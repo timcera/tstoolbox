@@ -18,7 +18,15 @@ News
 
 *Release date: 2011-10-21*
 
-  The scikits.timeseries was trowing a segmentation fault.  Unproven, but
+  The scikits.timeseries was throwing a segmentation fault.  Unproven, but
   suspect it was because of the latest numpy.  Only developed a work-around -
   eventually will move to the new datetime64 in numpy 1.7 and greater.
+
+0.2.1
+---
+
+*Release date: 2011-10-25*
+
+  Fixed how the start_date and end_date keywords were handled.  Minor bug
+  fixes and code cleanups.
 

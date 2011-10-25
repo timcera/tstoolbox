@@ -1,4 +1,4 @@
-#!/sjr/beodata/local/python_linux/bin/python
+#!/usr/bin/env python
 '''
 '''
 import sys
@@ -22,12 +22,10 @@ class MissingValuesInInputError(Exception):
 def _find_gcf(dividend, divisor):
     remainder = -1
     while remainder != 0:
-        qoutient = dividend/divisor
         remainder = dividend%divisor
         if remainder != 0:
             dividend = divisor
             divisor = remainder
-    gcf = divisor
     return divisor
 
 @baker.command
