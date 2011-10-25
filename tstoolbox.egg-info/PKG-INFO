@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: tstoolbox
-Version: 0.1
+Version: 0.2
 Summary: Command line script to manipulate time series files.
 Home-page: http://
 Author: Tim Cera, P.E.
@@ -69,9 +69,18 @@ Description: TSTOOLBOX
         0.1
         ---
         
-        *Release date: 22-Apr-2011*
+        *Release date: 2011-04-22*
         
         * Initial release
+        
+        0.2
+        ---
+        
+        *Release date: 2011-10-21*
+        
+          The scikits.timeseries was trowing a segmentation fault.  Unproven, but
+          suspect it was because of the latest numpy.  Only developed a work-around -
+          eventually will move to the new datetime64 in numpy 1.7 and greater.
         
         
 Keywords: time_series

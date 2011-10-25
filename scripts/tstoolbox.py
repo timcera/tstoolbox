@@ -1,12 +1,13 @@
-#!/usr/bin/env python
+#!/sjr/beodata/local/python_linux/bin/python
 '''
 '''
 import sys
+
 import scikits.timeseries as ts
 import numpy as np
-import tsutils
-
 import baker
+
+import tsutils
 
 # Errors
 class DSNDoesNotExist(Exception):
@@ -28,6 +29,36 @@ def _find_gcf(dividend, divisor):
             divisor = remainder
     gcf = divisor
     return divisor
+
+@baker.command
+def convertstdtoswmm(infile='-'):
+    ''' Prints out data to the screen in a format that SWMM understands
+    :param infile: Filename with data in 'ISOdate,value' format or '-' for stdin.
+    '''
+    tsd = tsutils.read_iso_ts(baker.openinput(infile))
+
+    isodatestr = '01/01/{0.year:4d} 00:00:00'
+    if tsd.freq >= 3000:
+        isodatestr = '{0.month:02d}/01/{0.year:4d} 00:00:00'
+    if tsd.freq >= 6000:
+        isodatestr = '{0.month:02d}/{0.day:02d}/{0.year:4d} 00:00:00'
+    if tsd.freq >= 7000:
+        isodatestr = '{0.month:02d}/{0.day:02d}/{0.year:4d} {0.hour:02d}:00:00'
+    if tsd.freq >= 8000:
+        isodatestr = '{0.month:02d}/{0.day:02d}/{0.year:4d} {0.hour:02d}:{0.minute:02d}:00'
+    if tsd.freq >= 9000:
+        isodatestr = '{0.month:02d}/{0.day:02d}/{0.year:4d} {0.hour:02d}:{0.minute:02d}:{0.second:02d}'
+    isodatestr = isodatestr + ' {1}'
+    for i in range(len(tsd)):
+        print isodatestr.format(tsd.dates[i], tsd[i])
+
+@baker.command
+def convertexcelcsvtostd(infile='-'):
+    ''' Prints out data to the screen in a WISKI ZRXP format.
+    :param infile: Filename with data in 'ISOdate,value' format or '-' for stdin.
+    '''
+    tsd = tsutils.read_excel_csv(baker.openinput(infile))
+    tsutils.printiso(tsd)
 
 @baker.command
 def converttozrxp(infile='-'):
@@ -66,7 +97,9 @@ def converttoexcelcsv(infile='-', start_date=None, end_date=None):
     :param start_date: If not given defaults to start of data set.
     :param end_date:   If not given defaults to end of data set.
     '''
-    tsd = tsutils.read_iso_ts(baker.openinput(infile))[start_date:end_date]
+    tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    b = ts.date_array(start_date=start_date, end_date=end_date, freq=tsd.freq)
+    tsd = tsd[b]
     for i in range(len(tsd)):
         print '{0.year:04d}/{0.month:02d}/{0.day:02d} {0.hour:02d}:{0.minute:02d}:{0.second:02d},{1}'.format(tsd.dates[i], tsd[i])
 
@@ -79,7 +112,9 @@ def centered_moving_window(infile='-', span=2, start_date=None, end_date=None, s
     :param end_date:   If not given defaults to end of data set.
     :param statistic: 'mean' is the only option to calculate the centered moving window aggregation
     '''
-    tsd = tsutils.read_iso_ts(baker.openinput(infile))[start_date:end_date]
+    tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    b = ts.date_array(start_date=start_date, end_date=end_date, freq=tsd.freq)
+    tsd = tsd[b]
     import scikits.timeseries.lib as tslib
     span = int(span)
     if statistic == 'mean':
@@ -98,7 +133,9 @@ def moving_window(infile='-', span=2, start_date=None, end_date=None, statistic=
     :param end_date:   If not given defaults to end of data set.
     :param statistic: 'mean', 'mean_expw', 'sum', 'minimum', 'maximum', 'median', 'stdev', 'variance' to calculate the aggregation, defaults to 'mean'.
     '''
-    tsd = tsutils.read_iso_ts(baker.openinput(infile))[start_date:end_date]
+    tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    b = ts.date_array(start_date=start_date, end_date=end_date, freq=tsd.freq)
+    tsd = tsd[b]
     import scikits.timeseries.lib as tslib
     span = int(span)
     if statistic == 'mean':
@@ -139,10 +176,33 @@ def aggregate(infile='-', start_date=None, end_date=None, statistic='mean', agg_
             'median': np.ma.median,
             'instantaneous': ts.first_unmasked_val,
             }
-    tsd = tsutils.read_iso_ts(baker.openinput(infile))[start_date:end_date]
+    tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    b = ts.date_array(start_date=start_date, end_date=end_date, freq=tsd.freq)
+    tsd = tsd[b]
 
     newts = ts.convert(tsd, agg_interval, func=statd[statistic])
     tsutils.printiso(newts)
+
+@baker.command
+def calculate_fdc(infile='-', xdata_type = 'norm'):
+    ''' Returns the frequency distrbution curve.  DOES NOT return a time-seris.
+    :param infile: Filename with data in 'ISOdate,value' format or '-' for stdin.
+    '''
+    from scipy.stats.distributions import norm
+
+    tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    n = tsd.count(axis=-1)
+    a = 1./(n + 1)
+    b = 1 - a
+    plotpos = np.ma.empty(len(tsd), dtype=float)
+    if xdata_type == 'norm':
+        plotpos[:n] = norm.ppf(np.linspace(a, b, n))
+    if xdata_type == 'lin':
+        plotpos[:n] = np.linespace(a, b, n)
+    ydata = np.ma.sort(tsd, endwith=False)[::-1]
+    xlabel = norm.cdf(plotpos)
+    for x,y,z in zip(plotpos, ydata, xlabel):
+        print x, y, z
 
 @baker.command
 def plot(infile='-', ofilename='plot.png', start_date=None, end_date=None, xtitle='Time', ytitle='', title='', figsize=(10,6.5)):
@@ -158,15 +218,18 @@ def plot(infile='-', ofilename='plot.png', start_date=None, end_date=None, xtitl
     '''
     import matplotlib
     matplotlib.use('Agg')
-    import scikits.timeseries.lib.plotlib as pl
-
-    tsd = tsutils.read_iso_ts(baker.openinput(infile))[start_date:end_date]
+    import pylab as pl
+    #import scikits.timeseries.lib.plotlib as pl
+    tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    b = ts.date_array(start_date=start_date, end_date=end_date, freq=tsd.freq)
+    tsd = tsd[b]
     fig = pl.figure(figsize=figsize)
-    fsp = fig.add_tsplot(111)
-    fsp.tsplot(tsd)
+    fsp = fig.add_subplot(111)
+    fsp.plot(tsd.dates, tsd.data)
     fsp.set_xlabel(xtitle)
     fsp.set_ylabel(ytitle)
     fsp.set_title(title)
+    fsp.xaxis_date()
     fig.savefig(ofilename)
 
 def plotcalibandobs(mwdmpath, mdsn, owdmpath, odsn, ofilename):

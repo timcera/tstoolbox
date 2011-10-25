@@ -1,5 +1,6 @@
 import sys
 import re
+from datetime import datetime
 
 import scikits.timeseries as ts
 
@@ -62,7 +63,27 @@ def dateconverter(datestr):
                          second=int(words[5]))
     return tsdate
 
+def dateconverter_wstr(datestr):
+    words = re.findall(r'\d+', str(datestr))
+    dashes = re.findall(r'-', str(datestr))
+    if len(dashes) == 0:
+        tsdate = ts.Date(freq='yearly',
+                         year=int(words[0]))
+    if len(dashes) == 1:
+        parsed_date = datetime.strptime(datestr, '%b-%Y')
+        tsdate = ts.Date(freq='monthly',
+                         datetime=parsed_date)
+    if len(dashes) == 2:
+        parsed_date = datetime.strptime(datestr, '%d-%b-%Y')
+        tsdate = ts.Date(freq='daily',
+                         datetime=parsed_date)
+    return tsdate
+
+
 def read_iso_ts(fp):
     tsdata = ts.tsfromtxt(fp, delimiter=',', datecols=(0), dateconverter=dateconverter, usecols=(0,1), names='value')
-    return tsdata['value']
+    return tsdata
 
+def read_excel_csv(fp):
+    tsdata = ts.tsfromtxt(fp, delimiter=',', datecols=(0), dateconverter=dateconverter_wstr, usecols=(0,1), names='value')
+    return tsdata['value']
