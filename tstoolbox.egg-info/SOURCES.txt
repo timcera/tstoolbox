@@ -1,0 +1,12 @@
+MANIFEST.in
+NEWS.txt
+README.rst
+setup.py
+tsutils.py
+scripts/tstoolbox.py
+tstoolbox.egg-info/PKG-INFO
+tstoolbox.egg-info/SOURCES.txt
+tstoolbox.egg-info/dependency_links.txt
+tstoolbox.egg-info/not-zip-safe
+tstoolbox.egg-info/requires.txt
+tstoolbox.egg-info/top_level.txt
