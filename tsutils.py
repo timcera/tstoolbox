@@ -20,11 +20,11 @@ def isoformatstr(date):
         isodatestr = isodatestr + ':{0.second:02d}'
     return isodatestr
 
-def printiso(ts):
+def printiso(ints):
     # Hopefully the date string will be the same for all date/times in the series
-    dateformat = isoformatstr(ts.dates[0])
-    for i in range(len(ts)):
-        print '{0},{1}'.format(dateformat.format(ts.dates[i]), ts[i])
+    dateformat = isoformatstr(ints.dates[0])
+    for i in range(len(ints)):
+        print '{0},{1}'.format(dateformat.format(ints.dates[i]), ints[i])
 
 def dateconverter(datestr):
     words = re.findall(r'\d+', str(datestr))
