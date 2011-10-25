@@ -98,10 +98,26 @@ def converttoexcelcsv(infile='-', start_date=None, end_date=None):
     :param end_date:   If not given defaults to end of data set.
     '''
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    if not start_date:
+        start_date = tsd.dates[0]
+    if not end_date:
+        end_date = tsd.dates[-1]
     b = ts.date_array(start_date=start_date, end_date=end_date, freq=tsd.freq)
     tsd = tsd[b]
+    xcldatestr = '{0.year:4d}/01/01 00:00:00'
+    if tsd.freq >= 3000:
+        xcldatestr = '{0.year:04d}/01/{0.day:2d} 00:00:00'
+    if tsd.freq >= 6000:
+        xcldatestr = '{0.year:04d}/{0.month:02d}/{0.day:2d} 00:00:00'
+    if tsd.freq >= 7000:
+        xcldatestr = '{0.year:04d}/{0.month:02d}/{0.day:2d} {0.hour:02d}:00:00'
+    if tsd.freq >= 8000:
+        xcldatestr = '{0.year:04d}/{0.month:02d}/{0.day:2d} {0.hour:02d}:{0.minute:02d}:00'
+    if tsd.freq >= 9000:
+        xcldatestr = '{0.year:04d}/{0.month:02d}/{0.day:2d} {0.hour:02d}:{0.minute:02d}:{0.second:02d}'
+    xcldatestr = xcldatestr + ',{1}'
     for i in range(len(tsd)):
-        print '{0.year:04d}/{0.month:02d}/{0.day:02d} {0.hour:02d}:{0.minute:02d}:{0.second:02d},{1}'.format(tsd.dates[i], tsd[i])
+        print xcldatestr.format(tsd.dates[i], tsd[i][0])
 
 @baker.command
 def centered_moving_window(infile='-', span=2, start_date=None, end_date=None, statistic='mean'):
@@ -113,6 +129,10 @@ def centered_moving_window(infile='-', span=2, start_date=None, end_date=None, s
     :param statistic: 'mean' is the only option to calculate the centered moving window aggregation
     '''
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    if not start_date:
+        start_date = tsd.dates[0]
+    if not end_date:
+        end_date = tsd.dates[-1]
     b = ts.date_array(start_date=start_date, end_date=end_date, freq=tsd.freq)
     tsd = tsd[b]
     import scikits.timeseries.lib as tslib
@@ -134,6 +154,10 @@ def moving_window(infile='-', span=2, start_date=None, end_date=None, statistic=
     :param statistic: 'mean', 'mean_expw', 'sum', 'minimum', 'maximum', 'median', 'stdev', 'variance' to calculate the aggregation, defaults to 'mean'.
     '''
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    if not start_date:
+        start_date = tsd.dates[0]
+    if not end_date:
+        end_date = tsd.dates[-1]
     b = ts.date_array(start_date=start_date, end_date=end_date, freq=tsd.freq)
     tsd = tsd[b]
     import scikits.timeseries.lib as tslib
@@ -177,6 +201,10 @@ def aggregate(infile='-', start_date=None, end_date=None, statistic='mean', agg_
             'instantaneous': ts.first_unmasked_val,
             }
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    if not start_date:
+        start_date = tsd.dates[0]
+    if not end_date:
+        end_date = tsd.dates[-1]
     b = ts.date_array(start_date=start_date, end_date=end_date, freq=tsd.freq)
     tsd = tsd[b]
 
@@ -221,6 +249,10 @@ def plot(infile='-', ofilename='plot.png', start_date=None, end_date=None, xtitl
     import pylab as pl
     #import scikits.timeseries.lib.plotlib as pl
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    if not start_date:
+        start_date = tsd.dates[0]
+    if not end_date:
+        end_date = tsd.dates[-1]
     b = ts.date_array(start_date=start_date, end_date=end_date, freq=tsd.freq)
     tsd = tsd[b]
     fig = pl.figure(figsize=figsize)
