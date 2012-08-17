@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/sjr/beodata/local/python_linux/bin/python
 '''
 '''
 import sys
@@ -52,18 +52,31 @@ def convertstdtoswmm(infile='-'):
 
 @baker.command
 def convertexcelcsvtostd(infile='-'):
-    ''' Prints out data to the screen in a WISKI ZRXP format.
+    ''' Prints out data to the screen in a tstoolbox 'standard' -> ISOdate,value
     :param infile: Filename with data in 'ISOdate,value' format or '-' for stdin.
     '''
     tsd = tsutils.read_excel_csv(baker.openinput(infile))
     tsutils.printiso(tsd)
 
 @baker.command
-def converttozrxp(infile='-'):
+def convert(factor=1.0, offset=0.0, infile='-'):
+    ''' Converts values of a time series by applying a factor and offset.
+    :param factor: Factor to multiply the time series values.
+    :param offset: Offset to add to the time series values.
+    :param infile: Filename with data in 'ISOdate,value' format or '-' for stdin.
+    '''
+    tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    tsd = tsd*factor + offset
+    tsutils.printiso(tsd)
+
+@baker.command
+def converttozrxp(infile='-', rexchange=None):
     ''' Prints out data to the screen in a WISKI ZRXP format.
     :param infile: Filename with data in 'ISOdate,value' format or '-' for stdin.
     '''
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
+    if rexchange:
+        print '#REXCHANGE{0}|*|'.format(rexchange)
     for i in range(len(tsd)):
         print '{0.year:04d}{0.month:02d}{0.day:02d}{0.hour:02d}{0.minute:02d}{0.second:02d} {1}'.format(tsd.dates[i], tsd[i])
 
@@ -104,18 +117,18 @@ def converttoexcelcsv(infile='-', start_date=None, end_date=None):
     tsd = tsd[b]
     xcldatestr = '{0.year:4d}/01/01 00:00:00'
     if tsd.freq >= 3000:
-        xcldatestr = '{0.year:04d}/01/{0.day:2d} 00:00:00'
+        xcldatestr = '{0.year:04d}/01/{0.day:02d} 00:00:00'
     if tsd.freq >= 6000:
-        xcldatestr = '{0.year:04d}/{0.month:02d}/{0.day:2d} 00:00:00'
+        xcldatestr = '{0.year:04d}/{0.month:02d}/{0.day:02d} 00:00:00'
     if tsd.freq >= 7000:
-        xcldatestr = '{0.year:04d}/{0.month:02d}/{0.day:2d} {0.hour:02d}:00:00'
+        xcldatestr = '{0.year:04d}/{0.month:02d}/{0.day:02d} {0.hour:02d}:00:00'
     if tsd.freq >= 8000:
-        xcldatestr = '{0.year:04d}/{0.month:02d}/{0.day:2d} {0.hour:02d}:{0.minute:02d}:00'
+        xcldatestr = '{0.year:04d}/{0.month:02d}/{0.day:02d} {0.hour:02d}:{0.minute:02d}:00'
     if tsd.freq >= 9000:
-        xcldatestr = '{0.year:04d}/{0.month:02d}/{0.day:2d} {0.hour:02d}:{0.minute:02d}:{0.second:02d}'
+        xcldatestr = '{0.year:04d}/{0.month:02d}/{0.day:02d} {0.hour:02d}:{0.minute:02d}:{0.second:02d}'
     xcldatestr = xcldatestr + ',{1}'
     for i in range(len(tsd)):
-        print xcldatestr.format(tsd.dates[i], tsd[i][0])
+        print xcldatestr.format(tsd.dates[i], tsd[i])
 
 @baker.command
 def centered_moving_window(infile='-', span=2, start_date=None, end_date=None, statistic='mean'):
@@ -199,13 +212,7 @@ def aggregate(infile='-', start_date=None, end_date=None, statistic='mean', agg_
             'instantaneous': ts.first_unmasked_val,
             }
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
-    if not start_date:
-        start_date = tsd.dates[0]
-    if not end_date:
-        end_date = tsd.dates[-1]
-    b = ts.date_array(start_date=start_date, end_date=end_date, freq=tsd.freq)
-    tsd = tsd[b]
-
+    tsd = ts.adjust_endpoints(tsd, start_date=start_date, end_date=end_date)
     newts = ts.convert(tsd, agg_interval, func=statd[statistic])
     tsutils.printiso(newts)
 

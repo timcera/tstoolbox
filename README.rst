@@ -56,3 +56,13 @@ If a subcommand accepts an input file for an argument, you can use '-' to
 indicate that the input is from a pipe.  For the subcommands that output data
 it is printed to the screen and you can then redirect to a file.
 
+Author
+======
+
+Tim Cera, P.E.
+
+tim at cerazone dot net
+
+Please send me a note if you find this useful, found a bug, submit a patch,
+...etc.
+

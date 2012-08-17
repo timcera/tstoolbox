@@ -81,7 +81,11 @@ def dateconverter_wstr(datestr):
 
 
 def read_iso_ts(fp):
-    tsdata = ts.tsfromtxt(fp, delimiter=',', datecols=(0), dateconverter=dateconverter, usecols=(0,1), names='value')
+    tsdata = ts.tsfromtxt(fp, delimiter=',', datecols=(0),
+            dateconverter=dateconverter, usecols=(0,1), names='value',
+            comments='#', autostrip=True)
+    data = [i[0] for i in tsdata.data]
+    tsdata = ts.time_series(data, tsdata.dates)
     return tsdata
 
 def read_excel_csv(fp):
