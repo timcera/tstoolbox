@@ -30,3 +30,16 @@ News
   Fixed how the start_date and end_date keywords were handled.  Minor bug
   fixes and code cleanups.
 
+0.3
+
+*Release date: 2012-12-05
+
+  Removed everything from scikits.timeseries to pandas.
+
+  Took as much advantage of pandas as I could to streamline many of the
+  sub-commands.
+
+  Added 'date_slice' sub-command and started to remove the '--start_date' and
+  '--end_date' options from other commands.  Use 'date_slice' instead in the
+  pipe.
+
