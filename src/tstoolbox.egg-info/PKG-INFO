@@ -1,0 +1,141 @@
+Metadata-Version: 1.0
+Name: tstoolbox
+Version: 0.3.1
+Summary: Command line script to manipulate time series files.
+Home-page: http://
+Author: Tim Cera, P.E.
+Author-email: tim@cerazone.net
+License: GPL
+Description: TSTOOLBOX
+        =========
+        The tstoolbox is a Python script to manipulate time-series on the command
+        line.  Based on pandas (http://pandas.pydata.org/)
+        
+        Requirements
+        ============
+        
+        Python requirements for all platforms
+        -------------------------------------
+        * pandas - on Windows this is part of the Python(x,y) distribution
+          (http://code.google.com/p/pythonxy/)
+        
+        * baker - command line parser
+        
+        Installation
+        ============
+        
+        Should be as easy as running ``easy_install tstoolbox`` or ``pip install
+        tstoolbox`` at any command line.  Not sure on Windows whether this will bring
+        in pandas, but as mentioned above, if you start with Python(x,y)
+        then you won't have a problem.
+        
+        The tstoolbox script is actually made up of two parts, 'tstoolbox.py' which
+        handles all command line interaction and 'tsutil.py' which is a library of
+        functions that 'tstoolbox.py' uses.  This means that you can write your own
+        scripts to access ts files by importing the functionality from 'tsutil.py'.
+        
+        Running
+        =======
+        Just run 'tstoolbox.py' to get a list of subcommands::
+        
+            Usage: /sjr/beodata/local/bin/tstoolbox COMMAND <options>
+            
+            Available commands:
+             aggregate      Takes a time series and aggregates to specified frequency,
+                            outputs to 'ISO-8601date,value' format.
+             calculate_fdc  Returns the frequency distrbution curve. DOES NOT return a
+                            time-series.
+             convert        Converts values of a time series by applying a factor and
+                            offset.
+             date_slice     Prints out data to the screen between start_date and
+                            end_date
+             excelcsvtostd  Prints out data to the screen in a tstoolbox 'standard' ->
+                            ISOdate,value
+             moving_window  Calculates a moving window statistic.
+             pickletots     Reads in a time-series from a Python pickled file.
+             plot           Time series plot. (10,6.5).
+             stdtozrxp      Prints out data to the screen in a WISKI ZRXP format.
+             tstopickle     Pickles the data into a Python pickled file. Can be brought
+                            back into Python with 'pickle.load' or 'numpy.load'.
+            
+            Use '/sjr/beodata/local/bin/tstoolbox <command> --help' for individual command help.
+        
+        If a subcommand accepts an input file for an argument, you can use '-' to
+        indicate that the input is from a pipe.  For the subcommands that output data
+        it is printed to the screen and you can then redirect to a file.
+        
+        Author
+        ======
+        
+        Tim Cera, P.E.
+        
+        tim at cerazone dot net
+        
+        Please send me a note if you find this useful, found a bug, submit a patch,
+        ...etc.
+        
+        
+        
+        .. This is your project NEWS file which will contain the release notes.
+        .. Example: http://www.python.org/download/releases/2.6/NEWS.txt
+        .. The content of this file, along with README.rst, will appear in your
+        .. project's PyPI page.
+        
+        News
+        ====
+        
+        0.1
+        ---
+        
+        *Release date: 2011-04-22*
+        
+        * Initial release
+        
+        0.2
+        ---
+        
+        *Release date: 2011-10-21*
+        
+          The scikits.timeseries was throwing a segmentation fault.  Unproven, but
+          suspect it was because of the latest numpy.  Only developed a work-around -
+          eventually will move to the new datetime64 in numpy 1.7 and greater.
+        
+        0.2.1
+        ---
+        
+        *Release date: 2011-10-25*
+        
+          Fixed how the start_date and end_date keywords were handled.  Minor bug
+          fixes and code cleanups.
+        
+        0.3
+        
+        *Release date: 2012-12-05
+        
+          Removed everything from scikits.timeseries to pandas.
+        
+          Took as much advantage of pandas as I could to streamline many of the
+          sub-commands.
+        
+          Added 'date_slice' sub-command and started to remove the '--start_date' and
+          '--end_date' options from other commands.  Use 'date_slice' instead in the
+          pipe.
+        
+        0.3.1
+        
+        *Release date: 2012-12-05
+        
+          Removed print statement used for debugging.
+        
+Keywords: time_series
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Environment :: Console
+Classifier: License :: OSI Approved :: GNU General Public License (GPL)
+Classifier: Natural Language :: English
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Microsoft
+Classifier: Programming Language :: Python :: 2
+Classifier: Topic :: Scientific/Engineering
