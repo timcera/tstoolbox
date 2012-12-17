@@ -6,7 +6,7 @@ README = open(os.path.join(here, 'README.rst')).read()
 NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
 
-version = '0.3.0'
+version = '0.3.1'
 
 install_requires = [
     # List your project dependencies here.
@@ -37,10 +37,15 @@ setup(name='tstoolbox',
     keywords='time_series',
     author='Tim Cera, P.E.',
     author_email='tim@cerazone.net',
-    url='http://',
-    license='GPL',
+    url='http://pypi.python.org/pypi/tstoolbox',
+    license='GPL2',
+    packages=find_packages('src'),
+    package_dir = {'': 'src'},include_package_data=True,
     zip_safe=False,
     install_requires=install_requires,
     py_modules=['tsutils'],
-    scripts=['scripts/tstoolbox.py'],
+    entry_points={
+        'console_scripts':
+            ['tstoolbox=tstoolbox:main']
+    }
 )

@@ -4,6 +4,7 @@ tstoolbox is a collection of command line tools for the manipulation of time
 series.
 '''
 import sys
+import os.path
 
 import pandas as pd
 import numpy as np
@@ -20,60 +21,95 @@ def _date_slice(infile='-', start_date=None, end_date=None):
     return tsd[start_date:end_date]
 
 
+def _sniff_filetype(filename):
+
+    # Is it a pickled file...
+    try:
+        return pd.core.common.load(filename)
+    except:
+        pass
+
+    # Really hard to determine if there is a header -
+    # Assume yes...
+    return pd.read_table(open(filename, 'rb'), header=0, sep=',',
+            parse_dates=[0], index_col=[0])
+
+
+def _print_input(iftrue, input, output, suffix):
+    if suffix:
+        output = output.rename(columns=lambda xloc: xloc + suffix)
+    if iftrue:
+        tsutils.printiso(input.join(output))
+    else:
+        tsutils.printiso(output)
+
+
 @baker.command
-def date_slice(infile='-', start_date=None, end_date=None):
+def read(*filenames):
+    '''
+    Collect time series from a list of pickle or csv files then print
+    in the tstoolbox standard format.
+    :param filenames: List of filenames to read time series from.
+    '''
+    for filename in filenames:
+        fname = os.path.basename(os.path.splitext(filename)[0])
+        tsd = _sniff_filetype(filename)
+        if len(filenames) > 1:
+            tsd = tsd.rename(columns=lambda x:fname + '_' + x)
+        try:
+            result = result.join(tsd)
+        except NameError:
+            result = tsd
+    tsutils.printiso(result)
+
+
+@baker.command
+def date_slice(start_date=None, end_date=None, infile='-'):
     '''
     Prints out data to the screen between start_date and end_date
-    :param infile: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
     :param start_date: The start_date of the series in ISOdatetime format, or
         'None' for beginning.
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
+    :param infile: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
     '''
     tsutils.printiso(_date_slice(infile=infile, start_date=start_date,
         end_date=end_date))
 
 
-@baker.command
-def excelcsvtostd(infile='-', header=0):
-    '''
-    Prints out data to the screen in a tstoolbox 'standard' -> ISOdate,value
-    :param infile: Filename with data in 'ISOdate,value' format
-    '''
-    tsd = tsutils.read_excel_csv(baker.openinput(infile), header=header)
-    tsutils.printiso(tsd)
-
 
 @baker.command
-def nppeak_detection(infile='-', print_input=False):
-    '''
-    Use scipy.signal peak detection...
-    '''
-    tsd = tsutils.read_iso_ts(baker.openinput(infile))
-    argmax = tsutils._argrelmax(tsd)
-    if print_input:
-        tsutils.printiso(tsd.join(argmax))
-    else:
-        tsutils.printiso(argmax)
-
-@baker.command
-def peak_detection(infile='-', type='peak', method='minmax', window=24, print_input=False):
+def peak_detection(window=24, type='peak', method='rel', print_input=False,
+        infile='-'):
     '''
     Peak and valley detection.
     :param infile: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param type: 'peak', 'valley', or 'both' to determine what should be returned.
-    :param window: There will not be multiple peaks within the window number of values.
+        stdin.  Default is stdin.
+    :param type: 'peak', 'valley', or 'both' to determine what should be
+        returned.  Default is 'peak'.
+    :param method: 'rel', 'minmax', 'zero_crossing' methods are available.
+        You can try different ones, but 'rel' is the default and is likely the
+        best.
+    :param window: There will not usually be multiple peaks within the window
+        number of values.  The different `method`s use this variable in different
+        ways.
+    :param print_input: If set to 'True' will include the input columns in the
+        output table.  Default is 'False'.
     '''
     if type not in ['peak', 'valley', 'both']:
         raise ValueError("The `type` argument must be one of 'peak', 'valley', or 'both'.  You supplied {0}.".format(type))
-    if method not in ['minmax', 'zero_crossing']:
+    if method not in ['rel', 'minmax', 'zero_crossing']:
         raise ValueError("The `method` argument must be one of 'minmax', 'zero_crossing'.  You supplied {0}.".format(type))
 
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
 
-    if method == 'minmax':
+    if method == 'rel':
+        func = tsutils._argrel
+        window = int(window/2)
+        if window == 0:
+            window = 1
+    elif method == 'minmax':
         func = tsutils._peakdetect
         window = int(window/2)
         if window == 0:
@@ -97,71 +133,56 @@ def peak_detection(infile='-', type='peak', method='minmax', window=24, print_in
             datavals = maxpeak
         if c[-7:] == '_valley':
             datavals = minpeak
-
         maxx, maxy = zip(*datavals)
         tmptsd[c][:] = np.nan
         tmptsd[c][np.array(maxx)] = maxy
 
-    if print_input:
-        tsutils.printiso(tsd.join(tmptsd))
-    else:
-        tsutils.printiso(tmptsd)
-
-# Following was replaced by much better algorithm...
-#@baker.command
-#def peak_detection(type=1, k=24, h=1.5, infile='-', print_input=False):
-#    '''
-#    Determines a significance of a peak.
-#    :param type: 1 or 2, type of algorithm used.
-#    :param infile: Filename with data in 'ISOdate,value' format or '-' for
-#        stdin.
-#    '''
-#    tsd = tsutils.read_iso_ts(baker.openinput(infile))
-#
-#    tmptsd = tsd.rename(columns=lambda x: x+'_peak_detection', copy=True)
-#    if type == 1:
-#        for i in range(len(tsd.values))[k:-k]:
-#            tmptsd.values[i] = (
-#                    np.nanmax(tsd.values[i] - tsd.values[i-k:i], axis=0) +
-#                    np.nanmax(tsd.values[i] - tsd.values[i+1:i+k+1], axis=0))/2.0
-#        tmptsd.values[:k] = np.nan
-#        tmptsd.values[-k:] = np.nan
-#        tmptsd[tmptsd.values<=0] = np.nan
-#        globalmean = tmptsd.mean()
-#        globalstd = tmptsd.std()
-#        tmptsd.values[(tmptsd.values - globalmean.values) <
-#                (h*globalstd.values)] = np.nan
-#        selvals = tsutils._argrelmax(tmptsd.fillna(0.0).values)
-#        tmptsd.values[:,:] = np.nan
-#        tmptsd.values[selvals] = tsd.values[selvals]
-#        #tmptsd.values[pd.rolling_max(tmptsd.fillna(0), 2*k + 1) !=
-#        #        tmptsd.values] = np.nan
-#        #isfi = np.isfinite(tmptsd)
-#        #tmptsd.values[isfi] = tsd.values[isfi]
-#    if print_input:
-#        tsutils.printiso(tsd.join(tmptsd))
-#    else:
-#        tsutils.printiso(tmptsd)
+    _print_input(print_input, tsd, tmptsd, None)
 
 
 @baker.command
-def convert(factor=1.0, offset=0.0, infile='-'):
+def convert(factor=1.0, offset=0.0, print_input=False, infile='-'):
     '''
-    Converts values of a time series by applying a factor and offset.
+    Converts values of a time series by applying a factor and offset.  See the
+        'equation' subcommand for a generalized form of this command.
     :param factor: Factor to multiply the time series values.
     :param offset: Offset to add to the time series values.
+    :param print_input: If set to 'True' will include the input columns in the
+        output table.  Default is 'False'.
     :param infile: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
     '''
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
-    tsd = tsd*factor + offset
-    tsutils.printiso(tsd)
+    tmptsd = tsd*factor + offset
+    _print_input(print_input, tsd, tmptsd, '_convert')
 
 
 @baker.command
-def stdtozrxp(infile='-', rexchange=None):
+def equation(equation, print_input=False, infile='-'):
+    '''
+    Applies <equation> to the time series data.  The <equation> argument is a
+        string contained in single quotes with 'x' used as the variable
+        representing the input.  For example, '(1 - x)*np.sin(x)'
+    :param equation: String contained in single quotes that defines the
+        equation.  The input variable place holder is 'x'.  Mathematical
+        functions in the 'np' (numpy) name space can be used.  For example,
+        'x*4 + 2', 'x**2 + np.cos(x)', and 'np.tan(x*np.pi/180)' are all valid
+        <equation> strings.
+    :param print_input: If set to 'True' will include the input columns in the
+        output table.  Default is 'False'.
+    :param infile: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
+    '''
+    x = tsutils.read_iso_ts(baker.openinput(infile))
+    y = eval(equation)
+    _print_input(print_input, x, y, '_equation')
+
+
+@baker.command
+def stdtozrxp(rexchange=None, infile='-'):
     '''
     Prints out data to the screen in a WISKI ZRXP format.
+    :param rexchange: The REXCHANGE ID to be written inro the zrxp header.
     :param infile: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
     '''
@@ -181,7 +202,7 @@ def stdtozrxp(infile='-', rexchange=None):
 def tstopickle(filename, infile='-'):
     '''
     Pickles the data into a Python pickled file.  Can be brought back into
-    Python with 'pickle.load' or 'numpy.load'.
+    Python with 'pickle.load' or 'numpy.load'.  See also 'tstoolbox read'.
     :param filename: The filename to store the pickled data.
     '''
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
@@ -189,17 +210,7 @@ def tstopickle(filename, infile='-'):
 
 
 @baker.command
-def pickletots(filename):
-    '''
-    Reads in a time-series from a Python pickled file.
-    :param filename: Path and filename to Python pickled file.
-    '''
-    tsd = pd.core.common.load(filename)
-    tsutils.printiso(tsd)
-
-
-@baker.command
-def moving_window(infile='-', span=2, statistic='mean'):
+def moving_window(span=2, statistic='mean', print_input=False, infile='-'):
     '''
     Calculates a moving window statistic.
     :param infile: Input comma separated file with 'ISO-8601_date/time,value'.
@@ -208,6 +219,8 @@ def moving_window(infile='-', span=2, statistic='mean'):
     :param statistic: 'mean', 'kurtosis', 'median', 'skew', 'stdev', 'sum',
         'variance', 'expw_mean', 'expw_stdev', 'expw_variance', 'minimum',
         'maximum' to calculate the aggregation, defaults to 'mean'.
+    :param print_input: If set to 'True' will include the input columns in the
+        output table.  Default is 'False'.
     '''
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
     span = int(span)
@@ -238,11 +251,11 @@ def moving_window(infile='-', span=2, statistic='mean'):
     else:
         print 'statistic ', statistic, ' is not implemented.'
         sys.exit()
-    tsutils.printiso(newts)
+    _print_input(print_input, tsd, newts, '_' + statistic)
 
 
 @baker.command
-def aggregate(infile='-', statistic='mean', agg_interval='daily'):
+def aggregate(statistic='mean', agg_interval='daily', print_input=False, infile='-'):
     '''
     Takes a time series and aggregates to specified frequency, outputs to
         'ISO-8601date,value' format.
@@ -251,6 +264,8 @@ def aggregate(infile='-', statistic='mean', agg_interval='daily'):
         'instantaneous' to calculate the aggregation, defaults to 'mean'.
     :param agg_interval: The 'hourly', 'daily', 'monthly', or 'yearly'
         aggregation intervals, defaults to daily.
+    :param print_input: If set to 'True' will include the input columns in the
+        output table.  Default is 'False'.
     '''
     aggd = {'hourly': 'H',
             'daily': 'D',
@@ -259,11 +274,11 @@ def aggregate(infile='-', statistic='mean', agg_interval='daily'):
             }
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
     newts = tsd.resample(aggd[agg_interval], how=statistic)
-    tsutils.printiso(newts)
+    _print_input(print_input, tsd, newts, '_' + statistic)
 
 
 @baker.command
-def calculate_fdc(infile='-', x_plotting_position = 'norm'):
+def calculate_fdc(x_plotting_position = 'norm', infile='-'):
     '''
     Returns the frequency distrbution curve.  DOES NOT return a time-series.
     :param infile: Filename with data in 'ISOdate,value' format or '-' for

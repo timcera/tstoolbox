@@ -122,15 +122,21 @@ def _boolrelextrema(data, comparator,
     locs = np.arange(0, datalen)
 
     results = np.ones(data.shape, dtype=bool)
-    main = data.take(locs, axis=axis, mode=mode)
+    main = data.take(locs, axis=axis)
     for shift in xrange(1, order + 1):
-        plus = data.take(locs + shift, axis=axis, mode=mode)
-        minus = data.take(locs - shift, axis=axis, mode=mode)
+        plus = np.take(data, locs + shift, axis=axis, mode=mode)
         results &= comparator(main, plus)
+        minus = np.take(data, locs - shift, axis=axis, mode=mode)
         results &= comparator(main, minus)
         if(~results.any()):
             return results
     return results
+
+
+def _argrel(data, axis=0, window=1):
+    tmpmin = _argrelmin(data, axis=axis, order=window)
+    tmpmax = _argrelmax(data, axis=axis, order=window)
+    return (zip(tmpmax[0], data[tmpmax[0]]), zip(tmpmin[0], data[tmpmin[0]]))
 
 
 def _argrelmin(data, axis=0, order=1, mode='clip'):
