@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: tstoolbox
-Version: 0.4
+Version: 0.4.1
 Summary: Command line script to manipulate time series files.
 Home-page: http://pypi.python.org/pypi/tstoolbox
 Author: Tim Cera, P.E.
@@ -82,11 +82,6 @@ Description: TSTOOLBOX
         
         
         
-        .. This is your project NEWS file which will contain the release notes.
-        .. Example: http://www.python.org/download/releases/2.6/NEWS.txt
-        .. The content of this file, along with README.rst, will appear in your
-        .. project's PyPI page.
-        
         News
         ====
         
@@ -151,7 +146,6 @@ Classifier: Intended Audience :: End Users/Desktop
 Classifier: Environment :: Console
 Classifier: License :: OSI Approved :: GNU General Public License (GPL)
 Classifier: Natural Language :: English
-Classifier: Operating System :: POSIX
-Classifier: Operating System :: Microsoft
+Classifier: Operating System :: OS Independent
 Classifier: Programming Language :: Python :: 2
 Classifier: Topic :: Scientific/Engineering
