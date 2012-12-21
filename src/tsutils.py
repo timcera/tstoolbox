@@ -20,6 +20,14 @@ def _isfinite(testval):
 
 
 # Utility
+def print_input(iftrue, input, output, suffix):
+    if suffix:
+        output = output.rename(columns=lambda xloc: xloc + suffix)
+    if iftrue:
+        printiso(input.join(output))
+    else:
+        printiso(output)
+
 def printiso(tsd):
     '''
     Default output format for tstoolbox, wdmtoolbox, swmmtoolbox, and hspfbintoolbox.

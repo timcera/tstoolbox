@@ -2,10 +2,12 @@ MANIFEST.in
 NEWS.txt
 README.rst
 setup.py
+src/tsutils.py
 src/tstoolbox/__init__.py
 src/tstoolbox.egg-info/PKG-INFO
 src/tstoolbox.egg-info/SOURCES.txt
 src/tstoolbox.egg-info/dependency_links.txt
 src/tstoolbox.egg-info/entry_points.txt
 src/tstoolbox.egg-info/not-zip-safe
+src/tstoolbox.egg-info/requires.txt
 src/tstoolbox.egg-info/top_level.txt

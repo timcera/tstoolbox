@@ -1,11 +1,11 @@
 Metadata-Version: 1.0
 Name: tstoolbox
-Version: 0.3.1
+Version: 0.4
 Summary: Command line script to manipulate time series files.
-Home-page: http://
+Home-page: http://pypi.python.org/pypi/tstoolbox
 Author: Tim Cera, P.E.
 Author-email: tim@cerazone.net
-License: GPL
+License: GPL2
 Description: TSTOOLBOX
         =========
         The tstoolbox is a Python script to manipulate time-series on the command
@@ -13,7 +13,6 @@ Description: TSTOOLBOX
         
         Requirements
         ============
-        
         Python requirements for all platforms
         -------------------------------------
         * pandas - on Windows this is part of the Python(x,y) distribution
@@ -23,7 +22,6 @@ Description: TSTOOLBOX
         
         Installation
         ============
-        
         Should be as easy as running ``easy_install tstoolbox`` or ``pip install
         tstoolbox`` at any command line.  Not sure on Windows whether this will bring
         in pandas, but as mentioned above, if you start with Python(x,y)
@@ -39,34 +37,42 @@ Description: TSTOOLBOX
         Just run 'tstoolbox.py' to get a list of subcommands::
         
             Usage: /sjr/beodata/local/bin/tstoolbox COMMAND <options>
-            
-            Available commands:
-             aggregate      Takes a time series and aggregates to specified frequency,
-                            outputs to 'ISO-8601date,value' format.
-             calculate_fdc  Returns the frequency distrbution curve. DOES NOT return a
-                            time-series.
-             convert        Converts values of a time series by applying a factor and
-                            offset.
-             date_slice     Prints out data to the screen between start_date and
-                            end_date
-             excelcsvtostd  Prints out data to the screen in a tstoolbox 'standard' ->
-                            ISOdate,value
-             moving_window  Calculates a moving window statistic.
-             pickletots     Reads in a time-series from a Python pickled file.
-             plot           Time series plot. (10,6.5).
-             stdtozrxp      Prints out data to the screen in a WISKI ZRXP format.
-             tstopickle     Pickles the data into a Python pickled file. Can be brought
-                            back into Python with 'pickle.load' or 'numpy.load'.
-            
-            Use '/sjr/beodata/local/bin/tstoolbox <command> --help' for individual command help.
         
-        If a subcommand accepts an input file for an argument, you can use '-' to
-        indicate that the input is from a pipe.  For the subcommands that output data
-        it is printed to the screen and you can then redirect to a file.
+            Available commands:
+             aggregate       Takes a time series and aggregates to specified frequency,
+                             outputs to 'ISO-8601date,value' format.
+             calculate_fdc   Returns the frequency distrbution curve. DOES NOT return a
+                             time-series.
+             convert         Converts values of a time series by applying a factor and
+                             offset. See the 'equation' subcommand for a generalized
+                             form of this command.
+             date_slice      Prints out data to the screen between start_date and
+                             end_date
+             equation        Applies <equation> to the time series data. The <equation>
+                             argument is a string contained in single quotes with 'x'
+                             used as the variable representing the input. For example,
+                             '(1 - x)*np.sin(x)'
+             moving_window   Calculates a moving window statistic.
+             peak_detection  Peak and valley detection.
+             plot            Time series plot. (10,6.5).
+             read            Collect time series from a list of pickle or csv files then
+                             print in the tstoolbox standard format.
+             stdtozrxp       Prints out data to the screen in a WISKI ZRXP format.
+             tstopickle      Pickles the data into a Python pickled file. Can be brought
+                             back into Python with 'pickle.load' or 'numpy.load'. See
+                             also 'tstoolbox read'.
+            
+            Use '/sjr/beodata/local/python_linux/bin/tstoolbox <command> --help' for individual command help.
+        
+        The default for all of the subcommands is to accept data from stdin (typically
+        a pipe).  If a subcommand accepts an input file for an argument, you can use
+        "--infile=filename", or to expliticly specifiy from stdin "--infile='-'" .  
+        
+        For the subcommands that output data it is printed to the screen and you can
+        then redirect to a file.
         
         Author
         ======
-        
         Tim Cera, P.E.
         
         tim at cerazone dot net
@@ -126,6 +132,16 @@ Description: TSTOOLBOX
         *Release date: 2012-12-05
         
           Removed print statement used for debugging.
+        
+        0.4
+        
+        *Release date: 2012-12-17
+        
+          Added 'equation' subcommand to manipulate time-series.
+          Added 'read' subcommand to read in multiple files at once.
+          Finished 'peak_detection' subcommand.
+          Added '--print_input' option to those subcommands where it made sense.
+        
         
 Keywords: time_series
 Platform: UNKNOWN

@@ -7,7 +7,7 @@ import sys
 import os.path
 
 import pandas as pd
-import numpy as np
+from numpy import *
 import baker
 
 import tsutils
@@ -92,21 +92,21 @@ def peak_detection(window=24, type='peak', method='rel', print_input=False,
         You can try different ones, but 'rel' is the default and is likely the
         best.
     :param window: There will not usually be multiple peaks within the window
-        number of values.  The different `method`s use this variable in different
-        ways.
+        number of values.  The different `method`s use this variable in
+        different ways.
     :param print_input: If set to 'True' will include the input columns in the
         output table.  Default is 'False'.
     '''
     if type not in ['peak', 'valley', 'both']:
         raise ValueError("The `type` argument must be one of 'peak', 'valley', or 'both'.  You supplied {0}.".format(type))
     if method not in ['rel', 'minmax', 'zero_crossing']:
-        raise ValueError("The `method` argument must be one of 'minmax', 'zero_crossing'.  You supplied {0}.".format(type))
+        raise ValueError("The `method` argument must be one of 'rel', 'minmax', 'zero_crossing'.  You supplied {0}.".format(type))
 
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
 
     if method == 'rel':
         func = tsutils._argrel
-        window = int(window/2)
+        window = int(window)/2
         if window == 0:
             window = 1
     elif method == 'minmax':
@@ -134,8 +134,8 @@ def peak_detection(window=24, type='peak', method='rel', print_input=False,
         if c[-7:] == '_valley':
             datavals = minpeak
         maxx, maxy = zip(*datavals)
-        tmptsd[c][:] = np.nan
-        tmptsd[c][np.array(maxx)] = maxy
+        tmptsd[c][:] = nan
+        tmptsd[c][array(maxx)] = maxy
 
     _print_input(print_input, tsd, tmptsd, None)
 
@@ -162,20 +162,74 @@ def equation(equation, print_input=False, infile='-'):
     '''
     Applies <equation> to the time series data.  The <equation> argument is a
         string contained in single quotes with 'x' used as the variable
-        representing the input.  For example, '(1 - x)*np.sin(x)'
+        representing the input.  For example, '(1 - x)*sin(x)'.
     :param equation: String contained in single quotes that defines the
         equation.  The input variable place holder is 'x'.  Mathematical
         functions in the 'np' (numpy) name space can be used.  For example,
-        'x*4 + 2', 'x**2 + np.cos(x)', and 'np.tan(x*np.pi/180)' are all valid
-        <equation> strings.
+        'x*4 + 2', 'x**2 + cos(x)', and 'tan(x*pi/180)' are all valid
+        <equation> strings.  The variable 't' is special representing the time
+        at which 'x' occurs.  This means you can so things like 'x[t] +
+        max(x[t-1], x[t+1])*0.6' to add to the current value 0.6 times the
+        maximum adjacent value.
     :param print_input: If set to 'True' will include the input columns in the
         output table.  Default is 'False'.
     :param infile: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
     '''
     x = tsutils.read_iso_ts(baker.openinput(infile))
-    y = eval(equation)
+    y = x.copy()
+    import re
+    if re.search('\[.*?t.*?\]', equation):
+        # This beasty is so users can use 't' in their equations
+        # Indices of 'x' are a function of 't' and can possibly be negative or
+        # greater than the length of the DataFrame.
+        # Correctly (I think) handles negative indices and indices greater
+        # than the length by setting to nan
+        # AssertionError happens when index negative.
+        # IndexError happens when index is greater than the length of the
+        # DataFrame.
+        nequation = re.sub(r'\[(.*?t.*?)\]', r'[col].values[\1:\1+1][0]', equation)
+        for col in x.columns:
+            for t in range(len(x)):
+                try:
+                    y[col][t] = eval(nequation)
+                except (AssertionError,IndexError):
+                    y[col][t] = nan
+    else:
+        y = eval(equation)
     _print_input(print_input, x, y, '_equation')
+
+
+@baker.command
+def pick(columns, infile='-'):
+    '''
+    Will pick a column or list of columns from input.  Start with 1.
+    :param columsn: Either and integer to collect a single column or a list of
+        intergers to collect multiple columns.
+    :param infile: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
+    '''
+    tsd = tsutils.read_iso_ts(baker.openinput(infile))
+
+    try:
+        columns = int(columns)
+    except ValueError:
+        columns = columns.split(',')
+        columns = [int(i) for i in columns]
+
+    if isinstance(columns, int):
+        tsutils.printiso(pd.DataFrame(tsd[tsd.columns[columns]]))
+        return
+
+    for index,col in enumerate(columns):
+        jtsd = pd.DataFrame(tsd[tsd.columns[col]])
+
+        jtsd =jtsd.rename(columns=lambda x:x + '_' + str(index), copy=True)
+        try:
+            newtsd = newtsd.join(jtsd)
+        except:
+            newtsd = jtsd
+    tsutils.printiso(newtsd)
 
 
 @baker.command
@@ -294,14 +348,14 @@ def calculate_fdc(x_plotting_position = 'norm', infile='-'):
     cnt = len(tsd.values)
     a_tmp = 1./(cnt + 1)
     b_tmp = 1 - a_tmp
-    plotpos = np.ma.empty(len(tsd), dtype=float)
+    plotpos = ma.empty(len(tsd), dtype=float)
     if x_plotting_position == 'norm':
-        plotpos[:cnt] = norm.ppf(np.linspace(a_tmp, b_tmp, cnt))
+        plotpos[:cnt] = norm.ppf(linspace(a_tmp, b_tmp, cnt))
         xlabel = norm.cdf(plotpos)
     if x_plotting_position == 'lin':
-        plotpos[:cnt] = np.linspace(a_tmp, b_tmp, cnt)
+        plotpos[:cnt] = linspace(a_tmp, b_tmp, cnt)
         xlabel = plotpos
-    ydata = np.ma.sort(tsd[tsd.columns[0]].values, endwith=False)[::-1]
+    ydata = ma.sort(tsd[tsd.columns[0]].values, endwith=False)[::-1]
     for xdat, ydat, zdat in zip(plotpos, ydata, xlabel):
         print xdat, ydat, zdat
 
