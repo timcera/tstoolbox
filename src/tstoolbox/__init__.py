@@ -35,15 +35,6 @@ def _sniff_filetype(filename):
             parse_dates=[0], index_col=[0])
 
 
-def _print_input(iftrue, input, output, suffix):
-    if suffix:
-        output = output.rename(columns=lambda xloc: xloc + suffix)
-    if iftrue:
-        tsutils.printiso(input.join(output))
-    else:
-        tsutils.printiso(output)
-
-
 @baker.command
 def read(*filenames):
     '''
@@ -137,7 +128,7 @@ def peak_detection(window=24, type='peak', method='rel', print_input=False,
         tmptsd[c][:] = nan
         tmptsd[c][array(maxx)] = maxy
 
-    _print_input(print_input, tsd, tmptsd, None)
+    tsutils.print_input(print_input, tsd, tmptsd, None)
 
 
 @baker.command
@@ -154,7 +145,7 @@ def convert(factor=1.0, offset=0.0, print_input=False, infile='-'):
     '''
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
     tmptsd = tsd*factor + offset
-    _print_input(print_input, tsd, tmptsd, '_convert')
+    tsutils.print_input(print_input, tsd, tmptsd, '_convert')
 
 
 @baker.command
@@ -197,7 +188,7 @@ def equation(equation, print_input=False, infile='-'):
                     y[col][t] = nan
     else:
         y = eval(equation)
-    _print_input(print_input, x, y, '_equation')
+    tsutils.print_input(print_input, x, y, '_equation')
 
 
 @baker.command
@@ -305,7 +296,7 @@ def moving_window(span=2, statistic='mean', print_input=False, infile='-'):
     else:
         print 'statistic ', statistic, ' is not implemented.'
         sys.exit()
-    _print_input(print_input, tsd, newts, '_' + statistic)
+    tsutils.print_input(print_input, tsd, newts, '_' + statistic)
 
 
 @baker.command
@@ -328,7 +319,7 @@ def aggregate(statistic='mean', agg_interval='daily', print_input=False, infile=
             }
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
     newts = tsd.resample(aggd[agg_interval], how=statistic)
-    _print_input(print_input, tsd, newts, '_' + statistic)
+    tsutils.print_input(print_input, tsd, newts, '_' + statistic)
 
 
 @baker.command
