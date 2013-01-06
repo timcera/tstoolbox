@@ -32,7 +32,7 @@ def _sniff_filetype(filename):
     # Really hard to determine if there is a header -
     # Assume yes...
     return pd.read_table(open(filename, 'rb'), header=0, sep=',',
-            parse_dates=[0], index_col=[0])
+                         parse_dates=[0], index_col=[0])
 
 
 @baker.command
@@ -46,7 +46,7 @@ def read(*filenames):
         fname = os.path.basename(os.path.splitext(filename)[0])
         tsd = _sniff_filetype(filename)
         if len(filenames) > 1:
-            tsd = tsd.rename(columns=lambda x:fname + '_' + x)
+            tsd = tsd.rename(columns=lambda x: fname + '_' + x)
         try:
             result = result.join(tsd)
         except NameError:
@@ -66,13 +66,12 @@ def date_slice(start_date=None, end_date=None, infile='-'):
         stdin.
     '''
     tsutils.printiso(_date_slice(infile=infile, start_date=start_date,
-        end_date=end_date))
-
+                                 end_date=end_date))
 
 
 @baker.command
 def peak_detection(window=24, type='peak', method='rel', print_input=False,
-        infile='-'):
+                   infile='-'):
     '''
     Peak and valley detection.
     :param infile: Filename with data in 'ISOdate,value' format or '-' for
@@ -97,26 +96,27 @@ def peak_detection(window=24, type='peak', method='rel', print_input=False,
 
     if method == 'rel':
         func = tsutils._argrel
-        window = int(window)/2
+        window = int(window) / 2
         if window == 0:
             window = 1
     elif method == 'minmax':
         func = tsutils._peakdetect
-        window = int(window/2)
+        window = int(window / 2)
         if window == 0:
-             window = 1
+            window = 1
     elif method == 'zero_crossing':
         func = tsutils._peakdetect_zero_crossing
         if not window % 2:
             window = window + 1
 
     if type == 'peak':
-        tmptsd = tsd.rename(columns=lambda x: x+'_peak', copy=True)
+        tmptsd = tsd.rename(columns=lambda x: x + '_peak', copy=True)
     if type == 'valley':
-        tmptsd = tsd.rename(columns=lambda x: x+'_valley', copy=True)
+        tmptsd = tsd.rename(columns=lambda x: x + '_valley', copy=True)
     if type == 'both':
-        tmptsd = tsd.rename(columns=lambda x: x+'_peak', copy=True)
-        tmptsd = tmptsd.join(tsd.rename(columns=lambda x: x+'_valley', copy=True))
+        tmptsd = tsd.rename(columns=lambda x: x + '_peak', copy=True)
+        tmptsd = tmptsd.join(
+            tsd.rename(columns=lambda x: x + '_valley', copy=True))
 
     for c in tmptsd.columns:
         maxpeak, minpeak = func(tmptsd[c].values, window=int(window))
@@ -144,7 +144,7 @@ def convert(factor=1.0, offset=0.0, print_input=False, infile='-'):
         stdin.
     '''
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
-    tmptsd = tsd*factor + offset
+    tmptsd = tsd * factor + offset
     tsutils.print_input(print_input, tsd, tmptsd, '_convert')
 
 
@@ -168,24 +168,63 @@ def equation(equation, print_input=False, infile='-'):
         stdin.
     '''
     x = tsutils.read_iso_ts(baker.openinput(infile))
-    y = x.copy()
     import re
-    if re.search('\[.*?t.*?\]', equation):
-        # This beasty is so users can use 't' in their equations
-        # Indices of 'x' are a function of 't' and can possibly be negative or
-        # greater than the length of the DataFrame.
-        # Correctly (I think) handles negative indices and indices greater
-        # than the length by setting to nan
-        # AssertionError happens when index negative.
-        # IndexError happens when index is greater than the length of the
-        # DataFrame.
-        nequation = re.sub(r'\[(.*?t.*?)\]', r'[col].values[\1:\1+1][0]', equation)
+
+    # Get rid of spaces
+    equation = equation.replace(' ', '')
+
+    tsearch = re.search(r'\[.*?t.*?\]', equation)
+    nsearch = re.search(r'x[1-9][0-9]*?', equation)
+    # This beasty is so users can use 't' in their equations
+    # Indices of 'x' are a function of 't' and can possibly be negative or
+    # greater than the length of the DataFrame.
+    # Correctly (I think) handles negative indices and indices greater
+    # than the length by setting to nan
+    # AssertionError happens when index negative.
+    # IndexError happens when index is greater than the length of the
+    # DataFrame.
+    # UGLY!
+    if tsearch and nsearch:
+        neq = equation.split('[')
+        neq = [i.split(']') for i in neq]
+        nequation = []
+        for i in neq:
+            mid = []
+            for j in i:
+                if 't' in j:
+                    mid.append('.values[{0}:{0}+1][0]'.format(j))
+                else:
+                    mid.append(j)
+            nequation.append(mid)
+        nequation = [']'.join(i) for i in nequation]
+        nequation = '['.join(nequation)
+        nequation = re.sub(
+            r'x([1-9][0-9]*?)(?!\[)', r'x[x.columns[\1-1]][t]', nequation)
+        nequation = re.sub(
+            r'x([1-9][0-9]*?)(?=\[)', r'x[x.columns[\1-1]]', nequation)
+        nequation = re.sub(r'\[\.values', r'.values', nequation)
+        nequation = re.sub(r'\[0\]\]', r'[0]', nequation)
+        y = pd.Series(x[x.columns[0]], index=x.index)
+        for t in range(len(x)):
+            try:
+                y[t] = eval(nequation)
+            except (AssertionError, IndexError):
+                y[t] = nan
+        y = pd.DataFrame(y, columns=['_'])
+    elif tsearch:
+        y = x.copy()
+        nequation = re.sub(
+            r'\[(.*?t.*?)\]', r'[col].values[\1:\1+1][0]', equation)
+        nequation = re.sub(r'x(?!\[)', r'x[col].values[t:t+1][0]', nequation)
         for col in x.columns:
             for t in range(len(x)):
                 try:
                     y[col][t] = eval(nequation)
-                except (AssertionError,IndexError):
+                except (AssertionError, IndexError):
                     y[col][t] = nan
+    elif nsearch:
+        nequation = re.sub(r'x([1-9][0-9]*?)', r'x[x.columns[\1-1]]', equation)
+        y = pd.DataFrame(eval(nequation), columns=['_'])
     else:
         y = eval(equation)
     tsutils.print_input(print_input, x, y, '_equation')
@@ -212,10 +251,10 @@ def pick(columns, infile='-'):
         tsutils.printiso(pd.DataFrame(tsd[tsd.columns[columns]]))
         return
 
-    for index,col in enumerate(columns):
+    for index, col in enumerate(columns):
         jtsd = pd.DataFrame(tsd[tsd.columns[col]])
 
-        jtsd =jtsd.rename(columns=lambda x:x + '_' + str(index), copy=True)
+        jtsd = jtsd.rename(columns=lambda x: x + '_' + str(index), copy=True)
         try:
             newtsd = newtsd.join(jtsd)
         except:
@@ -240,7 +279,7 @@ def stdtozrxp(rexchange=None, infile='-'):
     for i in range(len(tsd)):
         print ('{0.year:04d}{0.month:02d}{0.day:02d}{0.hour:02d}'
                '{0.minute:02d}{0.second:02d}, {1}').format(tsd.index[i],
-                       tsd[tsd.columns[0]][i])
+                                                           tsd[tsd.columns[0]][i])
 
 
 @baker.command
@@ -323,7 +362,7 @@ def aggregate(statistic='mean', agg_interval='daily', print_input=False, infile=
 
 
 @baker.command
-def calculate_fdc(x_plotting_position = 'norm', infile='-'):
+def calculate_fdc(x_plotting_position='norm', infile='-'):
     '''
     Returns the frequency distrbution curve.  DOES NOT return a time-series.
     :param infile: Filename with data in 'ISOdate,value' format or '-' for
@@ -337,7 +376,7 @@ def calculate_fdc(x_plotting_position = 'norm', infile='-'):
         raise ValueError("This function currently only works with one time-series at a time.  You gave it {0}".format(len(tsd.columns)))
 
     cnt = len(tsd.values)
-    a_tmp = 1./(cnt + 1)
+    a_tmp = 1. / (cnt + 1)
     b_tmp = 1 - a_tmp
     plotpos = ma.empty(len(tsd), dtype=float)
     if x_plotting_position == 'norm':
@@ -353,7 +392,7 @@ def calculate_fdc(x_plotting_position = 'norm', infile='-'):
 
 @baker.command
 def plot(infile='-', ofilename='plot.png', xtitle='Time', ytitle='',
-        title='', figsize=(10, 6.5)):
+         title='', figsize=(10, 6.5)):
     '''
     Time series plot.
     :param infile: Filename with data in 'ISOdate,value' format or '-' for
@@ -393,31 +432,31 @@ def plotcalibandobs(mwdmpath, mdsn, owdmpath, odsn, ofilename):
     hydroargs = {'color': 'blue',
                  'lw': 0.5,
                  'ls': 'steps-post',
-                }
+                 }
     hyetoargs = {'c': 'blue',
                  'lw': 0.5,
                  'ls': 'steps-post',
-                }
+                 }
     fig = cpl.hydrograph(rain['carr'], obs['carr'], figsize=figsize,
-            hydroargs=hydroargs, hyetoargs=hyetoargs)
+                         hydroargs=hydroargs, hyetoargs=hyetoargs)
     # The following just plots 1 dot - I need the line parameters in lin1 to
     # make the legend
     lin1 = fig.hydro.plot(obs['carr'].dates[0:1], obs['carr'][0:1],
-            color='blue', ls='-', lw=0.5, label=line[11])
+                          color='blue', ls='-', lw=0.5, label=line[11])
     rlin1 = fig.hyeto.plot(rain['carr'].dates[0:1], rain['carr'][0:1],
-            color='blue', ls='-', lw=0.5, label=line[9])
+                           color='blue', ls='-', lw=0.5, label=line[9])
     lin2 = fig.hydro.plot(sim['carr'].dates, sim['carr'], color='red', ls=':',
-            lw=1, label='Simulated')
+                          lw=1, label='Simulated')
     fig.hyeto.set_ylabel("Total Daily\nRainfall (inches)")
-    fig.hyeto.set_ylim(ymax = max_daily_rain, ymin = 0)
+    fig.hyeto.set_ylim(ymax=max_daily_rain, ymin=0)
     fig.hydro.set_ylabel("Average Daily {0} {1}".format(line[14],
-        parunitmap[line[14]]))
+                                                        parunitmap[line[14]]))
     if min(obs['arr']) > 0 and line[14] == 'Flow':
-        fig.hydro.set_ylim(ymin = 0)
-    #fig.hydro.set_yscale("symlog", linthreshy=100)
+        fig.hydro.set_ylim(ymin=0)
+    # fig.hydro.set_yscale("symlog", linthreshy=100)
     fig.hydro.set_dlim(plot_start_date, plot_end_date)
     fig.hydro.set_xlabel("Date")
-    #fig.legend((lin1, lin2), (line[11], 'Simulated'), (0.6, 0.55))
+    # fig.legend((lin1, lin2), (line[11], 'Simulated'), (0.6, 0.55))
     make_legend(fig.hydro, (lin1[-1], lin2[-1]))
     make_legend(fig.hyeto, (rlin1[-1],))
     fig.savefig(newbasename + "_daily_hydrograph.png")
@@ -426,4 +465,3 @@ def plotcalibandobs(mwdmpath, mdsn, owdmpath, odsn, ofilename):
 
 def main():
     baker.run()
-
