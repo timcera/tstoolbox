@@ -1,6 +1,6 @@
-Metadata-Version: 1.0
+Metadata-Version: 1.1
 Name: tstoolbox
-Version: 0.4.1
+Version: 0.4.2
 Summary: Command line script to manipulate time series files.
 Home-page: http://pypi.python.org/pypi/tstoolbox
 Author: Tim Cera, P.E.

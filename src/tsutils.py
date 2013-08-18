@@ -1,4 +1,6 @@
 
+from __future__ import print_function
+
 from cStringIO import StringIO
 
 import pandas as pd
@@ -35,12 +37,12 @@ def printiso(tsd):
     '''
     try:
         # Header
-        print 'Datetime,', ', '.join(str(i) for i in tsd.columns)
+        print('Datetime,', ', '.join(str(i) for i in tsd.columns))
 
         # Data
         for i in range(len(tsd)):
-            print tsd.index[i], ', ', ', '.join(
-                _isfinite(j) for j in tsd.values[i])
+            print(tsd.index[i], ', ', ', '.join(
+                _isfinite(j) for j in tsd.values[i]))
     except IOError:
         return
 

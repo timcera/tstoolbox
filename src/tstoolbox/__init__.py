@@ -1,4 +1,7 @@
 #!/sjr/beodata/local/python_linux/bin/python
+
+from __future__ import print_function
+
 '''
 tstoolbox is a collection of command line tools for the manipulation of time
 series.
@@ -275,11 +278,11 @@ def stdtozrxp(rexchange=None, infile='-'):
         raise ValueError('The "stdtozrxp" command can only accept a single '
                          'time-series, instead it is seeing {0}'.format(len(tsd.columns)))
     if rexchange:
-        print '#REXCHANGE{0}|*|'.format(rexchange)
+        print('#REXCHANGE{0}|*|'.format(rexchange))
     for i in range(len(tsd)):
-        print ('{0.year:04d}{0.month:02d}{0.day:02d}{0.hour:02d}'
+        print(('{0.year:04d}{0.month:02d}{0.day:02d}{0.hour:02d}'
                '{0.minute:02d}{0.second:02d}, {1}').format(tsd.index[i],
-                                                           tsd[tsd.columns[0]][i])
+                                                           tsd[tsd.columns[0]][i]))
 
 
 @baker.command
@@ -333,7 +336,7 @@ def moving_window(span=2, statistic='mean', print_input=False, infile='-'):
     elif statistic == 'maximum':
         newts = pd.stats.moments.rolling_max(tsd, span)
     else:
-        print 'statistic ', statistic, ' is not implemented.'
+        print('statistic ', statistic, ' is not implemented.')
         sys.exit()
     tsutils.print_input(print_input, tsd, newts, '_' + statistic)
 
@@ -387,7 +390,7 @@ def calculate_fdc(x_plotting_position='norm', infile='-'):
         xlabel = plotpos
     ydata = ma.sort(tsd[tsd.columns[0]].values, endwith=False)[::-1]
     for xdat, ydat, zdat in zip(plotpos, ydata, xlabel):
-        print xdat, ydat, zdat
+        print(xdat, ydat, zdat)
 
 
 @baker.command
@@ -411,7 +414,7 @@ def plot(infile='-', ofilename='plot.png', xtitle='Time', ytitle='',
     tsd = tsutils.read_iso_ts(baker.openinput(infile))
     fig = pl.figure(figsize=figsize)
     fsp = fig.add_subplot(111)
-    print tsd
+    print(tsd)
     fsp.plot(tsd.index, tsd.values)
     fsp.set_xlabel(xtitle)
     fsp.set_ylabel(ytitle)
