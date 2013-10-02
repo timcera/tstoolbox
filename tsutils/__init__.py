@@ -6,7 +6,6 @@ from dateutil.parser import parse
 import numpy as np
 from scipy import fft, ifft
 from scipy.optimize import curve_fit
-import baker
 
 
 def _isfinite(testval):
@@ -52,6 +51,7 @@ def read_iso_ts(indat):
     '''
     Reads the format printed by 'print_iso'.
     '''
+    import baker
     if isinstance(indat, pd.DataFrame):
         return indat
 
