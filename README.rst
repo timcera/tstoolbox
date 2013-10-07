@@ -1,7 +1,7 @@
 TSToolbox - Quick Guide
 =======================
 The tstoolbox is a Python script to manipulate time-series on the command
-line.  Uses pandas (http://pandas.pydata.org/) for any heavy lifting.
+line.  Uses pandas (http://pandas.pydata.org/) or numpy (http://numpy.scipy.org) for any heavy lifting.
 
 Requirements
 ------------
@@ -12,17 +12,17 @@ Requirements
 
 Installation
 ------------
-Should be as easy as running ``easy_install tstoolbox`` or ``pip install
+Should be as easy as running ``pip install tstoolbox`` or ``easy_install
 tstoolbox`` at any command line.  Not sure on Windows whether this will bring
 in pandas, but as mentioned above, if you start with scientific Python distribution then you won't have a problem.
 
-The tstoolbox script is actually made up of two parts, 'tstoolbox' which
-handles all command line interaction and 'tsutil.py' which is a library of
+The tstoolbox script is actually made up of two modules, 'tstoolbox' which
+handles all command line interaction and 'tsutil' which is a library of
 functions that 'tstoolbox' uses.  This means that you can write your own
-scripts to access ts files by importing the functionality from 'tsutil.py'.
+scripts to access ts files by importing the functionality from the 'tsutil' module.
 
-Usage
------
+Usage - Command Line
+--------------------
 Just run 'tstoolbox' to get a list of subcommands
 
 .. program-output:: tstoolbox
