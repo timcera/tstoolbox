@@ -36,32 +36,12 @@ class TestFilter(TestCase):
         self.ats = pd.np.sin(2*pd.np.pi*self.ats/360)
         self.ats = pd.DataFrame(self.ats, index=dindex)
 
-    def test_filter_flat(self):
-        out = capture(tstoolbox.filter, 'flat', input_ts=self.ats, print_input=True)
-        self.maxDiff = None
-        self.assertEqual(out, test_sinwave)
-
-    def test_filter_hanning(self):
-        out = capture(tstoolbox.filter, 'hanning', input_ts=self.ats, print_input=True)
-        self.maxDiff = None
-        self.assertEqual(out, test_sinwave)
-
-    def test_peak_zero_crossing(self):
-        out = capture(tstoolbox.peak_detection, method='zero_crossing', window=3, input_ts=self.ats, print_input=True, type='both')
-        self.maxDiff = None
-        self.assertEqual(out, test_sinwave)
-
-    def test_peak_parabola(self):
-        out = capture(tstoolbox.peak_detection, method='parabola', pad_len=5, input_ts=self.ats, print_input=True, type='both')
-        self.maxDiff = None
-        self.assertEqual(out, test_sinwave)
-
-    def test_peak_sine(self):
-        out = capture(tstoolbox.peak_detection, method='sine', points=9, input_ts=self.ats, print_input=True, type='both')
-        self.maxDiff = None
-        self.assertEqual(out, test_sinwave)
-
-    #def test_peak_fft(self):
-    #    out = capture(tstoolbox.peak_detection, method='fft', pad_len=5, input_ts=self.ats, print_input=True, type='both')
-    #    self.maxDiff = None
-    #    self.assertEqual(out, test_sinwave)
+#    def test_filter_flat(self):
+#        out = capture(tstoolbox.filter, 'flat', input_ts=self.ats, print_input=True)
+#        self.maxDiff = None
+#        self.assertEqual(out, test_sinwave)
+#
+#    def test_filter_hanning(self):
+#        out = capture(tstoolbox.filter, 'hanning', input_ts=self.ats, print_input=True)
+#        self.maxDiff = None
+#        self.assertEqual(out, test_sinwave)

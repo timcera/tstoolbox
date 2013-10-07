@@ -10,10 +10,14 @@ Tests for `tstoolbox` module.
 
 from unittest import TestCase
 import sys
+import subprocess
+import shlex
 try:
     from cStringIO import StringIO
 except:
     from io import StringIO
+
+import pandas
 
 import tstoolbox
 
@@ -26,20 +30,42 @@ def capture(func, *args, **kwds):
 
 
 class TestConvert(TestCase):
+    def setUp(self):
+        dr = pandas.date_range('2000-01-01', periods=2, freq='D')
+        ts = pandas.TimeSeries([4.5, 4.6], index=dr)
+        self.compare_direct_01 = pandas.DataFrame(ts, columns=['Value_convert'])
+        self.compare_direct_01.index.name = 'Datetime'
 
-    def test_convert(self):
-        out = capture(tstoolbox.convert, input_ts='tests/test.csv')
-        self.assertEqual(out,
-"""Datetime, Value_convert
+        dr = pandas.date_range('2000-01-01', periods=2, freq='D')
+        ts = pandas.TimeSeries([11.0, 11.2], index=dr)
+        self.compare_direct_02 = pandas.DataFrame(ts, columns=['Value_convert'])
+        self.compare_direct_02.index.name = 'Datetime'
+
+        self.compare_cli_01 = b"""Datetime, Value_convert
 2000-01-01 00:00:00 ,  4.5
 2000-01-02 00:00:00 ,  4.6
-""")
-
-    def test_convert_2_3(self):
-        out = capture(tstoolbox.convert, input_ts='tests/test.csv', factor=2, offset=2)
-        self.assertEqual(out,
-"""Datetime, Value_convert
+"""
+        self.compare_cli_02 = b"""Datetime, Value_convert
 2000-01-01 00:00:00 ,  11.0
 2000-01-02 00:00:00 ,  11.2
-""")
+"""
 
+    def test_convert_direct_01(self):
+        out = tstoolbox.convert(input_ts='tests/test.csv')
+        self.assertEqual(out, self.compare_direct_01)
+
+    def test_convert_direct_02(self):
+        out = tstoolbox.convert(input_ts='tests/test.csv', factor=2, offset=2)
+        self.assertEqual(out, self.compare_direct_02)
+
+    def test_convert_cli_01(self):
+        args = 'tstoolbox convert --input_ts="tests/test.csv"'
+        args = shlex.split(args)
+        out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
+        self.assertEqual(out[0], self.compare_cli_01)
+
+    def test_convert_cli_02(self):
+        args = 'tstoolbox convert --factor=2 --offset=2 --input_ts="tests/test.csv"'
+        args = shlex.split(args)
+        out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
+        self.assertEqual(out[0], self.compare_cli_02)

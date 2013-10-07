@@ -26,6 +26,23 @@ _offset_aliases = {
     }
 
 
+def _guess_interval(gtsd, interval='guess'):
+    if interval is not None:
+        if interval == 'guess':
+            interval = pd.np.min(gtsd.index.values[1:] - gtsd.index.values[:-1])
+            try:
+                interval = _offset_aliases[interval]
+            except KeyError:
+                raise ValueError("""
+Can't guess interval, you must supply desired interval with
+'--interval=' argument.""")
+            if interval == 'M':
+                # Need to determine whether 'M' or 'MS'
+                dr = pd.date_range(gtsd.index[0], periods=len(gtsd), freq='M')
+                if gtsd.reindex(dr).count() != gtsd.count():
+                    interval = 'MS'
+        return gtsd.asfreq(interval)
+
 @baker.command
 def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     '''
@@ -49,21 +66,7 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     ntsd = tsd.copy()
-    if interval is not None:
-        if interval == 'guess':
-            interval = pd.np.min(tsd.index.values[1:] - tsd.index.values[:-1])
-            try:
-                interval = _offset_aliases[interval]
-            except KeyError:
-                raise ValueError("""
-Can't guess interval, you must supply desired interval with
-'--interval=' argument.""")
-            if interval == 'M':
-                # Need to determine whether 'M' or 'MS'
-                dr = pd.date_range(tsd.index[0], periods=len(tsd), freq='M')
-                if tsd.reindex(dr).count() != tsd.count():
-                    interval = 'MS'
-        ntsd = tsd.asfreq(interval)
+    ntsd = _guess_interval(ntsd, interval=interval)
     predf = pd.DataFrame(ntsd.mean().values,
                          index=[ntsd.index[0] - pd.offsets.Hour()])
     predf.columns = ntsd.columns
@@ -96,3 +99,29 @@ Can't guess interval, you must supply desired interval with
             pass
     ntsd = ntsd.iloc[1:-1]
     tsutils.print_input(print_input, tsd, ntsd, '_fill')
+
+@baker.command
+def fill_from_others(method='best', maximum_lag=24, interval='guess', print_input=False,  input_ts='-'):
+    '''
+    Fills missing values (NaN) with different methods.  Missing values can
+        occur because of NaN, or because the time series is sparse.  The
+        'interval' option can insert NaNs to create a dense time series.
+    :param method: String contained in single quotes or a number that
+        defines the method to use for filling.
+        'ffill': assigns NaN values to the last good value
+        'bfill': assigns NaN values to the next good value
+        number: fills all NaN to this number
+        'interpolate': will linearly interpolate missing values
+        'spline': spline interpolation
+    :param interval: Will try to insert missing intervals.  Can give any
+        of the pandas offset aliases, 'guess' (to try and figure the
+        interval), or None to not insert missing intervals.
+    :param print_input: If set to 'True' will include the input columns in the
+        output table.  Default is 'False'.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
+    '''
+    tsd = tsutils.read_iso_ts(input_ts)
+    ntsd = tsd.copy()
+    ntsd = _guess_interval(ntsd, interval=interval)
+

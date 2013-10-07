@@ -13,7 +13,7 @@ import pandas as pd
 from numpy import *
 import baker
 
-from tstoolbox import tsutils
+import tsutils
 from tstoolbox.fill_functions import fill
 
 _offset_aliases = {
@@ -210,7 +210,7 @@ def read(*filenames):
         except NameError:
             result = tsd
 
-    tsutils.printiso(result)
+    return tsutils.printiso(result)
 
 
 @baker.command
@@ -282,10 +282,11 @@ def peak_detection(method='rel',
 
     tsd = tsutils.read_iso_ts(input_ts)
 
+    window = int(window)
     kwds = {}
     if method == 'rel':
         from tstoolbox.peakdetect import _argrel as func
-        window = int(window) / 2
+        window = window / 2
         if window == 0:
             window = 1
         kwds['window'] = int(window)
@@ -334,7 +335,7 @@ def peak_detection(method='rel',
         tmptsd[c][:] = nan
         tmptsd[c][array(maxx).astype('i')] = hold
 
-    tsutils.print_input(print_input, tsd, tmptsd, None)
+    return tsutils.print_input(print_input, tsd, tmptsd, None)
 
 
 @baker.command
@@ -351,7 +352,7 @@ def convert(factor=1.0, offset=0.0, print_input=False, input_ts='-'):
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     tmptsd = tsd * factor + offset
-    tsutils.print_input(print_input, tsd, tmptsd, '_convert')
+    return tsutils.print_input(print_input, tsd, tmptsd, '_convert')
 
 
 @baker.command
@@ -575,7 +576,7 @@ def aggregate(statistic='mean',
             }
     tsd = tsutils.read_iso_ts(input_ts)
     newts = tsd.resample(aggd[agg_interval], how=statistic)
-    tsutils.print_input(print_input, tsd, newts, '_' + statistic)
+    return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
 
 
 @baker.command

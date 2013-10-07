@@ -4,8 +4,6 @@ from __future__ import print_function
 import pandas as pd
 from dateutil.parser import parse
 import numpy as np
-from scipy import fft, ifft
-from scipy.optimize import curve_fit
 
 
 def _isfinite(testval):
@@ -25,9 +23,9 @@ def print_input(iftrue, input, output, suffix):
     if suffix:
         output = output.rename(columns=lambda xloc: xloc + suffix)
     if iftrue:
-        printiso(input.join(output, how='outer'))
+        return printiso(input.join(output, how='outer'))
     else:
-        printiso(output)
+        return printiso(output)
 
 
 def printiso(tsd, sparse=False):
@@ -35,16 +33,26 @@ def printiso(tsd, sparse=False):
     Default output format for tstoolbox, wdmtoolbox, swmmtoolbox,
     and hspfbintoolbox.
     '''
-    try:
-        # Header
-        print('Datetime,', ', '.join(str(i) for i in tsd.columns))
+    import traceback
+    import os.path
+    baker_cli = False
+    for i in traceback.extract_stack():
+        if os.path.basename(i[0]) == 'baker.py':
+            baker_cli = True
+            break
+    if baker_cli:
+        try:
+            # Header
+            print('Datetime,', ', '.join(str(i) for i in tsd.columns))
 
-        # Data
-        for i in range(len(tsd)):
-            print(tsd.index[i], ', ', ', '.join(
-                _isfinite(j) for j in tsd.values[i]))
-    except IOError:
-        return
+            # Data
+            for i in range(len(tsd)):
+                print(tsd.index[i], ', ', ', '.join(
+                    _isfinite(j) for j in tsd.values[i]))
+        except IOError:
+            return
+    else:
+        return tsd
 
 
 def read_iso_ts(indat):
@@ -52,6 +60,7 @@ def read_iso_ts(indat):
     Reads the format printed by 'print_iso'.
     '''
     import baker
+
     if isinstance(indat, pd.DataFrame):
         return indat
 
@@ -66,7 +75,7 @@ def read_iso_ts(indat):
     header = [i.strip() for i in header]
     dates = []
     values = {}
-    for line in fp.readlines():
+    for line in fp:
         try:
             # Python 3
             nline = str(line, encoding='utf8')
@@ -99,5 +108,3 @@ def read_excel_csv(fp, header=None):
     tsdata = pd.read_table(fp, header=header, sep=',', parse_dates=[0],
                            index_col=[0])
     return tsdata
-
-
