@@ -100,7 +100,6 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     ntsd = ntsd.iloc[1:-1]
     tsutils.print_input(print_input, tsd, ntsd, '_fill')
 
-@baker.command
 def fill_from_others(method='best', maximum_lag=24, interval='guess', print_input=False,  input_ts='-'):
     '''
     Fills missing values (NaN) with different methods.  Missing values can
