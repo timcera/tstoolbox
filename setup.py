@@ -9,11 +9,11 @@ except ImportError:
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
+    os.system('python setup.py upload_docs')
     sys.exit()
 
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
-CHANGES = open(os.path.join(here, 'CHANGES.rst')).read()
 
 version = open("VERSION").readline().strip()
 
@@ -30,7 +30,7 @@ install_requires = [
 setup(name='tstoolbox',
       version=version,
       description="Command line script to manipulate time series files.",
-      long_description=README + '\n\n' + CHANGES,
+      long_description=README,
       classifiers=[
       # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
           'Development Status :: 4 - Beta',
