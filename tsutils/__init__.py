@@ -28,6 +28,21 @@ def print_input(iftrue, input, output, suffix):
         return printiso(output)
 
 
+def _printiso(tsd):
+    ''' Separate so can use in tests.
+    '''
+    try:
+        # Header
+        print('Datetime,', ', '.join(str(i) for i in tsd.columns))
+
+        # Data
+        for i in range(len(tsd)):
+            print(tsd.index[i], ', ', ', '.join(
+                _isfinite(j) for j in tsd.values[i]))
+    except IOError:
+        return
+
+
 def printiso(tsd, sparse=False):
     '''
     Default output format for tstoolbox, wdmtoolbox, swmmtoolbox,
@@ -41,16 +56,7 @@ def printiso(tsd, sparse=False):
             baker_cli = True
             break
     if baker_cli:
-        try:
-            # Header
-            print('Datetime,', ', '.join(str(i) for i in tsd.columns))
-
-            # Data
-            for i in range(len(tsd)):
-                print(tsd.index[i], ', ', ', '.join(
-                    _isfinite(j) for j in tsd.values[i]))
-        except IOError:
-            return
+        _printiso(tsd)
     else:
         return tsd
 

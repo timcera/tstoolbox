@@ -98,7 +98,8 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
         except ValueError:
             pass
     ntsd = ntsd.iloc[1:-1]
-    tsutils.print_input(print_input, tsd, ntsd, '_fill')
+    return tsutils.print_input(print_input, tsd, ntsd, '_fill')
+
 
 def fill_from_others(method='best', maximum_lag=24, interval='guess', print_input=False,  input_ts='-'):
     '''

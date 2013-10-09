@@ -182,7 +182,7 @@ def zero_crossings(y_axis, window=11):
 #    return 1.0 / time_p_period
 ##############################################################################
 
-    tsutils.print_input(print_input, tsd, tmptsd, '_filter')
+    return tsutils.print_input(print_input, tsd, tmptsd, '_filter')
 
 
 @baker.command
@@ -224,8 +224,7 @@ def date_slice(start_date=None, end_date=None, input_ts='-'):
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
     '''
-    tsutils.printiso(_date_slice(input_ts=input_ts, start_date=start_date,
-                                 end_date=end_date))
+    return tsutils.printiso(_date_slice(input_ts=input_ts, start_date=start_date, end_date=end_date))
 
 
 @baker.command
@@ -439,14 +438,14 @@ def equation(equation, print_input=False, input_ts='-'):
         y = pd.DataFrame(eval(nequation), columns=['_'])
     else:
         y = eval(equation)
-    tsutils.print_input(print_input, x, y, '_equation')
+    return tsutils.print_input(print_input, x, y, '_equation')
 
 
 @baker.command
 def pick(columns, input_ts='-'):
     '''
     Will pick a column or list of columns from input.  Start with 1.
-    :param columns: Either and integer to collect a single column or a list of
+    :param columns: Either an integer to collect a single column or a list of
         integers to collect multiple columns.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
@@ -471,7 +470,7 @@ def pick(columns, input_ts='-'):
             newtsd = newtsd.join(jtsd)
         except:
             newtsd = jtsd
-    tsutils.printiso(newtsd)
+    return tsutils.printiso(newtsd)
 
 
 @baker.command
@@ -549,7 +548,7 @@ def moving_window(span=2, statistic='mean', print_input=False, input_ts='-'):
     else:
         print('statistic ', statistic, ' is not implemented.')
         sys.exit()
-    tsutils.print_input(print_input, tsd, newts, '_' + statistic)
+    return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
 
 
 @baker.command
