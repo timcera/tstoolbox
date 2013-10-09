@@ -53,9 +53,19 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
         defines the method to use for filling.
         'ffill': assigns NaN values to the last good value
         'bfill': assigns NaN values to the next good value
-        number: fills all NaN to this number
-        'interpolate': will linearly interpolate missing values
+                 number: fills all NaN to this number
+        'linear': will linearly interpolate missing values
         'spline': spline interpolation
+        'nearest': nearest good value
+        'zero':
+        'slinear':
+        'quadratic':
+        'cubic':
+        'mean': fill with mean
+        'median': fill with median
+        'max': fill with maximum
+        'min': fill with minimum
+        If a number will fill with that number.
     :param interval: Will try to insert missing intervals.  Can give any
         of the pandas offset aliases, 'guess' (to try and figure the
         interval), or None to not insert missing intervals.
