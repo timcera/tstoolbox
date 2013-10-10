@@ -1,6 +1,8 @@
 TSToolbox - Quick Guide
 =======================
-The tstoolbox is a Python script to manipulate time-series on the command line or by function calls within Python.  Uses pandas (http://pandas.pydata.org/) or numpy (http://numpy.scipy.org) for any heavy lifting.
+The tstoolbox is a Python script to manipulate time-series on the command line
+or by function calls within Python.  Uses pandas (http://pandas.pydata.org/)
+or numpy (http://numpy.scipy.org) for any heavy lifting.
 
 Requirements
 ------------
@@ -11,7 +13,10 @@ Requirements
 
 Installation
 ------------
-Should be as easy as running ``pip install tstoolbox`` or ``easy_install tstoolbox`` at any command line.  Not sure on Windows whether this will bring in pandas, but as mentioned above, if you start with scientific Python distribution then you won't have a problem.
+Should be as easy as running ``pip install tstoolbox`` or ``easy_install
+tstoolbox`` at any command line.  Not sure on Windows whether this will bring
+in pandas, but as mentioned above, if you start with scientific Python
+distribution then you won't have a problem.
 
 Usage - Command Line
 --------------------
@@ -19,9 +24,12 @@ Just run 'tstoolbox' to get a list of subcommands
 
 .. program-output:: tstoolbox
 
-The default for all of the subcommands is to accept data from stdin (typically a pipe).  If a subcommand accepts an input file for an argument, you can use "--infile=filename", or to expliticly specifiy from stdin "--infile='-'" .  
+The default for all of the subcommands is to accept data from stdin (typically
+a pipe).  If a subcommand accepts an input file for an argument, you can use
+"--infile=filename", or to expliticly specifiy from stdin "--infile='-'" .  
 
-For the subcommands that output data it is printed to the screen and you can then redirect to a file.
+For the subcommands that output data it is printed to the screen and you can
+then redirect to a file.
 
 Sub-command Detail
 ''''''''''''''''''
@@ -84,7 +92,10 @@ tstopickle
 
 Usage - API
 -----------
-You can use all of the command line subcommands as functions.  The function signature is identical to the command line subcommands.  The return is always a PANDAS DataFrame.  Input can be a CSV or TAB separated file, or a PANDAS DataFrame and is supplied to the function via the 'input_ts' keyword.
+You can use all of the command line subcommands as functions.  The function
+signature is identical to the command line subcommands.  The return is always
+a PANDAS DataFrame.  Input can be a CSV or TAB separated file, or a PANDAS
+DataFrame and is supplied to the function via the 'input_ts' keyword.
 
 Simply import tstoolbox::
 
