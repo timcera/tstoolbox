@@ -1,7 +1,8 @@
 TSToolbox Documentation
 =======================
 
-This is the home page for TSToolbox.  TSToolbox is a command line program and Python library to work with time-series.
+This is the home page for TSToolbox.  TSToolbox is a command line program and
+Python library to work with time-series.
 
 TSToolbox should work with Python 2.7+ and 3.0+.
 
