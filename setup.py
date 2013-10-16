@@ -22,6 +22,7 @@ install_requires = [
     # For more details, see:
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
     'pandas >= 0.8.1',
+    'python-dateutil >= 2.1',
     'baker >= 1.3',
     'scipy',
 ]
