@@ -506,48 +506,139 @@ def tstopickle(filename, input_ts='-'):
 
 
 @baker.command
-def moving_window(span=2, statistic='mean', print_input=False, input_ts='-'):
+def exp_weighted_rolling_window(span=2, statistic='mean', center=False, print_input=False, input_ts='-'):
     '''
-    Calculates a moving window statistic.
-    :param input_ts: Input comma separated file with
-        'ISO-8601_date/time,value'.
+    Calculates an exponentially weighted moving window statistic.
     :param span: The number of previous intervals to include in the
         calculation of the statistic.
-    :param statistic: 'mean', 'kurtosis', 'median', 'skew', 'stdev', 'sum',
-        'variance', 'expw_mean', 'expw_stdev', 'expw_variance', 'minimum',
-        'maximum' to calculate the aggregation, defaults to 'mean'.
-    :param print_input: If set to 'True' will include the input columns in the
-        output table.  Default is 'False'.
+    :param statistic: 'expw_mean', 'expw_stdev', 'expw_variance'
+        'expw_corr', 'expw_cov', defaults to 'expw_mean'.
+    :param center: If set to 'True' the calculation will be made for the
+        value at the center of the window.  Default is 'False'.
+    :param print_input: If set to 'True' will include the input columns in
+        the output table.  Default is 'False'.
+    :param input_ts: Input comma separated file with
+        'ISO-8601_date/time,value'.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
-    span = int(span)
-    if statistic == 'mean':
-        newts = pd.stats.moments.rolling_mean(tsd, span)
-    elif statistic == 'kurtosis':
-        newts = pd.stats.moments.rolling_kurt(tsd, span)
-    elif statistic == 'median':
-        newts = pd.stats.moments.rolling_median(tsd, span)
-    elif statistic == 'skew':
-        newts = pd.stats.moments.rolling_skew(tsd, span)
-    elif statistic == 'stdev':
-        newts = pd.stats.moments.rolling_std(tsd, span)
-    elif statistic == 'sum':
-        newts = pd.stats.moments.rolling_sum(tsd, span)
-    elif statistic == 'variance':
-        newts = pd.stats.moments.rolling_var(tsd, span)
-    elif statistic == 'expw_mean':
-        newts = pd.stats.moments.ewma(tsd, span=span)
+    if span is None:
+        span = len(tsd)
+    else:
+        span = int(span)
+    if statistic == 'expw_mean':
+        newts = pd.stats.moments.ewma(tsd, span=span, center=center)
     elif statistic == 'expw_stdev':
-        newts = pd.stats.moments.ewmstd(tsd, span=span)
+        newts = pd.stats.moments.ewmstd(tsd, span=span, center=center)
     elif statistic == 'expw_variance':
-        newts = pd.stats.moments.ewmvar(tsd, span=span)
-    elif statistic == 'minimum':
-        newts = pd.stats.moments.rolling_min(tsd, span)
-    elif statistic == 'maximum':
-        newts = pd.stats.moments.rolling_max(tsd, span)
+        newts = pd.stats.moments.ewmvar(tsd, span=span, center=center)
+    elif statistic == 'expw_corr':
+        newts = pd.stats.moments.ewmcorr(tsd, span=span, center=center)
+    elif statistic == 'expw_cov':
+        newts = pd.stats.moments.ewmcov(tsd, span=span, center=center)
     else:
         print('statistic ', statistic, ' is not implemented.')
         sys.exit()
+    return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
+
+
+@baker.command
+def accumulate(statistic='sum', print_input=False, input_ts='-'):
+    '''
+    Calculates accumulating statistics.
+    :param statistic: 'sum', 'max', 'min', 'prod', defaults to 'sum'.
+    :param print_input: If set to 'True' will include the input columns in
+        the output table.  Default is 'False'.
+    :param input_ts: Input comma separated file with
+        'ISO-8601_date/time,value'.
+    '''
+    tsd = tsutils.read_iso_ts(input_ts)
+    if statistic == 'sum':
+        ntsd = tsd.cumsum()
+    elif statistic == 'max':
+        ntsd = tsd.cummax()
+    elif statistic == 'min':
+        ntsd = tsd.cummin()
+    elif statistic == 'prod':
+        ntsd = tsd.cumprod()
+    else:
+        raise ValueError('statistic ', statistic, ' is not implemented.')
+    return tsutils.print_input(print_input, tsd, ntsd, '_' + statistic)
+
+
+@baker.command
+def rolling_window(span=2, statistic='mean', center=False, print_input=False, input_ts='-'):
+    '''
+    Calculates a rolling window statistic.
+    :param span: The number of previous intervals to include in the
+        calculation of the statistic. If `span` is equal to 0 will give an
+        expanding rolling window.
+    :param statistic: 'mean', 'corr', 'count', 'cov', 'kurtosis', 'median',
+        'skew', 'stdev', 'sum', 'variance', used to calculate the
+        value, defaults to 'mean'.
+    :param center: If set to 'True' the calculation will be made for the
+        value at the center of the window.  Default is 'False'.
+    :param print_input: If set to 'True' will include the input columns in
+        the output table.  Default is 'False'.
+    :param input_ts: Input comma separated file with
+        'ISO-8601_date/time,value'.
+    '''
+    tsd = tsutils.read_iso_ts(input_ts)
+    if span is None:
+        span = len(tsd)
+    else:
+        span = int(span)
+    if statistic == 'mean':
+        if span == 0:
+            newts = pd.stats.moments.expanding_mean(tsd, center=center)
+        else:
+            newts = pd.stats.moments.rolling_mean(tsd, span, center=center)
+    elif statistic == 'corr':
+        if span == 0:
+            newts = pd.stats.moments.expanding_corr(tsd, center=center)
+        else:
+            newts = pd.stats.moments.rolling_corr(tsd, span, center=center)
+    elif statistic == 'cov':
+        if span == 0:
+            newts = pd.stats.moments.expanding_cov(tsd, center=center)
+        else:
+            newts = pd.stats.moments.rolling_cov(tsd, span, center=center)
+    elif statistic == 'count':
+        if span == 0:
+            newts = pd.stats.moments.expanding_count(tsd, center=center)
+        else:
+            newts = pd.stats.moments.rolling_count(tsd, span, center=center)
+    elif statistic == 'kurtosis':
+        if span == 0:
+            newts = pd.stats.moments.expanding_kurt(tsd, center=center)
+        else:
+            newts = pd.stats.moments.rolling_kurt(tsd, span, center=center)
+    elif statistic == 'median':
+        if span == 0:
+            newts = pd.stats.moments.expanding_median(tsd, center=center)
+        else:
+            newts = pd.stats.moments.rolling_median(tsd, span, center=center)
+    elif statistic == 'skew':
+        if span == 0:
+            newts = pd.stats.moments.expanding_skew(tsd, center=center)
+        else:
+            newts = pd.stats.moments.rolling_skew(tsd, span, center=center)
+    elif statistic == 'stdev':
+        if span == 0:
+            newts = pd.stats.moments.expanding_std(tsd, center=center)
+        else:
+            newts = pd.stats.moments.rolling_std(tsd, span, center=center)
+    elif statistic == 'sum':
+        if span == 0:
+            newts = pd.stats.moments.expanding_sum(tsd, center=center)
+        else:
+            newts = pd.stats.moments.rolling_sum(tsd, span, center=center)
+    elif statistic == 'variance':
+        if span == 0:
+            newts = pd.stats.moments.expanding_var(tsd, center=center)
+        else:
+            newts = pd.stats.moments.rolling_var(tsd, span, center=center)
+    else:
+        raise ValueError('statistic ', statistic, ' is not implemented.')
     return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
 
 
@@ -559,14 +650,14 @@ def aggregate(statistic='mean',
     '''
     Takes a time series and aggregates to specified frequency, outputs to
         'ISO-8601date,value' format.
-    :param input_ts: Input comma separated file with 'ISO-8601_date/time,value'.
-    :param statistic: 'mean', 'sum', 'std', 'max', 'min', 'median',
-        'first', 'last', to calculate the
-        aggregation, defaults to 'mean'.
+    :param statistic: 'mean', 'sum', 'std', 'max', 'min', 'median', 'first',
+        'last', to calculate the aggregation, defaults to 'mean'.
     :param agg_interval: The 'hourly', 'daily', 'monthly', or 'yearly'
         aggregation intervals, defaults to daily.
-    :param print_input: If set to 'True' will include the input columns in the
-        output table.  Default is 'False'.
+    :param print_input: If set to 'True' will include the input columns in
+        the output table.  Default is 'False'.
+    :param input_ts: Input comma separated file with
+        'ISO-8601_date/time,value'.
     '''
     aggd = {'hourly': 'H',
             'daily': 'D',
@@ -612,19 +703,19 @@ You gave it {0}""".format(len(tsd.columns)))
 
 
 @baker.command
-def plot(input_ts='-', ofilename='plot.png', xtitle='Time', ytitle='',
-         title='', figsize=(10, 6.5)):
+def plot(ofilename='plot.png', xtitle='Time', ytitle='',
+         title='', figsize=(10, 6.5), input_ts='-'):
     '''
     Time series plot.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-       stdin.
     :param ofilename: Output filename for the plot.  Extension defines the
        type, ('.png'). Defaults to 'plot.png'.
     :param xtitle: Title of x-axis, defaults to 'Time'.
-    :param ytitle: Title of y-axis, defaults to 'Flow'.
+    :param ytitle: Title of y-axis, defaults to ''.
     :param title: Title of chart, defaults to ''.
     :param figsize: The (width, height) of plot as inches.  Defaults to
        (10,6.5).
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+       stdin.
     '''
     import matplotlib
     matplotlib.use('Agg')
@@ -632,7 +723,6 @@ def plot(input_ts='-', ofilename='plot.png', xtitle='Time', ytitle='',
     tsd = tsutils.read_iso_ts(input_ts)
     fig = pl.figure(figsize=figsize)
     fsp = fig.add_subplot(111)
-    print(tsd)
     fsp.plot(tsd.index, tsd.values)
     fsp.set_xlabel(xtitle)
     fsp.set_ylabel(ytitle)
