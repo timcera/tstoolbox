@@ -8,6 +8,8 @@ series.
 '''
 import sys
 import os.path
+import warnings
+warnings.filterwarnings('ignore')
 
 import pandas as pd
 from numpy import *
@@ -59,51 +61,16 @@ def _sniff_filetype(filename):
 def filter(filter_type, print_input=False, start_freq=30, end_freq=40, window_len=5, input_ts='-'):
     '''
     Apply different filters to the time-series.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.  Default is stdin.
-    :param filter_type: 'fft' for Fast Fourier Transform filter in the
-        frequency domain.  'convolution' for a convolution style filter
-        that requires kernel.  Built in kernels are 'boxcar' for a running
-        average filter, 'tide_usgs' for the USGS tidal filter,
-        'tide_doodson' for the tidal filter developed by Doodson.
-        Default is 'fft'.
+    :param filter_type: 'fft_highpass' and 'fft_lowpass' for Fast Fourier
+        Transform filter in the frequency domain.
     :param print_input: If set to 'True' will include the input columns in the
         output table.  Default is 'False'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    start_freq
-    end_freq
-    smooth the data using a window of the requested size.
-
-    This method is based on the convolution of a scaled window on the signal.
-    The signal is prepared by introducing reflected copies of the signal
-    (with the window size) in both ends so that transient parts are minimized
-    in the begining and end part of the output signal.
-
-    input:
-        x: the input signal
-        window_len: the dimension of the smoothing window; should be an odd
-            integer
-        window: the type of window from 'flat', 'hanning', 'hamming',
-            'bartlett', 'blackman'
-            flat window will produce a moving average smoothing.
-
-    output:
-        the smoothed signal
-
-    example:
-
-    t = linspace(-2,2,0.1)
-    x = sin(t)+randn(len(t))*0.1
-    y = _smooth(x)
-
-    see also:
-
-    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman,
-    numpy.convolve, scipy.signal.lfilter
-
-    TODO: the window parameter could be the window itself if a list instead of
-    a string
+        stdin.  Default is stdin.
+    :param start_freq: For 'fft_highpass' and 'fft_lowpass'. The frequency
+        where the ramp will begin.
+    :param end_freq: For 'fft_highpass' and 'fft_lowpass'. The frequency
+        where the ramp will end.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     from tstoolbox import filters
@@ -228,18 +195,27 @@ def date_slice(start_date=None, end_date=None, input_ts='-'):
 
 
 @baker.command
+def describe(input_ts='-'):
+    '''
+    Prints out statistics for the time-series.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
+    '''
+    tsd = tsutils.read_iso_ts(input_ts)
+    return tsutils.printiso(tsd.describe())
+
+
+@baker.command
 def peak_detection(method='rel',
                    type='peak',
                    window=24,
                    pad_len=5,
                    points=9,
                    lock_frequency=False,
-                   input_ts='-',
-                   print_input=False):
+                   print_input=False,
+                   input_ts='-'):
     '''
     Peak and valley detection.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.  Default is stdin.
     :param type: 'peak', 'valley', or 'both' to determine what should be
         returned.  Default is 'peak'.
     :param method: 'rel', 'minmax', 'zero_crossing', 'parabola', 'sine'
@@ -264,20 +240,25 @@ def peak_detection(method='rel',
         tinker with it. (default: False)
     :param print_input: If set to 'True' will include the input columns in
         the output table.  Default is 'False'.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.  Default is stdin.
     '''
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
 
     if type not in ['peak', 'valley', 'both']:
-        raise ValueError("""
-        The `type` argument must be one of 'peak',
-        'valley', or 'both'.  You supplied {0}.
-        """.format(type))
+        raise ValueError(
+"""
+    The `type` argument must be one of 'peak',
+    'valley', or 'both'.  You supplied {0}.
+""".format(type))
+
     if method not in ['rel', 'minmax', 'zero_crossing', 'parabola', 'sine']:
-        raise ValueError("""
-        The `method` argument must be one of 'rel', 'minmax',
-        'zero_crossing', 'parabola', or 'sine'.  You supplied {0}.
-        """.format(method))
+        raise ValueError(
+"""
+    The `method` argument must be one of 'rel', 'minmax',
+    'zero_crossing', 'parabola', or 'sine'.  You supplied {0}.
+""".format(method))
 
     tsd = tsutils.read_iso_ts(input_ts)
 
@@ -452,15 +433,11 @@ def pick(columns, input_ts='-'):
     '''
     tsd = tsutils.read_iso_ts(input_ts)
 
-    try:
-        columns = int(columns)
-    except ValueError:
-        columns = columns.split(',')
-        columns = [int(i) for i in columns]
+    columns = columns.split(',')
+    columns = [int(i) - 1 for i in columns]
 
-    if isinstance(columns, int):
-        tsutils.printiso(pd.DataFrame(tsd[tsd.columns[columns]]))
-        return
+    if len(columns) == 1 and isinstance(columns[0], int):
+        return tsutils.printiso(pd.DataFrame(tsd[tsd.columns[columns]]))
 
     for index, col in enumerate(columns):
         jtsd = pd.DataFrame(tsd[tsd.columns[col]])
@@ -468,7 +445,7 @@ def pick(columns, input_ts='-'):
         jtsd = jtsd.rename(columns=lambda x: str(x) + '_' + str(index), copy=True)
         try:
             newtsd = newtsd.join(jtsd)
-        except:
+        except NameError:
             newtsd = jtsd
     return tsutils.printiso(newtsd)
 
@@ -500,6 +477,8 @@ def tstopickle(filename, input_ts='-'):
     Pickles the data into a Python pickled file.  Can be brought back into
     Python with 'pickle.load' or 'numpy.load'.  See also 'tstoolbox read'.
     :param filename: The filename to store the pickled data.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     pd.core.common.save(tsd, filename)
@@ -517,8 +496,8 @@ def exp_weighted_rolling_window(span=2, statistic='mean', center=False, print_in
         value at the center of the window.  Default is 'False'.
     :param print_input: If set to 'True' will include the input columns in
         the output table.  Default is 'False'.
-    :param input_ts: Input comma separated file with
-        'ISO-8601_date/time,value'.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     if span is None:
@@ -548,8 +527,8 @@ def accumulate(statistic='sum', print_input=False, input_ts='-'):
     :param statistic: 'sum', 'max', 'min', 'prod', defaults to 'sum'.
     :param print_input: If set to 'True' will include the input columns in
         the output table.  Default is 'False'.
-    :param input_ts: Input comma separated file with
-        'ISO-8601_date/time,value'.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     if statistic == 'sum':
@@ -566,7 +545,7 @@ def accumulate(statistic='sum', print_input=False, input_ts='-'):
 
 
 @baker.command
-def rolling_window(span=2, statistic='mean', center=False, print_input=False, input_ts='-'):
+def rolling_window(span=2, statistic='mean', wintype=None, center=False, print_input=False, input_ts='-'):
     '''
     Calculates a rolling window statistic.
     :param span: The number of previous intervals to include in the
@@ -575,19 +554,46 @@ def rolling_window(span=2, statistic='mean', center=False, print_input=False, in
     :param statistic: 'mean', 'corr', 'count', 'cov', 'kurtosis', 'median',
         'skew', 'stdev', 'sum', 'variance', used to calculate the
         value, defaults to 'mean'.
+    :param wintype: The 'mean' and 'sum' `statistic` calculation can also be
+        weighted according to the `wintype` windows.  Some of the following
+        windows require additional keywords identified in parenthesis:
+        'boxcar', 'triang', 'blackman', 'hamming', 'bartlett', 'parzen',
+        'bohman', 'blackmanharris', 'nuttall', 'barthann', 'kaiser' (needs
+        beta), 'gaussian' (needs std), 'general_gaussian' (needs power,
+        width) 'slepian' (needs width).
     :param center: If set to 'True' the calculation will be made for the
         value at the center of the window.  Default is 'False'.
     :param print_input: If set to 'True' will include the input columns in
         the output table.  Default is 'False'.
-    :param input_ts: Input comma separated file with
-        'ISO-8601_date/time,value'.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     if span is None:
         span = len(tsd)
     else:
         span = int(span)
-    if statistic == 'mean':
+    window_list = [
+        'boxcar',
+        'triang',
+        'blackman',
+        'hamming',
+        'bartlett',
+        'parzen',
+        'bohman',
+        'blackmanharris',
+        'nuttall',
+        'barthann',
+        'kaiser',
+        'gaussian',
+        'general_gaussian',
+        'slepian',
+        ]
+    if wintype in window_list and statistic in ['mean', 'sum']:
+        meantest = statistic == 'mean'
+        newts = pd.stats.moments.rolling_window(tsd, span, wintype,
+                center=center, mean=meantest)
+    elif statistic == 'mean':
         if span == 0:
             newts = pd.stats.moments.expanding_mean(tsd, center=center)
         else:
@@ -651,13 +657,14 @@ def aggregate(statistic='mean',
     Takes a time series and aggregates to specified frequency, outputs to
         'ISO-8601date,value' format.
     :param statistic: 'mean', 'sum', 'std', 'max', 'min', 'median', 'first',
-        'last', to calculate the aggregation, defaults to 'mean'.
-    :param agg_interval: The 'hourly', 'daily', 'monthly', or 'yearly'
-        aggregation intervals, defaults to daily.
+        or 'last' to calculate the aggregation, defaults to 'mean'.
+        Can also be a comma separated list of statistic methods.
+    :param agg_interval: The 'hourly', 'daily', 'monthly', 'yearly'
+        aggregation intervals, defaults to 'daily'.
     :param print_input: If set to 'True' will include the input columns in
         the output table.  Default is 'False'.
-    :param input_ts: Input comma separated file with
-        'ISO-8601_date/time,value'.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
     '''
     aggd = {'hourly': 'H',
             'daily': 'D',
@@ -665,7 +672,13 @@ def aggregate(statistic='mean',
             'yearly': 'A'
             }
     tsd = tsutils.read_iso_ts(input_ts)
-    newts = tsd.resample(aggd[agg_interval], how=statistic)
+    methods = statistic.split(',')
+    for method in methods:
+        tmptsd = tsd.resample(aggd[agg_interval], how=method)
+        try:
+            newts = newts.join(tmptsd)
+        except NameError:
+            newts = tmptsd
     return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
 
 
@@ -673,10 +686,10 @@ def aggregate(statistic='mean',
 def calculate_fdc(x_plotting_position='norm', input_ts='-'):
     '''
     Returns the frequency distrbution curve.  DOES NOT return a time-series.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
     :param x_plotting_position: 'norm' or 'lin'.  'norm' defines a x
         plotting position Defaults to 'norm'.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
     '''
     from scipy.stats.distributions import norm
 
