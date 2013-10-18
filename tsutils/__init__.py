@@ -32,13 +32,16 @@ def _printiso(tsd):
     ''' Separate so can use in tests.
     '''
     try:
-        # Header
-        print('Datetime,', ', '.join(str(i) for i in tsd.columns))
+        if tsd.index.is_all_dates:
+            # Header
+            print('Datetime,', ', '.join(str(i) for i in tsd.columns))
 
-        # Data
-        for i in range(len(tsd)):
-            print(tsd.index[i], ', ', ', '.join(
-                _isfinite(j) for j in tsd.values[i]))
+            # Data
+            for i in range(len(tsd)):
+                print(tsd.index[i], ', ', ', '.join(
+                    _isfinite(j) for j in tsd.values[i]))
+        else:
+            print(tsd)
     except IOError:
         return
 
