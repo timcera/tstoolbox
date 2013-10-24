@@ -744,6 +744,11 @@ def plot(ofilename='plot.png', xtitle='Time', ytitle='',
     :param title: Title of chart, defaults to ''.
     :param figsize: The (width, height) of plot as inches.  Defaults to
        (10,6.5).
+    :param legend: Whether to display the legend. Defaults to True.
+    :param legend_names: Legend would normally use the column names associated
+       with the input data.  The 'legend_names' option allows you to override
+       the names in the data set.  You must supply a comma separated list of
+       strings for each column in the data set.  Defaults to None.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
        stdin.
     '''
