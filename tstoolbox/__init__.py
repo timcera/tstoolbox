@@ -61,6 +61,7 @@ def _sniff_filetype(filename):
 def filter(filter_type, print_input=False, start_freq=30, end_freq=40, window_len=5, input_ts='-'):
     '''
     Apply different filters to the time-series.
+
     :param filter_type: 'fft_highpass' and 'fft_lowpass' for Fast Fourier
         Transform filter in the frequency domain.
     :param print_input: If set to 'True' will include the input columns in the
@@ -157,6 +158,7 @@ def read(*filenames):
     '''
     Collect time series from a list of pickle or csv files then print
     in the tstoolbox standard format.
+
     :param filenames: List of filenames to read time series from.
     '''
     fnames = {}
@@ -184,6 +186,7 @@ def read(*filenames):
 def date_slice(start_date=None, end_date=None, input_ts='-'):
     '''
     Prints out data to the screen between start_date and end_date
+
     :param start_date: The start_date of the series in ISOdatetime format, or
         'None' for beginning.
     :param end_date: The end_date of the series in ISOdatetime format, or
@@ -198,6 +201,7 @@ def date_slice(start_date=None, end_date=None, input_ts='-'):
 def describe(input_ts='-'):
     '''
     Prints out statistics for the time-series.
+
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
     '''
@@ -216,6 +220,7 @@ def peak_detection(method='rel',
                    input_ts='-'):
     '''
     Peak and valley detection.
+
     :param type: 'peak', 'valley', or 'both' to determine what should be
         returned.  Default is 'peak'.
     :param method: 'rel', 'minmax', 'zero_crossing', 'parabola', 'sine'
@@ -323,6 +328,7 @@ def convert(factor=1.0, offset=0.0, print_input=False, input_ts='-'):
     '''
     Converts values of a time series by applying a factor and offset.  See the
         'equation' subcommand for a generalized form of this command.
+
     :param factor: Factor to multiply the time series values.
     :param offset: Offset to add to the time series values.
     :param print_input: If set to 'True' will include the input columns in the
@@ -341,6 +347,7 @@ def equation(equation, print_input=False, input_ts='-'):
     Applies <equation> to the time series data.  The <equation> argument is a
         string contained in single quotes with 'x' used as the variable
         representing the input.  For example, '(1 - x)*sin(x)'.
+
     :param equation: String contained in single quotes that defines the
         equation.  The input variable place holder is 'x'.  Mathematical
         functions in the 'np' (numpy) name space can be used.  For example,
@@ -426,6 +433,7 @@ def equation(equation, print_input=False, input_ts='-'):
 def pick(columns, input_ts='-'):
     '''
     Will pick a column or list of columns from input.  Start with 1.
+
     :param columns: Either an integer to collect a single column or a list of
         integers to collect multiple columns.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
@@ -454,6 +462,7 @@ def pick(columns, input_ts='-'):
 def stdtozrxp(rexchange=None, input_ts='-'):
     '''
     Prints out data to the screen in a WISKI ZRXP format.
+
     :param rexchange: The REXCHANGE ID to be written inro the zrxp header.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
@@ -476,6 +485,7 @@ def tstopickle(filename, input_ts='-'):
     '''
     Pickles the data into a Python pickled file.  Can be brought back into
     Python with 'pickle.load' or 'numpy.load'.  See also 'tstoolbox read'.
+
     :param filename: The filename to store the pickled data.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
@@ -488,6 +498,7 @@ def tstopickle(filename, input_ts='-'):
 def exp_weighted_rolling_window(span=2, statistic='mean', center=False, print_input=False, input_ts='-'):
     '''
     Calculates an exponentially weighted moving window statistic.
+
     :param span: The number of previous intervals to include in the
         calculation of the statistic.
     :param statistic: 'expw_mean', 'expw_stdev', 'expw_variance'
@@ -524,6 +535,7 @@ def exp_weighted_rolling_window(span=2, statistic='mean', center=False, print_in
 def accumulate(statistic='sum', print_input=False, input_ts='-'):
     '''
     Calculates accumulating statistics.
+
     :param statistic: 'sum', 'max', 'min', 'prod', defaults to 'sum'.
     :param print_input: If set to 'True' will include the input columns in
         the output table.  Default is 'False'.
@@ -548,6 +560,7 @@ def accumulate(statistic='sum', print_input=False, input_ts='-'):
 def rolling_window(span=2, statistic='mean', wintype=None, center=False, print_input=False, input_ts='-'):
     '''
     Calculates a rolling window statistic.
+
     :param span: The number of previous intervals to include in the
         calculation of the statistic. If `span` is equal to 0 will give an
         expanding rolling window.
@@ -656,6 +669,7 @@ def aggregate(statistic='mean',
     '''
     Takes a time series and aggregates to specified frequency, outputs to
         'ISO-8601date,value' format.
+
     :param statistic: 'mean', 'sum', 'std', 'max', 'min', 'median', 'first',
         or 'last' to calculate the aggregation, defaults to 'mean'.
         Can also be a comma separated list of statistic methods.
@@ -686,6 +700,7 @@ def aggregate(statistic='mean',
 def calculate_fdc(x_plotting_position='norm', input_ts='-'):
     '''
     Returns the frequency distrbution curve.  DOES NOT return a time-series.
+
     :param x_plotting_position: 'norm' or 'lin'.  'norm' defines a x
         plotting position Defaults to 'norm'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
@@ -717,9 +732,11 @@ You gave it {0}""".format(len(tsd.columns)))
 
 @baker.command
 def plot(ofilename='plot.png', xtitle='Time', ytitle='',
-         title='', figsize=(10, 6.5), input_ts='-'):
+         title='', figsize=(10, 6.5), legend=True,
+         legend_names=None, input_ts='-'):
     '''
     Time series plot.
+
     :param ofilename: Output filename for the plot.  Extension defines the
        type, ('.png'). Defaults to 'plot.png'.
     :param xtitle: Title of x-axis, defaults to 'Time'.
@@ -732,16 +749,28 @@ def plot(ofilename='plot.png', xtitle='Time', ytitle='',
     '''
     import matplotlib
     matplotlib.use('Agg')
-    import pylab as pl
+    import matplotlib.pyplot as plt
     tsd = tsutils.read_iso_ts(input_ts)
-    fig = pl.figure(figsize=figsize)
-    fsp = fig.add_subplot(111)
-    fsp.plot(tsd.index, tsd.values)
-    fsp.set_xlabel(xtitle)
-    fsp.set_ylabel(ytitle)
-    fsp.set_title(title)
-    fsp.xaxis_date()
-    fig.savefig(ofilename)
+    if legend_names:
+        lnames = legend_names.split(',')
+        if len(tsd.columns) == len(lnames):
+            renamedict = dict(zip(tsd.columns, lnames))
+            tsd.rename(columns=renamedict, inplace=True)
+        else:
+            raise ValueError('''
+*
+*   For 'legend_names' you must have the same number of comma
+*   separated names as columns in the input data.  The input
+*   data has {0} where the number of 'legend_names' is {1}.
+*
+'''.format(len(tsd.columns), len(lnames)))
+    plt.figure(figsize=figsize)
+    tsd.plot(legend=legend)
+    plt.legend(loc='best')
+    plt.xlabel(xtitle)
+    plt.ylabel(ytitle)
+    plt.title(title)
+    plt.savefig(ofilename)
 
 
 def plotcalibandobs(mwdmpath, mdsn, owdmpath, odsn, ofilename):

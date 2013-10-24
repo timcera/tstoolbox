@@ -95,10 +95,12 @@ def read_iso_ts(indat):
 
         if len(words) != len(header):
             raise ValueError('''
-The number of columns in record:
- {0}
-does not match the number of column names in the header:
- {1}
+*
+*  The number of columns in record:
+*   {0}
+*  does not match the number of column names in the header:
+*   {1}
+*
 '''.format(words, header))
 
         dates.append(parse(words[0]))
@@ -112,18 +114,19 @@ does not match the number of column names in the header:
 
     if len(dates) == 0:
         raise ValueError('''
-No data was collected from input.  Input must be a single line header with
-comma separated column names, including a name for the date/time column.  The
-header must be followed by ISO 8601 formatted date string and comma seperated
-columns of values.  Number of header columns must match number of date/time
-stamp and value columns. For example:
+*
+*  No data was collected from input.  Input must be a single line header with
+*  comma separated column names, including a name for the date/time column.
+*  The header must be followed by ISO 8601 formatted date string and comma
+*  seperated columns of values.  Number of header columns must match number of
+*  date/time stamp and value columns. For example:
 
 Datetime, Flow_8603
 2000-01-01 01:00:00 ,   4.5
 2000-01-01 18:00:00 ,  10.8
 2000-01-01 19:00:00 ,  11.1
 ...
-      ''')
+''')
 
     for col in header[1:]:
         tmpres = pd.DataFrame(pd.Series(values[col],
