@@ -51,6 +51,8 @@ def printiso(tsd, sparse=False):
     Default output format for tstoolbox, wdmtoolbox, swmmtoolbox,
     and hspfbintoolbox.
     '''
+    import sys
+    sys.tracebacklimit = 1000
     import traceback
     import os.path
     baker_cli = False
@@ -58,6 +60,7 @@ def printiso(tsd, sparse=False):
         if os.path.basename(i[0]) == 'baker.py':
             baker_cli = True
             break
+    sys.tracebacklimit = 0
     if baker_cli:
         _printiso(tsd)
     else:

@@ -526,8 +526,11 @@ def exp_weighted_rolling_window(span=2, statistic='mean', center=False, print_in
     elif statistic == 'expw_cov':
         newts = pd.stats.moments.ewmcov(tsd, span=span, center=center)
     else:
-        print('statistic ', statistic, ' is not implemented.')
-        sys.exit()
+        raise ValueError('''
+*
+*   Statistic {0} is not implemented.
+*
+'''.format(statistic))
     return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
 
 
@@ -829,7 +832,7 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
     elif type == 'kde':
         tsd.plot(kind='kde', legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
-                 ylim=ylim, secondary_y=secondary_y, mark_right=mark_right)
+                 ylim=ylim, secondary_y=secondary_y)
         ytitle = 'Density'
     elif type == 'boxplot':
         tsd.boxplot()
@@ -843,6 +846,13 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
         from pandas.tools.plotting import autocorrelation_plot
         autocorrelation_plot(tsd)
     elif type == 'bootstrap':
+        if len(tsd.columns) > 1:
+            raise ValueError('''
+*
+*   The 'bootstrap' plot can only work with 1 time-series in the DataFrame.
+*   The DataFrame that you supplied has {0} time-series.
+*
+'''.format(len(tsd.columns)))
         from pandas.tools.plotting import bootstrap_plot
         bootstrap_plot(tsd, size=bootstrap_size, samples=bootstrap_samples,
                 color='gray')
@@ -903,4 +913,5 @@ def plotcalibandobs(mwdmpath, mdsn, owdmpath, odsn, ofilename):
 
 
 def main():
+    sys.tracebacklimit = 0
     baker.run()
