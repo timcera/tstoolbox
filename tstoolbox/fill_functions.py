@@ -78,10 +78,11 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     tsd = tsutils.read_iso_ts(input_ts)
     ntsd = tsd.copy()
     ntsd = _guess_interval(ntsd, interval=interval)
+    offset = ntsd.index[1] - ntsd.index[0]
     predf = pd.DataFrame(dict(zip(tsd.columns, tsd.mean().values)),
-            index=[tsd.index[0] - pd.offsets.Hour()])
+            index=[tsd.index[0] - offset])
     postf = pd.DataFrame(dict(zip(tsd.columns, tsd.mean().values)),
-            index=[tsd.index[0] - pd.offsets.Hour()])
+            index=[tsd.index[-1] + offset])
     ntsd = pd.concat([predf, ntsd, postf])
     if method in ['ffill', 'bfill']:
         ntsd = ntsd.fillna(method=method)
