@@ -731,14 +731,26 @@ You gave it {0}""".format(len(tsd.columns)))
 
 
 @baker.command
-def plot(ofilename='plot.png', xtitle='Time', ytitle='',
-         title='', figsize=(10, 6.5), legend=True,
-         legend_names=None, input_ts='-'):
+def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
+         title='', figsize=(10, 6.5), legend=True, legend_names=None,
+         subplots=False, sharex=True, sharey=False, style=None, logx=False,
+         logy=False, xlim=None, ylim=None, secondary_y=False, mark_right=True,
+         scatter_matrix_diagonal='kde', bootstrap_size=50,
+         bootstrap_samples=500, input_ts='-'):
     '''
     Time series plot.
 
     :param ofilename: Output filename for the plot.  Extension defines the
        type, ('.png'). Defaults to 'plot.png'.
+    :param type: The plot type.  Can be 'time', 'xy', 'QQ', 'boxplot',
+       'scatter_matrix', 'lag_plot', 'autocorrelation', 'bootstrap', or 'kde'.
+       Defaults to 'time'.
+    :param scatter_matrix_diagonal: If plot type is 'scatter_matrix', this
+       specifies the plot along the diagonal.  Defaults to 'kde'.
+    :param bootstrap_size: The size of the random subset for 'bootstrap' plot.
+       Defaults to 50.
+    :param bootstrap_samples: The number of random subsets of
+       'bootstrap_size'.  Defaults to 500.
     :param xtitle: Title of x-axis, defaults to 'Time'.
     :param ytitle: Title of y-axis, defaults to ''.
     :param title: Title of chart, defaults to ''.
@@ -749,6 +761,28 @@ def plot(ofilename='plot.png', xtitle='Time', ytitle='',
        with the input data.  The 'legend_names' option allows you to override
        the names in the data set.  You must supply a comma separated list of
        strings for each column in the data set.  Defaults to None.
+    :param subplots: boolean, default False.
+       Make separate subplots for each time series
+    :param sharex: boolean, default True
+       In case subplots=True, share x axis
+    :param sharey: boolean, default False
+       In case subplots=True, share y axis
+    :param style: list of strings, comma separated
+       matplotlib line style per column
+    :param logx: boolean, default False
+       For line plots, use log scaling on x axis
+    :param logy: boolean, default False
+       For line plots, use log scaling on y axis
+    :param xlim: 2-tuple/list
+       Limits for the x-axis
+    :param ylim: 2-tuple/list
+       Limits for the y-axis
+    :param secondary_y: boolean or sequence, default False
+       Whether to plot on the secondary y-axis If a list/tuple, which columns
+       to plot on secondary y-axis
+    :param mark_right: boolean, default True :
+       When using a secondary_y axis, should the legend label the axis of the
+       various columns automatically
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
        stdin.
     '''
@@ -758,6 +792,12 @@ def plot(ofilename='plot.png', xtitle='Time', ytitle='',
     tsd = tsutils.read_iso_ts(input_ts)
     if legend_names:
         lnames = legend_names.split(',')
+        if len(lnames) != len(set(lnames)):
+            raise ValueError('''
+*
+*   Each name in legend_names must be unique.
+*
+''')
         if len(tsd.columns) == len(lnames):
             renamedict = dict(zip(tsd.columns, lnames))
             tsd.rename(columns=renamedict, inplace=True)
@@ -770,8 +810,49 @@ def plot(ofilename='plot.png', xtitle='Time', ytitle='',
 *
 '''.format(len(tsd.columns), len(lnames)))
     plt.figure(figsize=figsize)
-    tsd.plot(legend=legend)
-    plt.legend(loc='best')
+    if type == 'time':
+        tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
+                 sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
+                 ylim=ylim, secondary_y=secondary_y, mark_right=mark_right)
+        plt.legend(loc='best')
+    elif type == 'xy' or type == 'QQ':
+        if style is None and type == 'xy':
+            style = '*'
+        if type == 'QQ':
+            tsd = tsd.cumsum()
+        tsd.plot(x=tsd.columns[0], y=tsd.columns[1], subplots=subplots,
+                 sharex=sharex, sharey=sharey, style=style, logx=logx,
+                 logy=logy, xlim=xlim, ylim=ylim, secondary_y=secondary_y,
+                 mark_right=mark_right)
+        xtitle = tsd.columns[0]
+        ytitle = tsd.columns[1]
+    elif type == 'kde':
+        tsd.plot(kind='kde', legend=legend, subplots=subplots, sharex=sharex,
+                 sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
+                 ylim=ylim, secondary_y=secondary_y, mark_right=mark_right)
+        ytitle = 'Density'
+    elif type == 'boxplot':
+        tsd.boxplot()
+    elif type == 'scatter_matrix':
+        from pandas.tools.plotting import scatter_matrix
+        scatter_matrix(tsd, figsize=figsize, diagonal=scatter_matrix_diagonal)
+    elif type == 'lag_plot':
+        from pandas.tools.plotting import lag_plot
+        lag_plot(tsd)
+    elif type == 'autocorrelation':
+        from pandas.tools.plotting import autocorrelation_plot
+        autocorrelation_plot(tsd)
+    elif type == 'bootstrap':
+        from pandas.tools.plotting import bootstrap_plot
+        bootstrap_plot(tsd, size=bootstrap_size, samples=bootstrap_samples,
+                color='gray')
+    else:
+        raise ValueError('''
+*
+*   Plot 'type' {0} is not supported.
+*
+'''.format(type))
+
     plt.xlabel(xtitle)
     plt.ylabel(ytitle)
     plt.title(title)
