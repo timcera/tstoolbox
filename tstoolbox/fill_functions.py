@@ -49,6 +49,7 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     Fills missing values (NaN) with different methods.  Missing values can
         occur because of NaN, or because the time series is sparse.  The
         'interval' option can insert NaNs to create a dense time series.
+
     :param method: String contained in single quotes or a number that
         defines the method to use for filling.
         'ffill': assigns NaN values to the last good value
@@ -77,12 +78,10 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     tsd = tsutils.read_iso_ts(input_ts)
     ntsd = tsd.copy()
     ntsd = _guess_interval(ntsd, interval=interval)
-    predf = pd.DataFrame(ntsd.mean().values,
-                         index=[ntsd.index[0] - pd.offsets.Hour()])
-    predf.columns = ntsd.columns
-    postf = pd.DataFrame(ntsd.mean().values,
-                         index=[ntsd.index[-1] + pd.offsets.Hour()])
-    postf.columns = ntsd.columns
+    predf = pd.DataFrame(dict(zip(tsd.columns, tsd.mean().values)),
+            index=[tsd.index[0] - pd.offsets.Hour()])
+    postf = pd.DataFrame(dict(zip(tsd.columns, tsd.mean().values)),
+            index=[tsd.index[0] - pd.offsets.Hour()])
     ntsd = pd.concat([predf, ntsd, postf])
     if method in ['ffill', 'bfill']:
         ntsd = ntsd.fillna(method=method)
