@@ -58,7 +58,12 @@ def _sniff_filetype(filename):
 
 
 @baker.command
-def filter(filter_type, print_input=False, start_freq=30, end_freq=40, window_len=5, input_ts='-'):
+def filter(filter_type,
+           print_input=False,
+           start_freq=30,
+           end_freq=40,
+           window_len=5,
+           input_ts='-'):
     '''
     Apply different filters to the time-series.
 
@@ -83,7 +88,11 @@ def filter(filter_type, print_input=False, start_freq=30, end_freq=40, window_le
         return filters.fft_highpass(tsd, start_freq, end_freq)
     elif filter_type in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
         if len(tsd.values) < window_len:
-            raise ValueError("Input vector needs to be bigger than window size.")
+            raise ValueError('''
+*
+*   Input vector needs to be bigger than window size.
+*
+''')
         if window_len < 3:
             return tsd
         s = pd.np.r_[tsd[window_len - 1:0:-1], tsd, tsd[-1:-window_len:-1]]
@@ -123,7 +132,7 @@ def zero_crossings(y_axis, window=11):
     indices = [x_axis[index] for index in zero_crossings]
 
     # check if zero-crossings are valid
-    diff = np.diff(indices)
+#    diff = np.diff(indices)
 #    if diff.std() / diff.mean() > 0.2:
 #        print diff.std() / diff.mean()
 #        print np.diff(indices)
@@ -183,7 +192,9 @@ def read(*filenames):
 
 
 @baker.command
-def date_slice(start_date=None, end_date=None, input_ts='-'):
+def date_slice(start_date=None,
+               end_date=None,
+               input_ts='-'):
     '''
     Prints out data to the screen between start_date and end_date
 
@@ -194,7 +205,10 @@ def date_slice(start_date=None, end_date=None, input_ts='-'):
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
     '''
-    return tsutils.printiso(_date_slice(input_ts=input_ts, start_date=start_date, end_date=end_date))
+    return tsutils.printiso(
+        _date_slice(input_ts=input_ts,
+                    start_date=start_date,
+                    end_date=end_date))
 
 
 @baker.command
@@ -252,18 +266,20 @@ def peak_detection(method='rel',
     # in case want to figure it out in the future.
 
     if type not in ['peak', 'valley', 'both']:
-        raise ValueError(
-"""
-    The `type` argument must be one of 'peak',
-    'valley', or 'both'.  You supplied {0}.
-""".format(type))
+        raise ValueError('''
+*
+*   The `type` argument must be one of 'peak',
+*   'valley', or 'both'.  You supplied {0}.
+*
+'''.format(type))
 
     if method not in ['rel', 'minmax', 'zero_crossing', 'parabola', 'sine']:
-        raise ValueError(
-"""
-    The `method` argument must be one of 'rel', 'minmax',
-    'zero_crossing', 'parabola', or 'sine'.  You supplied {0}.
-""".format(method))
+        raise ValueError('''
+*
+*   The `method` argument must be one of 'rel', 'minmax',
+*   'zero_crossing', 'parabola', or 'sine'.  You supplied {0}.
+*
+'''.format(method))
 
     tsd = tsutils.read_iso_ts(input_ts)
 
@@ -308,7 +324,8 @@ def peak_detection(method='rel',
 
     for c in tmptsd.columns:
         if method in ['fft', 'parabola', 'sine']:
-            maxpeak, minpeak = func(tmptsd[c].values, range(len(tmptsd[c])), **kwds)
+            maxpeak, minpeak = func(
+                tmptsd[c].values, range(len(tmptsd[c])), **kwds)
         else:
             maxpeak, minpeak = func(tmptsd[c].values, **kwds)
         if c[-5:] == '_peak':
@@ -411,9 +428,12 @@ def equation(equation, print_input=False, input_ts='-'):
         y = x.copy()
         nequation = re.sub(
             r'\[(.*?t.*?)\]', r'[col].values[\1:\1+1][0]', equation)
-        # Replace 'x' with underlying equation, but not the 'x' in a word, like 'maximum'.
+        # Replace 'x' with underlying equation, but not the 'x' in a word,
+        # like 'maximum'.
         nequation = re.sub(
-            r'(?<![a-zA-Z])x(?![a-zA-Z\[])', r'x[col].values[t:t+1][0]', nequation)
+            r'(?<![a-zA-Z])x(?![a-zA-Z\[])',
+            r'x[col].values[t:t+1][0]',
+            nequation)
         for col in x.columns:
             for t in range(len(x)):
                 try:
@@ -450,7 +470,8 @@ def pick(columns, input_ts='-'):
     for index, col in enumerate(columns):
         jtsd = pd.DataFrame(tsd[tsd.columns[col]])
 
-        jtsd = jtsd.rename(columns=lambda x: str(x) + '_' + str(index), copy=True)
+        jtsd = jtsd.rename(
+            columns=lambda x: str(x) + '_' + str(index), copy=True)
         try:
             newtsd = newtsd.join(jtsd)
         except NameError:
@@ -469,9 +490,12 @@ def stdtozrxp(rexchange=None, input_ts='-'):
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     if len(tsd.columns) > 1:
-        raise ValueError("""
-        The "stdtozrxp" command can only accept a single
-        'time-series, instead it is seeing {0}""".format(len(tsd.columns)))
+        raise ValueError('''
+*
+*   The "stdtozrxp" command can only accept a single
+*   'time-series, instead it is seeing {0}.
+*
+'''.format(len(tsd.columns)))
     if rexchange:
         print('#REXCHANGE{0}|*|'.format(rexchange))
     for i in range(len(tsd)):
@@ -495,7 +519,11 @@ def tstopickle(filename, input_ts='-'):
 
 
 @baker.command
-def exp_weighted_rolling_window(span=2, statistic='mean', center=False, print_input=False, input_ts='-'):
+def exp_weighted_rolling_window(span=2,
+                                statistic='mean',
+                                center=False,
+                                print_input=False,
+                                input_ts='-'):
     '''
     Calculates an exponentially weighted moving window statistic.
 
@@ -535,7 +563,9 @@ def exp_weighted_rolling_window(span=2, statistic='mean', center=False, print_in
 
 
 @baker.command
-def accumulate(statistic='sum', print_input=False, input_ts='-'):
+def accumulate(statistic='sum',
+               print_input=False,
+               input_ts='-'):
     '''
     Calculates accumulating statistics.
 
@@ -555,12 +585,21 @@ def accumulate(statistic='sum', print_input=False, input_ts='-'):
     elif statistic == 'prod':
         ntsd = tsd.cumprod()
     else:
-        raise ValueError('statistic ', statistic, ' is not implemented.')
+        raise ValueError('''
+*
+*   Statistic {0} is not implemented.
+*
+'''.format(statistic))
     return tsutils.print_input(print_input, tsd, ntsd, '_' + statistic)
 
 
 @baker.command
-def rolling_window(span=2, statistic='mean', wintype=None, center=False, print_input=False, input_ts='-'):
+def rolling_window(span=2,
+                   statistic='mean',
+                   wintype=None,
+                   center=False,
+                   print_input=False,
+                   input_ts='-'):
     '''
     Calculates a rolling window statistic.
 
@@ -607,8 +646,8 @@ def rolling_window(span=2, statistic='mean', wintype=None, center=False, print_i
         ]
     if wintype in window_list and statistic in ['mean', 'sum']:
         meantest = statistic == 'mean'
-        newts = pd.stats.moments.rolling_window(tsd, span, wintype,
-                center=center, mean=meantest)
+        newts = pd.stats.moments.rolling_window(
+            tsd, span, wintype, center=center, mean=meantest)
     elif statistic == 'mean':
         if span == 0:
             newts = pd.stats.moments.expanding_mean(tsd, center=center)
@@ -660,7 +699,11 @@ def rolling_window(span=2, statistic='mean', wintype=None, center=False, print_i
         else:
             newts = pd.stats.moments.rolling_var(tsd, span, center=center)
     else:
-        raise ValueError('statistic ', statistic, ' is not implemented.')
+        raise ValueError('''
+*
+*   Statistic {0} is not implemented.
+*
+'''.format(statistic))
     return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
 
 
@@ -713,10 +756,12 @@ def calculate_fdc(x_plotting_position='norm', input_ts='-'):
 
     tsd = tsutils.read_iso_ts(input_ts)
     if len(tsd.columns) > 1:
-        raise ValueError(
-"""
-This function currently only works with one time-series at a time.
-You gave it {0}""".format(len(tsd.columns)))
+        raise ValueError('''
+*
+*   This function currently only works with one time-series at a time.
+*   You gave it {0}.
+*
+'''.format(len(tsd.columns)))
 
     cnt = len(tsd.values)
     a_tmp = 1. / (cnt + 1)
@@ -855,7 +900,8 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
 '''.format(len(tsd.columns)))
         from pandas.tools.plotting import bootstrap_plot
         bootstrap_plot(tsd, size=bootstrap_size, samples=bootstrap_samples,
-                color='gray')
+                       color='gray')
+        xtitle = None
     else:
         raise ValueError('''
 *

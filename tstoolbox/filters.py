@@ -159,8 +159,8 @@ if __name__ == '__main__':
     '''
     arr = np.arange(100)
     print(arr)
-    print(median(arr, (3, )))
-    print(constant(arr, (-25, 20), (10, 20)))
+    print(np.median(arr, (3, )))
+    print(np.constant(arr, (-25, 20), (10, 20)))
     arr = np.arange(30)
     arr = np.reshape(arr, (6, 5))
-    print(mean(arr, pad_width=((2, 3), (3, 2), (4,5)), stat_len=(3, )))
+    print(np.mean(arr, pad_width=((2, 3), (3, 2), (4, 5)), stat_len=(3, )))

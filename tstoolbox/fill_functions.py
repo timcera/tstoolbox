@@ -29,7 +29,8 @@ _offset_aliases = {
 def _guess_interval(gtsd, interval='guess'):
     if interval is not None:
         if interval == 'guess':
-            interval = pd.np.min(gtsd.index.values[1:] - gtsd.index.values[:-1])
+            interval = pd.np.min(
+                gtsd.index.values[1:] - gtsd.index.values[:-1])
             try:
                 interval = _offset_aliases[interval]
             except KeyError:
@@ -42,6 +43,7 @@ Can't guess interval, you must supply desired interval with
                 if gtsd.reindex(dr).count() != gtsd.count():
                     interval = 'MS'
         return gtsd.asfreq(interval)
+
 
 @baker.command
 def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
@@ -80,9 +82,9 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     ntsd = _guess_interval(ntsd, interval=interval)
     offset = ntsd.index[1] - ntsd.index[0]
     predf = pd.DataFrame(dict(zip(tsd.columns, tsd.mean().values)),
-            index=[tsd.index[0] - offset])
+                         index=[tsd.index[0] - offset])
     postf = pd.DataFrame(dict(zip(tsd.columns, tsd.mean().values)),
-            index=[tsd.index[-1] + offset])
+                         index=[tsd.index[-1] + offset])
     ntsd = pd.concat([predf, ntsd, postf])
     if method in ['ffill', 'bfill']:
         ntsd = ntsd.fillna(method=method)
@@ -111,7 +113,11 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     return tsutils.print_input(print_input, tsd, ntsd, '_fill')
 
 
-def fill_from_others(method='best', maximum_lag=24, interval='guess', print_input=False,  input_ts='-'):
+def fill_from_others(method='best',
+                     maximum_lag=24,
+                     interval='guess',
+                     print_input=False,
+                     input_ts='-'):
     '''
     Fills missing values (NaN) with different methods.  Missing values can
         occur because of NaN, or because the time series is sparse.  The
@@ -134,4 +140,3 @@ def fill_from_others(method='best', maximum_lag=24, interval='guess', print_inpu
     tsd = tsutils.read_iso_ts(input_ts)
     ntsd = tsd.copy()
     ntsd = _guess_interval(ntsd, interval=interval)
-
