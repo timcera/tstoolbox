@@ -783,18 +783,20 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
          title='', figsize=(10, 6.5), legend=True, legend_names=None,
          subplots=False, sharex=True, sharey=False, style=None, logx=False,
          logy=False, xlim=None, ylim=None, secondary_y=False, mark_right=True,
-         scatter_matrix_diagonal='kde', bootstrap_size=50,
+         scatter_matrix_diagonal='probability_density', bootstrap_size=50,
          bootstrap_samples=500, input_ts='-'):
     '''
     Time series plot.
 
     :param ofilename: Output filename for the plot.  Extension defines the
        type, ('.png'). Defaults to 'plot.png'.
-    :param type: The plot type.  Can be 'time', 'xy', 'QQ', 'boxplot',
-       'scatter_matrix', 'lag_plot', 'autocorrelation', 'bootstrap', or 'kde'.
+    :param type: The plot type.  Can be 'time', 'xy', 'double_mass', 'boxplot',
+       'scatter_matrix', 'lag_plot', 'autocorrelation', 'bootstrap', or
+       'probability_density'.
        Defaults to 'time'.
     :param scatter_matrix_diagonal: If plot type is 'scatter_matrix', this
-       specifies the plot along the diagonal.  Defaults to 'kde'.
+       specifies the plot along the diagonal.  Defaults to
+       'probability_density'.
     :param bootstrap_size: The size of the random subset for 'bootstrap' plot.
        Defaults to 50.
     :param bootstrap_samples: The number of random subsets of
@@ -863,10 +865,10 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
                  ylim=ylim, secondary_y=secondary_y, mark_right=mark_right)
         plt.legend(loc='best')
-    elif type == 'xy' or type == 'QQ':
+    elif type == 'xy' or type == 'double_mass':
         if style is None and type == 'xy':
             style = '*'
-        if type == 'QQ':
+        if type == 'double_mass':
             tsd = tsd.cumsum()
         tsd.plot(x=tsd.columns[0], y=tsd.columns[1], subplots=subplots,
                  sharex=sharex, sharey=sharey, style=style, logx=logx,
@@ -874,7 +876,7 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
                  mark_right=mark_right)
         xtitle = tsd.columns[0]
         ytitle = tsd.columns[1]
-    elif type == 'kde':
+    elif type == 'probability_density':
         tsd.plot(kind='kde', legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
                  ylim=ylim, secondary_y=secondary_y)
