@@ -17,6 +17,77 @@ def _isfinite(testval):
     else:
         return ' '
 
+def guess_freq(data):
+    # Another way to do this is to abuse PANDAS .asfreq.  Basically, how low
+    # can you go and maintain the same number of values.
+    mapcode = {365*86400: 6,
+               366*86400: 6,
+               31*86400:  5,
+               30*86400:  5,
+               29*86400:  5,
+               28*86400:  5,
+               86400:     4,
+               3600:      3,
+               60:        2,
+               1:         1
+               }
+
+    pndcode = {365*86400: 'A',
+               366*86400: 'A',
+               31*86400:  'M',
+               30*86400:  'M',
+               29*86400:  'M',
+               28*86400:  'M',
+               86400:     'D',
+               3600:      'H',
+               60:        'T',
+               1:         'S'
+               }
+
+    if data.index.freq is not None:
+        return mapcode[data.index.freq.nanos/1000000000], data.index.freqstr
+
+    interval = np.unique(data.index.values[1:] - data.index.values[:-1])
+    interval = [np.timedelta64(i, 's') for i in interval]
+    interval = np.array(interval)
+
+    # If there are more than one interval lets see if the are caused by
+    # missing values.  Say there is at least one 2 hour interval and at
+    # least one 1 hour interval, this should correctly say the interval
+    # is one hour.
+    ninterval = {}
+    if len(interval) > 1 and np.all(interval < np.timedelta64(28, 'D')):
+        for i, aval in enumerate(interval):
+            for j, bval in enumerate(interval[i+1:]):
+                ninterval[_find_gcf(aval, bval)] = 1
+        ninterval = ninterval.keys()
+        ninterval.sort()
+        interval = ninterval
+
+    # If len of intervai is STILL > than 1, must be large time spans between
+    # data.  Lets try to figure out the largest common interval that will
+    # evenly fit in the observation intervals.
+    if len(interval) > 1:
+        accumulate_freq = []
+        for inter in interval:
+            # Have the interval in seconds, need to convert to
+            # interval identifier
+            intertmp = np.timedelta64(inter, 's').tolist()
+            intertmp = intertmp.days*86400 + intertmp.seconds
+
+            for seconds in sorted(mapcode, reverse=True):
+                if intertmp % seconds == 0:
+                    accumulate_freq.append(seconds)
+                    break
+
+        accumulate_freq.sort()
+        finterval = accumulate_freq[0]
+    else:
+        intertmp = np.timedelta64(interval[0], 's').tolist()
+        intertmp = intertmp.days*86400 + intertmp.seconds
+
+    return mapcode[intertmp], pndcode[intertmp]
+
 
 # Utility
 def print_input(iftrue, input, output, suffix):
@@ -138,6 +209,8 @@ Datetime, Flow_8603
             result = result.join(tmpres)
         except NameError:
             result = tmpres
+
+    result = result.asfreq(guess_freq(result)[1])
 
     return result
 
