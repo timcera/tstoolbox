@@ -779,14 +779,14 @@ def calculate_fdc(x_plotting_position='norm', input_ts='-'):
 
 
 @baker.command
-def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
+def plot(ofilename='plot.png', type='time', xtitle='', ytitle='',
          title='', figsize=(10, 6.5), legend=True, legend_names=None,
          subplots=False, sharex=True, sharey=False, style=None, logx=False,
          logy=False, xlim=None, ylim=None, secondary_y=False, mark_right=True,
          scatter_matrix_diagonal='probability_density', bootstrap_size=50,
          bootstrap_samples=500, input_ts='-'):
     '''
-    Time series plot.
+    Plots.
 
     :param ofilename: Output filename for the plot.  Extension defines the
        type, ('.png'). Defaults to 'plot.png'.
@@ -801,16 +801,16 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
        Defaults to 50.
     :param bootstrap_samples: The number of random subsets of
        'bootstrap_size'.  Defaults to 500.
-    :param xtitle: Title of x-axis, defaults to 'Time'.
-    :param ytitle: Title of y-axis, defaults to ''.
+    :param xtitle: Title of x-axis, defaults depend on ``type``.
+    :param ytitle: Title of y-axis, defaults depend on ``type``.
     :param title: Title of chart, defaults to ''.
     :param figsize: The (width, height) of plot as inches.  Defaults to
        (10,6.5).
     :param legend: Whether to display the legend. Defaults to True.
-    :param legend_names: Legend would normally use the column names associated
+    :param legend_names: Legend would normally use the time-series names associated
        with the input data.  The 'legend_names' option allows you to override
        the names in the data set.  You must supply a comma separated list of
-       strings for each column in the data set.  Defaults to None.
+       strings for each time-series in the data set.  Defaults to None.
     :param subplots: boolean, default False.
        Make separate subplots for each time series
     :param sharex: boolean, default True
@@ -818,7 +818,11 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
     :param sharey: boolean, default False
        In case subplots=True, share y axis
     :param style: list of strings, comma separated
-       matplotlib line style per column
+       matplotlib line style per time-series.  Just combine codes, for example
+       'r--*' is a red dashed line with star marker.
+       Color: http://matplotlib.org/api/colors_api.html?highlight=color
+       Line: http://matplotlib.org/api/artist_api.html#matplotlib.lines.Line2D.set_linestyle
+       Marker: http://matplotlib.org/api/markers_api.html?highlight=style
     :param logx: boolean, default False
        For line plots, use log scaling on x axis
     :param logy: boolean, default False
@@ -828,11 +832,11 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
     :param ylim: 2-tuple/list
        Limits for the y-axis
     :param secondary_y: boolean or sequence, default False
-       Whether to plot on the secondary y-axis If a list/tuple, which columns
-       to plot on secondary y-axis
+       Whether to plot on the secondary y-axis If a list/tuple, which
+       time-series to plot on secondary y-axis
     :param mark_right: boolean, default True :
        When using a secondary_y axis, should the legend label the axis of the
-       various columns automatically
+       various time-series automatically
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
        stdin.
     '''
@@ -840,6 +844,22 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     tsd = tsutils.read_iso_ts(input_ts)
+
+    # This is to help pretty print the frequency
+    try:
+        try:
+            pltfreq = str(tsd.index.freq, 'utf-8').lower()
+        except TypeError:
+            pltfreq = str(tsd.index.freq).lower()
+        if pltfreq.split(' ')[0][1:] == '1':
+            beginstr = 3
+        else:
+            beginstr = 1
+        # short freq string (day) OR (2 day)
+        short_freq = '({0})'.format(pltfreq[beginstr:-1])
+    except AttributeError:
+        short_freq = ''
+
     if legend_names:
         lnames = legend_names.split(',')
         if len(lnames) != len(set(lnames)):
@@ -864,6 +884,8 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
         tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
                  ylim=ylim, secondary_y=secondary_y, mark_right=mark_right)
+        plt.xlabel(xtitle or 'Time')
+        plt.ylabel(ytitle)
         plt.legend(loc='best')
     elif type == 'xy' or type == 'double_mass':
         if style is None and type == 'xy':
@@ -874,24 +896,31 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
                  sharex=sharex, sharey=sharey, style=style, logx=logx,
                  logy=logy, xlim=xlim, ylim=ylim, secondary_y=secondary_y,
                  mark_right=mark_right)
-        xtitle = tsd.columns[0]
-        ytitle = tsd.columns[1]
+        plt.xlabel(xtitle or tsd.columns[0])
+        plt.ylabel(ytitle or tsd.columns[1])
     elif type == 'probability_density':
         tsd.plot(kind='kde', legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
                  ylim=ylim, secondary_y=secondary_y)
-        ytitle = 'Density'
+        plt.xlabel(xtitle)
+        plt.ylabel(ytitle or 'Density')
     elif type == 'boxplot':
         tsd.boxplot()
     elif type == 'scatter_matrix':
         from pandas.tools.plotting import scatter_matrix
+        if scatter_matrix_diagonal == 'probablity_density':
+            scatter_matrix_diagonal = 'kde'
         scatter_matrix(tsd, figsize=figsize, diagonal=scatter_matrix_diagonal)
     elif type == 'lag_plot':
         from pandas.tools.plotting import lag_plot
         lag_plot(tsd)
+        plt.xlabel(xtitle or 'y(t)')
+        plt.ylabel(ytitle or 'y(t+{0})'.format(short_freq or 1))
     elif type == 'autocorrelation':
         from pandas.tools.plotting import autocorrelation_plot
         autocorrelation_plot(tsd)
+        plt.xlabel(xtitle or 'Time Lag {0}'.format(short_freq))
+        plt.ylabel(ytitle)
     elif type == 'bootstrap':
         if len(tsd.columns) > 1:
             raise ValueError('''
@@ -903,7 +932,6 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
         from pandas.tools.plotting import bootstrap_plot
         bootstrap_plot(tsd, size=bootstrap_size, samples=bootstrap_samples,
                        color='gray')
-        xtitle = None
     else:
         raise ValueError('''
 *
@@ -911,8 +939,6 @@ def plot(ofilename='plot.png', type='time', xtitle='Time', ytitle='',
 *
 '''.format(type))
 
-    plt.xlabel(xtitle)
-    plt.ylabel(ytitle)
     plt.title(title)
     plt.savefig(ofilename)
 
