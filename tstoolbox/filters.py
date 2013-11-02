@@ -80,9 +80,9 @@ def _transform(vector, ramp_start_freq, ramp_end_freq):
 
     freq = F.fftfreq(len(vector))[:len(vector)/2]
     factor = np.ones_like(result)
-    factor[freq > ramp_start_freq] = 0.0
+    factor[freq > 1.0/ramp_start_freq] = 0.0
 
-    sl = np.logical_and(ramp_start_freq < freq, freq < ramp_end_freq)
+    sl = np.logical_and(1.0/ramp_start_freq < freq, freq < 1.0/ramp_end_freq)
 
     a = factor[sl]
     # Create float array of required length and reverse

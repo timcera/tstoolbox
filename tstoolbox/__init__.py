@@ -63,29 +63,40 @@ def filter(filter_type,
            start_freq=30,
            end_freq=40,
            window_len=5,
-           input_ts='-'):
+           input_ts='-',
+           start_date=None,
+           end_date=None):
     '''
     Apply different filters to the time-series.
 
-    :param filter_type: 'fft_highpass' and 'fft_lowpass' for Fast Fourier
-        Transform filter in the frequency domain.
-    :param print_input: If set to 'True' will include the input columns in the
-        output table.  Default is 'False'.
+    :param filter_type: 'flat', 'hanning', 'hamming', 'bartlett', 'blackman',
+        'fft_highpass' and 'fft_lowpass' for Fast Fourier Transform filter in
+        the frequency domain.
+    :param window_len: For the windowed types, 'flat', 'hanning', 'hamming',
+        'bartlett', 'blackman' specifies the length of the window.  Defaults
+        to 5.
+    :param print_input: If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.  Default is stdin.
     :param start_freq: For 'fft_highpass' and 'fft_lowpass'. The frequency
         where the ramp will begin.
     :param end_freq: For 'fft_highpass' and 'fft_lowpass'. The frequency
         where the ramp will end.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
     from tstoolbox import filters
 
+    ntsd = tsd.copy()
     # fft_lowpass, fft_highpass
     if filter_type == 'fft_lowpass':
-        return filters.fft_lowpass(tsd, start_freq, end_freq)
+        ntsd.values[:] = filters.fft_lowpass(tsd.values, start_freq, end_freq)
     elif filter_type == 'fft_highpass':
-        return filters.fft_highpass(tsd, start_freq, end_freq)
+        ntsd.values[:] = filters.fft_highpass(tsd.values, start_freq, end_freq)
     elif filter_type in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
         if len(tsd.values) < window_len:
             raise ValueError('''
@@ -102,8 +113,9 @@ def filter(filter_type,
         else:
             w = eval('pd.np.' + filter_type + '(window_len)')
 
-        y = pd.np.convolve(w / w.sum(), s, mode='valid')
-        return y
+        y = pd.np.convolve(w / w.sum(), s, mode='same')
+        ntsd.values[:] = y
+    return tsutils.print_input(print_input, tsd, ntsd, '_filter')
 
 
 def zero_crossings(y_axis, window=11):
@@ -163,17 +175,38 @@ def zero_crossings(y_axis, window=11):
 
 
 @baker.command
-def read(*filenames):
+def read(*filenames, **kwds):
     '''
     Collect time series from a list of pickle or csv files then print
     in the tstoolbox standard format.
 
     :param filenames: List of filenames to read time series from.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
+    try:
+        start_date = kwds['start_date']
+        kwds.pop('start_date')
+    except KeyError:
+        start_date = None
+    try:
+        end_date = kwds['end_date']
+        kwds.pop('end_date')
+    except KeyError:
+        end_date = None
+    if kwds.keys():
+        raise ValueError('''
+*
+*   Only allowed keywords are 'start_date' and 'end_date'.
+*   You supplied {0}.
+*
+'''.format(kwds.keys())
     fnames = {}
     for index, filename in enumerate(filenames):
         fname = os.path.basename(os.path.splitext(filename)[0])
-        tsd = _sniff_filetype(filename)
+        tsd = _sniff_filetype(filename)[start_date:end_date]
 
         nfname = fname
         if fname in fnames:
@@ -181,7 +214,7 @@ def read(*filenames):
         fnames[fname] = 1
 
         if len(filenames) > 1:
-            tsd = tsd.rename(columns=lambda x: nfname + '_' + x)
+            tsd.rename(columns=lambda x: nfname + '_' + x, inplace=True)
 
         try:
             result = result.join(tsd)
@@ -212,14 +245,18 @@ def date_slice(start_date=None,
 
 
 @baker.command
-def describe(input_ts='-'):
+def describe(input_ts='-', start_date=None, end_date=None):
     '''
     Prints out statistics for the time-series.
 
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date: end_date]
     return tsutils.printiso(tsd.describe())
 
 
@@ -227,11 +264,13 @@ def describe(input_ts='-'):
 def peak_detection(method='rel',
                    type='peak',
                    window=24,
-                   pad_len=5,
+                   #pad_len=5,  eventually used for fft
                    points=9,
                    lock_frequency=False,
                    print_input=False,
-                   input_ts='-'):
+                   input_ts='-',
+                   start_date=None,
+                   end_date=None):
     '''
     Peak and valley detection.
 
@@ -261,6 +300,10 @@ def peak_detection(method='rel',
         the output table.  Default is 'False'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.  Default is stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
@@ -281,7 +324,7 @@ def peak_detection(method='rel',
 *
 '''.format(method))
 
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date: end_date]
 
     window = int(window)
     kwds = {}
@@ -341,7 +384,13 @@ def peak_detection(method='rel',
 
 
 @baker.command
-def convert(factor=1.0, offset=0.0, print_input=False, input_ts='-'):
+def convert(
+        factor=1.0,
+        offset=0.0,
+        print_input=False,
+        input_ts='-',
+        start_date=None,
+        end_date=None):
     '''
     Converts values of a time series by applying a factor and offset.  See the
         'equation' subcommand for a generalized form of this command.
@@ -352,14 +401,23 @@ def convert(factor=1.0, offset=0.0, print_input=False, input_ts='-'):
         output table.  Default is 'False'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
     tmptsd = tsd * factor + offset
     return tsutils.print_input(print_input, tsd, tmptsd, '_convert')
 
 
 @baker.command
-def equation(equation, print_input=False, input_ts='-'):
+def equation(
+        equation,
+        print_input=False,
+        input_ts='-',
+        start_date=None,
+        end_date=None):
     '''
     Applies <equation> to the time series data.  The <equation> argument is a
         string contained in single quotes with 'x' used as the variable
@@ -377,8 +435,12 @@ def equation(equation, print_input=False, input_ts='-'):
         output table.  Default is 'False'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
-    x = tsutils.read_iso_ts(input_ts)
+    x = tsutils.read_iso_ts(input_ts)[start_date:end_date]
     import re
 
     # Get rid of spaces
@@ -450,7 +512,7 @@ def equation(equation, print_input=False, input_ts='-'):
 
 
 @baker.command
-def pick(columns, input_ts='-'):
+def pick(columns, input_ts='-', start_date=None, end_date=None):
     '''
     Will pick a column or list of columns from input.  Start with 1.
 
@@ -458,8 +520,12 @@ def pick(columns, input_ts='-'):
         integers to collect multiple columns.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
 
     columns = columns.split(',')
     columns = [int(i) - 1 for i in columns]
@@ -480,15 +546,23 @@ def pick(columns, input_ts='-'):
 
 
 @baker.command
-def stdtozrxp(rexchange=None, input_ts='-'):
+def stdtozrxp(
+        rexchange=None,
+        input_ts='-',
+        start_date=None,
+        end_date=None):
     '''
     Prints out data to the screen in a WISKI ZRXP format.
 
     :param rexchange: The REXCHANGE ID to be written inro the zrxp header.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
     if len(tsd.columns) > 1:
         raise ValueError('''
 *
@@ -505,7 +579,11 @@ def stdtozrxp(rexchange=None, input_ts='-'):
 
 
 @baker.command
-def tstopickle(filename, input_ts='-'):
+def tstopickle(
+        filename,
+        input_ts='-',
+        start_date=None,
+        end_date=None):
     '''
     Pickles the data into a Python pickled file.  Can be brought back into
     Python with 'pickle.load' or 'numpy.load'.  See also 'tstoolbox read'.
@@ -513,17 +591,24 @@ def tstopickle(filename, input_ts='-'):
     :param filename: The filename to store the pickled data.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
     pd.core.common.save(tsd, filename)
 
 
 @baker.command
-def exp_weighted_rolling_window(span=2,
-                                statistic='mean',
-                                center=False,
-                                print_input=False,
-                                input_ts='-'):
+def exp_weighted_rolling_window(
+        span=2,
+        statistic='expw_mean',
+        center=False,
+        print_input=False,
+        input_ts='-',
+        start_date=None,
+        end_date=None):
     '''
     Calculates an exponentially weighted moving window statistic.
 
@@ -537,8 +622,12 @@ def exp_weighted_rolling_window(span=2,
         the output table.  Default is 'False'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
     if span is None:
         span = len(tsd)
     else:
@@ -563,9 +652,12 @@ def exp_weighted_rolling_window(span=2,
 
 
 @baker.command
-def accumulate(statistic='sum',
-               print_input=False,
-               input_ts='-'):
+def accumulate(
+        statistic='sum',
+        print_input=False,
+        input_ts='-',
+        start_date=None,
+        end_date=None):
     '''
     Calculates accumulating statistics.
 
@@ -574,8 +666,12 @@ def accumulate(statistic='sum',
         the output table.  Default is 'False'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
     if statistic == 'sum':
         ntsd = tsd.cumsum()
     elif statistic == 'max':
@@ -594,12 +690,15 @@ def accumulate(statistic='sum',
 
 
 @baker.command
-def rolling_window(span=2,
-                   statistic='mean',
-                   wintype=None,
-                   center=False,
-                   print_input=False,
-                   input_ts='-'):
+def rolling_window(
+        span=2,
+        statistic='mean',
+        wintype=None,
+        center=False,
+        print_input=False,
+        input_ts='-',
+        start_date=None,
+        end_date=None):
     '''
     Calculates a rolling window statistic.
 
@@ -622,8 +721,12 @@ def rolling_window(span=2,
         the output table.  Default is 'False'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
     if span is None:
         span = len(tsd)
     else:
@@ -708,10 +811,13 @@ def rolling_window(span=2,
 
 
 @baker.command
-def aggregate(statistic='mean',
-              agg_interval='daily',
-              print_input=False,
-              input_ts='-'):
+def aggregate(
+        statistic='mean',
+        agg_interval='daily',
+        print_input=False,
+        input_ts='-',
+        start_date=None,
+        end_date=None):
     '''
     Takes a time series and aggregates to specified frequency, outputs to
         'ISO-8601date,value' format.
@@ -725,25 +831,34 @@ def aggregate(statistic='mean',
         the output table.  Default is 'False'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
     aggd = {'hourly': 'H',
             'daily': 'D',
             'monthly': 'M',
             'yearly': 'A'
             }
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
     methods = statistic.split(',')
     for method in methods:
         tmptsd = tsd.resample(aggd[agg_interval], how=method)
+        tmptsd.rename(columns=lambda x: x + '_' + method, inplace=True)
         try:
             newts = newts.join(tmptsd)
         except NameError:
             newts = tmptsd
-    return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
+    return tsutils.print_input(print_input, tsd, newts, '')
 
 
 @baker.command
-def calculate_fdc(x_plotting_position='norm', input_ts='-'):
+def calculate_fdc(
+        x_plotting_position='norm',
+        input_ts='-',
+        start_date=None,
+        end_date=None):
     '''
     Returns the frequency distrbution curve.  DOES NOT return a time-series.
 
@@ -751,10 +866,14 @@ def calculate_fdc(x_plotting_position='norm', input_ts='-'):
         plotting position Defaults to 'norm'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
     from scipy.stats.distributions import norm
 
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
     if len(tsd.columns) > 1:
         raise ValueError('''
 *
@@ -779,12 +898,31 @@ def calculate_fdc(x_plotting_position='norm', input_ts='-'):
 
 
 @baker.command
-def plot(ofilename='plot.png', type='time', xtitle='', ytitle='',
-         title='', figsize=(10, 6.5), legend=True, legend_names=None,
-         subplots=False, sharex=True, sharey=False, style=None, logx=False,
-         logy=False, xlim=None, ylim=None, secondary_y=False, mark_right=True,
-         scatter_matrix_diagonal='probability_density', bootstrap_size=50,
-         bootstrap_samples=500, input_ts='-'):
+def plot(
+        ofilename='plot.png',
+        type='time',
+        xtitle='',
+        ytitle='',
+        title='',
+        figsize=(10, 6.5),
+        legend=True,
+        legend_names=None,
+        subplots=False,
+        sharex=True,
+        sharey=False,
+        style=None,
+        logx=False,
+        logy=False,
+        xlim=None,
+        ylim=None,
+        secondary_y=False,
+        mark_right=True,
+        scatter_matrix_diagonal='probability_density',
+        bootstrap_size=50,
+        bootstrap_samples=500,
+        input_ts='-',
+        start_date=None,
+        end_date=None):
     '''
     Plots.
 
@@ -839,11 +977,15 @@ def plot(ofilename='plot.png', type='time', xtitle='', ytitle='',
        various time-series automatically
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
        stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
     '''
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
 
     # This is to help pretty print the frequency
     try:
@@ -987,5 +1129,6 @@ def plotcalibandobs(mwdmpath, mdsn, owdmpath, odsn, ofilename):
 
 
 def main():
-    sys.tracebacklimit = 0
+    if not os.path.exists('debug_tstoolbox'):
+        sys.tracebacklimit = 0
     baker.run()

@@ -92,7 +92,7 @@ def guess_freq(data):
 # Utility
 def print_input(iftrue, input, output, suffix):
     if suffix:
-        output = output.rename(columns=lambda xloc: xloc + suffix)
+        output.rename(columns=lambda xloc: xloc + suffix, inplace=True)
     if iftrue:
         return printiso(input.join(output, how='outer'))
     else:
@@ -138,7 +138,7 @@ def printiso(tsd, sparse=False):
         return tsd
 
 
-def read_iso_ts(indat):
+def read_iso_ts(indat, dense=True):
     '''
     Reads the format printed by 'print_iso'.
     '''
@@ -210,7 +210,8 @@ Datetime, Flow_8603
         except NameError:
             result = tmpres
 
-    result = result.asfreq(guess_freq(result)[1])
+    if dense:
+        return result.asfreq(guess_freq(result)[1])
 
     return result
 
