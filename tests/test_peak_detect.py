@@ -65,7 +65,7 @@ class TestPeakDetect(TestCase):
         self.assertEqual(out, self.compare)
 
     def test_peak_parabola_direct(self):
-        out = tstoolbox.peak_detection(method='parabola', pad_len=5, input_ts=self.ats, print_input=True, type='both')
+        out = tstoolbox.peak_detection(method='parabola', input_ts=self.ats, print_input=True, type='both')
         self.maxDiff = None
         self.assertEqual(out, self.compare)
 
@@ -97,7 +97,7 @@ class TestPeakDetect(TestCase):
         self.assertEqual(out, output_peak_detection)
 
     #def test_peak_parabola_cli(self):
-    #    args = 'tstoolbox peak_detection --pad_len=5 --method="parabola" --type="both" --print_input=True'
+    #    args = 'tstoolbox peak_detection --method="parabola" --type="both" --print_input=True'
     #    args = shlex.split(args)
     #    out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate(input=input_peak_detection)[0]
     #    self.maxDiff = None
