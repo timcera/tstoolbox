@@ -202,7 +202,7 @@ def read(*filenames, **kwds):
 *   Only allowed keywords are 'start_date' and 'end_date'.
 *   You supplied {0}.
 *
-'''.format(kwds.keys())
+'''.format(kwds.keys()))
     fnames = {}
     for index, filename in enumerate(filenames):
         fname = os.path.basename(os.path.splitext(filename)[0])
