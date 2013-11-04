@@ -601,57 +601,6 @@ def tstopickle(
 
 
 @baker.command
-def exp_weighted_rolling_window(
-        span=2,
-        statistic='expw_mean',
-        center=False,
-        print_input=False,
-        input_ts='-',
-        start_date=None,
-        end_date=None):
-    '''
-    Calculates an exponentially weighted moving window statistic.
-
-    :param span: The number of previous intervals to include in the
-        calculation of the statistic.
-    :param statistic: 'expw_mean', 'expw_stdev', 'expw_variance'
-        'expw_corr', 'expw_cov', defaults to 'expw_mean'.
-    :param center: If set to 'True' the calculation will be made for the
-        value at the center of the window.  Default is 'False'.
-    :param print_input: If set to 'True' will include the input columns in
-        the output table.  Default is 'False'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
-    '''
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
-    if span is None:
-        span = len(tsd)
-    else:
-        span = int(span)
-    if statistic == 'expw_mean':
-        newts = pd.stats.moments.ewma(tsd, span=span, center=center)
-    elif statistic == 'expw_stdev':
-        newts = pd.stats.moments.ewmstd(tsd, span=span, center=center)
-    elif statistic == 'expw_variance':
-        newts = pd.stats.moments.ewmvar(tsd, span=span, center=center)
-    elif statistic == 'expw_corr':
-        newts = pd.stats.moments.ewmcorr(tsd, span=span, center=center)
-    elif statistic == 'expw_cov':
-        newts = pd.stats.moments.ewmcov(tsd, span=span, center=center)
-    else:
-        raise ValueError('''
-*
-*   Statistic {0} is not implemented.
-*
-'''.format(statistic))
-    return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
-
-
-@baker.command
 def accumulate(
         statistic='sum',
         print_input=False,
@@ -705,9 +654,10 @@ def rolling_window(
     :param span: The number of previous intervals to include in the
         calculation of the statistic. If `span` is equal to 0 will give an
         expanding rolling window.
-    :param statistic: 'mean', 'corr', 'count', 'cov', 'kurtosis', 'median',
-        'skew', 'stdev', 'sum', 'variance', used to calculate the
-        value, defaults to 'mean'.
+    :param statistic: One of 'mean', 'corr', 'count', 'cov', 'kurtosis',
+        'median', 'skew', 'stdev', 'sum', 'variance', 'expw_mean',
+        'expw_stdev', 'expw_variance' 'expw_corr', 'expw_cov' used to calculate
+        the statistic, defaults to 'mean'.
     :param wintype: The 'mean' and 'sum' `statistic` calculation can also be
         weighted according to the `wintype` windows.  Some of the following
         windows require additional keywords identified in parenthesis:
@@ -801,10 +751,20 @@ def rolling_window(
             newts = pd.stats.moments.expanding_var(tsd, center=center)
         else:
             newts = pd.stats.moments.rolling_var(tsd, span, center=center)
+    elif statistic == 'expw_mean':
+        newts = pd.stats.moments.ewma(tsd, span=span, center=center)
+    elif statistic == 'expw_stdev':
+        newts = pd.stats.moments.ewmstd(tsd, span=span, center=center)
+    elif statistic == 'expw_variance':
+        newts = pd.stats.moments.ewmvar(tsd, span=span, center=center)
+    elif statistic == 'expw_corr':
+        newts = pd.stats.moments.ewmcorr(tsd, span=span, center=center)
+    elif statistic == 'expw_cov':
+        newts = pd.stats.moments.ewmcov(tsd, span=span, center=center)
     else:
         raise ValueError('''
 *
-*   Statistic {0} is not implemented.
+*   Statistic '{0}' is not implemented.
 *
 '''.format(statistic))
     return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
