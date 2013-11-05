@@ -55,17 +55,17 @@ class TestRead(TestCase):
         self.assertEqual(out, self.read_direct)
 
     def test_read_mulitple_direct(self):
-        out = tstoolbox.read('tests/test.csv', 'tests/test.csv')
+        out = tstoolbox.read('tests/test.csv,tests/test.csv')
         self.assertEqual(out, self.read_multiple_direct)
 
     def test_read_cli(self):
-        args = 'tstoolbox read "tests/test.csv"'
+        args = 'tstoolbox read tests/test.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.read_cli)
 
     def test_read_mulitple_cli(self):
-        args = 'tstoolbox read tests/test.csv tests/test.csv'
+        args = 'tstoolbox read tests/test.csv,tests/test.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.read_multiple_cli)

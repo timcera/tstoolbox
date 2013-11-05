@@ -182,17 +182,18 @@ def read(filenames, start_date=None, end_date=None):
     Collect time series from a list of pickle or csv files then print
     in the tstoolbox standard format.
 
-    :param filenames: List of comma delimited filenames to read time series from.
+    :param filenames: List of comma delimited filenames to read time series
+        from.
     :param start_date: The start_date of the series in ISOdatetime format, or
         'None' for beginning.
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
     fnames = {}
-    for index, filename in enumerate(filenames.split(',')):
+    filenames = filenames.split(',')
+    for index, filename in enumerate(filenames):
         fname = os.path.basename(os.path.splitext(filename)[0])
         tsd = _sniff_filetype(filename)[start_date:end_date]
-
         nfname = fname
         if fname in fnames:
             nfname = fname + '_' + str(index)
@@ -205,7 +206,6 @@ def read(filenames, start_date=None, end_date=None):
             result = result.join(tsd)
         except NameError:
             result = tsd
-
     return tsutils.printiso(result)
 
 
