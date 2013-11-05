@@ -91,21 +91,23 @@ def filter(filter_type,
     tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
     from tstoolbox import filters
 
-    ntsd = tsd.copy()
-    # fft_lowpass, fft_highpass
-    if filter_type == 'fft_lowpass':
-        ntsd.values[:,0] = filters._transform(tsd.values, cutoff_period,
-                window_len, lopass=True)
-    elif filter_type == 'fft_highpass':
-        ntsd.values[:,0] = filters._transform(tsd.values, cutoff_period,
-                window_len)
-    elif filter_type in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
-        if len(tsd.values) < window_len:
+    if len(tsd.values) < window_len:
             raise ValueError('''
 *
-*   Input vector needs to be bigger than window size.
+*   Input vector (length={0}) needs to be bigger than window size ({1}).
 *
-''')
+'''.format(len(tsd.values), window_len))
+
+    ntsd = tsd.copy()
+
+    # fft_lowpass, fft_highpass
+    if filter_type == 'fft_lowpass':
+        ntsd.values[:, 0] = filters._transform(
+            tsd.values, cutoff_period, window_len, lopass=True)
+    elif filter_type == 'fft_highpass':
+        ntsd.values[:, 0] = filters._transform(
+            tsd.values, cutoff_period, window_len)
+    elif filter_type in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
         if window_len < 3:
             return tsd
         s = pd.np.r_[tsd[window_len - 1:0:-1], tsd, tsd[-1:-window_len:-1]]
@@ -890,10 +892,11 @@ def plot(
     :param figsize: The (width, height) of plot as inches.  Defaults to
        (10,6.5).
     :param legend: Whether to display the legend. Defaults to True.
-    :param legend_names: Legend would normally use the time-series names associated
-       with the input data.  The 'legend_names' option allows you to override
-       the names in the data set.  You must supply a comma separated list of
-       strings for each time-series in the data set.  Defaults to None.
+    :param legend_names: Legend would normally use the time-series names
+       associated with the input data.  The 'legend_names' option allows you to
+       override the names in the data set.  You must supply a comma
+       separated list of strings for each time-series in the data set.
+       Defaults to None.
     :param subplots: boolean, default False.
        Make separate subplots for each time series
     :param sharex: boolean, default True
