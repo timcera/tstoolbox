@@ -60,8 +60,7 @@ def _sniff_filetype(filename):
 @baker.command
 def filter(filter_type,
            print_input=False,
-           start_freq=30,
-           end_freq=40,
+           cutoff_period=None,
            window_len=5,
            input_ts='-',
            start_date=None,
@@ -79,10 +78,11 @@ def filter(filter_type,
         columns in the output table.  Default is 'False'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.  Default is stdin.
-    :param start_freq: For 'fft_highpass' and 'fft_lowpass'. The frequency
-        where the ramp will begin.
-    :param end_freq: For 'fft_highpass' and 'fft_lowpass'. The frequency
-        where the ramp will end.
+    :param cutoff_period: The period in input time units that will form the
+        cutoff between low freqencies (longer periods) and high frequencies
+        (shorter periods).  Filter will be smoothed by `window_len` running
+        average.  For 'fft_highpass' and 'fft_lowpass'. Default is None and
+        must be upplied if using 'fft_highpass' or 'fft_lowpass'.
     :param start_date: The start_date of the series in ISOdatetime format, or
         'None' for beginning.
     :param end_date: The end_date of the series in ISOdatetime format, or
@@ -94,9 +94,11 @@ def filter(filter_type,
     ntsd = tsd.copy()
     # fft_lowpass, fft_highpass
     if filter_type == 'fft_lowpass':
-        ntsd.values[:] = filters.fft_lowpass(tsd.values, start_freq, end_freq)
+        ntsd.values[:,0] = filters._transform(tsd.values, cutoff_period,
+                window_len, lopass=True)
     elif filter_type == 'fft_highpass':
-        ntsd.values[:] = filters.fft_highpass(tsd.values, start_freq, end_freq)
+        ntsd.values[:,0] = filters._transform(tsd.values, cutoff_period,
+                window_len)
     elif filter_type in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
         if len(tsd.values) < window_len:
             raise ValueError('''
@@ -175,36 +177,19 @@ def zero_crossings(y_axis, window=11):
 
 
 @baker.command
-def read(*filenames, **kwds):
+def read(filenames, start_date=None, end_date=None):
     '''
     Collect time series from a list of pickle or csv files then print
     in the tstoolbox standard format.
 
-    :param filenames: List of filenames to read time series from.
+    :param filenames: List of comma delimited filenames to read time series from.
     :param start_date: The start_date of the series in ISOdatetime format, or
         'None' for beginning.
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    try:
-        start_date = kwds['start_date']
-        kwds.pop('start_date')
-    except KeyError:
-        start_date = None
-    try:
-        end_date = kwds['end_date']
-        kwds.pop('end_date')
-    except KeyError:
-        end_date = None
-    if kwds.keys():
-        raise ValueError('''
-*
-*   Only allowed keywords are 'start_date' and 'end_date'.
-*   You supplied {0}.
-*
-'''.format(kwds.keys()))
     fnames = {}
-    for index, filename in enumerate(filenames):
+    for index, filename in enumerate(filenames.split(',')):
         fname = os.path.basename(os.path.splitext(filename)[0])
         tsd = _sniff_filetype(filename)[start_date:end_date]
 
@@ -530,14 +515,14 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
     columns = columns.split(',')
     columns = [int(i) - 1 for i in columns]
 
-    if len(columns) == 1 and isinstance(columns[0], int):
+    if len(columns) == 1:
         return tsutils.printiso(pd.DataFrame(tsd[tsd.columns[columns]]))
 
     for index, col in enumerate(columns):
         jtsd = pd.DataFrame(tsd[tsd.columns[col]])
 
         jtsd = jtsd.rename(
-            columns=lambda x: str(x) + '_' + str(index), copy=True)
+            columns=lambda x: str(x).strip() + '_' + str(index), copy=True)
         try:
             newtsd = newtsd.join(jtsd)
         except NameError:
@@ -864,7 +849,7 @@ def plot(
         xtitle='',
         ytitle='',
         title='',
-        figsize=(10, 6.5),
+        figsize=(10, 6.0),
         legend=True,
         legend_names=None,
         subplots=False,

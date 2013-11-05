@@ -13,9 +13,13 @@ def _isfinite(testval):
     Just returns a blank in place of 'nan' so that other applications see just
     a missing value.
     '''
-    if np.isfinite(testval):
-        return str(testval)
-    else:
+    try:
+        torf = np.isfinite(float(testval))
+        if torf:
+            return str(testval)
+        else:
+            return ' '
+    except (TypeError, ValueError):
         return ' '
 
 
@@ -109,6 +113,9 @@ def print_input(iftrue, input, output, suffix):
 def _printiso(tsd):
     ''' Separate so can use in tests.
     '''
+    import sys
+    sys.tracebacklimit = 1000
+    fp = open('tmplog.txt', 'w')
     try:
         if tsd.index.is_all_dates:
             # Header
@@ -116,6 +123,7 @@ def _printiso(tsd):
 
             # Data
             for i in range(len(tsd)):
+                fp.write(str(tsd.values[i]) + '\n')
                 print(tsd.index[i], ', ', ', '.join(
                     _isfinite(j) for j in tsd.values[i]))
         else:
@@ -130,6 +138,10 @@ def printiso(tsd, sparse=False):
     and hspfbintoolbox.
     '''
     import sys
+    try:
+        oldtracebacklimit = sys.tracebacklimit
+    except AttributeError:
+        oldtracebacklimit = 1000
     sys.tracebacklimit = 1000
     import traceback
     import os.path
@@ -138,7 +150,7 @@ def printiso(tsd, sparse=False):
         if os.path.basename(i[0]) == 'baker.py':
             baker_cli = True
             break
-    sys.tracebacklimit = 0
+    sys.tracebacklimit = oldtracebacklimit
     if baker_cli:
         _printiso(tsd)
     else:
@@ -221,7 +233,8 @@ Datetime, Flow_8603
             result = tmpres
 
     if dense:
-        return result.asfreq(guess_freq(result)[1])
+        result = result.asfreq(guess_freq(result)[1])
+        return result
 
     return result
 
