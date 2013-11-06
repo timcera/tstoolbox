@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Astronomia documentation build configuration file, created by
-# sphinx-quickstart on Mon Jun 10 23:11:56 2013.
+# tstoolbox documentation build configuration file, created by
+# sphinx-quickstart on Wed Nov  6 14:04:36 2013.
 #
 # This file is execfile()d with the current directory set to its containing dir.
 #
@@ -28,11 +27,13 @@ import sys, os
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.doctest',
+              'sphinx.ext.intersphinx',
               'sphinx.ext.todo',
               'sphinx.ext.coverage',
               'sphinx.ext.pngmath',
               'sphinx.ext.mathjax',
-              'sphinx.ext.autosummary',
+              'sphinx.ext.ifconfig',
+              'sphinx.ext.viewcode',
               'sphinxcontrib.programoutput']
 
 # Add any paths that contain templates here, relative to this directory.
@@ -48,8 +49,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'tstoolbox'
-copyright = '2013, Tim Cera'
+project = u'tstoolbox'
+copyright = u'2013, Tim Cera, P.E.'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -68,7 +69,7 @@ release = version
 # non-false value, then it is used:
 #today = ''
 # Else, today_fmt is used as the format for a strftime call.
-today_fmt = '%Y-%m-%d'
+#today_fmt = '%B %d, %Y'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -78,11 +79,11 @@ exclude_patterns = ['_build']
 #default_role = None
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
-add_function_parentheses = True
+#add_function_parentheses = True
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-add_module_names = True
+#add_module_names = True
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
@@ -99,7 +100,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'pyramid'
+html_theme = 'default'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -158,7 +159,7 @@ html_static_path = ['_static']
 #html_show_sourcelink = True
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-html_show_sphinx = False
+#html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 #html_show_copyright = True
@@ -172,7 +173,7 @@ html_show_sphinx = False
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Astronomiadoc'
+htmlhelp_basename = 'tstoolboxdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -191,8 +192,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Astronomia.tex', 'Astronomia Documentation',
-   'Tim Cera', 'manual'),
+  ('index', 'tstoolbox.tex', u'tstoolbox Documentation',
+   u'Tim Cera, P.E.', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -221,8 +222,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'astronomia', 'Astronomia Documentation',
-     ['Tim Cera'], 1)
+    ('index', 'tstoolbox', u'tstoolbox Documentation',
+     [u'Tim Cera, P.E.'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -235,8 +236,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Astronomia', 'Astronomia Documentation',
-   'Tim Cera', 'Astronomia', 'One line description of project.',
+  ('index', 'tstoolbox', u'tstoolbox Documentation',
+   u'Tim Cera, P.E.', 'tstoolbox', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -248,3 +249,50 @@ texinfo_documents = [
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
+
+
+# -- Options for Epub output ---------------------------------------------------
+
+# Bibliographic Dublin Core info.
+epub_title = u'tstoolbox'
+epub_author = u'Tim Cera, P.E.'
+epub_publisher = u'Tim Cera, P.E.'
+epub_copyright = u'2013, Tim Cera, P.E.'
+
+# The language of the text. It defaults to the language option
+# or en if the language is not set.
+#epub_language = ''
+
+# The scheme of the identifier. Typical schemes are ISBN or URL.
+#epub_scheme = ''
+
+# The unique identifier of the text. This can be a ISBN number
+# or the project homepage.
+#epub_identifier = ''
+
+# A unique identification for the text.
+#epub_uid = ''
+
+# A tuple containing the cover image and cover page html template filenames.
+#epub_cover = ()
+
+# HTML files that should be inserted before the pages created by sphinx.
+# The format is a list of tuples containing the path and title.
+#epub_pre_files = []
+
+# HTML files shat should be inserted after the pages created by sphinx.
+# The format is a list of tuples containing the path and title.
+#epub_post_files = []
+
+# A list of files that should not be packed into the epub file.
+#epub_exclude_files = []
+
+# The depth of the table of contents in toc.ncx.
+#epub_tocdepth = 3
+
+# Allow duplicate toc entries.
+#epub_tocdup = True
+
+
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {'http://docs.python.org/': None}
