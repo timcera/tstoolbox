@@ -115,7 +115,6 @@ def _printiso(tsd):
     '''
     import sys
     sys.tracebacklimit = 1000
-    fp = open('tmplog.txt', 'w')
     try:
         if tsd.index.is_all_dates:
             # Header
@@ -123,7 +122,6 @@ def _printiso(tsd):
 
             # Data
             for i in range(len(tsd)):
-                fp.write(str(tsd.values[i]) + '\n')
                 print(tsd.index[i], ', ', ', '.join(
                     _isfinite(j) for j in tsd.values[i]))
         else:
