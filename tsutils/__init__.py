@@ -44,6 +44,7 @@ def guess_freq(data):
                30*86400:  'M',
                29*86400:  'M',
                28*86400:  'M',
+               604800:    'W',
                86400:     'D',
                3600:      'H',
                60:        'T',
@@ -89,7 +90,20 @@ def guess_freq(data):
     else:
         finterval = interval[0]
 
-    pandacode = pndcode[finterval]
+    try:
+        pandacode = pndcode[finterval]
+    except KeyError:
+        accum = {}
+        for seconds in sorted(pndcode, reverse=False):
+            if seconds > finterval:
+                break
+            else:
+                testval = finterval % seconds
+                if testval == 0:
+                    pandacode = '{0}{1}'.format(finterval/seconds, pndcode[seconds])
+                    finterval = seconds  # This needs to be fixed - need to
+                                         # also return finterval/seconds
+
     if pandacode == 'M':
         if data.index[0].day == 1:
             pandacode = 'MS'
@@ -110,7 +124,7 @@ def print_input(iftrue, input, output, suffix):
         return printiso(output)
 
 
-def _printiso(tsd):
+def _printiso(tsd, date_format='%Y-%m-%d %H:%M:%S', delimiter=','):
     ''' Separate so can use in tests.
     '''
     import sys
