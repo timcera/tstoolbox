@@ -24,7 +24,6 @@ install_requires = [
     'pandas >= 0.8.1',
     'python-dateutil >= 2.1',
     'baker >= 1.3',
-    'scipy',
 ]
 
 
@@ -33,7 +32,8 @@ setup(name='tstoolbox',
       description="Command line script to manipulate time series files.",
       long_description=README,
       classifiers=[
-      # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+          # Get strings from
+          # http://pypi.python.org/pypi?%3Aaction=list_classifiers
           'Development Status :: 5 - Production/Stable',
           'Intended Audience :: Science/Research',
           'Intended Audience :: End Users/Desktop',

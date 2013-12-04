@@ -1,5 +1,6 @@
 
 from __future__ import print_function
+from __future__ import division
 
 
 import pandas as pd
@@ -26,16 +27,14 @@ def _isfinite(testval):
 def guess_freq(data):
     # Another way to do this is to abuse PANDAS .asfreq.  Basically, how low
     # can you go and maintain the same number of values.
-    mapcode = {365*86400: 6,
-               366*86400: 6,
-               31*86400:  5,
-               30*86400:  5,
-               29*86400:  5,
-               28*86400:  5,
-               86400:     4,
-               3600:      3,
-               60:        2,
-               1:         1
+    mapcode = {'A': 6,
+               'AS': 6,
+               'M': 5,
+               'MS': 5,
+               'D': 4,
+               'H': 3,
+               'T': 2,
+               'S': 1
                }
 
     pndcode = {365*86400: 'A',
@@ -54,10 +53,12 @@ def guess_freq(data):
     import fractions
 
     if data.index.freq is not None:
-        return mapcode[data.index.freq.nanos/1000000000], data.index.freqstr
+        return mapcode[
+            pndcode[
+                data.index.freq.nanos//1000000000]], data.index.freqstr, 1
 
     interval = np.unique(data.index.values[1:] -
-                         data.index.values[:-1])/1000000000
+                         data.index.values[:-1])//1000000000
     interval = interval.tolist()
 
     # If there are more than one interval lets see if the are caused by
@@ -77,7 +78,7 @@ def guess_freq(data):
     if len(interval) > 1:
         accumulate_freq = []
         for inter in interval:
-            for seconds in sorted(mapcode, reverse=True):
+            for seconds in sorted(pndcode, reverse=True):
                 if seconds > inter:
                     continue
                 if inter % seconds == 0:
@@ -89,7 +90,18 @@ def guess_freq(data):
     else:
         finterval = interval[0]
 
-    pandacode = pndcode[finterval]
+    # Calculate tstep
+    tstep = 1
+    try:
+        pandacode = pndcode[finterval]
+    except KeyError:
+        # finterval is probably a multiple of an existing interval
+        for seconds in sorted(pndcode, reverse=True):
+            if finterval > seconds and finterval % seconds == 0:
+                tstep = finterval//seconds
+                pandacode = pndcode[seconds]
+                break
+
     if pandacode == 'M':
         if data.index[0].day == 1:
             pandacode = 'MS'
@@ -97,7 +109,7 @@ def guess_freq(data):
         if data.index[0].month == 1:
             pandacode = 'AS'
 
-    return mapcode[finterval], pandacode
+    return mapcode[pandacode], pandacode, tstep
 
 
 # Utility
@@ -117,13 +129,8 @@ def _printiso(tsd):
     sys.tracebacklimit = 1000
     try:
         if tsd.index.is_all_dates:
-            # Header
-            print('Datetime,', ', '.join(str(i) for i in tsd.columns))
-
-            # Data
-            for i in range(len(tsd)):
-                print(tsd.index[i], ', ', ', '.join(
-                    _isfinite(j) for j in tsd.values[i]))
+            tsd.index.name = 'Datetime'
+            tsd.to_csv(sys.stdout, float_format='%g')
         else:
             print(tsd)
     except IOError:
@@ -163,76 +170,22 @@ def read_iso_ts(indat, dense=True):
 
     if isinstance(indat, pd.DataFrame):
         if dense:
-            return indat.asfreq(guess_freq(indat)[1])
+            gf = guess_freq(indat)
+            return indat.asfreq('{0}{1}'.format(gf[2], gf[1]))
         else:
             return indat
 
     fp = baker.openinput(indat)
 
-    header = fp.readline()
-    try:
-        header = str(header, encoding='utf8')
-    except TypeError:
-        header = str(header)
-    header = header.split(',')
-    header = [i.strip() for i in header]
-    dates = []
-    values = {}
-    for line in fp:
-        try:
-            # Python 3
-            nline = str(line, encoding='utf8')
-        except TypeError:
-            # Python 2
-            nline = str(line)
-        words = nline.split(',')
+    result = pd.io.parsers.read_table(fp, header=0, sep=',', index_col=0,
+                                      parse_dates=True)
 
-        if len(words) != len(header):
-            raise ValueError('''
-*
-*  The number of columns in record:
-*   {0}
-*  does not match the number of column names in the header:
-*   {1}
-*
-'''.format(words, header))
-
-        dates.append(parse(words[0]))
-        for index, col in enumerate(header[1:]):
-            try:
-                values.setdefault(col, []).append(float(words[1 + index]))
-            except ValueError:
-                values.setdefault(col, []).append(np.nan)
-
-    fp.close()
-
-    if len(dates) == 0:
-        raise ValueError('''
-*
-*  No data was collected from input.  Input must be a single line header with
-*  comma separated column names, including a name for the date/time column.
-*  The header must be followed by ISO 8601 formatted date string and comma
-*  seperated columns of values.  Number of header columns must match number of
-*  date/time stamp and value columns. For example:
-
-Datetime, Flow_8603
-2000-01-01 01:00:00 ,   4.5
-2000-01-01 18:00:00 ,  10.8
-2000-01-01 19:00:00 ,  11.1
-...
-''')
-
-    for col in header[1:]:
-        tmpres = pd.DataFrame(pd.Series(values[col],
-                                        index=dates), columns=[col])
-        try:
-            result = result.join(tmpres)
-        except NameError:
-            result = tmpres
+    result.index.name = 'Datetime'
+    result.columns = [i.strip() for i in result.columns]
 
     if dense:
-        result = result.asfreq(guess_freq(result)[1])
-        return result
+        gf = guess_freq(result)
+        result = result.asfreq('{0}{1}'.format(gf[2], gf[1]))
 
     return result
 

@@ -70,15 +70,15 @@ class TestFill(TestCase):
         self.nearest_compare_cli = capture(tsutils._printiso, self.nearest_compare)
 
         self.mean_compare = self.ats.copy()
-        self.mean_compare['Value_fill']['2011-01-01T01:00:00'] = 2.42105263158
+        self.mean_compare['Value_fill']['2011-01-01T01:00:00'] = 2.4210526315789473
         self.mean_compare['Value_fill']['2011-01-01T09:00:00'] = 3.0
-        self.mean_compare['Value_fill']['2011-01-01T10:00:00'] = 2.42105263158
-        self.mean_compare['Value_fill']['2011-01-01T11:00:00'] = 2.42105263158
-        self.mean_compare['Value_fill']['2011-01-01T12:00:00'] = 2.42105263158
+        self.mean_compare['Value_fill']['2011-01-01T10:00:00'] = 2.4210526315789473
+        self.mean_compare['Value_fill']['2011-01-01T11:00:00'] = 2.4210526315789473
+        self.mean_compare['Value_fill']['2011-01-01T12:00:00'] = 2.4210526315789473
         self.mean_compare['Value_fill']['2011-01-01T13:00:00'] = 9.0
-        self.mean_compare['Value_fill']['2011-01-01T16:00:00'] = 2.42105263158
-        self.mean_compare['Value_fill']['2011-01-01T22:00:00'] = 2.42105263158
-        self.mean_compare['Value_fill']['2011-01-01T23:00:00'] = 2.42105263158
+        self.mean_compare['Value_fill']['2011-01-01T16:00:00'] = 2.4210526315789473
+        self.mean_compare['Value_fill']['2011-01-01T22:00:00'] = 2.4210526315789473
+        self.mean_compare['Value_fill']['2011-01-01T23:00:00'] = 2.4210526315789473
 
         self.mean_compare_cli = capture(tsutils._printiso, self.mean_compare)
 

@@ -41,13 +41,13 @@ class TestConvert(TestCase):
         self.compare_direct_02 = pandas.DataFrame(ts, columns=['Value_convert'])
         self.compare_direct_02.index.name = 'Datetime'
 
-        self.compare_cli_01 = b"""Datetime, Value_convert
-2000-01-01 00:00:00 ,  4.5
-2000-01-02 00:00:00 ,  4.6
+        self.compare_cli_01 = b"""Datetime,Value_convert
+2000-01-01,4.5
+2000-01-02,4.6
 """
-        self.compare_cli_02 = b"""Datetime, Value_convert
-2000-01-01 00:00:00 ,  11.0
-2000-01-02 00:00:00 ,  11.2
+        self.compare_cli_02 = b"""Datetime,Value_convert
+2000-01-01,11
+2000-01-02,11.2
 """
 
     def test_convert_direct_01(self):

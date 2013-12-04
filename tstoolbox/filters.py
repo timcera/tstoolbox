@@ -27,8 +27,11 @@ class MisMatchedKernel(Exception):
 
     def __str__(self):
         return """
-Length of kernel must be %i.
-Instead have %i""" % (self.rk, self.pw)
+*
+*   Length of kernel must be %i.
+*   Instead have %i
+*
+""" % (self.rk, self.pw)
 
 
 class BadKernelValues(Exception):
@@ -39,7 +42,11 @@ class BadKernelValues(Exception):
         pass
 
     def __str__(self):
-        return "\n\nShould only have positive values."
+        return """
+*
+*   Should only have positive values.
+*
+"""
 
 
 def _transform(vector, cutoff_period, window_len, lopass=None):
@@ -66,12 +73,14 @@ def _transform(vector, cutoff_period, window_len, lopass=None):
 *   The cutoff_period must be set.
 *
 ''')
+
     if window_len is None:
         raise ValueError('''
 *
 *   The window_len must be set.
 *
 ''')
+
     import numpy.fft as F
     result = F.rfft(vector[:, 0], len(vector[:, 0]))
 

@@ -39,14 +39,14 @@ class TestAggregate(TestCase):
         ts = pandas.TimeSeries([48.0, 48.0], index=dr)
         self.aggregate_direct_sum = pandas.DataFrame(ts, columns=['Value_sum'])
 
-        self.aggregate_cli_mean = """Datetime, Value_mean
-2011-01-01 00:00:00 ,  2.0
-2011-01-02 00:00:00 ,  2.0
+        self.aggregate_cli_mean = """Datetime,Value_mean
+2011-01-01,2.0
+2011-01-02,2.0
 """
 
-        self.aggregate_cli_sum = """Datetime, Value_sum
-2011-01-01 00:00:00 ,  48.0
-2011-01-02 00:00:00 ,  48.0
+        self.aggregate_cli_sum = """Datetime,Value_sum
+2011-01-01,48.0
+2011-01-02,48.0
 """
 
     def test_aggregate_direct_mean(self):

@@ -364,7 +364,7 @@ def peak_detection(method='rel',
             datavals = minpeak
         maxx, maxy = list(zip(*datavals))
         hold = tmptsd[c][array(maxx).astype('i')]
-        tmptsd[c][:] = nan
+        tmptsd[c][:] = pd.np.nan
         tmptsd[c][array(maxx).astype('i')] = hold
 
     return tsutils.print_input(print_input, tsd, tmptsd, None)
@@ -427,7 +427,7 @@ def equation(
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    x = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    x = tsutils.read_iso_ts(input_ts)[start_date:end_date].astype('f')
     import re
 
     # Get rid of spaces
@@ -471,7 +471,7 @@ def equation(
             try:
                 y[t] = eval(nequation)
             except (AssertionError, IndexError):
-                y[t] = nan
+                y[t] = pd.np.nan
         y = pd.DataFrame(y, columns=['_'])
     elif tsearch:
         y = x.copy()
@@ -488,7 +488,7 @@ def equation(
                 try:
                     y[col][t] = eval(nequation)
                 except (AssertionError, IndexError):
-                    y[col][t] = nan
+                    y[col][t] = pd.np.nan
     elif nsearch:
         nequation = re.sub(
             r'x([1-9][0-9]*?)', r'x[x.columns[\1-1]]', equation)
@@ -798,6 +798,109 @@ def aggregate(
         except NameError:
             newts = tmptsd
     return tsutils.print_input(print_input, tsd, newts, '')
+
+
+@baker.command
+def clip(
+        a_min=None,
+        a_max=None,
+        start_date=None,
+        end_date=None,
+        print_input=False,
+        input_ts='-'):
+    '''
+    Returns a time-series with values limited to [a_min, a_max]
+
+    :param print_input: If set to 'True' will include the input columns in
+        the output table.  Default is 'False'.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
+    '''
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    for col in tsd.columns:
+        if a_min is None:
+            try:
+                n_min = np.finfo(tsd[col].dtype).min
+            except ValueError:
+                n_min = np.iinfo(tsd[col].dtype).min
+        else:
+            n_min = float(a_min)
+        if a_max is None:
+            try:
+                n_max = np.finfo(tsd[col].dtype).max
+            except ValueError:
+                n_max = np.iinfo(tsd[col].dtype).max
+        else:
+            n_max = float(a_max)
+    return tsutils.print_input(
+        print_input, tsd, tsd.clip(n_min, n_max), '_clip')
+
+
+@baker.command
+def add_trend(
+        start_offset_from_mean,
+        end_offset_from_mean,
+        start_date=None,
+        end_date=None,
+        print_input=False,
+        input_ts='-'):
+    '''
+    Adds a trend referenced to the mean
+
+    :param start_offset_from_mean: The starting value for the applied trend.
+    :param end_offset_from_mean: The ending value for the applied trend.
+    :param print_input: If set to 'True' will include the input columns in
+        the output table.  Default is 'False'.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
+    '''
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    ntsd = tsd.copy().astype('f')
+    ntsd.ix[:] = pd.np.nan
+    ntsd.ix[0] = tsd.mean() + float(start_offset_from_mean)
+    ntsd.ix[-1] = tsd.mean() + float(end_offset_from_mean)
+    ntsd = ntsd.apply(pd.Series.interpolate, method='values')
+    ntsd = ntsd + tsd
+    return tsutils.print_input(
+        print_input, tsd, ntsd, '_trend')
+
+
+@baker.command
+def remove_trend(
+        start_date=None,
+        end_date=None,
+        print_input=False,
+        input_ts='-'):
+    '''
+    Removes a 'trend'.
+
+    :param print_input: If set to 'True' will include the input columns in
+        the output table.  Default is 'False'.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+        stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
+    '''
+    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    ntsd = tsd.copy()
+    for col in tsd.columns:
+        index = tsd.index.astype('l')
+        index = index - index[0]
+        lin = pd.np.polyfit(index, tsd[col], 1)
+        ntsd[col] = lin[0]*index + lin[1]
+        ntsd[col] = tsd[col] - ntsd[col]
+    return tsutils.print_input(
+        print_input, tsd, ntsd, '_rem_trend')
 
 
 @baker.command
