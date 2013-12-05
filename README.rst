@@ -35,6 +35,10 @@ then redirect to a file.
 Sub-command Detail
 ''''''''''''''''''
 
+accumulate
+~~~~~~~~~~
+.. program-output:: tstoolbox accumulate --help
+
 aggregate
 ~~~~~~~~~
 .. program-output:: tstoolbox aggregate --help
@@ -51,6 +55,10 @@ date_slice
 ~~~~~~~~~~
 .. program-output:: tstoolbox date_slice --help
 
+describe
+~~~~~~~~
+.. program-output:: tstoolbox describe --help
+
 equation
 ~~~~~~~~
 .. program-output:: tstoolbox equation --help
@@ -59,13 +67,9 @@ fill
 ~~~~
 .. program-output:: tstoolbox fill --help
 
-filters
-~~~~~~~
-.. program-output:: tstoolbox filters --help
-
-moving_window
-~~~~~~~~~~~~~
-.. program-output:: tstoolbox moving_window --help
+filter
+~~~~~~
+.. program-output:: tstoolbox filter --help
 
 peak_detection
 ~~~~~~~~~~~~~~
@@ -82,6 +86,10 @@ plot
 read
 ~~~~
 .. program-output:: tstoolbox read --help
+
+rolling_window
+~~~~~~~~~~~~~~
+.. program-output:: tstoolbox rolling_window --help
 
 stdtozrxp
 ~~~~~~~~~

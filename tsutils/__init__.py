@@ -4,49 +4,33 @@ from __future__ import division
 
 
 import pandas as pd
-from dateutil.parser import parse
 import numpy as np
-
-
-def _isfinite(testval):
-    '''
-    Private utility for 'printiso' function.
-    Just returns a blank in place of 'nan' so that other applications see just
-    a missing value.
-    '''
-    try:
-        torf = np.isfinite(float(testval))
-        if torf:
-            return str(testval)
-        else:
-            return ' '
-    except (TypeError, ValueError):
-        return ' '
 
 
 def guess_freq(data):
     # Another way to do this is to abuse PANDAS .asfreq.  Basically, how low
     # can you go and maintain the same number of values.
-    mapcode = {'A': 6,
-               'AS': 6,
-               'M': 5,
-               'MS': 5,
-               'D': 4,
-               'H': 3,
-               'T': 2,
-               'S': 1
+    mapcode = {'A':  6,  # annual
+               'AS': 6,  # annual start
+               'M':  5,  # month
+               'MS': 5,  # month start
+               'D':  4,  # day
+               'H':  3,  # hour
+               'T':  2,  # minute
+               'S':  1   # second
                }
 
-    pndcode = {365*86400: 'A',
-               366*86400: 'A',
-               31*86400:  'M',
-               30*86400:  'M',
-               29*86400:  'M',
-               28*86400:  'M',
-               86400:     'D',
-               3600:      'H',
-               60:        'T',
-               1:         'S'
+    pndcode = {31536000: 'A',  # 365 days
+               31622400: 'A',  # 366 days
+               2678400:  'M',  # 31 day month
+               2592000:  'M',  # 30 day month
+               2505600:  'M',  # 29 day month
+               2419200:  'M',  # 28 day month
+               604800:   'W',  # 7 day week
+               86400:    'D',  # 1 day
+               3600:     'H',  # 1 hour
+               60:       'T',  # 1 minute
+               1:        'S'   # 1 second
                }
 
     import itertools
@@ -122,7 +106,7 @@ def print_input(iftrue, input, output, suffix):
         return printiso(output)
 
 
-def _printiso(tsd):
+def _printiso(tsd, date_format='%Y-%m-%d %H:%M:%S', delimiter=','):
     ''' Separate so can use in tests.
     '''
     import sys
