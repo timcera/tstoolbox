@@ -1,11 +1,12 @@
 #!/sjr/beodata/local/python_linux/bin/python
-
-from __future__ import print_function
-
 '''
 tstoolbox is a collection of command line tools for the manipulation of time
 series.
 '''
+
+from __future__ import print_function
+from __future__ import division
+
 import sys
 import os.path
 import warnings
@@ -92,34 +93,37 @@ def filter(filter_type,
     from tstoolbox import filters
 
     if len(tsd.values) < window_len:
-            raise ValueError('''
+        raise ValueError('''
 *
 *   Input vector (length={0}) needs to be bigger than window size ({1}).
 *
 '''.format(len(tsd.values), window_len))
 
-    ntsd = tsd.copy()
+    # Trying to save some memory
+    if print_input:
+        otsd = tsd.copy()
+    else:
+        otsd = pd.DataFrame()
 
-    # fft_lowpass, fft_highpass
-    if filter_type == 'fft_lowpass':
-        ntsd.values[:, 0] = filters._transform(
-            tsd.values, cutoff_period, window_len, lopass=True)
-    elif filter_type == 'fft_highpass':
-        ntsd.values[:, 0] = filters._transform(
-            tsd.values, cutoff_period, window_len)
-    elif filter_type in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
-        if window_len < 3:
-            return tsd
-        s = pd.np.r_[tsd[window_len - 1:0:-1], tsd, tsd[-1:-window_len:-1]]
+    for col in tsd.columns:
+        # fft_lowpass, fft_highpass
+        if filter_type == 'fft_lowpass':
+            tsd[col].values[:] = filters._transform(
+                tsd[col].values, cutoff_period, window_len, lopass=True)
+        elif filter_type == 'fft_highpass':
+            tsd[col].values[:] = filters._transform(
+                tsd[col].values, cutoff_period, window_len)
+        elif filter_type in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
+            if window_len < 3:
+                continue
+            s = pd.np.pad(tsd[col].values, window_len//2, 'reflect')
 
-        if filter_type == 'flat':  # moving average
-            w = pd.np.ones(window_len, 'd')
-        else:
-            w = eval('pd.np.' + filter_type + '(window_len)')
-
-        y = pd.np.convolve(w / w.sum(), s, mode='same')
-        ntsd.values[:] = y
-    return tsutils.print_input(print_input, tsd, ntsd, '_filter')
+            if filter_type == 'flat':  # moving average
+                w = pd.np.ones(window_len, 'd')
+            else:
+                w = eval('pd.np.' + filter_type + '(window_len)')
+            tsd[col].values[:] = pd.np.convolve(w / w.sum(), s, mode='valid')
+    return tsutils.print_input(print_input, otsd, tsd, '_filter')
 
 
 def zero_crossings(y_axis, window=11):
@@ -137,14 +141,14 @@ def zero_crossings(y_axis, window=11):
     """
     # smooth the curve
     length = len(y_axis)
-    x_axis = np.asarray(range(length), int)
+    x_axis = pd.np.asarray(range(length), int)
 
     ymean = y_axis.mean()
     y_axis = y_axis - ymean
 
     # discard tail of smoothed signal
     y_axis = _smooth(y_axis, window)[:length]
-    zero_crossings = np.where(np.diff(np.sign(y_axis)))[0]
+    zero_crossings = pd.np.where(pd.np.diff(pd.np.sign(y_axis)))[0]
     indices = [x_axis[index] for index in zero_crossings]
 
     # check if zero-crossings are valid
@@ -824,16 +828,16 @@ def clip(
     for col in tsd.columns:
         if a_min is None:
             try:
-                n_min = np.finfo(tsd[col].dtype).min
+                n_min = pd.np.finfo(tsd[col].dtype).min
             except ValueError:
-                n_min = np.iinfo(tsd[col].dtype).min
+                n_min = pd.np.iinfo(tsd[col].dtype).min
         else:
             n_min = float(a_min)
         if a_max is None:
             try:
-                n_max = np.finfo(tsd[col].dtype).max
+                n_max = pd.np.finfo(tsd[col].dtype).max
             except ValueError:
-                n_max = np.iinfo(tsd[col].dtype).max
+                n_max = pd.np.iinfo(tsd[col].dtype).max
         else:
             n_max = float(a_max)
     return tsutils.print_input(
@@ -1134,49 +1138,6 @@ def plot(
 
     plt.title(title)
     plt.savefig(ofilename)
-
-
-def plotcalibandobs(mwdmpath, mdsn, owdmpath, odsn, ofilename):
-    ''' IN DEVELOPMENT Plot model and observed data.
-    :param mwdmpath: Path and WDM filename with model data (<64 characters).
-    :param mdsn: DSN that contains the model data.
-    :param owdmpath: Path and WDM filename with obs data (<64 characters).
-    :param mdsn: DSN that contains the observed data.
-    :param ofilename: Output filename for the plot.
-    '''
-    # Create hydrograph plot
-    hydroargs = {'color': 'blue',
-                 'lw': 0.5,
-                 'ls': 'steps-post',
-                 }
-    hyetoargs = {'c': 'blue',
-                 'lw': 0.5,
-                 'ls': 'steps-post',
-                 }
-    fig = cpl.hydrograph(rain['carr'], obs['carr'], figsize=figsize,
-                         hydroargs=hydroargs, hyetoargs=hyetoargs)
-    # The following just plots 1 dot - I need the line parameters in lin1 to
-    # make the legend
-    lin1 = fig.hydro.plot(obs['carr'].dates[0:1], obs['carr'][0:1],
-                          color='blue', ls='-', lw=0.5, label=line[11])
-    rlin1 = fig.hyeto.plot(rain['carr'].dates[0:1], rain['carr'][0:1],
-                           color='blue', ls='-', lw=0.5, label=line[9])
-    lin2 = fig.hydro.plot(sim['carr'].dates, sim['carr'], color='red', ls=':',
-                          lw=1, label='Simulated')
-    fig.hyeto.set_ylabel("Total Daily\nRainfall (inches)")
-    fig.hyeto.set_ylim(ymax=max_daily_rain, ymin=0)
-    fig.hydro.set_ylabel("Average Daily {0} {1}".format(line[14],
-                                                        parunitmap[line[14]]))
-    if min(obs['arr']) > 0 and line[14] == 'Flow':
-        fig.hydro.set_ylim(ymin=0)
-    # fig.hydro.set_yscale("symlog", linthreshy=100)
-    fig.hydro.set_dlim(plot_start_date, plot_end_date)
-    fig.hydro.set_xlabel("Date")
-    # fig.legend((lin1, lin2), (line[11], 'Simulated'), (0.6, 0.55))
-    make_legend(fig.hydro, (lin1[-1], lin2[-1]))
-    make_legend(fig.hyeto, (rlin1[-1],))
-    fig.savefig(newbasename + "_daily_hydrograph.png")
-    fig.savefig(rnewbasename + "_daily_hydrograph.png")
 
 
 def main():

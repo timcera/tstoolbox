@@ -10,14 +10,20 @@ Tests for `tstoolbox` module.
 
 from unittest import TestCase
 import sys
+import os
+
 try:
     from cStringIO import StringIO
 except:
     from io import StringIO
 
+import shlex
+import subprocess
+
 import pandas as pd
 
 import tstoolbox
+import tsutils
 
 
 def capture(func, *args, **kwds):
@@ -35,13 +41,36 @@ class TestFilter(TestCase):
         self.ats = pd.np.arange(0, 360, 15)
         self.ats = pd.np.sin(2*pd.np.pi*self.ats/360)
         self.ats = pd.DataFrame(self.ats, index=dindex)
+        self.ats.index.name = 'Datetime'
+        self.ats.columns = ['Value']
+        self.flat_3 = self.ats.copy()
+        self.flat_3.columns = ['Value_filter']
+        self.flat_3 = self.ats.join(self.flat_3)
 
-#    def test_filter_flat(self):
-#        out = capture(tstoolbox.filter, 'flat', input_ts=self.ats, print_input=True)
+        self.hanning = self.ats.copy()
+        self.hanning.columns = ['Value_filter']
+        self.hanning = self.ats.join(self.hanning)
+
+    def test_filter_flat(self):
+        out = tstoolbox.filter('flat', input_ts='tests/test_sine.csv', print_input=True)
+        self.maxDiff = None
+        self.assertEqual(out, self.flat_3)
+
+    def test_filter_hanning(self):
+        out = tstoolbox.filter('hanning', input_ts='tests/test_sine.csv', print_input=True)
+        self.maxDiff = None
+        self.assertEqual(out, self.hanning)
+
+#    def test_filter_flat_cli(self):
+#        args = 'tstoolbox filter flat --input_ts=self.ats --print_input=True'
+#        args = shlex.split(args)
+#        out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
 #        self.maxDiff = None
 #        self.assertEqual(out, test_sinwave)
 #
-#    def test_filter_hanning(self):
-#        out = capture(tstoolbox.filter, 'hanning', input_ts=self.ats, print_input=True)
+#    def test_filter_hanning_cli(self):
+#        args = 'tstoolbox filter  hanning --input_ts=self.ats, --print_input=True)'
+#        args = shlex.split(args)
+#        out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
 #        self.maxDiff = None
 #        self.assertEqual(out, test_sinwave)

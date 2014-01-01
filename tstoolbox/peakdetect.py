@@ -1,14 +1,9 @@
 
 from __future__ import print_function
 
-import pandas as pd
-from dateutil.parser import parse
 import numpy as np
 from scipy import fft, ifft
 from scipy.optimize import curve_fit
-import baker
-
-from tstoolbox import tsutils
 
 
 def _boolrelextrema(data, comparator,
@@ -221,12 +216,11 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
     # store data length for later use
     length = len(y_axis)
 
-
     # perform some checks
     if window < 1:
-        raise ValueError( "window must be '1' or above in value")
+        raise ValueError("window must be '1' or above in value")
     if not (np.isscalar(delta) and delta >= 0):
-        raise ValueError( "delta must be a positive number")
+        raise ValueError("delta must be a positive number")
 
     # maxima and minima candidates are temporarily stored in
     # mx and mn respectively
@@ -234,7 +228,7 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
 
     #Only detect peak if there is 'window' amount of points after it
     for index, (x, y) in enumerate(zip(x_axis[:-window],
-                                        y_axis[:-window])):
+                                       y_axis[:-window])):
         if y > mx:
             mx = y
             mxpos = x

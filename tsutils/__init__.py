@@ -106,6 +106,12 @@ def print_input(iftrue, input, output, suffix):
         return printiso(output)
 
 
+def _apply_across_columns(func, xtsd, **kwds):
+    for col in xtsd.columns:
+        xtsd[col] = func(xtsd[col], **kwds)
+    return xtsd
+
+
 def _printiso(tsd, date_format='%Y-%m-%d %H:%M:%S', delimiter=','):
     ''' Separate so can use in tests.
     '''
