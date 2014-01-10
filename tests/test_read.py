@@ -35,12 +35,12 @@ class TestRead(TestCase):
 
         ts = pandas.TimeSeries([4.5, 4.6], index=dr)
 
-        self.read_direct = pandas.DataFrame(ts, columns=['Value'])
+        self.read_direct = pandas.DataFrame(ts, columns=['test_Value'])
 
         self.read_multiple_direct = pandas.DataFrame(ts, columns=['test_Value'])
         self.read_multiple_direct = self.read_multiple_direct.join(pandas.Series(ts, name='test_1_Value'))
 
-        self.read_cli = b"""Datetime,Value
+        self.read_cli = b"""Datetime,test_Value
 2000-01-01,4.5
 2000-01-02,4.6
 """

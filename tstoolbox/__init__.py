@@ -9,7 +9,12 @@ from __future__ import division
 
 import sys
 import os.path
+import csv
 import warnings
+try:
+    from io import StringIO
+except:
+    from StringIO import StringIO
 warnings.filterwarnings('ignore')
 
 import pandas as pd
@@ -42,20 +47,6 @@ def _date_slice(input_ts='-', start_date=None, end_date=None):
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     return tsd[start_date:end_date]
-
-
-def _sniff_filetype(filename):
-
-    # Is it a pickled file...
-    try:
-        return pd.core.common.load(filename)
-    except:
-        pass
-
-    # Really hard to determine if there is a header -
-    # Assume yes...
-    return pd.read_table(open(filename, 'rb'), header=0, sep=',',
-                         parse_dates=[0], index_col=[0])
 
 
 @baker.command
@@ -183,7 +174,7 @@ def zero_crossings(y_axis, window=11):
 
 
 @baker.command
-def read(filenames, start_date=None, end_date=None):
+def read(filenames, start_date=None, end_date=None, dense=False):
     '''
     Collect time series from a list of pickle or csv files then print
     in the tstoolbox standard format.
@@ -194,22 +185,22 @@ def read(filenames, start_date=None, end_date=None):
         'None' for beginning.
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
+    :param dense: Set `dense` to True to have missing values inserted such that there is a single interval.
     '''
     fnames = {}
     filenames = filenames.split(',')
     for index, filename in enumerate(filenames):
         fname = os.path.basename(os.path.splitext(filename)[0])
-        tsd = _sniff_filetype(filename)[start_date:end_date]
+        tsd = tsutils.read_iso_ts(filename, dense=dense)[start_date:end_date]
         nfname = fname
         if fname in fnames:
-            nfname = fname + '_' + str(index)
+            tsd.columns = ['{0}_{1}_{2}'.format(fname, index, i) for i in tsd.columns]
+        else:
+            tsd.columns = ['{0}_{1}'.format(fname, i) for i in tsd.columns]
         fnames[fname] = 1
 
-        if len(filenames) > 1:
-            tsd.rename(columns=lambda x: nfname + '_' + x, inplace=True)
-
         try:
-            result = result.join(tsd)
+            result = result.join(tsd, how='outer')
         except NameError:
             result = tsd
     return tsutils.printiso(result)
