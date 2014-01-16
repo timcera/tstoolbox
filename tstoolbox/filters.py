@@ -82,7 +82,7 @@ def _transform(vector, cutoff_period, window_len, lopass=None):
 ''')
 
     import numpy.fft as F
-    result = F.rfft(vector[:, 0], len(vector[:, 0]))
+    result = F.rfft(vector, len(vector))
 
     freq = F.fftfreq(len(vector))[:len(vector)/2 + 1]
     factor = np.ones_like(freq)

@@ -159,46 +159,51 @@ def read_iso_ts(indat, dense=True):
     '''
     import baker
     import csv
-    from io import StringIO
 
     if isinstance(indat, pd.DataFrame):
-        if dense:
-            gf = guess_freq(indat)
-            return indat.asfreq('{0}{1}'.format(gf[2], gf[1]))
-        else:
-            return indat
+        result = indat
+        if not dense:
+            return result
 
-    if isinstance(indat, str):
+    elif isinstance(indat, str):
         if indat == '-':
             # format must be the tstoolbox standard
             has_header = True
             dialect = csv.excel
             fp = baker.openinput(indat)
-        else:
-            # Is it a pickled file...
+        elif os.path.exists(indat):
+            # Is it a pickled file?
             try:
-                return pd.core.common.load(filename)
+                result = pd.io.pickle.read_pickle(indat)
+                fp = False
             except:
-                pass
+                # Maybe a CSV file?
+                with open(indat) as csvfile:
+                    readsome = csvfile.read(2048)
+                    dialect = csv.Sniffer().sniff(readsome,
+                                                  delimiters=', \t:|')
+                    has_header = csv.Sniffer().has_header(readsome)
 
-            with open(indat) as csvfile:
-                readsome = csvfile.read(2048)
-                dialect = csv.Sniffer().sniff(readsome, delimiters=', \t:|')
-                has_header = csv.Sniffer().has_header(readsome)
+                fp = open(indat)
 
-            fp = open(indat)
-    elif isinstance(indat, file):
-            fp = indat
-
-    if has_header:
-        result = pd.io.parsers.read_table(fp, header=0, dialect=dialect,
-                                          index_col=0, parse_dates=True)
-        result.columns = [i.strip() for i in result.columns]
-    else:
-        result = pd.io.parsers.read_table(fp, header=None, dialect=dialect,
-                                          index_col=0, parse_dates=True)
-        fname, ext = os.path.splitext(fp.name)
-        result.columns = ['{0}_{1}'.format(fname, i) for i in result.columns]
+        if fp:
+            if has_header:
+                result = pd.io.parsers.read_table(fp, header=0,
+                                                  dialect=dialect,
+                                                  index_col=0,
+                                                  parse_dates=True)
+                result.columns = [i.strip() for i in result.columns]
+            else:
+                result = pd.io.parsers.read_table(fp, header=None,
+                                                  dialect=dialect,
+                                                  index_col=0,
+                                                  parse_dates=True)
+                fname, ext = os.path.splitext(fp.name)
+                if len(result.columns) == 1:
+                    result.columns = [fname]
+                else:
+                    result.columns = ['{0}_{1}'.format(fname, i)
+                                      for i in result.columns]
 
     result.index.name = 'Datetime'
 

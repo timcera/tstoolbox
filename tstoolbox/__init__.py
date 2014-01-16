@@ -9,7 +9,6 @@ from __future__ import division
 
 import sys
 import os.path
-import csv
 import warnings
 try:
     from io import StringIO
@@ -18,6 +17,8 @@ except:
 warnings.filterwarnings('ignore')
 
 import pandas as pd
+# The numpy import is needed like this to be able to include numpy functions in
+# the 'equation' subcommand.
 from numpy import *
 import baker
 
@@ -41,12 +42,19 @@ _offset_aliases = {
     }
 
 
-def _date_slice(input_ts='-', start_date=None, end_date=None):
+def _date_slice(input_tsd, start_date=None, end_date=None):
     '''
     Private function to slice time series.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)
-    return tsd[start_date:end_date]
+    if start_date is None:
+        sdate = None
+    else:
+        sdate = pd.Timestamp(start_date)
+    if end_date is None:
+        edate = None
+    else:
+        edate = pd.Timestamp(end_date)
+    return input_tsd[sdate:edate]
 
 
 @baker.command
@@ -71,16 +79,17 @@ def filter(filter_type,
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.  Default is stdin.
     :param cutoff_period: The period in input time units that will form the
-        cutoff between low freqencies (longer periods) and high frequencies
+        cutoff between low frequencies (longer periods) and high frequencies
         (shorter periods).  Filter will be smoothed by `window_len` running
         average.  For 'fft_highpass' and 'fft_lowpass'. Default is None and
-        must be upplied if using 'fft_highpass' or 'fft_lowpass'.
+        must be supplied if using 'fft_highpass' or 'fft_lowpass'.
     :param start_date: The start_date of the series in ISOdatetime format, or
         'None' for beginning.
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts), start_date=start_date,
+                      end_date=end_date)
     from tstoolbox import filters
 
     if len(tsd.values) < window_len:
@@ -104,7 +113,11 @@ def filter(filter_type,
         elif filter_type == 'fft_highpass':
             tsd[col].values[:] = filters._transform(
                 tsd[col].values, cutoff_period, window_len)
-        elif filter_type in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
+        elif filter_type in ['flat',
+                             'hanning',
+                             'hamming',
+                             'bartlett',
+                             'blackman']:
             if window_len < 3:
                 continue
             s = pd.np.pad(tsd[col].values, window_len//2, 'reflect')
@@ -119,12 +132,12 @@ def filter(filter_type,
 
 def zero_crossings(y_axis, window=11):
     """
-    Algorithm to find zero crossings. Smoothens the curve and finds the
+    Algorithm to find zero crossings. Smooths the curve and finds the
     zero-crossings by looking for a sign change.
 
 
     keyword arguments:
-    y_axis -- A list containg the signal over which to find zero-crossings
+    y_axis -- A list containing the signal over which to find zero-crossings
     window -- the dimension of the smoothing window; should be an odd integer
         (default: 11)
 
@@ -185,18 +198,17 @@ def read(filenames, start_date=None, end_date=None, dense=False):
         'None' for beginning.
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
-    :param dense: Set `dense` to True to have missing values inserted such that there is a single interval.
+    :param dense: Set `dense` to True to have missing values inserted such that
+        there is a single interval.
     '''
     fnames = {}
     filenames = filenames.split(',')
     for index, filename in enumerate(filenames):
         fname = os.path.basename(os.path.splitext(filename)[0])
-        tsd = tsutils.read_iso_ts(filename, dense=dense)[start_date:end_date]
-        nfname = fname
+        tsd = _date_slice(tsutils.read_iso_ts(filename, dense=dense),
+                          start_date=start_date, end_date=end_date)
         if fname in fnames:
-            tsd.columns = ['{0}_{1}_{2}'.format(fname, index, i) for i in tsd.columns]
-        else:
-            tsd.columns = ['{0}_{1}'.format(fname, i) for i in tsd.columns]
+            tsd.columns = ['{1}_{0}'.format(index, i) for i in tsd.columns]
         fnames[fname] = 1
 
         try:
@@ -221,7 +233,7 @@ def date_slice(start_date=None,
         stdin.
     '''
     return tsutils.printiso(
-        _date_slice(input_ts=input_ts,
+        _date_slice(tsutils.read_iso_ts(input_ts),
                     start_date=start_date,
                     end_date=end_date))
 
@@ -238,7 +250,8 @@ def describe(input_ts='-', start_date=None, end_date=None):
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)[start_date: end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts), start_date=start_date,
+                      end_date=end_date)
     return tsutils.printiso(tsd.describe())
 
 
@@ -306,7 +319,8 @@ def peak_detection(method='rel',
 *
 '''.format(method))
 
-    tsd = tsutils.read_iso_ts(input_ts)[start_date: end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts), start_date=start_date,
+                      end_date=end_date)
 
     window = int(window)
     kwds = {}
@@ -388,7 +402,8 @@ def convert(
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts), start_date=start_date,
+                      end_date=end_date)
     tmptsd = tsd * factor + offset
     return tsutils.print_input(print_input, tsd, tmptsd, '_convert')
 
@@ -422,7 +437,8 @@ def equation(
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    x = tsutils.read_iso_ts(input_ts)[start_date:end_date].astype('f')
+    x = _date_slice(tsutils.read_iso_ts(input_ts),
+                    start_date=start_date, end_date=end_date).astype('f')
     import re
 
     # Get rid of spaces
@@ -507,7 +523,8 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts), start_date=start_date,
+                      end_date=end_date)
 
     columns = columns.split(',')
     columns = [int(i) - 1 for i in columns]
@@ -536,7 +553,7 @@ def stdtozrxp(
     '''
     Prints out data to the screen in a WISKI ZRXP format.
 
-    :param rexchange: The REXCHANGE ID to be written inro the zrxp header.
+    :param rexchange: The REXCHANGE ID to be written into the zrxp header.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
         stdin.
     :param start_date: The start_date of the series in ISOdatetime format, or
@@ -544,7 +561,8 @@ def stdtozrxp(
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts),
+                      start_date=start_date, end_date=end_date)
     if len(tsd.columns) > 1:
         raise ValueError('''
 *
@@ -578,7 +596,8 @@ def tstopickle(
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts),
+                      start_date=start_date, end_date=end_date)
     pd.core.common.save(tsd, filename)
 
 
@@ -602,7 +621,8 @@ def accumulate(
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts),
+                      start_date=start_date, end_date=end_date)
     if statistic == 'sum':
         ntsd = tsd.cumsum()
     elif statistic == 'max':
@@ -658,7 +678,8 @@ def rolling_window(
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts),
+                      start_date=start_date, end_date=end_date)
     if span is None:
         span = len(tsd)
     else:
@@ -783,7 +804,8 @@ def aggregate(
             'monthly': 'M',
             'yearly': 'A'
             }
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts),
+                      start_date=start_date, end_date=end_date)
     methods = statistic.split(',')
     for method in methods:
         tmptsd = tsd.resample(aggd[agg_interval], how=method)
@@ -815,7 +837,8 @@ def clip(
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts), start_date=start_date,
+                      end_date=end_date)
     for col in tsd.columns:
         if a_min is None:
             try:
@@ -857,7 +880,8 @@ def add_trend(
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts),
+                      start_date=start_date, end_date=end_date)
     ntsd = tsd.copy().astype('f')
     ntsd.ix[:] = pd.np.nan
     ntsd.ix[0] = tsd.mean() + float(start_offset_from_mean)
@@ -886,7 +910,8 @@ def remove_trend(
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts),
+                      start_date=start_date, end_date=end_date)
     ntsd = tsd.copy()
     for col in tsd.columns:
         index = tsd.index.astype('l')
@@ -905,7 +930,7 @@ def calculate_fdc(
         start_date=None,
         end_date=None):
     '''
-    Returns the frequency distrbution curve.  DOES NOT return a time-series.
+    Returns the frequency distribution curve.  DOES NOT return a time-series.
 
     :param x_plotting_position: 'norm' or 'lin'.  'norm' defines a x
         plotting position Defaults to 'norm'.
@@ -918,7 +943,8 @@ def calculate_fdc(
     '''
     from scipy.stats.distributions import norm
 
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts),
+                      start_date=start_date, end_date=end_date)
     if len(tsd.columns) > 1:
         raise ValueError('''
 *
@@ -1031,7 +1057,8 @@ def plot(
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    tsd = tsutils.read_iso_ts(input_ts)[start_date:end_date]
+    tsd = _date_slice(tsutils.read_iso_ts(input_ts, dense=False),
+                      start_date=start_date, end_date=end_date)
 
     # This is to help pretty print the frequency
     try:
@@ -1067,6 +1094,9 @@ def plot(
 *   data has {0} where the number of 'legend_names' is {1}.
 *
 '''.format(len(tsd.columns), len(lnames)))
+
+    if style:
+        style = style.split(',')
     plt.figure(figsize=figsize)
     if type == 'time':
         tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
