@@ -1094,6 +1094,8 @@ def plot(
 *   separated names as columns in the input data.  The input
 *   data has {0} where the number of 'legend_names' is {1}.
 *
+*   If 'xy' type be sure to have a name for the 'x' column.
+*
 '''.format(len(tsd.columns), len(lnames)))
 
     if style:
@@ -1111,12 +1113,13 @@ def plot(
             style = '*'
         if type == 'double_mass':
             tsd = tsd.cumsum()
-        tsd.plot(x=tsd.columns[0], y=tsd.columns[1], subplots=subplots,
+        tsd.plot(x=tsd.columns[0], y=tsd.columns[1:], subplots=subplots,
                  sharex=sharex, sharey=sharey, style=style, logx=logx,
                  logy=logy, xlim=xlim, ylim=ylim, secondary_y=secondary_y,
                  mark_right=mark_right)
         plt.xlabel(xtitle or tsd.columns[0])
         plt.ylabel(ytitle or tsd.columns[1])
+        plt.legend(loc='best')
     elif type == 'probability_density':
         tsd.plot(kind='kde', legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
