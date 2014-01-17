@@ -26,7 +26,7 @@ Just run 'tstoolbox' to get a list of subcommands
 
 The default for all of the subcommands is to accept data from stdin (typically
 a pipe).  If a subcommand accepts an input file for an argument, you can use
-"--input_ts=input_file_name.csv", or to expliticly specify from stdin (the
+"--input_ts=input_file_name.csv", or to explicitly specify from stdin (the
 default) "--input_ts='-'" .  
 
 For the subcommands that output data it is printed to the screen and you can
