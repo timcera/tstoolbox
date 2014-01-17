@@ -938,8 +938,9 @@ def calculate_fdc(
         plotpos[:cnt] = linspace(a_tmp, b_tmp, cnt)
         xlabel = plotpos
     ydata = ma.sort(tsd[tsd.columns[0]].values, endwith=False)[::-1]
+    print('Exceedance, Value, Exceedance_Label')
     for xdat, ydat, zdat in zip(plotpos, ydata, xlabel):
-        print(xdat, ydat, zdat)
+        print('{0}, {1}, {2}'.format(xdat, ydat, zdat))
 
 
 @baker.command
