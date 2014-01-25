@@ -1004,13 +1004,6 @@ def plot(
        'scatter_matrix', 'lag_plot', 'autocorrelation', 'bootstrap', or
        'probability_density'.
        Defaults to 'time'.
-    :param scatter_matrix_diagonal: If plot type is 'scatter_matrix', this
-       specifies the plot along the diagonal.  Defaults to
-       'probability_density'.
-    :param bootstrap_size: The size of the random subset for 'bootstrap' plot.
-       Defaults to 50.
-    :param bootstrap_samples: The number of random subsets of
-       'bootstrap_size'.  Defaults to 500.
     :param xtitle: Title of x-axis, defaults depend on ``type``.
     :param ytitle: Title of y-axis, defaults depend on ``type``.
     :param title: Title of chart, defaults to ''.
@@ -1028,19 +1021,139 @@ def plot(
        In case subplots=True, share x axis
     :param sharey: boolean, default False
        In case subplots=True, share y axis
-    :param style: list of strings, comma separated
-       matplotlib line style per time-series.  Just combine codes, for example
-       'r--*' is a red dashed line with star marker.
-       Color: http://matplotlib.org/api/colors_api.html?highlight=color
-       Line: http://matplotlib.org/api/artist_api.html#matplotlib.lines.Line2D.set_linestyle
-       Marker: http://matplotlib.org/api/markers_api.html?highlight=style
+    :param style: comma separated matplotlib style strings
+       matplotlib line style per time-series.  Just combine codes in
+       'ColorLineMarker' order, for example
+       'r--*' is a red dashed line with star marker. \r
+       \r
+          =========================                  \r
+       \r
+          Colors - Single Character Codes:           \r
+       \r
+          'b'  blue                                  \r
+       \r
+          'g'  green                                 \r
+       \r
+          'r'  red                                   \r
+       \r
+          'c'  cyan                                  \r
+       \r
+          'm'  magenta                               \r
+       \r
+          'y'  yellow                                \r
+       \r
+          'k'  black                                 \r
+       \r
+          'w'  white                                 \r
+       \r
+          ---------------------                      \r
+       \r
+          Grays - Float:                             \r
+       \r
+          '0.75'  0.75 gray                          \r
+       \r
+          ---------------------                      \r
+       \r
+          Colors - HTML Color Names                  \r
+       \r
+          'red'                                      \r
+       \r
+          'burlywood'                                \r
+       \r
+          'chartreuse'                               \r
+       \r
+          ...etc.                                    \r
+       \r
+       Color reference:                              \r
+       \r
+       http://matplotlib.org/api/colors_api.html     \r
+       \r
+          =========================                  \r
+       \r
+          Lines                                      \r
+       \r
+          '-'     solid                              \r
+       \r
+          '--'    dashed                             \r
+       \r
+          '-.'    dash_dot                           \r
+       \r
+          ':'     dotted                             \r
+       \r
+          'None'  draw nothing                       \r
+       \r
+          ' '     draw nothing                       \r
+       \r
+          ''      draw nothing                       \r
+       \r
+       Line reference:                               \r
+       \r
+       http://matplotlib.org/api/artist_api.html     \r
+       \r
+          =========================                  \r
+       \r
+          Markers                                    \r
+       \r
+          '.'     point                              \r
+       \r
+          'o'     circle                             \r
+       \r
+          'v'     triangle down                      \r
+       \r
+          '^'     triangle up                        \r
+       \r
+          '<'     triangle left                      \r
+       \r
+          '>'     triangle right                     \r
+       \r
+          '1'     tri_down                           \r
+       \r
+          '2'     tri_up                             \r
+       \r
+          '3'     tri_left                           \r
+       \r
+          '4'     tri_right                          \r
+       \r
+          '8'     octagon                            \r
+       \r
+          's'     square                             \r
+       \r
+          'p'     pentagon                           \r
+       \r
+          '*'     star                               \r
+       \r
+          'h'     hexagon1                           \r
+       \r
+          'H'     hexagon2                           \r
+       \r
+          '+'     plus                               \r
+       \r
+          'x'     x                                  \r
+       \r
+          'D'     diamond                            \r
+       \r
+          'd'     thin diamond                       \r
+       \r
+          '|'     vline                              \r
+       \r
+          '_'     hline                              \r
+       \r
+          'None'     nothing                         \r
+       \r
+          ' '     nothing                            \r
+       \r
+          ''     nothing                             \r
+       \r
+       Marker reference:                             \r
+       \r
+       http://matplotlib.org/api/markers_api.html
     :param logx: boolean, default False
        For line plots, use log scaling on x axis
     :param logy: boolean, default False
        For line plots, use log scaling on y axis
-    :param xlim: 2-tuple/list
+    :param xlim: comma separated lower and upper limits (--xlim 1,1000)
        Limits for the x-axis
-    :param ylim: 2-tuple/list
+    :param ylim: comma separated lower and upper limits (--ylim 1,1000)
        Limits for the y-axis
     :param secondary_y: boolean or sequence, default False
        Whether to plot on the secondary y-axis If a list/tuple, which
@@ -1048,6 +1161,13 @@ def plot(
     :param mark_right: boolean, default True :
        When using a secondary_y axis, should the legend label the axis of the
        various time-series automatically
+    :param scatter_matrix_diagonal: If plot type is 'scatter_matrix', this
+       specifies the plot along the diagonal.  Defaults to
+       'probability_density'.
+    :param bootstrap_size: The size of the random subset for 'bootstrap' plot.
+       Defaults to 50.
+    :param bootstrap_samples: The number of random subsets of
+       'bootstrap_size'.  Defaults to 500.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
        stdin.
     :param start_date: The start_date of the series in ISOdatetime format, or
@@ -1060,6 +1180,11 @@ def plot(
     import matplotlib.pyplot as plt
     tsd = _date_slice(tsutils.read_iso_ts(input_ts, dense=False),
                       start_date=start_date, end_date=end_date)
+
+    if ylim is not None:
+        ylim = [float(i) if '.' in i else int(i) for i in ylim.split(',')]
+    if xlim is not None:
+        xlim = [float(i) if '.' in i else int(i) for i in xlim.split(',')]
 
     # This is to help pretty print the frequency
     try:
