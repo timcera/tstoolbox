@@ -1024,128 +1024,125 @@ def plot(
     :param style: comma separated matplotlib style strings
        matplotlib line style per time-series.  Just combine codes in
        'ColorLineMarker' order, for example
-       'r--*' is a red dashed line with star marker. \r
-       \r
-          =========================                  \r
-       \r
-          Colors - Single Character Codes:           \r
-       \r
-          'b'  blue                                  \r
-       \r
-          'g'  green                                 \r
-       \r
-          'r'  red                                   \r
-       \r
-          'c'  cyan                                  \r
-       \r
-          'm'  magenta                               \r
-       \r
-          'y'  yellow                                \r
-       \r
-          'k'  black                                 \r
-       \r
-          'w'  white                                 \r
-       \r
-          ---------------------                      \r
-       \r
-          Grays - Float:                             \r
-       \r
-          '0.75'  0.75 gray                          \r
-       \r
-          ---------------------                      \r
-       \r
-          Colors - HTML Color Names                  \r
-       \r
-          'red'                                      \r
-       \r
-          'burlywood'                                \r
-       \r
-          'chartreuse'                               \r
-       \r
-          ...etc.                                    \r
-       \r
-       Color reference:                              \r
-       \r
-       http://matplotlib.org/api/colors_api.html     \r
-       \r
-          =========================                  \r
-       \r
-          Lines                                      \r
-       \r
-          '-'     solid                              \r
-       \r
-          '--'    dashed                             \r
-       \r
-          '-.'    dash_dot                           \r
-       \r
-          ':'     dotted                             \r
-       \r
-          'None'  draw nothing                       \r
-       \r
-          ' '     draw nothing                       \r
-       \r
-          ''      draw nothing                       \r
-       \r
-       Line reference:                               \r
-       \r
-       http://matplotlib.org/api/artist_api.html     \r
-       \r
-          =========================                  \r
-       \r
-          Markers                                    \r
-       \r
-          '.'     point                              \r
-       \r
-          'o'     circle                             \r
-       \r
-          'v'     triangle down                      \r
-       \r
-          '^'     triangle up                        \r
-       \r
-          '<'     triangle left                      \r
-       \r
-          '>'     triangle right                     \r
-       \r
-          '1'     tri_down                           \r
-       \r
-          '2'     tri_up                             \r
-       \r
-          '3'     tri_left                           \r
-       \r
-          '4'     tri_right                          \r
-       \r
-          '8'     octagon                            \r
-       \r
-          's'     square                             \r
-       \r
-          'p'     pentagon                           \r
-       \r
-          '*'     star                               \r
-       \r
-          'h'     hexagon1                           \r
-       \r
-          'H'     hexagon2                           \r
-       \r
-          '+'     plus                               \r
-       \r
-          'x'     x                                  \r
-       \r
-          'D'     diamond                            \r
-       \r
-          'd'     thin diamond                       \r
-       \r
-          '|'     vline                              \r
-       \r
-          '_'     hline                              \r
-       \r
-          'None'     nothing                         \r
-       \r
-          ' '     nothing                            \r
-       \r
-          ''     nothing                             \r
-       \r
-       Marker reference:                             \r
-       \r
+       'r--*' is a red dashed line with star marker.
+
+       =========================
+
+       Colors - Single Character Codes:
+
+       'b'  blue
+
+       'g'  green
+
+       'r'  red
+
+       'c'  cyan
+
+       'm'  magenta
+
+       'y'  yellow
+
+       'k'  black
+
+       'w'  white
+
+       ---------------------
+
+       Grays - Float:
+
+       '0.75'  0.75 gray
+
+       ---------------------
+
+       Colors - HTML Color Names
+
+       'red'
+
+       'burlywood'
+
+       'chartreuse'
+
+       ...etc.
+
+       Color reference:
+       http://matplotlib.org/api/colors_api.html
+
+       =========================
+
+       Lines
+
+       '-'     solid
+
+       '--'    dashed
+
+       '-.'    dash_dot
+
+       ':'     dotted
+
+       'None'  draw nothing
+
+       ' '     draw nothing
+
+       ''      draw nothing
+
+       Line reference:
+       http://matplotlib.org/api/artist_api.html
+
+       =========================
+
+       Markers
+
+       '.'     point
+
+       'o'     circle
+
+       'v'     triangle down
+
+       '^'     triangle up
+
+       '<'     triangle left
+
+       '>'     triangle right
+
+       '1'     tri_down
+
+       '2'     tri_up
+
+       '3'     tri_left
+
+       '4'     tri_right
+
+       '8'     octagon
+
+       's'     square
+
+       'p'     pentagon
+
+       '*'     star
+
+       'h'     hexagon1
+
+       'H'     hexagon2
+
+       '+'     plus
+
+       'x'     x
+
+       'D'     diamond
+
+       'd'     thin diamond
+
+       '|'     vline
+
+       '_'     hline
+
+       'None'     nothing
+
+       ' '     nothing
+
+       ''     nothing
+
+       Marker reference:
        http://matplotlib.org/api/markers_api.html
     :param logx: boolean, default False
        For line plots, use log scaling on x axis
