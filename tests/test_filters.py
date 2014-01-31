@@ -22,8 +22,8 @@ import subprocess
 
 import pandas as pd
 
-import tstoolbox
-import tsutils
+from tstoolbox import tstoolbox
+import tstoolbox.tsutils as tsutils
 
 
 def capture(func, *args, **kwds):

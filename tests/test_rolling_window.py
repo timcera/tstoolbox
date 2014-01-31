@@ -19,8 +19,8 @@ except:
 
 import pandas
 
-import tsutils
-import tstoolbox
+import tstoolbox.tsutils as tsutils
+from tstoolbox import tstoolbox
 
 
 def capture(func, *args, **kwds):

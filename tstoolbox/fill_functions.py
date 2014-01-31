@@ -1,13 +1,14 @@
 #!/sjr/beodata/local/python_linux/bin/python
 
 from __future__ import print_function
+from __future__ import absolute_import
 
 import pandas as pd
 from numpy import *
 from scipy.interpolate import interp1d
 import baker
 
-from tstoolbox import tsutils
+from . import tsutils
 
 _offset_aliases = {
     86400000000000:    'D',

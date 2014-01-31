@@ -53,13 +53,13 @@ setup(name='tstoolbox',
       author_email='tim@cerazone.net',
       url='http://pypi.python.org/pypi/tstoolbox',
       license='GPL2',
-      packages=['tstoolbox', 'tsutils'],
+      packages=['tstoolbox'],
       include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,
       entry_points={
           'console_scripts':
-              ['tstoolbox=tstoolbox:main']
+              ['tstoolbox=tstoolbox.tstoolbox:main']
       },
       test_suite='tests',
       )

@@ -8,6 +8,21 @@ import pandas as pd
 import numpy as np
 
 
+def date_slice(input_tsd, start_date=None, end_date=None):
+    '''
+    Private function to slice time series.
+    '''
+    if start_date is None:
+        sdate = None
+    else:
+        sdate = pd.Timestamp(start_date)
+    if end_date is None:
+        edate = None
+    else:
+        edate = pd.Timestamp(end_date)
+    return input_tsd[sdate:edate]
+
+
 def guess_freq(data):
     # Another way to do this is to abuse PANDAS .asfreq.  Basically, how low
     # can you go and maintain the same number of values.

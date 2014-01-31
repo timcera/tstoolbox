@@ -19,7 +19,7 @@ except:
 
 import pandas as pd
 
-import tstoolbox
+from tstoolbox import tstoolbox
 
 
 def capture(func, *args, **kwds):
