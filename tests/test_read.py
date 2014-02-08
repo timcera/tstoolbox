@@ -8,7 +8,8 @@ test_read
 Tests for `tstoolbox` module.
 """
 
-from unittest import TestCase
+from pandas.util.testing import TestCase
+from pandas.util.testing import assert_frame_equal
 import sys
 import shlex
 import subprocess
@@ -36,9 +37,11 @@ class TestRead(TestCase):
         ts = pandas.TimeSeries([4.5, 4.6], index=dr)
 
         self.read_direct = pandas.DataFrame(ts, columns=['Value'])
+        self.read_direct.index.name = 'Datetime'
 
         self.read_multiple_direct = pandas.DataFrame(ts, columns=['Value'])
         self.read_multiple_direct = self.read_multiple_direct.join(pandas.Series(ts, name='Value_1'))
+        self.read_multiple_direct.index.name = 'Datetime'
 
         self.read_cli = b"""Datetime,Value
 2000-01-01,4.5
@@ -52,11 +55,11 @@ class TestRead(TestCase):
 
     def test_read_direct(self):
         out = tstoolbox.read('tests/test.csv')
-        self.assertEqual(out, self.read_direct)
+        assert_frame_equal(out, self.read_direct)
 
     def test_read_mulitple_direct(self):
         out = tstoolbox.read('tests/test.csv,tests/test.csv')
-        self.assertEqual(out, self.read_multiple_direct)
+        assert_frame_equal(out, self.read_multiple_direct)
 
     def test_read_cli(self):
         args = 'tstoolbox read tests/test.csv'

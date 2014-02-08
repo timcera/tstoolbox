@@ -9,7 +9,8 @@ Tests for `tstoolbox` module.
 """
 import shlex
 import subprocess
-from unittest import TestCase
+from pandas.util.testing import TestCase
+from pandas.util.testing import assert_frame_equal
 import sys
 try:
     from cStringIO import StringIO
@@ -85,27 +86,27 @@ class TestFill(TestCase):
     def test_fill_ffill_direct(self):
         out = tstoolbox.fill(input_ts='tests/test_fill_01.csv')
         self.maxDiff = None
-        self.assertEqual(out, self.ffill_compare)
+        assert_frame_equal(out, self.ffill_compare)
 
     def test_fill_bfill(self):
         out = tstoolbox.fill(method='bfill', input_ts='tests/test_fill_01.csv')
         self.maxDiff = None
-        self.assertEqual(out, self.bfill_compare)
+        assert_frame_equal(out, self.bfill_compare)
 
     def test_fill_linear(self):
         out = tstoolbox.fill(method='linear', input_ts='tests/test_fill_01.csv')
         self.maxDiff = None
-        self.assertEqual(out, self.linear_compare)
+        assert_frame_equal(out, self.linear_compare)
 
     def test_fill_nearest(self):
         out = tstoolbox.fill(method='nearest', input_ts='tests/test_fill_01.csv')
         self.maxDiff = None
-        self.assertEqual(out, self.nearest_compare)
+        assert_frame_equal(out, self.nearest_compare)
 
     def test_fill_mean(self):
         out = tstoolbox.fill(method='mean', input_ts='tests/test_fill_01.csv')
         self.maxDiff = None
-        self.assertEqual(out, self.mean_compare)
+        assert_frame_equal(out, self.mean_compare)
 
     def test_fill_ffill_cli(self):
         args = 'tstoolbox fill --input_ts=tests/test_fill_01.csv'

@@ -8,7 +8,8 @@ test_pick
 Tests for `tstoolbox` module.
 """
 
-from unittest import TestCase
+from pandas.util.testing import TestCase
+from pandas.util.testing import assert_frame_equal
 import sys
 import shlex
 import subprocess
@@ -50,7 +51,7 @@ class TestPick(TestCase):
 
     def test_pick(self):
         out = tstoolbox.pick('2,1', 'tests/test_multiple_cols.csv')
-        self.assertEqual(out, self.pick_multiple_direct)
+        assert_frame_equal(out, self.pick_multiple_direct)
 
     def test_pick_cli(self):
         args = 'tstoolbox pick 2,1 "tests/test_multiple_cols.csv"'

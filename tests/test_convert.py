@@ -8,7 +8,8 @@ test_tstoolbox
 Tests for `tstoolbox` module.
 """
 
-from unittest import TestCase
+from pandas.util.testing import TestCase
+from pandas.util.testing import assert_frame_equal
 import sys
 import subprocess
 import shlex
@@ -52,11 +53,11 @@ class TestConvert(TestCase):
 
     def test_convert_direct_01(self):
         out = tstoolbox.convert(input_ts='tests/test.csv')
-        self.assertEqual(out, self.compare_direct_01)
+        assert_frame_equal(out, self.compare_direct_01)
 
     def test_convert_direct_02(self):
         out = tstoolbox.convert(input_ts='tests/test.csv', factor=2, offset=2)
-        self.assertEqual(out, self.compare_direct_02)
+        assert_frame_equal(out, self.compare_direct_02)
 
     def test_convert_cli_01(self):
         args = 'tstoolbox convert --input_ts="tests/test.csv"'

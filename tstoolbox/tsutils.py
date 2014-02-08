@@ -113,13 +113,14 @@ def guess_freq(data):
 
 
 # Utility
-def print_input(iftrue, input, output, suffix):
+def print_input(iftrue, input, output, suffix, float_format='%g'):
     if suffix:
         output.rename(columns=lambda xloc: xloc + suffix, inplace=True)
     if iftrue:
-        return printiso(input.join(output, how='outer'))
+        return printiso(input.join(output, how='outer'),
+                        float_format=float_format)
     else:
-        return printiso(output)
+        return printiso(output, float_format=float_format)
 
 
 def _apply_across_columns(func, xtsd, **kwds):
@@ -128,7 +129,8 @@ def _apply_across_columns(func, xtsd, **kwds):
     return xtsd
 
 
-def _printiso(tsd, date_format='%Y-%m-%d %H:%M:%S', delimiter=','):
+def _printiso(tsd, date_format='%Y-%m-%d %H:%M:%S', delimiter=',',
+              float_format='%g'):
     ''' Separate so can use in tests.
     '''
     import sys
@@ -136,14 +138,14 @@ def _printiso(tsd, date_format='%Y-%m-%d %H:%M:%S', delimiter=','):
     try:
         if tsd.index.is_all_dates:
             tsd.index.name = 'Datetime'
-            tsd.to_csv(sys.stdout, float_format='%g')
+            tsd.to_csv(sys.stdout, float_format=float_format)
         else:
             print(tsd)
     except IOError:
         return
 
 
-def printiso(tsd, sparse=False):
+def printiso(tsd, sparse=False, float_format='%g'):
     '''
     Default output format for tstoolbox, wdmtoolbox, swmmtoolbox,
     and hspfbintoolbox.
@@ -163,7 +165,7 @@ def printiso(tsd, sparse=False):
             break
     sys.tracebacklimit = oldtracebacklimit
     if baker_cli:
-        _printiso(tsd)
+        _printiso(tsd, float_format=float_format)
     else:
         return tsd
 
@@ -175,10 +177,16 @@ def read_iso_ts(indat, dense=True):
     import baker
     import csv
 
+    def densify(ind):
+        gf = guess_freq(ind)
+        return ind.asfreq('{0}{1}'.format(gf[2], gf[1]))
+
+    fp = None
     if isinstance(indat, pd.DataFrame):
-        result = indat
-        if not dense:
-            return result
+        if dense:
+            return densify(indat)
+        else:
+            return indat
 
     elif isinstance(indat, str):
         if indat == '-':
@@ -200,6 +208,12 @@ def read_iso_ts(indat, dense=True):
                     has_header = csv.Sniffer().has_header(readsome)
 
                 fp = open(indat)
+        else:
+            raise ValueError('''
+*
+*   File {0} doesn't exist.
+*
+'''.format(indat))
 
         if fp:
             if has_header:
@@ -223,10 +237,9 @@ def read_iso_ts(indat, dense=True):
     result.index.name = 'Datetime'
 
     if dense:
-        gf = guess_freq(result)
-        result = result.asfreq('{0}{1}'.format(gf[2], gf[1]))
-
-    return result
+        return densify(result)
+    else:
+        return result
 
 
 def read_excel_csv(fp, header=None):

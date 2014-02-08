@@ -111,6 +111,8 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
         except ValueError:
             pass
     ntsd = ntsd.iloc[1:-1]
+    tsd.index.name = 'Datetime'
+    ntsd.index.name = 'Datetime'
     return tsutils.print_input(print_input, tsd, ntsd, '_fill')
 
 

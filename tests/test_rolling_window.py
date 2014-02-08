@@ -8,7 +8,8 @@ test_tstoolbox
 Tests for `tstoolbox` module.
 """
 
-from unittest import TestCase
+from pandas.util.testing import TestCase
+from pandas.util.testing import assert_frame_equal
 import sys
 import subprocess
 import shlex
@@ -55,11 +56,11 @@ class TestRollingWindow(TestCase):
 
     def test_rolling_window_sum(self):
         out = tstoolbox.rolling_window(statistic='sum', input_ts='tests/test.csv')
-        self.assertEqual(out, self.compare_rolling_window_sum)
+        assert_frame_equal(out, self.compare_rolling_window_sum)
 
     def test_rolling_window_mean(self):
         out = tstoolbox.rolling_window(statistic='mean', input_ts='tests/test.csv')
-        self.assertEqual(out, self.compare_rolling_window_mean)
+        assert_frame_equal(out, self.compare_rolling_window_mean)
 
     def test_rolling_window_sum_cli(self):
         args = 'tstoolbox rolling_window --statistic="sum" --input_ts="tests/test.csv"'

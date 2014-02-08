@@ -10,7 +10,8 @@ Tests for `tstoolbox` module.
 
 import shlex
 import subprocess
-from unittest import TestCase
+from pandas.util.testing import TestCase
+from pandas.util.testing import assert_frame_equal
 import sys
 try:
     from cStringIO import StringIO
@@ -45,7 +46,7 @@ class TestDescribe(TestCase):
 
     def test_date_slice(self):
         out = tstoolbox.describe(input_ts='tests/sunspot_area.csv')
-        self.assertEqual(out, self.date_slice)
+        assert_frame_equal(out, self.date_slice)
 
     def test_date_slice_cli(self):
         args = 'tstoolbox describe --input_ts="tests/sunspot_area.csv"'

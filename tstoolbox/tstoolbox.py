@@ -49,6 +49,7 @@ def filter(filter_type,
            print_input=False,
            cutoff_period=None,
            window_len=5,
+           float_format='%g',
            input_ts='-',
            start_date=None,
            end_date=None):
@@ -115,7 +116,8 @@ def filter(filter_type,
             else:
                 w = eval('pd.np.' + filter_type + '(window_len)')
             tsd[col].values[:] = pd.np.convolve(w / w.sum(), s, mode='valid')
-    return tsutils.print_input(print_input, otsd, tsd, '_filter')
+    return tsutils.print_input(print_input, otsd, tsd, '_filter',
+                               float_format=float_format)
 
 
 def zero_crossings(y_axis, window=11):
@@ -175,7 +177,8 @@ def zero_crossings(y_axis, window=11):
 
 
 @baker.command
-def read(filenames, start_date=None, end_date=None, dense=False):
+def read(filenames, start_date=None, end_date=None, dense=False,
+         float_format='%g'):
     '''
     Collect time series from a list of pickle or csv files then print
     in the tstoolbox standard format.
@@ -203,11 +206,12 @@ def read(filenames, start_date=None, end_date=None, dense=False):
             result = result.join(tsd, how='outer')
         except NameError:
             result = tsd
-    return tsutils.printiso(result)
+    return tsutils.printiso(result, float_format=float_format)
 
 
 @baker.command
-def date_slice(start_date=None,
+def date_slice(float_format='%g',
+               start_date=None,
                end_date=None,
                input_ts='-'):
     '''
@@ -223,7 +227,7 @@ def date_slice(start_date=None,
     return tsutils.printiso(
         tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                            start_date=start_date,
-                           end_date=end_date))
+                           end_date=end_date), float_format=float_format)
 
 
 @baker.command
@@ -251,6 +255,7 @@ def peak_detection(method='rel',
                    #pad_len=5,  eventually used for fft
                    points=9,
                    lock_frequency=False,
+                   float_format='%g',
                    print_input=False,
                    input_ts='-',
                    start_date=None,
@@ -366,7 +371,10 @@ def peak_detection(method='rel',
         tmptsd[c][:] = pd.np.nan
         tmptsd[c][array(maxx).astype('i')] = hold
 
-    return tsutils.print_input(print_input, tsd, tmptsd, None)
+    tmptsd.index.name = 'Datetime'
+    tsd.index.name = 'Datetime'
+    return tsutils.print_input(print_input, tsd, tmptsd, None,
+                               float_format=float_format)
 
 
 @baker.command
@@ -374,6 +382,7 @@ def convert(
         factor=1.0,
         offset=0.0,
         print_input=False,
+        float_format='%g',
         input_ts='-',
         start_date=None,
         end_date=None):
@@ -396,13 +405,15 @@ def convert(
                              start_date=start_date,
                              end_date=end_date)
     tmptsd = tsd * factor + offset
-    return tsutils.print_input(print_input, tsd, tmptsd, '_convert')
+    return tsutils.print_input(print_input, tsd, tmptsd, '_convert',
+                               float_format='%g')
 
 
 @baker.command
 def equation(
         equation,
         print_input=False,
+        float_format='%g',
         input_ts='-',
         start_date=None,
         end_date=None):
@@ -431,6 +442,7 @@ def equation(
     x = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                            start_date=start_date,
                            end_date=end_date).astype('f')
+
     import re
 
     # Get rid of spaces
@@ -448,57 +460,58 @@ def equation(
     # DataFrame.
     # UGLY!
     if tsearch and nsearch:
-        neq = equation.split('[')
-        neq = [i.split(']') for i in neq]
-        nequation = []
-        for i in neq:
-            mid = []
-            for j in i:
-                if 't' in j:
-                    mid.append('.values[{0}:{0}+1][0]'.format(j))
-                else:
-                    mid.append(j)
-            nequation.append(mid)
-        nequation = [']'.join(i) for i in nequation]
-        nequation = '['.join(nequation)
-        nequation = re.sub(
-            r'x([1-9][0-9]*?)(?!\[)', r'x[x.columns[\1-1]][t]', nequation)
-        nequation = re.sub(
-            r'x([1-9][0-9]*?)(?=\[)', r'x[x.columns[\1-1]]', nequation)
-        nequation = re.sub(
-            r'\[\.values', r'.values', nequation)
-        nequation = re.sub(
-            r'\[0\]\]', r'[0]', nequation)
-        y = pd.Series(x[x.columns[0]], index=x.index)
+        testeval = re.findall(r'x[1-9][0-9]*?\[(.*?t.*?)\]',
+                              equation)
+        nequation = re.sub(r'x([1-9][0-9]*?)\[(.*?t.*?)\]',
+                           r'x.ix[\2,\1-1]',
+                           equation)
+        nequation = re.sub(r'x([1-9][0-9]*?)',
+                           r'x.ix[t,\1-1]',
+                           nequation)
+        y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
         for t in range(len(x)):
             try:
-                y[t] = eval(nequation)
+                for tst in testeval:
+                    if eval(tst) < 0:
+                        raise IndexError()
+                y.ix[t, 0] = eval(nequation)
             except (AssertionError, IndexError):
-                y[t] = pd.np.nan
-        y = pd.DataFrame(y, columns=['_'])
+                y.ix[t, 0] = pd.np.nan
+        y = pd.DataFrame(y, columns=['_'], dtype='float32')
     elif tsearch:
         y = x.copy()
-        nequation = re.sub(
-            r'\[(.*?t.*?)\]', r'[col].values[\1:\1+1][0]', equation)
+        testeval = re.findall(r'x\[(.*?t.*?)\]',
+                              equation)
+        nequation = re.sub(r'x\[(.*?t.*?)\]',
+                           r'xxix[\1,:]',
+                           equation)
         # Replace 'x' with underlying equation, but not the 'x' in a word,
         # like 'maximum'.
-        nequation = re.sub(
-            r'(?<![a-zA-Z])x(?![a-zA-Z\[])',
-            r'x[col].values[t:t+1][0]',
-            nequation)
-        for col in x.columns:
-            for t in range(len(x)):
-                try:
-                    y[col][t] = eval(nequation)
-                except (AssertionError, IndexError):
-                    y[col][t] = pd.np.nan
+        nequation = re.sub(r'(?<![a-zA-Z])x(?![a-zA-Z\[])',
+                           r'xxix[t,:]',
+                           nequation)
+        nequation = re.sub(r'xxix',
+                           r'x.ix',
+                           nequation)
+
+        for t in range(len(x)):
+            try:
+                for tst in testeval:
+                    if eval(tst) < 0:
+                        raise IndexError()
+                y.ix[t, :] = eval(nequation)
+            except (AssertionError, IndexError):
+                y.ix[t, :] = pd.np.nan
     elif nsearch:
-        nequation = re.sub(
-            r'x([1-9][0-9]*?)', r'x[x.columns[\1-1]]', equation)
-        y = pd.DataFrame(eval(nequation), columns=['_'])
+        y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
+        nequation = re.sub(r'x([1-9][0-9]*?)',
+                           r'x.ix[:,\1-1]',
+                           equation)
+        y.ix[:, 0] = eval(nequation)
     else:
         y = eval(equation)
-    return tsutils.print_input(print_input, x, y, '_equation')
+    return tsutils.print_input(print_input, x, y, '_equation',
+                               float_format=float_format)
 
 
 @baker.command
@@ -1181,10 +1194,24 @@ def plot(
                              start_date=start_date,
                              end_date=end_date)
 
-    if ylim is not None:
-        ylim = [float(i) if '.' in i else int(i) for i in ylim.split(',')]
-    if xlim is not None:
-        xlim = [float(i) if '.' in i else int(i) for i in xlim.split(',')]
+    # This defines the xlim and ylim as lists rather than strings.
+    # Might prove useful in the future in a more generic spot.
+    def know_your_limits(xylimits):
+        if isinstance(xylimits, str):
+            nlim = []
+            for lim in xylimits.split(','):
+                if lim == '':
+                    nlim.append(None)
+                elif '.' in lim:
+                    nlim.append(float(lim))
+                else:
+                    nlim.append(int(lim))
+        else:  # tuples or lists...
+            nlim = xylimits
+        return nlim
+
+    ylim = know_your_limits(ylim)
+    xlim = know_your_limits(xlim)
 
     # This is to help pretty print the frequency
     try:

@@ -8,7 +8,7 @@ test_tstoolbox
 Tests for `tstoolbox` module.
 """
 
-from unittest import TestCase
+from pandas.util.testing import TestCase
 import sys
 try:
     from cStringIO import StringIO
