@@ -442,6 +442,7 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         results to unpack one of the lists into x, y coordinates do:
         x, y = zip(*tab)
     """
+    from scipy.optimize import curve_fit
     # check input data
     x_axis, y_axis = _datacheck_peakdetect(x_axis, y_axis)
     # make the points argument odd
