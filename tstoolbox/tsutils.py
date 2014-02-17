@@ -182,13 +182,18 @@ def read_iso_ts(indat, dense=True):
         return ind.asfreq('{0}{1}'.format(gf[2], gf[1]))
 
     fp = None
+
+    if isinstance(indat, pd.Series):
+        indat = pd.DataFrame(indat)
+        indat.index.name = 'Datetime'
+
     if isinstance(indat, pd.DataFrame):
         if dense:
             return densify(indat)
         else:
             return indat
 
-    elif isinstance(indat, str):
+    if isinstance(indat, str):
         if indat == '-':
             # format must be the tstoolbox standard
             has_header = True
