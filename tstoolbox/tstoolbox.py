@@ -955,8 +955,6 @@ def calculate_fdc(
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
-    from scipy.stats.distributions import norm
-
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date)
@@ -973,6 +971,7 @@ def calculate_fdc(
     b_tmp = 1 - a_tmp
     plotpos = ma.empty(len(tsd), dtype=float)
     if x_plotting_position == 'norm':
+        from scipy.stats.distributions import norm
         plotpos[:cnt] = norm.ppf(linspace(a_tmp, b_tmp, cnt))
         xlabel = norm.cdf(plotpos)
     if x_plotting_position == 'lin':

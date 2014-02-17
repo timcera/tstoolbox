@@ -5,7 +5,6 @@ from __future__ import absolute_import
 
 import pandas as pd
 from numpy import *
-from scipy.interpolate import interp1d
 import baker
 
 from . import tsutils
@@ -92,6 +91,7 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     elif method in ['linear']:
         ntsd = ntsd.apply(pd.Series.interpolate, method='values')
     elif method in ['nearest', 'zero', 'slinear', 'quadratic', 'cubic']:
+        from scipy.interpolate import interp1d
         for c in ntsd.columns:
             df2 = ntsd[c].dropna()
             f = interp1d(df2.index.values.astype('d'), df2.values, kind=method)

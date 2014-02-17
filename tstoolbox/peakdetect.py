@@ -2,8 +2,6 @@
 from __future__ import print_function
 
 import numpy as np
-from scipy import fft, ifft
-from scipy.optimize import curve_fit
 
 
 def _boolrelextrema(data, comparator,
@@ -148,6 +146,7 @@ def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
         [[x, y, [fitted_x, fitted_y]]]
 
     """
+    from scipy.optimize import curve_fit
     func = lambda x, k, tau, m: k * ((x - tau) ** 2) + m
     fitted_peaks = []
     for peak in raw_peaks:
@@ -319,6 +318,7 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
         results to unpack one of the lists into x, y coordinates do:
         x, y = zip(*tab)
     """
+    from scipy import fft, ifft
     # check input data
     x_axis, y_axis = _datacheck_peakdetect(x_axis, y_axis)
     zero_indices = zero_crossings(y_axis, window=11)
