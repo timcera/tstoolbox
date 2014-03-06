@@ -41,7 +41,7 @@ class TestFDC(TestCase):
                 self.assertAlmostEqual(t1, t2)
 
     def test_flat_norm(self):
-        out = capture(tstoolbox.calculate_fdc, input_ts='tests/test_flat_norm.csv')
+        out = capture(tstoolbox.calculate_fdc, input_ts='tests/data_flat_01.csv')
         teststr = """Exceedance, Value, Exceedance_Label
 -1.78615556126, 2, 0.037037037037
 -1.44610359292, 2, 0.0740740740741
@@ -73,7 +73,7 @@ class TestFDC(TestCase):
         self.linebyline(out, teststr)
 
     def test_flat_linear(self):
-        out = capture(tstoolbox.calculate_fdc, x_plotting_position='lin', input_ts='tests/test_flat_norm.csv')
+        out = capture(tstoolbox.calculate_fdc, x_plotting_position='lin', input_ts='tests/data_flat_01.csv')
         teststr = """Exceedance, Value, Exceedance_Label
 0.037037037037, 2, 0.037037037037
 0.0740740740741, 2, 0.0740740740741
@@ -105,7 +105,7 @@ class TestFDC(TestCase):
         self.linebyline(out, teststr)
 
     def test_sunspot(self):
-        out = capture(tstoolbox.calculate_fdc, x_plotting_position='norm', input_ts='tests/sunspot_area.csv')
+        out = capture(tstoolbox.calculate_fdc, x_plotting_position='norm', input_ts='tests/data_sunspot.csv')
         fp = open('tests/sunspot_area_fdc_compare.txt', 'r')
         teststr = ''.join(fp.readlines())
         self.linebyline(out, teststr)

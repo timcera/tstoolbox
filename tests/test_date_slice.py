@@ -42,11 +42,11 @@ class TestDate_slice(TestCase):
         self.date_slice_cli = capture(tsutils._printiso, self.date_slice)
 
     def test_date_slice(self):
-        out = tstoolbox.date_slice(input_ts='tests/test_aggregate.csv', start_date='2011-01-01T12:00:00', end_date='2011-01-01T14:00:00')
+        out = tstoolbox.date_slice(input_ts='tests/data_flat.csv', start_date='2011-01-01T12:00:00', end_date='2011-01-01T14:00:00')
         assert_frame_equal(out, self.date_slice)
 
     def test_date_slice_cli(self):
-        args = 'tstoolbox date_slice --input_ts="tests/test_aggregate.csv" --start_date="2011-01-01T12:00:00" --end_date="2011-01-01T14:00:00"'
+        args = 'tstoolbox date_slice --input_ts="tests/data_flat.csv" --start_date="2011-01-01T12:00:00" --end_date="2011-01-01T14:00:00"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
         self.assertEqual(out, self.date_slice_cli)

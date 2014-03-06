@@ -55,21 +55,21 @@ class TestRollingWindow(TestCase):
                 self.compare_rolling_window_mean)
 
     def test_rolling_window_sum(self):
-        out = tstoolbox.rolling_window(statistic='sum', input_ts='tests/test.csv')
+        out = tstoolbox.rolling_window(statistic='sum', input_ts='tests/data_simple.csv')
         assert_frame_equal(out, self.compare_rolling_window_sum)
 
     def test_rolling_window_mean(self):
-        out = tstoolbox.rolling_window(statistic='mean', input_ts='tests/test.csv')
+        out = tstoolbox.rolling_window(statistic='mean', input_ts='tests/data_simple.csv')
         assert_frame_equal(out, self.compare_rolling_window_mean)
 
     def test_rolling_window_sum_cli(self):
-        args = 'tstoolbox rolling_window --statistic="sum" --input_ts="tests/test.csv"'
+        args = 'tstoolbox rolling_window --statistic="sum" --input_ts="tests/data_simple.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.compare_rolling_window_sum_cli)
 
     def test_rolling_window_mean_cli(self):
-        args = 'tstoolbox rolling_window --statistic="mean" --input_ts="tests/test.csv"'
+        args = 'tstoolbox rolling_window --statistic="mean" --input_ts="tests/data_simple.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.compare_rolling_window_mean_cli)

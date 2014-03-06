@@ -9,41 +9,6 @@ import baker
 
 from . import tsutils
 
-_offset_aliases = {
-    86400000000000:    'D',
-    604800000000000:   'W',
-    2419200000000000:  'M',
-    2505600000000000:  'M',
-    2592000000000000:  'M',
-    2678400000000000:  'M',
-    31536000000000000: 'A',
-    31622400000000000: 'A',
-    3600000000000:     'H',
-    60000000000:       'M',
-    1000000000:        'T',
-    1000000:           'L',
-    1000:              'U',
-    }
-
-
-def _guess_interval(gtsd, interval='guess'):
-    if interval is not None:
-        if interval == 'guess':
-            interval = pd.np.min(
-                gtsd.index.values[1:] - gtsd.index.values[:-1])
-            try:
-                interval = _offset_aliases[interval]
-            except KeyError:
-                raise ValueError("""
-Can't guess interval, you must supply desired interval with
-'--interval=' argument.""")
-            if interval == 'M':
-                # Need to determine whether 'M' or 'MS'
-                dr = pd.date_range(gtsd.index[0], periods=len(gtsd), freq='M')
-                if gtsd.reindex(dr).count() != gtsd.count():
-                    interval = 'MS'
-        return gtsd.asfreq(interval)
-
 
 @baker.command
 def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
@@ -79,7 +44,7 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     ntsd = tsd.copy()
-    ntsd = _guess_interval(ntsd, interval=interval)
+    ntsd = tsutils.asbestfreq(ntsd)[0]
     offset = ntsd.index[1] - ntsd.index[0]
     predf = pd.DataFrame(dict(zip(tsd.columns, tsd.mean().values)),
                          index=[tsd.index[0] - offset])
@@ -142,4 +107,4 @@ def fill_from_others(method='best',
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     ntsd = tsd.copy()
-    ntsd = _guess_interval(ntsd, interval=interval)
+    ntsd = tsutils.asbestfreq(ntsd)[0]

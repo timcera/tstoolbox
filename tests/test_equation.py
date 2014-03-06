@@ -85,62 +85,62 @@ class TestEquation(TestCase):
         self.equation_multiple_cols_04_cli = capture(tsutils._printiso, self.equation_multiple_cols_04)
 
     def test_equation(self):
-        out = tstoolbox.equation('x*4 + 2', input_ts='tests/test.csv', print_input=True)
+        out = tstoolbox.equation('x*4 + 2', input_ts='tests/data_simple.csv', print_input=True)
         assert_frame_equal(out, self.equation)
 
     def test_equation_multiple_cols_01(self):
-        out = tstoolbox.equation('sin(x1)*4 + cos(x2)*2', input_ts='tests/test_multiple_cols.csv', print_input=True)
+        out = tstoolbox.equation('sin(x1)*4 + cos(x2)*2', input_ts='tests/data_multiple_cols.csv', print_input=True)
         assert_frame_equal(out, self.equation_multiple_cols_01)
 
     def test_equation_multiple_cols_02(self):
-        out = tstoolbox.equation('x1 + x2', input_ts='tests/test_multiple_cols.csv', print_input=True)
+        out = tstoolbox.equation('x1 + x2', input_ts='tests/data_multiple_cols.csv', print_input=True)
         assert_frame_equal(out, self.equation_multiple_cols_02)
 
     def test_equation_multiple_cols_03(self):
-        out = tstoolbox.equation('x1[t] + 0.6*maximum(x1[t-1], x1[t+1]) + x2', input_ts='tests/test_multiple_cols.csv', print_input=True)
+        out = tstoolbox.equation('x1[t] + 0.6*maximum(x1[t-1], x1[t+1]) + x2', input_ts='tests/data_multiple_cols.csv', print_input=True)
         assert_frame_equal(out, self.equation_multiple_cols_03)
 
     def test_equation_multiple_cols_04(self):
-        out = tstoolbox.equation('x[t] + 0.6*maximum(x[t-1], x[t+1]) + x[t]', input_ts='tests/test_aggregate.csv', print_input=True)
+        out = tstoolbox.equation('x[t] + 0.6*maximum(x[t-1], x[t+1]) + x[t]', input_ts='tests/data_flat.csv', print_input=True)
         self.maxDiff = None
         assert_frame_equal(out, self.equation_multiple_cols_04)
 
     def test_equation_multiple_cols_05(self):
         # Almost same as test_equation_multiple_cols_04
-        out = tstoolbox.equation('x + 0.6*maximum(x[t-1], x[t+1]) + x[t]', input_ts='tests/test_aggregate.csv', print_input=True)
+        out = tstoolbox.equation('x + 0.6*maximum(x[t-1], x[t+1]) + x[t]', input_ts='tests/data_flat.csv', print_input=True)
         self.maxDiff = None
         assert_frame_equal(out, self.equation_multiple_cols_04)
 
     def test_equation_cli(self):
-        args = 'tstoolbox equation "x*4 + 2" --input_ts="tests/test.csv"  --print_input=True'
+        args = 'tstoolbox equation "x*4 + 2" --input_ts="tests/data_simple.csv"  --print_input=True'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
         self.maxDiff = None
         self.assertEqual(out, self.equation_cli)
 
     def test_equation_multiple_cols_01_cli(self):
-        args = 'tstoolbox equation "sin(x1)*4 + cos(x2)*2" --input_ts="tests/test_multiple_cols.csv" --print_input=True'
+        args = 'tstoolbox equation "sin(x1)*4 + cos(x2)*2" --input_ts="tests/data_multiple_cols.csv" --print_input=True'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
         self.maxDiff = None
         self.assertEqual(out, self.equation_multiple_cols_01_cli)
 
     def test_equation_multiple_cols_02_cli(self):
-        args = 'tstoolbox equation "x1 + x2" --input_ts="tests/test_multiple_cols.csv" --print_input=True'
+        args = 'tstoolbox equation "x1 + x2" --input_ts="tests/data_multiple_cols.csv" --print_input=True'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
         self.maxDiff = None
         self.assertEqual(out, self.equation_multiple_cols_02_cli)
 
     def test_equation_multiple_cols_03_cli(self):
-        args = 'tstoolbox equation "x1[t] + 0.6*maximum(x1[t-1], x1[t+1]) + x2" --input_ts="tests/test_multiple_cols.csv" --print_input=True --float_format="%.2f"'
+        args = 'tstoolbox equation "x1[t] + 0.6*maximum(x1[t-1], x1[t+1]) + x2" --input_ts="tests/data_multiple_cols.csv" --print_input=True --float_format="%.2f"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
         self.maxDiff = None
         self.assertEqual(out, self.equation_multiple_cols_03_cli)
 
     def test_equation_multiple_cols_04_cli(self):
-        args = 'tstoolbox equation "x[t] + 0.6*maximum(x[t-1], x[t+1]) + x[t]" --input_ts="tests/test_aggregate.csv" --print_input=True'
+        args = 'tstoolbox equation "x[t] + 0.6*maximum(x[t-1], x[t+1]) + x[t]" --input_ts="tests/data_flat.csv" --print_input=True'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
         self.maxDiff = None
@@ -148,7 +148,7 @@ class TestEquation(TestCase):
 
     def test_equation_multiple_cols_05_cli(self):
         # Almost same as test_equation_multiple_cols_04_cli
-        args = 'tstoolbox equation "x + 0.6*maximum(x[t-1], x[t+1]) + x[t]" --input_ts="tests/test_aggregate.csv" --print_input=True'
+        args = 'tstoolbox equation "x + 0.6*maximum(x[t-1], x[t+1]) + x[t]" --input_ts="tests/data_flat.csv" --print_input=True'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
         self.maxDiff = None

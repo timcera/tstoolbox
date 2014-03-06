@@ -11,10 +11,6 @@ from __future__ import absolute_import
 import sys
 import os.path
 import warnings
-try:
-    from io import StringIO
-except:
-    from StringIO import StringIO
 warnings.filterwarnings('ignore')
 
 import pandas as pd
@@ -872,17 +868,17 @@ def clip(
 
 @baker.command
 def add_trend(
-        start_offset_from_mean,
-        end_offset_from_mean,
+        start_offset,
+        end_offset,
         start_date=None,
         end_date=None,
         print_input=False,
         input_ts='-'):
     '''
-    Adds a trend referenced to the mean
+    Adds a trend.
 
-    :param start_offset_from_mean: The starting value for the applied trend.
-    :param end_offset_from_mean: The ending value for the applied trend.
+    :param start_offset: The starting value for the applied trend.
+    :param end_offset: The ending value for the applied trend.
     :param print_input: If set to 'True' will include the input columns in
         the output table.  Default is 'False'.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
@@ -896,10 +892,10 @@ def add_trend(
                              start_date=start_date,
                              end_date=end_date)
     ntsd = tsd.copy().astype('f')
-    ntsd.ix[:] = pd.np.nan
-    ntsd.ix[0] = tsd.mean() + float(start_offset_from_mean)
-    ntsd.ix[-1] = tsd.mean() + float(end_offset_from_mean)
-    ntsd = ntsd.apply(pd.Series.interpolate, method='values')
+    ntsd.ix[:, :] = pd.np.nan
+    ntsd.ix[0, :] = float(start_offset)
+    ntsd.ix[-1, :] = float(end_offset)
+    ntsd = ntsd.interpolate(method='values')
     ntsd = ntsd + tsd
     return tsutils.print_input(
         print_input, tsd, ntsd, '_trend')
