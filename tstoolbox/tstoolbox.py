@@ -980,6 +980,117 @@ def calculate_fdc(
 
 
 @baker.command
+def stack(
+        input_ts='-',
+        start_date=None,
+        end_date=None):
+    '''
+    Returns the stack of the input table.
+
+    The stack command takes the standard table and converts to a three column
+    table.
+
+
+    From:
+
+    Datetime,TS1,TS2,TS3
+    2000-01-01 00:00:00,1.2,1018.2,0.0032
+    2000-01-02 00:00:00,1.8,1453.1,0.0002
+    2000-01-03 00:00:00,1.9,1683.1,-0.0004
+
+    To:
+
+    Datetime,Columns,Values
+    2000-01-01,TS1,1.2
+    2000-01-02,TS1,1.8
+    2000-01-03,TS1,1.9
+    2000-01-01,TS2,1018.2
+    2000-01-02,TS2,1453.1
+    2000-01-03,TS2,1683.1
+    2000-01-01,TS3,0.0032
+    2000-01-02,TS3,0.0002
+    2000-01-03,TS3,-0.0004
+
+
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+       stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
+    '''
+    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+                             start_date=start_date,
+                             end_date=end_date)
+
+    newtsd = pd.DataFrame(tsd.stack()).reset_index(1)
+    newtsd.sort(['level_1'], inplace=True)
+    newtsd.columns = ['Columns', 'Values']
+    return tsutils.printiso(newtsd)
+
+
+@baker.command
+def unstack(
+        column_names,
+        input_ts='-',
+        start_date=None,
+        end_date=None):
+    '''
+    Returns the unstack of the input table.
+
+    The unstack command takes the stacked table and converts to a
+    standard tstoolbox table.
+
+
+    From:
+
+    Datetime,Columns,Values
+    2000-01-01,TS1,1.2
+    2000-01-02,TS1,1.8
+    2000-01-03,TS1,1.9
+    2000-01-01,TS2,1018.2
+    2000-01-02,TS2,1453.1
+    2000-01-03,TS2,1683.1
+    2000-01-01,TS3,0.0032
+    2000-01-02,TS3,0.0002
+    2000-01-03,TS3,-0.0004
+
+
+    To:
+
+    Datetime,TS1,TS2,TS3
+    2000-01-01,1.2,1018.2,0.0032
+    2000-01-02,1.8,1453.1,0.0002
+    2000-01-03,1.9,1683.1,-0.0004
+
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+       stdin.
+    :param columns_labels: The column in the table that holds the column
+    labels.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
+    '''
+    tsd = tsutils.read_iso_ts(input_ts)
+    tsd.sort(inplace=True)
+    tsd = tsutils.date_slice(tsd,
+                             start_date=start_date,
+                             end_date=end_date)
+
+    index = [tsd.index.values, tsd[column_names].values]
+    cols = list(tsd.columns)
+    cols.remove(column_names)
+    newtsd = pd.DataFrame(tsd[cols].values, index=index)
+    newtsd = newtsd.unstack()
+    newtsd.index.name = 'Datetime'
+    levels = newtsd.columns.levels
+    labels = newtsd.columns.labels
+    newtsd.columns = levels[1][labels[1]]
+    return tsutils.printiso(newtsd)
+
+
+@baker.command
 def plot(
         ofilename='plot.png',
         type='time',
