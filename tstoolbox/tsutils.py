@@ -46,10 +46,20 @@ def asbestfreq(data):
 
     # This first loop gets the basic offset alias
     cnt = data.count()
+    code = ''
+    otstcnt = 0
     for pandacode in pandacodes:
         tstfreq = data.asfreq('{0}'.format(pandacode))
+        # Following test would work if NO missing data.
         if np.all(tstfreq.count() == cnt):
+            code = pandacode
             break
+        # The following test means that the loop has gone 1 too far.
+        # Therefore use 'code' without update.
+        if tstfreq.count() == otstcnt:
+            break
+        code = pandacode
+        otstcnt = tstfreq.count()
 
     # Now need to find the tstep, for example bi-weekly = '2W'
 
@@ -67,15 +77,15 @@ def asbestfreq(data):
                'U': 1000,
                }
 
-    finterval = codemap.setdefault(pandacode, None)
+    finterval = codemap.setdefault(code, None)
 
     tstep = 1
     if finterval == minterval:
-        return tstfreq, pandacode
+        return tstfreq, code
     elif finterval is not None:
         try:
             for tstep in range(int(minterval)//int(finterval) + 1, 1, -1):
-                tstfreq = data.asfreq('{0}{1}'.format(tstep, pandacode))
+                tstfreq = data.asfreq('{0}{1}'.format(tstep, code))
                 if np.all(tstfreq.count() == cnt):
                     break
         except AttributeError:
@@ -83,7 +93,7 @@ def asbestfreq(data):
             # That would go here....
             pass
 
-    return tstfreq, '{0}{1}'.format(tstep, pandacode)
+    return tstfreq, '{0}{1}'.format(tstep, code)
 
 
 # Utility
