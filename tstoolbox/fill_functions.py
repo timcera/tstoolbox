@@ -43,7 +43,10 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
         stdin.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
-    ntsd = tsd.copy()
+    if print_input is True:
+        ntsd = tsd.copy()
+    else:
+        ntsd = tsd
     ntsd = tsutils.asbestfreq(ntsd)[0]
     offset = ntsd.index[1] - ntsd.index[0]
     predf = pd.DataFrame(dict(zip(tsd.columns, tsd.mean().values)),
@@ -81,22 +84,21 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     return tsutils.print_input(print_input, tsd, ntsd, '_fill')
 
 
-def fill_from_others(method='best',
-                     maximum_lag=24,
-                     interval='guess',
-                     print_input=False,
-                     input_ts='-'):
+@baker.command
+def fill_by_correlation(method='move2',
+                        maximum_lag=0,
+                        interval='guess',
+                        transform='log10',
+                        choose_best=True,
+                        print_input=False,
+                        input_ts='-'):
     '''
     Fills missing values (NaN) with different methods.  Missing values can
         occur because of NaN, or because the time series is sparse.  The
         'interval' option can insert NaNs to create a dense time series.
     :param method: String contained in single quotes or a number that
         defines the method to use for filling.
-        'ffill': assigns NaN values to the last good value
-        'bfill': assigns NaN values to the next good value
-        number: fills all NaN to this number
-        'interpolate': will linearly interpolate missing values
-        'spline': spline interpolation
+        'move2': maintenance of variance extension - 2
     :param interval: Will try to insert missing intervals.  Can give any
         of the pandas offset aliases, 'guess' (to try and figure the
         interval), or None to not insert missing intervals.
@@ -106,5 +108,46 @@ def fill_from_others(method='best',
         stdin.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
-    ntsd = tsd.copy()
+    if print_input is True:
+        ntsd = tsd.copy()
+    else:
+        ntsd = tsd
     ntsd = tsutils.asbestfreq(ntsd)[0]
+
+    if transform == 'log10':
+        ntsd = pd.np.log10(ntsd)
+
+    firstcol = pd.DataFrame(ntsd.iloc[:, 0])
+    basets = pd.DataFrame(ntsd.iloc[:, 1:])
+    if choose_best is True:
+        firstcol = pd.DataFrame(ntsd.iloc[:, 0])
+        allothers = pd.DataFrame(ntsd.iloc[:, 1:])
+        collect = []
+        for index in list(range(maximum_lag + 1)):
+            shifty = allothers.shift(index)
+            testdf = firstcol.join(shifty)
+            lagres = testdf.dropna().corr().iloc[1:, 0]
+            collect.append(pd.np.abs(lagres.values))
+        collect = pd.np.array(collect)
+        bestlag, bestts = pd.np.unravel_index(collect.argmax(), collect.shape)
+        basets = pd.DataFrame(ntsd.iloc[:, bestts + 1].shift(bestlag))
+
+    single_source_ts = ['move1', 'move2', 'move3']
+    if method.lower() in single_source_ts:
+        if len(basets.columns) != 1:
+            raise ValueError('''
+*
+*   For methods in {0}
+*   You can only have a single source column.  You can pass in onlu 2
+*   time-series or use the flag 'choose_best' along with 'maximum_lag'.
+*   Instead there are {1} source time series.
+*
+'''.format(single_source_ts, len(basets.columns)))
+
+    if method == 'move1':
+        ntsd = firstcol.join(basets)
+        dna = ntsd.dropna()
+        means = pd.np.mean(dna)
+        stdevs = pd.np.std(dna)
+        print(means, stdevs)
+

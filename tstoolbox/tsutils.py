@@ -13,13 +13,22 @@ def date_slice(input_tsd, start_date=None, end_date=None):
     Private function to slice time series.
     '''
     if start_date is None:
-        sdate = None
+        sdate = input_tsd.index[0]
     else:
         sdate = pd.Timestamp(start_date)
     if end_date is None:
-        edate = None
+        edate = input_tsd.index[-1]
     else:
         edate = pd.Timestamp(end_date)
+    ltsd = len(input_tsd.columns)
+    if sdate < input_tsd.index[0]:
+        before = pd.DataFrame([[pd.np.nan]*ltsd], index=[sdate],
+                columns=input_tsd.columns)
+        input_tsd = before.append(input_tsd)
+    if edate > input_tsd.index[-1]:
+        after = pd.DataFrame([[pd.np.nan]*ltsd], index=[edate],
+                columns=input_tsd.columns)
+        input_tsd = input_tsd.append(after)
     return input_tsd[sdate:edate]
 
 
@@ -97,14 +106,18 @@ def asbestfreq(data):
 
 
 # Utility
-def print_input(iftrue, input, output, suffix, float_format='%g'):
+def print_input(iftrue, intds, output, suffix,
+                date_format=None, sep=',',
+                float_format='%g'):
     if suffix:
         output.rename(columns=lambda xloc: xloc + suffix, inplace=True)
     if iftrue:
-        return printiso(input.join(output, how='outer'),
-                        float_format=float_format)
+        return printiso(intds.join(output, how='outer'),
+                        date_format=date_format,
+                        sep=sep, float_format=float_format)
     else:
-        return printiso(output, float_format=float_format)
+        return printiso(output, date_format=date_format, sep=sep,
+                        float_format=float_format)
 
 
 def _apply_across_columns(func, xtsd, **kwds):
@@ -113,7 +126,7 @@ def _apply_across_columns(func, xtsd, **kwds):
     return xtsd
 
 
-def _printiso(tsd, date_format='%Y-%m-%d %H:%M:%S', delimiter=',',
+def _printiso(tsd, date_format=None, sep=',',
               float_format='%g'):
     ''' Separate so can use in tests.
     '''
@@ -123,14 +136,16 @@ def _printiso(tsd, date_format='%Y-%m-%d %H:%M:%S', delimiter=',',
     try:
         if tsd.index.is_all_dates:
             tsd.index.name = 'Datetime'
-            tsd.to_csv(sys.stdout, float_format=float_format)
+            tsd.to_csv(sys.stdout, float_format=float_format,
+                       date_format=date_format, sep=sep)
         else:
             print(tsd)
     except IOError:
         return
 
 
-def printiso(tsd, sparse=False, float_format='%g'):
+def printiso(tsd, sparse=False, date_format=None,
+             sep=',', float_format='%g'):
     '''
     Default output format for tstoolbox, wdmtoolbox, swmmtoolbox,
     and hspfbintoolbox.
@@ -151,7 +166,8 @@ def printiso(tsd, sparse=False, float_format='%g'):
     sys.tracebacklimit = oldtracebacklimit
     tsd.index.name = 'Datetime'
     if baker_cli:
-        _printiso(tsd, float_format=float_format)
+        _printiso(tsd, float_format=float_format,
+                  date_format=date_format, sep=sep)
     else:
         return tsd
 
