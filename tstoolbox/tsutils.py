@@ -12,24 +12,24 @@ def date_slice(input_tsd, start_date=None, end_date=None):
     '''
     Private function to slice time series.
     '''
-    if start_date is None:
-        sdate = input_tsd.index[0]
-    else:
-        sdate = pd.Timestamp(start_date)
-    if end_date is None:
-        edate = input_tsd.index[-1]
-    else:
-        edate = pd.Timestamp(end_date)
-    ltsd = len(input_tsd.columns)
-    if sdate < input_tsd.index[0]:
-        before = pd.DataFrame([[pd.np.nan]*ltsd], index=[sdate],
-                columns=input_tsd.columns)
-        input_tsd = before.append(input_tsd)
-    if edate > input_tsd.index[-1]:
-        after = pd.DataFrame([[pd.np.nan]*ltsd], index=[edate],
-                columns=input_tsd.columns)
-        input_tsd = input_tsd.append(after)
-    return input_tsd[sdate:edate]
+
+    accdate = []
+    for testdate,alpha_omega in [(start_date, 0), (end_date, -1)]:
+        if testdate is None:
+            tdate = input_tsd.index[alpha_omega]
+        else:
+            tdate = pd.Timestamp(testdate)
+            # Is this comparison cheaper than the .join?
+            if not pd.np.any(input_tsd.index == tdate):
+                # Create a dummy column at the date I want, then delete
+                # Not the best, but...
+                row = pd.DataFrame([pd.np.nan], index=[tdate])
+                row.columns = ['deleteme']
+                input_tsd = input_tsd.join(row, how='outer')
+                input_tsd.drop('deleteme', inplace=True, axis=1)
+        accdate.append(tdate)
+
+    return input_tsd[slice(*accdate)]
 
 
 def asbestfreq(data):
