@@ -194,12 +194,11 @@ def read(filenames, start_date=None, end_date=None, dense=False,
         fname = os.path.basename(os.path.splitext(filename)[0])
         tsd = tsutils.date_slice(tsutils.read_iso_ts(filename, dense=dense),
                                  start_date=start_date, end_date=end_date)
-        if fname in fnames:
-            tsd.columns = ['{1}_{0}'.format(index, i) for i in tsd.columns]
-        fnames[fname] = 1
 
         try:
-            result = result.join(tsd, how='outer')
+            result = result.join(tsd,
+                                 how='outer',
+                                 rsuffix='_{0}'.format(os.path.splitext(os.path.basename(filename))[0]))
         except NameError:
             result = tsd
     return tsutils.printiso(result, float_format=float_format)
@@ -537,10 +536,8 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
     for index, col in enumerate(columns):
         jtsd = pd.DataFrame(tsd[tsd.columns[col]])
 
-        jtsd = jtsd.rename(
-            columns=lambda x: str(x).strip() + '_' + str(index), copy=True)
         try:
-            newtsd = newtsd.join(jtsd)
+            newtsd = newtsd.join(jtsd, lsuffix='_{0}'.format(index))
         except NameError:
             newtsd = jtsd
     return tsutils.printiso(newtsd)

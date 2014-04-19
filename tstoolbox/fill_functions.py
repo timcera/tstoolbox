@@ -149,5 +149,6 @@ def fill_by_correlation(method='move2',
         dna = ntsd.dropna()
         means = pd.np.mean(dna)
         stdevs = pd.np.std(dna)
+        print(means[1] + stdevs[1]/stdevs[0]*means[0])
         print(means, stdevs)
 

@@ -55,20 +55,11 @@ def asbestfreq(data):
 
     # This first loop gets the basic offset alias
     cnt = data.count()
-    code = ''
-    otstcnt = 0
     for pandacode in pandacodes:
         tstfreq = data.asfreq('{0}'.format(pandacode))
         # Following test would work if NO missing data.
         if np.all(tstfreq.count() == cnt):
-            code = pandacode
             break
-        # The following test means that the loop has gone 1 too far.
-        # Therefore use 'code' without update.
-        if tstfreq.count() == otstcnt:
-            break
-        code = pandacode
-        otstcnt = tstfreq.count()
 
     # Now need to find the tstep, for example bi-weekly = '2W'
 
@@ -86,15 +77,15 @@ def asbestfreq(data):
                'U': 1000,
                }
 
-    finterval = codemap.setdefault(code, None)
+    finterval = codemap.setdefault(pandacode, None)
 
     tstep = 1
     if finterval == minterval:
-        return tstfreq, code
+        return tstfreq, pandacode
     elif finterval is not None:
         try:
             for tstep in range(int(minterval)//int(finterval) + 1, 1, -1):
-                tstfreq = data.asfreq('{0}{1}'.format(tstep, code))
+                tstfreq = data.asfreq('{0}{1}'.format(tstep, pandacode))
                 if np.all(tstfreq.count() == cnt):
                     break
         except AttributeError:
@@ -102,7 +93,7 @@ def asbestfreq(data):
             # That would go here....
             pass
 
-    return tstfreq, '{0}{1}'.format(tstep, code)
+    return tstfreq, '{0}{1}'.format(tstep, pandacode)
 
 
 # Utility
@@ -112,9 +103,13 @@ def print_input(iftrue, intds, output, suffix,
     if suffix:
         output.rename(columns=lambda xloc: xloc + suffix, inplace=True)
     if iftrue:
-        return printiso(intds.join(output, how='outer'),
+        return printiso(intds.join(output,
+                                   lsuffix='_1',
+                                   rsuffix='_2',
+                                   how='outer'),
                         date_format=date_format,
-                        sep=sep, float_format=float_format)
+                        sep=sep,
+                        float_format=float_format)
     else:
         return printiso(output, date_format=date_format, sep=sep,
                         float_format=float_format)
