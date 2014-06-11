@@ -188,10 +188,8 @@ def read(filenames, start_date=None, end_date=None, dense=False,
     :param dense: Set `dense` to True to have missing values inserted such that
         there is a single interval.
     '''
-    fnames = {}
     filenames = filenames.split(',')
     for index, filename in enumerate(filenames):
-        fname = os.path.basename(os.path.splitext(filename)[0])
         tsd = tsutils.date_slice(tsutils.read_iso_ts(filename, dense=dense),
                                  start_date=start_date, end_date=end_date)
 
@@ -959,20 +957,20 @@ def calculate_fdc(
 *
 '''.format(len(tsd.columns)))
 
-    cnt = len(tsd.values)
+    cnt = tsd[tsd.columns[0]].count()
     a_tmp = 1. / (cnt + 1)
     b_tmp = 1 - a_tmp
-    plotpos = ma.empty(len(tsd), dtype=float)
     if x_plotting_position == 'norm':
         from scipy.stats.distributions import norm
-        plotpos[:cnt] = norm.ppf(linspace(a_tmp, b_tmp, cnt))
+        plotpos = norm.ppf(linspace(a_tmp, b_tmp, cnt))
         xlabel = norm.cdf(plotpos)
     if x_plotting_position == 'lin':
-        plotpos[:cnt] = linspace(a_tmp, b_tmp, cnt)
+        plotpos = linspace(a_tmp, b_tmp, cnt)
         xlabel = plotpos
-    ydata = ma.sort(tsd[tsd.columns[0]].values, endwith=False)[::-1]
+    ydata = tsd[tsd.columns[0]].dropna()
+    ydata.sort(ascending=False)
     print('Exceedance, Value, Exceedance_Label')
-    for xdat, ydat, zdat in zip(plotpos, ydata, xlabel):
+    for xdat, ydat, zdat in zip(plotpos, ydata.values, xlabel):
         print('{0}, {1}, {2}'.format(xdat, ydat, zdat))
 
 
@@ -1087,6 +1085,33 @@ def unstack(
     return tsutils.printiso(newtsd)
 
 
+mark_dict = {
+".":"point",
+",":"pixel",
+"o":"circle",
+"v":"triangle_down",
+"^":"triangle_up",
+"<":"triangle_left",
+">":"triangle_right",
+"1":"tri_down",
+"2":"tri_up",
+"3":"tri_left",
+"4":"tri_right",
+"8":"octagon",
+"s":"square",
+"p":"pentagon",
+"*":"star",
+"h":"hexagon1",
+"H":"hexagon2",
+"+":"plus",
+"D":"diamond",
+"d":"thin_diamond",
+"|":"vline",
+"_":"hline"
+}
+
+colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+
 @baker.command
 def plot(
         ofilename='plot.png',
@@ -1110,6 +1135,8 @@ def plot(
         scatter_matrix_diagonal='probability_density',
         bootstrap_size=50,
         bootstrap_samples=500,
+        norm_xaxis=False,
+        xy_match_line='',
         input_ts='-',
         start_date=None,
         end_date=None):
@@ -1283,6 +1310,12 @@ def plot(
        Defaults to 50.
     :param bootstrap_samples: The number of random subsets of
        'bootstrap_size'.  Defaults to 500.
+    :param norm_xaxis: Only available with xy plots.
+       Whether the x-axis should be labels with the normal
+       distribution common with frequency distribution curves.
+       Defaults to False.
+    :param xy_match_line: Will add a match line where x == y.  Default is ''.
+       Can set to a line style code.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
        stdin.
     :param start_date: The start_date of the series in ISOdatetime format, or
@@ -1296,7 +1329,6 @@ def plot(
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts, dense=False),
                              start_date=start_date,
                              end_date=end_date)
-
     # This defines the xlim and ylim as lists rather than strings.
     # Might prove useful in the future in a more generic spot.
     def know_your_limits(xylimits):
@@ -1341,7 +1373,9 @@ def plot(
 ''')
         if len(tsd.columns) == len(lnames):
             renamedict = dict(zip(tsd.columns, lnames))
-            tsd.rename(columns=renamedict, inplace=True)
+        elif type == 'xy' and len(tsd.columns)//2 + 1 == len(lnames):
+            renamedict = dict(zip(tsd.columns[2::2], lnames[1:]))
+            renamedict[tsd.columns[1]] = lnames[0]
         else:
             raise ValueError('''
 *
@@ -1349,53 +1383,139 @@ def plot(
 *   separated names as columns in the input data.  The input
 *   data has {0} where the number of 'legend_names' is {1}.
 *
-*   If 'xy' type be sure to have a name for the 'x' column.
+*   If 'xy' type you need to have legend names as x,y1,y2,y3,...
 *
 '''.format(len(tsd.columns), len(lnames)))
+        tsd.rename(columns=renamedict, inplace=True)
+    else:
+        lnames = tsd.columns
 
     if style:
         style = style.split(',')
+
     plt.figure(figsize=figsize)
     if type == 'time':
         tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
-                 ylim=ylim, secondary_y=secondary_y, mark_right=mark_right)
+                 ylim=ylim, secondary_y=secondary_y, mark_right=mark_right,
+                 figsize=figsize)
         plt.xlabel(xtitle or 'Time')
         plt.ylabel(ytitle)
-        plt.legend(loc='best')
+        if legend is True:
+            plt.legend(loc='best')
     elif type == 'xy' or type == 'double_mass':
+        # PANDAS was not doing the right thing with xy plots
+        # if you wanted lines between markers.
+        # Fell back to using raw matplotlib.
+        # Boy I do not like matplotlib.
+        fig, ax = plt.subplots(figsize=figsize)
         if style is None and type == 'xy':
-            style = '*'
+            style = '*' * len(tsd.columns)
+            style = ','.join(style).split(',')  # weird but it works
         if type == 'double_mass':
             tsd = tsd.cumsum()
-        tsd.plot(x=tsd.columns[0], y=tsd.columns[1:], subplots=subplots,
-                 sharex=sharex, sharey=sharey, style=style, logx=logx,
-                 logy=logy, xlim=xlim, ylim=ylim, secondary_y=secondary_y,
-                 mark_right=mark_right)
-        plt.xlabel(xtitle or tsd.columns[0])
-        plt.ylabel(ytitle or tsd.columns[1])
-        plt.legend(loc='best')
+        xs = pd.np.array(tsd.iloc[:, 0::2])
+        ys = pd.np.array(tsd.iloc[:, 1::2])
+        for colindex in range(tsd.shape[1]//2):
+            lstyle = style[colindex]
+            lcolor = 'b'
+            marker = ''
+            linest = '-'
+            if lstyle[0] in colors:
+                lcolor = lstyle[0]
+                lstyle = lstyle[1:]
+                linest = lstyle
+            if lstyle[0] in mark_dict:
+                marker = lstyle[0]
+                linest = lstyle[1:]
+
+            if logy is True:
+                ax.semilogy(xs[:, colindex], ys[:, colindex],
+                             linestyle=linest,
+                             color=lcolor,
+                             marker=marker,
+                             label=lnames[colindex + 1]
+                             )
+            elif logx is True:
+                ax.semilogx(xs[:, colindex]. ys[:, colindex],
+                             linestyle=linest,
+                             color=lcolor,
+                             marker=marker,
+                             label=lnames[colindex + 1]
+                             )
+            elif logx is True and logy is True:
+                ax.loglog(xs[:,colindex]. ys[:,colindex],
+                           linestyle=linest,
+                           color=lcolor,
+                           marker=marker,
+                           label=lnames[colindex + 1]
+                           )
+            else:
+                ax.plot(xs[:,colindex], ys[:,colindex],
+                         linestyle=linest,
+                         color=lcolor,
+                         marker=marker,
+                         label=lnames[colindex + 1]
+                         )
+            if xy_match_line:
+                if isinstance(xy_match_line, str):
+                    xymsty = xy_match_line
+                else:
+                    xymsty = 'g--'
+                nxlim = ax.get_xlim()
+                nylim = ax.get_ylim()
+                maxt = max(nxlim[1], nylim[1])
+                ax.plot([0, maxt], [0, maxt],
+                        linestyle=xymsty)
+        ax.set_ylim(ylim)
+        if norm_xaxis is True:
+            # This should go into it's own FDC probability plot.
+            from matplotlib.ticker import FixedLocator
+            ax.set_xlim((0.001, 0.999))
+            xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
+            xtmaj_str = ['1', '10', '50', '90', '99']
+            xtmin = pd.np.concatenate([pd.np.linspace(0.001, 0.01, 10),
+                                       pd.np.linspace(0.01, 0.1, 10),
+                                       pd.np.linspace(0.1, 0.9, 9),
+                                       pd.np.linspace(0.9, 0.99, 10),
+                                       pd.np.linspace(0.99, 0.999, 10),
+                                       ])
+            ax.xaxis.set_major_locator(FixedLocator(xtmaj))
+            ax.xaxis.set_minor_locator(FixedLocator(xtmin))
+            ax.set_xticklabels(xtmaj_str)
+        else:
+            ax.set_xlim(xlim)
+        ax.set_xlabel(xtitle or tsd.columns[0])
+        ax.set_ylabel(ytitle or tsd.columns[1])
+        if legend is True:
+            ax.legend(loc='best')
     elif type == 'probability_density':
         tsd.plot(kind='kde', legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
-                 ylim=ylim, secondary_y=secondary_y)
+                 ylim=ylim, secondary_y=secondary_y,
+                 figsize=figsize)
         plt.xlabel(xtitle)
         plt.ylabel(ytitle or 'Density')
+        if legend is True:
+            plt.legend(loc='best')
     elif type == 'boxplot':
         tsd.boxplot()
     elif type == 'scatter_matrix':
         from pandas.tools.plotting import scatter_matrix
         if scatter_matrix_diagonal == 'probablity_density':
             scatter_matrix_diagonal = 'kde'
-        scatter_matrix(tsd, figsize=figsize, diagonal=scatter_matrix_diagonal)
+        scatter_matrix(tsd, diagonal=scatter_matrix_diagonal,
+                       figsize=figsize)
     elif type == 'lag_plot':
         from pandas.tools.plotting import lag_plot
-        lag_plot(tsd)
+        lag_plot(tsd,
+                 figsize=figsize)
         plt.xlabel(xtitle or 'y(t)')
         plt.ylabel(ytitle or 'y(t+{0})'.format(short_freq or 1))
     elif type == 'autocorrelation':
         from pandas.tools.plotting import autocorrelation_plot
-        autocorrelation_plot(tsd)
+        autocorrelation_plot(tsd,
+                             figsize=figsize)
         plt.xlabel(xtitle or 'Time Lag {0}'.format(short_freq))
         plt.ylabel(ytitle)
     elif type == 'bootstrap':
@@ -1408,7 +1528,8 @@ def plot(
 '''.format(len(tsd.columns)))
         from pandas.tools.plotting import bootstrap_plot
         bootstrap_plot(tsd, size=bootstrap_size, samples=bootstrap_samples,
-                       color='gray')
+                       color='gray',
+                       figsize=figsize)
     else:
         raise ValueError('''
 *

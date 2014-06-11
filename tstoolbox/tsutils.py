@@ -13,23 +13,26 @@ def date_slice(input_tsd, start_date=None, end_date=None):
     Private function to slice time series.
     '''
 
-    accdate = []
-    for testdate,alpha_omega in [(start_date, 0), (end_date, -1)]:
-        if testdate is None:
-            tdate = input_tsd.index[alpha_omega]
-        else:
-            tdate = pd.Timestamp(testdate)
-            # Is this comparison cheaper than the .join?
-            if not pd.np.any(input_tsd.index == tdate):
-                # Create a dummy column at the date I want, then delete
-                # Not the best, but...
-                row = pd.DataFrame([pd.np.nan], index=[tdate])
-                row.columns = ['deleteme']
-                input_tsd = input_tsd.join(row, how='outer')
-                input_tsd.drop('deleteme', inplace=True, axis=1)
-        accdate.append(tdate)
+    if input_tsd.index.is_all_dates:
+        accdate = []
+        for testdate,alpha_omega in [(start_date, 0), (end_date, -1)]:
+            if testdate is None:
+                tdate = input_tsd.index[alpha_omega]
+            else:
+                tdate = pd.Timestamp(testdate)
+                # Is this comparison cheaper than the .join?
+                if not pd.np.any(input_tsd.index == tdate):
+                    # Create a dummy column at the date I want, then delete
+                    # Not the best, but...
+                    row = pd.DataFrame([pd.np.nan], index=[tdate])
+                    row.columns = ['deleteme']
+                    input_tsd = input_tsd.join(row, how='outer')
+                    input_tsd.drop('deleteme', inplace=True, axis=1)
+            accdate.append(tdate)
 
-    return input_tsd[slice(*accdate)]
+        return input_tsd[slice(*accdate)]
+    else:
+        return input_tsd
 
 
 def asbestfreq(data):
@@ -125,7 +128,6 @@ def _printiso(tsd, date_format=None, sep=',',
               float_format='%g'):
     ''' Separate so can use in tests.
     '''
-    tsd.index.name = 'Datetime'
     import sys
     sys.tracebacklimit = 1000
     try:
@@ -134,7 +136,9 @@ def _printiso(tsd, date_format=None, sep=',',
             tsd.to_csv(sys.stdout, float_format=float_format,
                        date_format=date_format, sep=sep)
         else:
-            print(tsd)
+            tsd.index.name = 'UniqueID'
+            tsd.to_csv(sys.stdout, float_format=float_format,
+                       date_format=date_format, sep=sep)
     except IOError:
         return
 
@@ -167,14 +171,25 @@ def printiso(tsd, sparse=False, date_format=None,
         return tsd
 
 
-def read_iso_ts(indat, dense=True):
+def read_iso_ts(indat, dense=True, parse_dates=True):
     '''
-    Reads the format printed by 'print_iso'.
+    Reads the format printed by 'print_iso' and maybe other formats.
     '''
     import csv
     from pandas.compat import StringIO, u
 
     import baker
+
+    index_col = 0
+    if parse_dates is False:
+        index_col = False
+
+    # Would want this to be more generic...
+    na_values = []
+    for spc in range(20)[1:]:
+        spcs = ' '*spc
+        na_values.append(spcs)
+        na_values.append(spcs + 'nan')
 
     fp = None
 
@@ -183,10 +198,14 @@ def read_iso_ts(indat, dense=True):
         indat = pd.DataFrame(indat)
 
     if isinstance(indat, pd.DataFrame):
-        indat.index.name = 'Datetime'
-        if dense:
-            return asbestfreq(indat)[0]
+        if indat.index.is_all_dates:
+            indat.index.name = 'Datetime'
+            if dense:
+                return asbestfreq(indat)[0]
+            else:
+                return indat
         else:
+            indat.index.name = 'UniqueID'
             return indat
 
     if isinstance(indat, str) or isinstance(indat, bytes):
@@ -225,6 +244,7 @@ def read_iso_ts(indat, dense=True):
 
     if fp:
         try:
+            # This will fail if coming from stdin
             fp.seek(0)
             readsome = fp.read(2048)
             dialect = csv.Sniffer().sniff(readsome,
@@ -236,15 +256,19 @@ def read_iso_ts(indat, dense=True):
 
         if has_header:
             result = pd.io.parsers.read_table(fp, header=0,
+                                              na_values = na_values,
                                               dialect=dialect,
-                                              index_col=0,
-                                              parse_dates=True)
+                                              index_col=index_col,
+                                              parse_dates=True,
+                                              skipinitialspace=True)
             result.columns = [i.strip() for i in result.columns]
         else:
             result = pd.io.parsers.read_table(fp, header=None,
+                                              na_values = na_values,
                                               dialect=dialect,
-                                              index_col=0,
-                                              parse_dates=True)
+                                              index_col=index_col,
+                                              parse_dates=True,
+                                              skipinitialspace=True)
             fname, ext = os.path.splitext(fp.name)
             if len(result.columns) == 1:
                 result.columns = [fname]
@@ -252,14 +276,20 @@ def read_iso_ts(indat, dense=True):
                 result.columns = ['{0}_{1}'.format(fname, i)
                                   for i in result.columns]
 
-    result.index.name = 'Datetime'
+    if result.index.is_all_dates is True:
+        result.index.name = 'Datetime'
 
-    if dense:
-        try:
-            return asbestfreq(result)[0]
-        except ValueError:
+        if dense:
+            try:
+                return asbestfreq(result)[0]
+            except ValueError:
+                return result
+        else:
             return result
     else:
+        if result.index.name != 'UniqueID':
+            result.reset_index(level=0, inplace=True)
+        result.index.name = 'UniqueID'
         return result
 
 
