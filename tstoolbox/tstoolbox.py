@@ -347,7 +347,8 @@ def peak_detection(method='rel',
     if type == 'both':
         tmptsd = tsd.rename(columns=lambda x: str(x) + '_peak', copy=True)
         tmptsd = tmptsd.join(
-            tsd.rename(columns=lambda x: str(x) + '_valley', copy=True))
+            tsd.rename(columns=lambda x: str(x) + '_valley', copy=True),
+            how='outer')
 
     for c in tmptsd.columns:
         if method in ['fft', 'parabola', 'sine']:
@@ -535,7 +536,7 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
         jtsd = pd.DataFrame(tsd[tsd.columns[col]])
 
         try:
-            newtsd = newtsd.join(jtsd, lsuffix='_{0}'.format(index))
+            newtsd = newtsd.join(jtsd, lsuffix='_{0}'.format(index), how='outer')
         except NameError:
             newtsd = jtsd
     return tsutils.printiso(newtsd)
@@ -813,7 +814,7 @@ def aggregate(
         tmptsd = tsd.resample(aggd[agg_interval], how=method)
         tmptsd.rename(columns=lambda x: x + '_' + method, inplace=True)
         try:
-            newts = newts.join(tmptsd)
+            newts = newts.join(tmptsd, how='outer')
         except NameError:
             newts = tmptsd
     return tsutils.print_input(print_input, tsd, newts, '')

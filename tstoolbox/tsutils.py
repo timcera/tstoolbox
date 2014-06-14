@@ -87,7 +87,7 @@ def asbestfreq(data):
         return tstfreq, pandacode
     elif finterval is not None:
         try:
-            for tstep in range(int(minterval)//int(finterval) + 1, 1, -1):
+            for tstep in range(int(minterval)//int(finterval) + 1, 0, -1):
                 tstfreq = data.asfreq('{0}{1}'.format(tstep, pandacode))
                 if np.all(tstfreq.count() == cnt):
                     break
@@ -284,13 +284,11 @@ def read_iso_ts(indat, dense=True, parse_dates=True):
                 return asbestfreq(result)[0]
             except ValueError:
                 return result
-        else:
-            return result
     else:
         if result.index.name != 'UniqueID':
             result.reset_index(level=0, inplace=True)
         result.index.name = 'UniqueID'
-        return result
+    return result
 
 
 def read_excel_csv(fp, header=None):
