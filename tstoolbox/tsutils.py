@@ -1,3 +1,6 @@
+'''
+A collection of functions used by tstoolbox, wdmtoolbox, ...etc.
+'''
 
 from __future__ import print_function
 from __future__ import division
@@ -36,8 +39,9 @@ def date_slice(input_tsd, start_date=None, end_date=None):
 
 
 def asbestfreq(data):
-    # This uses PANDAS .asfreq.  Basically, how low
-    # can you go and maintain the same number of values.
+    ''' This uses PANDAS .asfreq.  Basically, how low
+    can you go and maintain the same number of values.
+    '''
 
     # Since pandas doesn't set data.index.freq and data.index.freqstr when
     # using .asfreq, this function returns that PANDAS time offset alias code
@@ -103,6 +107,8 @@ def asbestfreq(data):
 def print_input(iftrue, intds, output, suffix,
                 date_format=None, sep=',',
                 float_format='%g'):
+    ''' Used when wanting to print the input time series also.
+    '''
     if suffix:
         output.rename(columns=lambda xloc: xloc + suffix, inplace=True)
     if iftrue:
@@ -156,7 +162,6 @@ def printiso(tsd, sparse=False, date_format=None,
         oldtracebacklimit = 1000
     sys.tracebacklimit = 1000
     import traceback
-    import os.path
     baker_cli = False
     for i in traceback.extract_stack():
         if os.path.basename(i[0]) == 'baker.py':
@@ -176,7 +181,7 @@ def read_iso_ts(indat, dense=True, parse_dates=True):
     Reads the format printed by 'print_iso' and maybe other formats.
     '''
     import csv
-    from pandas.compat import StringIO, u
+    from pandas.compat import StringIO
 
     import baker
 
@@ -217,18 +222,18 @@ def read_iso_ts(indat, dense=True, parse_dates=True):
             # format must be the tstoolbox standard
             has_header = True
             dialect = csv.excel
-            fp = baker.openinput(indat)
+            fpi = baker.openinput(indat)
         elif '\n' in indat or '\r' in indat:
             # a string
-            fp = StringIO(indat)
+            fpi = StringIO(indat)
         elif os.path.exists(indat):
             # Is it a pickled file?
             try:
                 result = pd.io.pickle.read_pickle(indat)
-                fp = False
+                fpi = False
             except:
                 # Maybe a CSV file?
-                fp = open(indat)
+                fpi = open(indat)
         else:
             raise ValueError('''
 *
@@ -242,38 +247,34 @@ def read_iso_ts(indat, dense=True, parse_dates=True):
 *
 ''')
 
-    if fp:
+    if fpi:
         try:
-            # This will fail if coming from stdin
-            fp.seek(0)
-            readsome = fp.read(2048)
+            fpi.seek(0)
+            readsome = fpi.read(2048)
             dialect = csv.Sniffer().sniff(readsome,
                                           delimiters=', \t:|')
             has_header = csv.Sniffer().has_header(readsome)
-            fp.seek(0)
+            fpi.seek(0)
         except:
             pass
 
         if has_header:
-            result = pd.io.parsers.read_table(fp, header=0,
-                                              na_values = na_values,
+            result = pd.io.parsers.read_table(fpi, header=0,
                                               dialect=dialect,
                                               index_col=index_col,
                                               parse_dates=True,
                                               skipinitialspace=True)
             result.columns = [i.strip() for i in result.columns]
         else:
-            result = pd.io.parsers.read_table(fp, header=None,
-                                              na_values = na_values,
+            result = pd.io.parsers.read_table(fpi, header=None,
                                               dialect=dialect,
-                                              index_col=index_col,
-                                              parse_dates=True,
-                                              skipinitialspace=True)
-            fname, ext = os.path.splitext(fp.name)
+                                              index_col=0,
+                                              parse_dates=True)
+            fname = os.path.splitext(fpi.name)
             if len(result.columns) == 1:
-                result.columns = [fname]
+                result.columns = [fname[0]]
             else:
-                result.columns = ['{0}_{1}'.format(fname, i)
+                result.columns = ['{0}_{1}'.format(fname[0], i)
                                   for i in result.columns]
 
     if result.index.is_all_dates is True:
@@ -291,9 +292,11 @@ def read_iso_ts(indat, dense=True, parse_dates=True):
     return result
 
 
-def read_excel_csv(fp, header=None):
+def read_excel_csv(fpi, header=None):
+    ''' Read Excel formatted CSV file.
+    '''
     if header is not None:
         header = int(header)
-    tsdata = pd.read_table(fp, header=header, sep=',', parse_dates=[0],
+    tsdata = pd.read_table(fpi, header=header, sep=',', parse_dates=[0],
                            index_col=[0])
     return tsdata
