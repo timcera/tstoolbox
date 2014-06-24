@@ -174,7 +174,7 @@ def zero_crossings(y_axis, window=11):
 
 @baker.command
 def read(filenames, start_date=None, end_date=None, dense=False,
-         float_format='%g'):
+         float_format='%g', how='outer'):
     '''
     Collect time series from a list of pickle or csv files then print
     in the tstoolbox standard format.
@@ -187,6 +187,13 @@ def read(filenames, start_date=None, end_date=None, dense=False,
         'None' for end.
     :param dense: Set `dense` to True to have missing values inserted such that
         there is a single interval.
+    :param how: Use PANDAS concept on how to join the separate DataFrames read
+        from each file.  Default how='outer' which is the union, 'inner' is the
+        intersection, 'left' is only those values from the second file that
+        match indices in the first, 'right' is only values in the first file
+        that match indices in the second.  The 'left' and 'right' options for
+        'how' might be a problem if you have more than 2 files that you are
+        reading in.
     '''
     filenames = filenames.split(',')
     for index, filename in enumerate(filenames):
@@ -195,7 +202,7 @@ def read(filenames, start_date=None, end_date=None, dense=False,
 
         try:
             result = result.join(tsd,
-                                 how='outer',
+                                 how=how,
                                  rsuffix='_{0}'.format(os.path.splitext(os.path.basename(filename))[0]))
         except NameError:
             result = tsd
@@ -1138,6 +1145,7 @@ def plot(
         bootstrap_samples=500,
         norm_xaxis=False,
         xy_match_line='',
+        grid=True,
         input_ts='-',
         start_date=None,
         end_date=None):
@@ -1316,7 +1324,9 @@ def plot(
        distribution common with frequency distribution curves.
        Defaults to False.
     :param xy_match_line: Will add a match line where x == y.  Default is ''.
-       Can set to a line style code.
+       Set to a line style code.
+    :param grid: boolean, default False
+       Whether to plot grid lines on the major ticks.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
        stdin.
     :param start_date: The start_date of the series in ISOdatetime format, or
@@ -1332,7 +1342,7 @@ def plot(
                              end_date=end_date)
     # This defines the xlim and ylim as lists rather than strings.
     # Might prove useful in the future in a more generic spot.
-    def know_your_limits(xylimits):
+    def know_your_limits(xylimits, log=False):
         if isinstance(xylimits, str):
             nlim = []
             for lim in xylimits.split(','):
@@ -1344,10 +1354,30 @@ def plot(
                     nlim.append(int(lim))
         else:  # tuples or lists...
             nlim = xylimits
+
+        if nlim is None:
+            return nlim
+
+        if nlim[0] is not None and nlim[1] is not None:
+            if nlim[0] >= nlim[1]:
+                raise ValueError('''
+*
+*   The second limit must be greater than the first.
+*   You gave {0}.
+*
+'''.format(nlim))
+
+        if log is True:
+            if ((nlim[0] is not None and nlim[0] <= 0) or
+                    (nlim[1] is not None and nlim[1] <= 0)):
+                raise ValueError('''
+*
+*   If log plot cannot have limits less than or equal to 0.
+*   You have {0}.
+*
+'''.format(nlim))
         return nlim
 
-    ylim = know_your_limits(ylim)
-    xlim = know_your_limits(xlim)
 
     # This is to help pretty print the frequency
     try:
@@ -1394,6 +1424,9 @@ def plot(
     if style:
         style = style.split(',')
 
+    ylim = know_your_limits(ylim, log=logy)
+    xlim = know_your_limits(xlim, log=logx)
+
     plt.figure(figsize=figsize)
     if type == 'time':
         tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
@@ -1430,14 +1463,14 @@ def plot(
                 marker = lstyle[0]
                 linest = lstyle[1:]
 
-            if logy is True:
+            if logy is True and logx is False:
                 ax.semilogy(xs[:, colindex], ys[:, colindex],
                              linestyle=linest,
                              color=lcolor,
                              marker=marker,
                              label=lnames[colindex + 1]
                              )
-            elif logx is True:
+            elif logx is True and logy is False:
                 ax.semilogx(xs[:, colindex]. ys[:, colindex],
                              linestyle=linest,
                              color=lcolor,
@@ -1458,17 +1491,20 @@ def plot(
                          marker=marker,
                          label=lnames[colindex + 1]
                          )
-            if xy_match_line:
-                if isinstance(xy_match_line, str):
-                    xymsty = xy_match_line
-                else:
-                    xymsty = 'g--'
-                nxlim = ax.get_xlim()
-                nylim = ax.get_ylim()
-                maxt = max(nxlim[1], nylim[1])
-                ax.plot([0, maxt], [0, maxt],
-                        linestyle=xymsty)
         ax.set_ylim(ylim)
+        ax.set_xlim(xlim)
+        if xy_match_line:
+            if isinstance(xy_match_line, str):
+                xymsty = xy_match_line
+            else:
+                xymsty = 'g--'
+            nxlim = ax.get_xlim()
+            nylim = ax.get_ylim()
+            maxt = max(nxlim[1], nylim[1])
+            mint = min(nxlim[0], nylim[0])
+            ax.plot([mint, maxt], [mint, maxt], xymsty)
+            ax.set_ylim(nylim)
+            ax.set_xlim(nxlim)
         if norm_xaxis is True:
             # This should go into it's own FDC probability plot.
             from matplotlib.ticker import FixedLocator
@@ -1538,6 +1574,7 @@ def plot(
 *
 '''.format(type))
 
+    plt.grid(grid)
     plt.title(title)
     plt.savefig(ofilename)
 
