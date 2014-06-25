@@ -1404,7 +1404,7 @@ def plot(
 ''')
         if len(tsd.columns) == len(lnames):
             renamedict = dict(zip(tsd.columns, lnames))
-        elif type == 'xy' and len(tsd.columns)//2 + 1 == len(lnames):
+        elif type == 'xy' and len(tsd.columns)//2 == len(lnames):
             renamedict = dict(zip(tsd.columns[2::2], lnames[1:]))
             renamedict[tsd.columns[1]] = lnames[0]
         else:
@@ -1468,28 +1468,28 @@ def plot(
                              linestyle=linest,
                              color=lcolor,
                              marker=marker,
-                             label=lnames[colindex + 1]
+                             label=lnames[colindex]
                              )
             elif logx is True and logy is False:
                 ax.semilogx(xs[:, colindex]. ys[:, colindex],
                              linestyle=linest,
                              color=lcolor,
                              marker=marker,
-                             label=lnames[colindex + 1]
+                             label=lnames[colindex]
                              )
             elif logx is True and logy is True:
                 ax.loglog(xs[:,colindex]. ys[:,colindex],
                            linestyle=linest,
                            color=lcolor,
                            marker=marker,
-                           label=lnames[colindex + 1]
+                           label=lnames[colindex]
                            )
             else:
                 ax.plot(xs[:,colindex], ys[:,colindex],
                          linestyle=linest,
                          color=lcolor,
                          marker=marker,
-                         label=lnames[colindex + 1]
+                         label=lnames[colindex]
                          )
         ax.set_ylim(ylim)
         ax.set_xlim(xlim)
@@ -1502,7 +1502,7 @@ def plot(
             nylim = ax.get_ylim()
             maxt = max(nxlim[1], nylim[1])
             mint = min(nxlim[0], nylim[0])
-            ax.plot([mint, maxt], [mint, maxt], xymsty)
+            ax.plot([mint, maxt], [mint, maxt], xymsty, zorder=1)
             ax.set_ylim(nylim)
             ax.set_xlim(nxlim)
         if norm_xaxis is True:
