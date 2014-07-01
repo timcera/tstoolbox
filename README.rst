@@ -108,7 +108,7 @@ DataFrame and is supplied to the function via the 'input_ts' keyword.
 
 Simply import tstoolbox::
 
-    import tstoolbox
+    from tstoolbox import tstoolbox
 
     # Then you could call the functions
     ntsd = tstoolbox.fill(method='linear', input_ts='tests/test_fill_01.csv')
