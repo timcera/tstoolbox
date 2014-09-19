@@ -534,12 +534,41 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
                              end_date=end_date)
 
     columns = columns.split(',')
-    columns = [int(i) - 1 for i in columns]
+    ncolumns = []
+    for i in columns:
+        if i in tsd.columns:
+            ncolumns.append(tsd.columns.tolist().index(i))
+            continue
+        else:
+            try:
+                target_col = int(i)
+            except:
+                raise ValueError('''
+*
+*   The name {0} isn't in the list of column names
+*   {1}.
+*
+'''.format(i, tsd.columns))
+            if target_col < 1:
+                raise ValueError('''
+*
+*   The request column index {0} must be greater than 0.
+*   First column is index 1.
+*
+'''.format(i))
+            if target_col > len(tsd.columns):
+                raise ValueError('''
+*
+*   The request column index {0} must be less than the
+*   number of columns {1}.
+*
+'''.format(i, len(tsd.columns)))
+            ncolumns.append(target_col - 1)
 
-    if len(columns) == 1:
-        return tsutils.printiso(pd.DataFrame(tsd[tsd.columns[columns]]))
+    if len(ncolumns) == 1:
+        return tsutils.printiso(pd.DataFrame(tsd[tsd.columns[ncolumns]]))
 
-    for index, col in enumerate(columns):
+    for index, col in enumerate(ncolumns):
         jtsd = pd.DataFrame(tsd[tsd.columns[col]])
 
         try:
