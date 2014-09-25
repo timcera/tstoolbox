@@ -151,6 +151,22 @@ def _printiso(tsd, date_format=None, sep=',',
     except IOError:
         return
 
+def test_cli():
+    import sys
+    import traceback
+    try:
+        oldtracebacklimit = sys.tracebacklimit
+    except AttributeError:
+        oldtracebacklimit = 1000
+    sys.tracebacklimit = 1000
+    cli = False
+    for i in traceback.extract_stack():
+        if os.path.sep + 'mando' + os.path.sep in i[0] or 'baker' in i[0]:
+            cli = True
+            break
+    sys.tracebacklimit = oldtracebacklimit
+    return cli
+
 
 def printiso(tsd, sparse=False, date_format=None,
              sep=',', float_format='%g'):
@@ -158,21 +174,8 @@ def printiso(tsd, sparse=False, date_format=None,
     Default output format for tstoolbox, wdmtoolbox, swmmtoolbox,
     and hspfbintoolbox.
     '''
-    import sys
-    try:
-        oldtracebacklimit = sys.tracebacklimit
-    except AttributeError:
-        oldtracebacklimit = 1000
-    sys.tracebacklimit = 1000
-    import traceback
-    mando_cli = False
-    for i in traceback.extract_stack():
-        if os.path.sep + 'mando' + os.path.sep in i[0]:
-            mando_cli = True
-            break
-    sys.tracebacklimit = oldtracebacklimit
     tsd.index.name = 'Datetime'
-    if mando_cli:
+    if test_cli():
         _printiso(tsd, float_format=float_format,
                   date_format=date_format, sep=sep)
     else:
