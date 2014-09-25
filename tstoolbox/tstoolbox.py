@@ -1185,7 +1185,8 @@ def plot(
        type, ('.png'). Defaults to 'plot.png'.
     :param type: The plot type.  Can be 'time', 'xy', 'double_mass', 'boxplot',
        'scatter_matrix', 'lag_plot', 'autocorrelation', 'bootstrap', or
-       'probability_density'.
+       'probability_density', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
+       'histogram'.
        Defaults to 'time'.
     :param xtitle: Title of x-axis, defaults depend on ``type``.
     :param ytitle: Title of y-axis, defaults depend on ``type``.
@@ -1607,6 +1608,12 @@ def plot(
                  style=style, logx=logx, logy=logy, xlim=xlim,
                  ylim=ylim,
                  figsize=figsize)
+        plt.xlabel(xtitle)
+        plt.ylabel(ytitle)
+        if legend is True:
+            plt.legend(loc='best')
+    elif type == 'histogram':
+        tsd.hist(figsize=figsize)
         plt.xlabel(xtitle)
         plt.ylabel(ytitle)
         if legend is True:
