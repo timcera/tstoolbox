@@ -1596,6 +1596,21 @@ def plot(
         bootstrap_plot(tsd, size=bootstrap_size, samples=bootstrap_samples,
                        color='gray',
                        figsize=figsize)
+    elif type == 'bar' or type == 'bar_stacked' or type == 'barh' or type == 'barh_stacked':
+        stacked = False
+        if type[-7:] == 'stacked':
+            stacked = True
+        kind = 'bar'
+        if type[:4] == 'barh':
+            kind = 'barh'
+        tsd.plot(kind=kind, legend=legend, stacked=stacked,
+                 style=style, logx=logx, logy=logy, xlim=xlim,
+                 ylim=ylim,
+                 figsize=figsize)
+        plt.xlabel(xtitle)
+        plt.ylabel(ytitle)
+        if legend is True:
+            plt.legend(loc='best')
     else:
         raise ValueError('''
 *
