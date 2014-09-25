@@ -50,11 +50,11 @@ class TestPick(TestCase):
         self.pick_cli = capture(tsutils._printiso, self.pick_multiple_direct)
 
     def test_pick(self):
-        out = tstoolbox.pick('2,1', 'tests/data_multiple_cols.csv')
+        out = tstoolbox.pick('2,1', input_ts='tests/data_multiple_cols.csv')
         assert_frame_equal(out, self.pick_multiple_direct)
 
     def test_pick_cli(self):
-        args = 'tstoolbox pick 2,1 "tests/data_multiple_cols.csv"'
+        args = 'tstoolbox pick 2,1 --input_ts="tests/data_multiple_cols.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.pick_cli)

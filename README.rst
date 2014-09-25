@@ -9,7 +9,7 @@ Requirements
 * pandas - on Windows this is part scientific Python distributions like
   Python(x,y), Anaconda, or Enthought.
 
-* baker - command line parser
+* mando - command line parser
 
 Installation
 ------------

@@ -5,12 +5,12 @@ from __future__ import absolute_import
 
 import pandas as pd
 from numpy import *
-import baker
+import mando
 
 from . import tsutils
 
 
-@baker.command
+@mando.command
 def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     '''
     Fills missing values (NaN) with different methods.  Missing values can
@@ -84,7 +84,7 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     return tsutils.print_input(print_input, tsd, ntsd, '_fill')
 
 
-@baker.command
+@mando.command
 def fill_by_correlation(method='move2',
                         maximum_lag=0,
                         interval='guess',

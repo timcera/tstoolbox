@@ -23,7 +23,7 @@ install_requires = [
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
     'pandas >= 0.8.1',
     'python-dateutil >= 2.1',
-    'baker >= 1.3',
+    'mando >= 0.3.2',
 ]
 
 

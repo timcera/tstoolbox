@@ -6,6 +6,9 @@ from __future__ import print_function
 from __future__ import division
 
 import os
+import sys
+import gzip
+import bz2
 
 import pandas as pd
 import numpy as np
@@ -162,18 +165,32 @@ def printiso(tsd, sparse=False, date_format=None,
         oldtracebacklimit = 1000
     sys.tracebacklimit = 1000
     import traceback
-    baker_cli = False
+    mando_cli = False
     for i in traceback.extract_stack():
-        if os.path.basename(i[0]) == 'baker.py':
-            baker_cli = True
+        if os.path.sep + 'mando' + os.path.sep in i[0]:
+            mando_cli = True
             break
     sys.tracebacklimit = oldtracebacklimit
     tsd.index.name = 'Datetime'
-    if baker_cli:
+    if mando_cli:
         _printiso(tsd, float_format=float_format,
                   date_format=date_format, sep=sep)
     else:
         return tsd
+
+def openinput(filein):
+    """
+    Opens the given input file. It can decode various formats too, such as
+    gzip and bz2.
+    """
+    if filein == '-':
+        return sys.stdin
+    ext = os.path.splitext(filein)[1]
+    if ext in ['.gz', '.GZ']:
+        return gzip.open(filein, 'rb')
+    if ext in ['.bz', '.bz2']:
+        return bz2.BZ2File(filein, 'rb')
+    return open(filein, 'rb')
 
 
 def read_iso_ts(indat, dense=True, parse_dates=True):
@@ -182,8 +199,6 @@ def read_iso_ts(indat, dense=True, parse_dates=True):
     '''
     import csv
     from pandas.compat import StringIO
-
-    import baker
 
     index_col = 0
     if parse_dates is False:
@@ -196,7 +211,7 @@ def read_iso_ts(indat, dense=True, parse_dates=True):
         na_values.append(spcs)
         na_values.append(spcs + 'nan')
 
-    fp = None
+    fpi = None
 
     # Handle Series by converting to DataFrame
     if isinstance(indat, pd.Series):
@@ -213,16 +228,17 @@ def read_iso_ts(indat, dense=True, parse_dates=True):
             indat.index.name = 'UniqueID'
             return indat
 
+    has_header = False
+    dialect = csv.excel
     if isinstance(indat, str) or isinstance(indat, bytes):
         try:
             indat = str(indat, encoding='utf-8')
         except:
             pass
         if indat == '-':
-            # format must be the tstoolbox standard
+            # if from stdin format must be the tstoolbox standard
             has_header = True
-            dialect = csv.excel
-            fpi = baker.openinput(indat)
+            fpi = openinput(indat)
         elif '\n' in indat or '\r' in indat:
             # a string
             fpi = StringIO(indat)
@@ -233,7 +249,7 @@ def read_iso_ts(indat, dense=True, parse_dates=True):
                 fpi = False
             except:
                 # Maybe a CSV file?
-                fpi = open(indat)
+                fpi = openinput(indat)
         else:
             raise ValueError('''
 *
@@ -251,12 +267,12 @@ def read_iso_ts(indat, dense=True, parse_dates=True):
         try:
             fpi.seek(0)
             readsome = fpi.read(2048)
+            fpi.seek(0)
             dialect = csv.Sniffer().sniff(readsome,
                                           delimiters=', \t:|')
             has_header = csv.Sniffer().has_header(readsome)
-            fpi.seek(0)
         except:
-            pass
+            has_header = True
 
         if has_header:
             result = pd.io.parsers.read_table(fpi, header=0,
@@ -269,7 +285,8 @@ def read_iso_ts(indat, dense=True, parse_dates=True):
             result = pd.io.parsers.read_table(fpi, header=None,
                                               dialect=dialect,
                                               index_col=0,
-                                              parse_dates=True)
+                                              parse_dates=True,
+                                              skipinitialspace=True)
             fname = os.path.splitext(fpi.name)
             if len(result.columns) == 1:
                 result.columns = [fname[0]]

@@ -17,7 +17,7 @@ import pandas as pd
 # The numpy import is needed like this to be able to include numpy functions in
 # the 'equation' subcommand.
 from numpy import *
-import baker
+import mando
 
 from . import tsutils
 from . import fill_functions
@@ -40,7 +40,7 @@ _offset_aliases = {
     }
 
 
-@baker.command
+@mando.command
 def filter(filter_type,
            print_input=False,
            cutoff_period=None,
@@ -172,7 +172,7 @@ def zero_crossings(y_axis, window=11):
     return tsutils.print_input(print_input, tsd, tmptsd, '_filter')
 
 
-@baker.command
+@mando.command
 def read(filenames, start_date=None, end_date=None, dense=False,
          float_format='%g', how='outer'):
     '''
@@ -209,7 +209,7 @@ def read(filenames, start_date=None, end_date=None, dense=False,
     return tsutils.printiso(result, float_format=float_format)
 
 
-@baker.command
+@mando.command
 def date_slice(float_format='%g',
                start_date=None,
                end_date=None,
@@ -230,7 +230,7 @@ def date_slice(float_format='%g',
                            end_date=end_date), float_format=float_format)
 
 
-@baker.command
+@mando.command
 def describe(input_ts='-', start_date=None, end_date=None):
     '''
     Prints out statistics for the time-series.
@@ -248,7 +248,7 @@ def describe(input_ts='-', start_date=None, end_date=None):
     return tsutils.printiso(tsd.describe())
 
 
-@baker.command
+@mando.command
 def peak_detection(method='rel',
                    type='peak',
                    window=24,
@@ -256,7 +256,7 @@ def peak_detection(method='rel',
                    points=9,
                    lock_frequency=False,
                    float_format='%g',
-                   print_input=False,
+                   print_input='',
                    input_ts='-',
                    start_date=None,
                    end_date=None):
@@ -378,7 +378,7 @@ def peak_detection(method='rel',
                                float_format=float_format)
 
 
-@baker.command
+@mando.command
 def convert(
         factor=1.0,
         offset=0.0,
@@ -410,10 +410,10 @@ def convert(
                                float_format='%g')
 
 
-@baker.command
+@mando.command
 def equation(
         equation,
-        print_input=False,
+        print_input='',
         float_format='%g',
         input_ts='-',
         start_date=None,
@@ -515,7 +515,7 @@ def equation(
                                float_format=float_format)
 
 
-@baker.command
+@mando.command
 def pick(columns, input_ts='-', start_date=None, end_date=None):
     '''
     Will pick a column or list of columns from input.  Start with 1.
@@ -578,7 +578,7 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
     return tsutils.printiso(newtsd)
 
 
-@baker.command
+@mando.command
 def stdtozrxp(
         rexchange=None,
         input_ts='-',
@@ -613,7 +613,7 @@ def stdtozrxp(
             tsd.index[i], tsd[tsd.columns[0]][i]))
 
 
-@baker.command
+@mando.command
 def tstopickle(
         filename,
         input_ts='-',
@@ -637,7 +637,7 @@ def tstopickle(
     pd.core.common.save(tsd, filename)
 
 
-@baker.command
+@mando.command
 def accumulate(
         statistic='sum',
         print_input=False,
@@ -677,7 +677,7 @@ def accumulate(
     return tsutils.print_input(print_input, tsd, ntsd, '_' + statistic)
 
 
-@baker.command
+@mando.command
 def rolling_window(
         span=2,
         statistic='mean',
@@ -811,7 +811,7 @@ def rolling_window(
     return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
 
 
-@baker.command
+@mando.command
 def aggregate(
         statistic='mean',
         agg_interval='daily',
@@ -856,7 +856,7 @@ def aggregate(
     return tsutils.print_input(print_input, tsd, newts, '')
 
 
-@baker.command
+@mando.command
 def clip(
         a_min=None,
         a_max=None,
@@ -898,7 +898,7 @@ def clip(
         print_input, tsd, tsd.clip(n_min, n_max), '_clip')
 
 
-@baker.command
+@mando.command
 def add_trend(
         start_offset,
         end_offset,
@@ -933,7 +933,7 @@ def add_trend(
         print_input, tsd, ntsd, '_trend')
 
 
-@baker.command
+@mando.command
 def remove_trend(
         start_date=None,
         end_date=None,
@@ -965,7 +965,7 @@ def remove_trend(
         print_input, tsd, ntsd, '_rem_trend')
 
 
-@baker.command
+@mando.command
 def calculate_fdc(
         x_plotting_position='norm',
         input_ts='-',
@@ -1011,7 +1011,7 @@ def calculate_fdc(
         print('{0}, {1}, {2}'.format(xdat, ydat, zdat))
 
 
-@baker.command
+@mando.command
 def stack(
         input_ts='-',
         start_date=None,
@@ -1061,7 +1061,7 @@ def stack(
     return tsutils.printiso(newtsd)
 
 
-@baker.command
+@mando.command
 def unstack(
         column_names,
         input_ts='-',
@@ -1149,7 +1149,7 @@ mark_dict = {
 
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
 
-@baker.command
+@mando.command
 def plot(
         ofilename='plot.png',
         type='time',
@@ -1611,4 +1611,4 @@ def plot(
 def main():
     if not os.path.exists('debug_tstoolbox'):
         sys.tracebacklimit = 0
-    baker.run()
+    mando.main()

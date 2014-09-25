@@ -62,6 +62,11 @@ class TestPeakDetect(TestCase):
     def test_peak_zero_crossing_direct(self):
         out = tstoolbox.peak_detection(method='zero_crossing', window=3, input_ts=self.ats, print_input=True, type='both')
         self.maxDiff = None
+        fp = open('/tmp/tslog3.txt', 'w')
+        fp.write('{0}'.format(out))
+        fp.write('\n')
+        fp.write('{0}'.format(self.compare))
+        fp.close()
         assert_frame_equal(out, self.compare)
 
 #    def test_peak_parabola_direct(self):

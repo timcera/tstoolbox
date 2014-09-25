@@ -578,8 +578,9 @@ def _peakdetect_zero_crossing(y_axis, x_axis=None, window=5):
     x_axis, y_axis = _datacheck_peakdetect(x_axis, y_axis)
 
     zero_indices = zero_crossings(y_axis, window=window)
-
     zero_indices = np.concatenate(([0], zero_indices, [len(y_axis) - 1]))
+    zero_indices = np.unique(zero_indices)
+
     period_lengths = np.diff(zero_indices)
 
     bins_y = [y_axis[index:index + diff] for index, diff in
