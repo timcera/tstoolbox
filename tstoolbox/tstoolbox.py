@@ -1157,14 +1157,14 @@ def plot(
         ytitle='',
         title='',
         figsize=(10, 6.0),
-        legend=True,
+        legend=None,
         legend_names=None,
         subplots=False,
         sharex=True,
         sharey=False,
         style=None,
-        logx='',
-        logy='',
+        logx=False,
+        logy=False,
         xlim=None,
         ylim=None,
         secondary_y=False,
@@ -1364,6 +1364,14 @@ def plot(
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
     '''
+
+    # Need to work around some old option defaults with the implemntation of
+    # mando
+    if legend == '' or legend == 'True':
+        legend = True
+    else:
+        legend = False
+
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
