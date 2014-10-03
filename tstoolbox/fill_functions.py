@@ -84,7 +84,7 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     return tsutils.print_input(print_input, tsd, ntsd, '_fill')
 
 
-@mando.command
+#@mando.command
 def fill_by_correlation(method='move2',
                         maximum_lag=0,
                         interval='guess',

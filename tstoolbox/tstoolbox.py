@@ -199,7 +199,7 @@ def read(filenames, start_date=None, end_date=None, dense=False,
     for index, filename in enumerate(filenames):
         tsd = tsutils.date_slice(tsutils.read_iso_ts(filename, dense=dense),
                                  start_date=start_date, end_date=end_date)
-
+        tsd.dropna(how='all', inplace=True)
         try:
             result = result.join(tsd,
                                  how=how,
@@ -1165,6 +1165,8 @@ def plot(
         style=None,
         logx=False,
         logy=False,
+        xaxis='arithmetic',
+        yaxis='arithmetic',
         xlim=None,
         ylim=None,
         secondary_y=False,
@@ -1173,11 +1175,14 @@ def plot(
         bootstrap_size=50,
         bootstrap_samples=500,
         norm_xaxis=False,
+        norm_yaxis=False,
         xy_match_line='',
         grid=True,
         input_ts='-',
         start_date=None,
-        end_date=None):
+        end_date=None,
+        label_rotation=None,
+        label_skip=1):
     '''
     Plots.
 
@@ -1330,12 +1335,18 @@ def plot(
        http://matplotlib.org/api/markers_api.html
     :param logx: boolean, default False
        For line plots, use log scaling on x axis
+       DEPRECATED: use '--xaxis="log"' instead.
     :param logy: boolean, default False
        For line plots, use log scaling on y axis
+       DEPRECATED: use '--yaxis="log"' instead.
     :param xlim: comma separated lower and upper limits (--xlim 1,1000)
        Limits for the x-axis
     :param ylim: comma separated lower and upper limits (--ylim 1,1000)
        Limits for the y-axis
+    :param xaxis: defines the type of the xaxis.  One of 'arithmetic',
+       'log', 'normal'. Default is 'arithmetic'.
+    :param yaxis: defines the type of the yaxis.  One of 'arithmetic',
+       'log', 'normal'. Default is 'arithmetic'.
     :param secondary_y: boolean or sequence, default False
        Whether to plot on the secondary y-axis If a list/tuple, which
        time-series to plot on secondary y-axis
@@ -1353,6 +1364,7 @@ def plot(
        Whether the x-axis should be labels with the normal
        distribution common with frequency distribution curves.
        Defaults to False.
+       DEPRECATED: use '--xaxis="normal"' or '--yaxis="normal"' instead.
     :param xy_match_line: Will add a match line where x == y.  Default is ''.
        Set to a line style code.
     :param grid: boolean, default False
@@ -1363,11 +1375,13 @@ def plot(
         'None' for beginning.
     :param end_date: The end_date of the series in ISOdatetime format, or
         'None' for end.
+    :param label_rotation: Rotation for major labels for bar plots.
+    :param label_skip: Skip for major labels for bar plots.
     '''
 
     # Need to work around some old option defaults with the implemntation of
     # mando
-    if legend == '' or legend == 'True':
+    if legend == '' or legend == 'True' or legend is None:
         legend = True
     else:
         legend = False
@@ -1378,9 +1392,10 @@ def plot(
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts, dense=False),
                              start_date=start_date,
                              end_date=end_date)
+
     # This defines the xlim and ylim as lists rather than strings.
     # Might prove useful in the future in a more generic spot.
-    def know_your_limits(xylimits, log=False):
+    def know_your_limits(xylimits, axis='arithmetic'):
         if isinstance(xylimits, str):
             nlim = []
             for lim in xylimits.split(','):
@@ -1405,7 +1420,7 @@ def plot(
 *
 '''.format(nlim))
 
-        if log is True:
+        if axis == 'log':
             if ((nlim[0] is not None and nlim[0] <= 0) or
                     (nlim[1] is not None and nlim[1] <= 0)):
                 raise ValueError('''
@@ -1414,6 +1429,21 @@ def plot(
 *   You have {0}.
 *
 '''.format(nlim))
+
+        if axis == 'normal':
+            if nlim[0] is None:
+                nlim[0] = 0.001
+            if nlim[1] is None:
+                nlim[1] = 0.999
+            if (nlim[0] <= 0 or nlim[0] >= 1 or
+                nlim[1] <= 0 or nlim[1] >= 1):
+                raise ValueError('''
+*
+*   Both limits must be between 0 and 1 for the
+*   'normal' axis.  Instead you have {0}
+*
+'''.format(nlim))
+
         return nlim
 
 
@@ -1462,8 +1492,35 @@ def plot(
     if style:
         style = style.split(',')
 
-    ylim = know_your_limits(ylim, log=logy)
-    xlim = know_your_limits(xlim, log=logx)
+    if logx is True or logy is True or norm_xaxis is True:
+        import warnings
+        warnings.warn('''
+*
+*   The --logx, --logy, and --norm_xaxis  options are deprecated.
+*   Use '--xaxis="log" or '--yaxis="log"',
+*   or '--xaxis="normal"' or '--yaxis="normal"'.
+*
+''')
+
+    if xaxis == 'log':
+        logx = True
+    if yaxis == 'log':
+        logy = True
+    if xaxis == 'normal':
+        norm_xaxis = True
+    if yaxis == 'normal':
+        norm_yaxis = True
+
+    if xaxis == 'normal' and yaxis == 'normal':
+        raise ValueError('''
+*
+*   Cannot have both xaxis and yaxis be normally distributed with the
+*   'normal' option.
+*
+''')
+
+    ylim = know_your_limits(ylim, axis=xaxis)
+    xlim = know_your_limits(xlim, axis=yaxis)
 
     plt.figure(figsize=figsize)
     if type == 'time':
@@ -1503,32 +1560,32 @@ def plot(
 
             if logy is True and logx is False:
                 ax.semilogy(xs[:, colindex], ys[:, colindex],
-                             linestyle=linest,
-                             color=lcolor,
-                             marker=marker,
-                             label=lnames[colindex]
-                             )
+                            linestyle=linest,
+                            color=lcolor,
+                            marker=marker,
+                            label=lnames[colindex]
+                            )
             elif logx is True and logy is False:
                 ax.semilogx(xs[:, colindex]. ys[:, colindex],
-                             linestyle=linest,
-                             color=lcolor,
-                             marker=marker,
-                             label=lnames[colindex]
-                             )
+                            linestyle=linest,
+                            color=lcolor,
+                            marker=marker,
+                            label=lnames[colindex]
+                            )
             elif logx is True and logy is True:
-                ax.loglog(xs[:,colindex]. ys[:,colindex],
-                           linestyle=linest,
-                           color=lcolor,
-                           marker=marker,
-                           label=lnames[colindex]
-                           )
+                ax.loglog(xs[:, colindex]. ys[:, colindex],
+                          linestyle=linest,
+                          color=lcolor,
+                          marker=marker,
+                          label=lnames[colindex]
+                          )
             else:
-                ax.plot(xs[:,colindex], ys[:,colindex],
-                         linestyle=linest,
-                         color=lcolor,
-                         marker=marker,
-                         label=lnames[colindex]
-                         )
+                ax.plot(xs[:, colindex], ys[:, colindex],
+                        linestyle=linest,
+                        color=lcolor,
+                        marker=marker,
+                        label=lnames[colindex]
+                        )
         ax.set_ylim(ylim)
         ax.set_xlim(xlim)
         if xy_match_line:
@@ -1545,7 +1602,11 @@ def plot(
             ax.set_xlim(nxlim)
         if norm_xaxis is True:
             # This should go into it's own FDC probability plot.
+            from scipy.stats.distributions import norm
             from matplotlib.ticker import FixedLocator
+            n = len(tsd)
+            oxdata = norm.ppf(np.linspace(1./(n+1), 1-1./(n+1), n))
+            oydata = ma.sort(obs['carr'], endwith=False)[::-1]
             ax.set_xlim((0.001, 0.999))
             xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
             xtmaj_str = ['1', '10', '50', '90', '99']
@@ -1560,6 +1621,23 @@ def plot(
             ax.set_xticklabels(xtmaj_str)
         else:
             ax.set_xlim(xlim)
+        if norm_yaxis is True:
+            # This should go into it's own FDC probability plot.
+            from matplotlib.ticker import FixedLocator
+            ax.set_ylim((0.001, 0.999))
+            ytmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
+            ytmaj_str = ['1', '10', '50', '90', '99']
+            ytmin = pd.np.concatenate([pd.np.linspace(0.001, 0.01, 10),
+                                       pd.np.linspace(0.01, 0.1, 10),
+                                       pd.np.linspace(0.1, 0.9, 9),
+                                       pd.np.linspace(0.9, 0.99, 10),
+                                       pd.np.linspace(0.99, 0.999, 10),
+                                       ])
+            ax.yaxis.set_major_locator(FixedLocator(xtmaj))
+            ax.yaxis.set_minor_locator(FixedLocator(xtmin))
+            ax.set_yticklabels(xtmaj_str)
+        else:
+            ax.set_ylim(xlim)
         ax.set_xlabel(xtitle or tsd.columns[0])
         ax.set_ylabel(ytitle or tsd.columns[1])
         if legend is True:
@@ -1606,16 +1684,41 @@ def plot(
                        color='gray',
                        figsize=figsize)
     elif type == 'bar' or type == 'bar_stacked' or type == 'barh' or type == 'barh_stacked':
+        from matplotlib.dates import AutoDateLocator, AutoDateFormatter
         stacked = False
         if type[-7:] == 'stacked':
             stacked = True
         kind = 'bar'
         if type[:4] == 'barh':
             kind = 'barh'
-        tsd.plot(kind=kind, legend=legend, stacked=stacked,
-                 style=style, logx=logx, logy=logy, xlim=xlim,
-                 ylim=ylim,
-                 figsize=figsize)
+        ax = tsd.plot(kind=kind, legend=legend, stacked=stacked,
+                      style=style, logx=logx, logy=logy, xlim=xlim,
+                      ylim=ylim,
+                      figsize=figsize)
+        freq = tsutils.asbestfreq(tsd)[1]
+        if freq is not None:
+            if freq[0] == 'A':
+                endchar = 4
+            elif freq[0] == 'M':
+                endchar = 7
+            elif freq[0] == 'D':
+                endchar = 10
+            elif freq[0] == 'H':
+                endchar = 13
+            else:
+                endchar = None
+            nticklabels = []
+            if kind == 'bar':
+                taxis = ax.xaxis
+            else:
+                taxis = ax.yaxis
+            for index, i in enumerate(taxis.get_majorticklabels()):
+                 if index % label_skip:
+                     nticklabels.append(' ')
+                 else:
+                     nticklabels.append(i.get_text()[:endchar])
+            taxis.set_ticklabels(nticklabels)
+            plt.setp(taxis.get_majorticklabels(), rotation=label_rotation)
         plt.xlabel(xtitle)
         plt.ylabel(ytitle)
         if legend is True:
