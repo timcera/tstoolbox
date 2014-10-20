@@ -613,8 +613,9 @@ def _peakdetect_zero_crossing(y_axis, x_axis=None, window=5):
         for bin_x, bin_y, peak in zip(even_bins_x, even_bins_y, lo_peaks):
             lo_peaks_x.append(bin_x[np.where(bin_y == peak)[0][0]])
 
-    max_peaks = [[x, y] for x, y in zip(hi_peaks_x, hi_peaks)]
-    min_peaks = [[x, y] for x, y in zip(lo_peaks_x, lo_peaks)]
+    # peaks or valley cannot be at 0
+    max_peaks = [[x, y] for x, y in zip(hi_peaks_x, hi_peaks) if x != 0]
+    min_peaks = [[x, y] for x, y in zip(lo_peaks_x, lo_peaks) if x != 0]
 
     return [max_peaks, min_peaks]
 
@@ -712,6 +713,11 @@ def zero_crossings(y_axis, window=11):
     # check if any zero crossings were found
     if len(zero_crossings) < 1:
         raise ValueError
+
+    try:
+        indices.remove(0)
+    except ValueError:
+        pass
 
     return indices
     # used this to test the fft function's sensitivity to spectral leakage
