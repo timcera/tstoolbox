@@ -1191,7 +1191,7 @@ def plot(
     :param type: The plot type.  Can be 'time', 'xy', 'double_mass', 'boxplot',
        'scatter_matrix', 'lag_plot', 'autocorrelation', 'bootstrap', or
        'probability_density', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
-       'histogram'.
+       'histogram', 'norm_xaxis', 'norm_yaxis'.
        Defaults to 'time'.
     :param xtitle: Title of x-axis, defaults depend on ``type``.
     :param ytitle: Title of y-axis, defaults depend on ``type``.
@@ -1344,9 +1344,9 @@ def plot(
     :param ylim: comma separated lower and upper limits (--ylim 1,1000)
        Limits for the y-axis
     :param xaxis: defines the type of the xaxis.  One of 'arithmetic',
-       'log', 'normal'. Default is 'arithmetic'.
+       'log'. Default is 'arithmetic'.
     :param yaxis: defines the type of the yaxis.  One of 'arithmetic',
-       'log', 'normal'. Default is 'arithmetic'.
+       'log'. Default is 'arithmetic'.
     :param secondary_y: boolean or sequence, default False
        Whether to plot on the secondary y-axis If a list/tuple, which
        time-series to plot on secondary y-axis
@@ -1364,7 +1364,7 @@ def plot(
        Whether the x-axis should be labels with the normal
        distribution common with frequency distribution curves.
        Defaults to False.
-       DEPRECATED: use '--xaxis="normal"' or '--yaxis="normal"' instead.
+       DEPRECATED: use '--type="norm_xaxis"' or '--type="norm_yaxis"' instead.
     :param xy_match_line: Will add a match line where x == y.  Default is ''.
        Set to a line style code.
     :param grid: boolean, default False
@@ -1389,6 +1389,8 @@ def plot(
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
+    from matplotlib.ticker import FixedLocator
+
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts, dense=False),
                              start_date=start_date,
                              end_date=end_date)
@@ -1407,6 +1409,23 @@ def plot(
                     nlim.append(int(lim))
         else:  # tuples or lists...
             nlim = xylimits
+
+
+        if axis == 'normal':
+            if nlim is None:
+                nlim = [None, None]
+            if nlim[0] is None:
+                nlim[0] = 0.01
+            if nlim[1] is None:
+                nlim[1] = 0.99
+            if (nlim[0] <= 0 or nlim[0] >= 1 or
+                nlim[1] <= 0 or nlim[1] >= 1):
+                raise ValueError('''
+*
+*   Both limits must be between 0 and 1 for the
+*   'normal' axis.  Instead you have {0}
+*
+'''.format(nlim))
 
         if nlim is None:
             return nlim
@@ -1427,20 +1446,6 @@ def plot(
 *
 *   If log plot cannot have limits less than or equal to 0.
 *   You have {0}.
-*
-'''.format(nlim))
-
-        if axis == 'normal':
-            if nlim[0] is None:
-                nlim[0] = 0.001
-            if nlim[1] is None:
-                nlim[1] = 0.999
-            if (nlim[0] <= 0 or nlim[0] >= 1 or
-                nlim[1] <= 0 or nlim[1] >= 1):
-                raise ValueError('''
-*
-*   Both limits must be between 0 and 1 for the
-*   'normal' axis.  Instead you have {0}
 *
 '''.format(nlim))
 
@@ -1498,7 +1503,7 @@ def plot(
 *
 *   The --logx, --logy, and --norm_xaxis  options are deprecated.
 *   Use '--xaxis="log" or '--yaxis="log"',
-*   or '--xaxis="normal"' or '--yaxis="normal"'.
+*   or '--type="norm_xaxis"' or '--type="norm_yaxis"'.
 *
 ''')
 
@@ -1506,21 +1511,31 @@ def plot(
         logx = True
     if yaxis == 'log':
         logy = True
-    if xaxis == 'normal':
-        norm_xaxis = True
-    if yaxis == 'normal':
-        norm_yaxis = True
 
-    if xaxis == 'normal' and yaxis == 'normal':
-        raise ValueError('''
+    if type == 'norm_xaxis':
+        xaxis = 'normal'
+        if xaxis != 'arithmetic':
+            import warnings
+            warnings.warn('''
 *
-*   Cannot have both xaxis and yaxis be normally distributed with the
-*   'normal' option.
+*   The --type=norm_xaxis cannot also have the xaxis set to {0}.
+*   The {0} setting for xaxis is ignored.
 *
-''')
+'''.format(xaxis))
 
-    ylim = know_your_limits(ylim, axis=xaxis)
-    xlim = know_your_limits(xlim, axis=yaxis)
+    if type == 'norm_yaxis': 
+        yaxis = 'normal'
+        if yaxis != 'arithmetic':
+            import warnings
+            warnings.warn('''
+*
+*   The --type=norm_yaxis cannot also have the yaxis set to {0}.
+*   The {0} setting for yaxis is ignored.
+*
+'''.format(yaxis))
+
+    xlim = know_your_limits(xlim, axis=xaxis)
+    ylim = know_your_limits(ylim, axis=yaxis)
 
     plt.figure(figsize=figsize)
     if type == 'time':
@@ -1532,7 +1547,7 @@ def plot(
         plt.ylabel(ytitle)
         if legend is True:
             plt.legend(loc='best')
-    elif type == 'xy' or type == 'double_mass':
+    elif type in ['xy', 'double_mass', 'norm_xaxis', 'norm_yaxis']:
         # PANDAS was not doing the right thing with xy plots
         # if you wanted lines between markers.
         # Fell back to using raw matplotlib.
@@ -1543,9 +1558,16 @@ def plot(
             style = ','.join(style).split(',')  # weird but it works
         if type == 'double_mass':
             tsd = tsd.cumsum()
-        xs = pd.np.array(tsd.iloc[:, 0::2])
-        ys = pd.np.array(tsd.iloc[:, 1::2])
-        for colindex in range(tsd.shape[1]//2):
+        if type in ['norm_xaxis', 'norm_yaxis']:
+            # scipy is not a PANDAS required library
+            from scipy.stats.distributions import norm
+            ys = tsd.iloc[:, :]
+            colcnt = tsd.shape[1]
+        else:
+            xs = pd.np.array(tsd.iloc[:, 0::2])
+            ys = pd.np.array(tsd.iloc[:, 1::2])
+            colcnt = tsd.shape[1]//2
+        for colindex in range(colcnt):
             lstyle = style[colindex]
             lcolor = 'b'
             marker = ''
@@ -1558,36 +1580,68 @@ def plot(
                 marker = lstyle[0]
                 linest = lstyle[1:]
 
+            if type in ['norm_xaxis', 'norm_yaxis']:
+                oydata = pd.np.array(ys.iloc[:, colindex].dropna())
+                oydata = pd.np.sort(oydata)[::-1]
+                n = len(oydata)
+                oxdata = norm.ppf(pd.np.linspace(1./(n+1), 1-1./(n+1), n))
+                norm_axis = ax.xaxis
+            else:
+                oxdata = xs[:, colindex]
+                oydata = ys[:, colindex]
+            if type == 'norm_yaxis':
+                oxdata, oydata = oydata, oxdata
+                norm_axis = ax.yaxis
+
             if logy is True and logx is False:
-                ax.semilogy(xs[:, colindex], ys[:, colindex],
+                ax.semilogy(oxdata, oydata,
                             linestyle=linest,
                             color=lcolor,
                             marker=marker,
                             label=lnames[colindex]
                             )
             elif logx is True and logy is False:
-                ax.semilogx(xs[:, colindex]. ys[:, colindex],
+                ax.semilogx(oxdata, oydata,
                             linestyle=linest,
                             color=lcolor,
                             marker=marker,
                             label=lnames[colindex]
                             )
             elif logx is True and logy is True:
-                ax.loglog(xs[:, colindex]. ys[:, colindex],
+                ax.loglog(oxdata, oydata,
                           linestyle=linest,
                           color=lcolor,
                           marker=marker,
                           label=lnames[colindex]
                           )
             else:
-                ax.plot(xs[:, colindex], ys[:, colindex],
+                ax.plot(oxdata, oydata,
                         linestyle=linest,
                         color=lcolor,
                         marker=marker,
                         label=lnames[colindex]
                         )
-        ax.set_ylim(ylim)
-        ax.set_xlim(xlim)
+        if type in ['norm_xaxis', 'norm_yaxis']:
+            xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
+            xtmaj_str = ['1', '10', '50', '90', '99']
+            xtmin = pd.np.concatenate([pd.np.linspace(0.001, 0.01, 10),
+                                       pd.np.linspace(0.01, 0.1, 10),
+                                       pd.np.linspace(0.1, 0.9, 9),
+                                       pd.np.linspace(0.9, 0.99, 10),
+                                       pd.np.linspace(0.99, 0.999, 10),
+                                       ])
+            xtmaj = norm.ppf(xtmaj)
+            xtmin = norm.ppf(xtmin)
+            norm_axis.set_major_locator(FixedLocator(xtmaj))
+            norm_axis.set_minor_locator(FixedLocator(xtmin))
+            if type == 'norm_xaxis':
+                ax.set_xticklabels(xtmaj_str)
+                ax.set_xlim(norm.ppf([0.01, 0.99]))
+                ax.set_ylim(ylim)
+            if type == 'norm_yaxis':
+                ax.set_yticklabels(xtmaj_str)
+                ax.set_ylim(norm.ppf(ylim))
+                ax.set_xlim(xlim)
         if xy_match_line:
             if isinstance(xy_match_line, str):
                 xymsty = xy_match_line
@@ -1600,48 +1654,13 @@ def plot(
             ax.plot([mint, maxt], [mint, maxt], xymsty, zorder=1)
             ax.set_ylim(nylim)
             ax.set_xlim(nxlim)
-        if norm_xaxis is True:
-            # This should go into it's own FDC probability plot.
-            from scipy.stats.distributions import norm
-            from matplotlib.ticker import FixedLocator
-            n = len(tsd)
-            oxdata = norm.ppf(np.linspace(1./(n+1), 1-1./(n+1), n))
-            oydata = ma.sort(obs['carr'], endwith=False)[::-1]
-            ax.set_xlim((0.001, 0.999))
-            xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
-            xtmaj_str = ['1', '10', '50', '90', '99']
-            xtmin = pd.np.concatenate([pd.np.linspace(0.001, 0.01, 10),
-                                       pd.np.linspace(0.01, 0.1, 10),
-                                       pd.np.linspace(0.1, 0.9, 9),
-                                       pd.np.linspace(0.9, 0.99, 10),
-                                       pd.np.linspace(0.99, 0.999, 10),
-                                       ])
-            ax.xaxis.set_major_locator(FixedLocator(xtmaj))
-            ax.xaxis.set_minor_locator(FixedLocator(xtmin))
-            ax.set_xticklabels(xtmaj_str)
-        else:
-            ax.set_xlim(xlim)
-        if norm_yaxis is True:
-            # This should go into it's own FDC probability plot.
-            from matplotlib.ticker import FixedLocator
-            ax.set_ylim((0.001, 0.999))
-            ytmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
-            ytmaj_str = ['1', '10', '50', '90', '99']
-            ytmin = pd.np.concatenate([pd.np.linspace(0.001, 0.01, 10),
-                                       pd.np.linspace(0.01, 0.1, 10),
-                                       pd.np.linspace(0.1, 0.9, 9),
-                                       pd.np.linspace(0.9, 0.99, 10),
-                                       pd.np.linspace(0.99, 0.999, 10),
-                                       ])
-            ax.yaxis.set_major_locator(FixedLocator(xtmaj))
-            ax.yaxis.set_minor_locator(FixedLocator(xtmin))
-            ax.set_yticklabels(xtmaj_str)
-        else:
-            ax.set_ylim(xlim)
         ax.set_xlabel(xtitle or tsd.columns[0])
         ax.set_ylabel(ytitle or tsd.columns[1])
         if legend is True:
             ax.legend(loc='best')
+        if type not in ['norm_xaxis', 'norm_yaxis']:
+            ax.set_xlim(xlim)
+            ax.set_ylim(ylim)
     elif type == 'probability_density':
         tsd.plot(kind='kde', legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
@@ -1684,7 +1703,6 @@ def plot(
                        color='gray',
                        figsize=figsize)
     elif type == 'bar' or type == 'bar_stacked' or type == 'barh' or type == 'barh_stacked':
-        from matplotlib.dates import AutoDateLocator, AutoDateFormatter
         stacked = False
         if type[-7:] == 'stacked':
             stacked = True
