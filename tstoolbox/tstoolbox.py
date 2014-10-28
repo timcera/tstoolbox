@@ -1523,7 +1523,7 @@ def plot(
 *
 '''.format(xaxis))
 
-    if type == 'norm_yaxis': 
+    if type == 'norm_yaxis':
         yaxis = 'normal'
         if yaxis != 'arithmetic':
             import warnings
@@ -1757,6 +1757,98 @@ def plot(
     plt.grid(grid)
     plt.title(title)
     plt.savefig(ofilename)
+
+
+def _dtw(ts_a, ts_b, d = lambda x,y: abs(x-y), window=10000):
+    """Returns the DTW similarity distance between two 2-D
+    timeseries numpy arrays.
+
+    Arguments
+    ---------
+    ts_a, ts_b : array of shape [n_samples, n_timepoints]
+        Two arrays containing n_samples of timeseries data
+        whose DTW distance between each sample of A and B
+        will be compared
+
+    d : DistanceMetric object (default = abs(x-y))
+        the distance measure used for A_i - B_j in the
+        DTW dynamic programming function
+
+    Returns
+    -------
+    DTW distance between A and B
+    """
+
+    # Create cost matrix via broadcasting with large int
+    ts_a, ts_b = pd.np.array(ts_a), pd.np.array(ts_b)
+    M, N = len(ts_a), len(ts_b)
+    cost = sys.maxint * pd.np.ones((M, N))
+
+    # Initialize the first row and column
+    cost[0, 0] = d(ts_a[0], ts_b[0])
+    for i in xrange(1, M):
+        cost[i, 0] = cost[i-1, 0] + d(ts_a[i], ts_b[0])
+
+    for j in xrange(1, N):
+        cost[0, j] = cost[0, j-1] + d(ts_a[0], ts_b[j])
+
+    # Populate rest of cost matrix within window
+    for i in xrange(1, M):
+        for j in xrange(max(1, i - window),
+                        min(N, i + window)):
+            choices = cost[i - 1, j - 1], cost[i, j-1], cost[i-1, j]
+            cost[i, j] = min(choices) + d(ts_a[i], ts_b[j])
+
+    print(cost)
+    # Return DTW distance given window
+    return cost[-1, -1]
+
+@mando.command
+def dtw(window=10000,
+        input_ts='-',
+        start_date=None,
+        end_date=None):
+    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts, dense=False),
+                             start_date=start_date,
+                             end_date=end_date)
+
+    process = {}
+    for i in tsd.columns:
+        for j in tsd.columns:
+            if (i, j) not in process and (j, i) not in process and i != j:
+                process[(i, j)] = _dtw(tsd[i], tsd[j], window=window)
+
+    print(process.keys())
+
+    ntsd = pd.DataFrame(process.values(), process.keys())
+    return tsutils.printiso(ntsd)
+
+@mando.command
+def pca(n_components=None,
+        input_ts='-',
+        start_date=None,
+        end_date=None):
+    '''
+    Returns the principal components analysis of the time series.  Does not
+    return a time-series.
+
+    :param n_components: The number of groups to separate the time series into.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+       stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
+    '''
+    from sklearn.decomposition import PCA
+
+    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+                             start_date=start_date,
+                             end_date=end_date)
+
+    pca = PCA(n_components)
+    pca.fit(tsd.dropna(how='any'))
+    print(pca.components_)
 
 
 def main():
