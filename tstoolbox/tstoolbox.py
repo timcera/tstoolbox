@@ -1177,7 +1177,7 @@ def plot(
         norm_xaxis=False,
         norm_yaxis=False,
         xy_match_line='',
-        grid=True,
+        grid=None,
         input_ts='-',
         start_date=None,
         end_date=None,
@@ -1367,7 +1367,7 @@ def plot(
        DEPRECATED: use '--type="norm_xaxis"' or '--type="norm_yaxis"' instead.
     :param xy_match_line: Will add a match line where x == y.  Default is ''.
        Set to a line style code.
-    :param grid: boolean, default False
+    :param grid: boolean, default True
        Whether to plot grid lines on the major ticks.
     :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
        stdin.
@@ -1754,6 +1754,10 @@ def plot(
 *
 '''.format(type))
 
+    if grid is None:
+        grid = True
+    else:
+        grid = False
     plt.grid(grid)
     plt.title(title)
     plt.savefig(ofilename)
@@ -1849,6 +1853,66 @@ def pca(n_components=None,
     pca = PCA(n_components)
     pca.fit(tsd.dropna(how='any'))
     print(pca.components_)
+
+
+@mando.command
+def normalization(mode='minmax',
+                  min_limit=0,
+                  max_limit=1,
+                  pct_rank_method='average',
+                  print_input=False,
+                  float_format='%g',
+                  input_ts='-',
+                  start_date=None,
+                  end_date=None):
+    '''
+    Returns the normalization of the time series.
+
+    :param mode: 'minmax' or 'zscore'.  Default is 'minmax'
+                 'minmax' is (X-Xmin)/(Xmax-Xmin).
+                 'zscore' is X-mean(X)/stddev(X)
+                 'pct_rank' is rank(X)*100/N
+    :param min_limit: Defaults to 0.  Defines the minimum limit of
+        the minmax normalization.
+    :param max_limit: Defaults to 1.  Defines the maximum limit of
+        the minmax normalization.
+    :param pct_rank_method: Defaults to 'average'.  Defines how tied ranks
+        are broken.  Can be 'average', 'min', 'max', 'first', 'dense'.
+    :param print_input: If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
+    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
+       stdin.
+    :param start_date: The start_date of the series in ISOdatetime format, or
+        'None' for beginning.
+    :param end_date: The end_date of the series in ISOdatetime format, or
+        'None' for end.
+    '''
+    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+                             start_date=start_date,
+                             end_date=end_date)
+
+    # Trying to save some memory
+    if print_input:
+        otsd = tsd.copy()
+    else:
+        otsd = pd.DataFrame()
+
+    if mode == 'minmax':
+        tsd = min_limit + (tsd - tsd.min())/(tsd.max() - tsd.min())
+    elif mode == 'zscore':
+        tsd = (tsd - tsd.mean())/tsd.std()
+    elif mode == 'pct_rank':
+        tsd = tsd.rank(method=pct_rank_method, pct=True)
+    else:
+        raise ValueError('''
+*
+*   The 'mode' options are 'minmax', 'zscore', or 'pct_rank', you gave me
+*   {0}.
+*
+'''.format(mode))
+
+    return tsutils.print_input(print_input, otsd, tsd, '_{0}'.format(mode),
+                               float_format=float_format)
 
 
 def main():
