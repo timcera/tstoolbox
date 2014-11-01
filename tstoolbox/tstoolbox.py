@@ -199,7 +199,6 @@ def read(filenames, start_date=None, end_date=None, dense=False,
     for index, filename in enumerate(filenames):
         tsd = tsutils.date_slice(tsutils.read_iso_ts(filename, dense=dense),
                                  start_date=start_date, end_date=end_date)
-        tsd.dropna(how='all', inplace=True)
         try:
             result = result.join(tsd,
                                  how=how,
