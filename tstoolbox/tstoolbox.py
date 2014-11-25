@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import sys
 import os.path
 import warnings
+import argparse
 warnings.filterwarnings('ignore')
 
 import pandas as pd
@@ -169,7 +170,7 @@ def zero_crossings(y_axis, window=11):
 #    return 1.0 / time_p_period
 ##############################################################################
 
-    return tsutils.print_input(print_input, tsd, tmptsd, '_filter')
+    # return tsutils.print_input(print_input, tsd, tmptsd, '_filter')
 
 
 @mando.command
@@ -196,13 +197,14 @@ def read(filenames, start_date=None, end_date=None, dense=False,
         reading in.
     '''
     filenames = filenames.split(',')
-    for index, filename in enumerate(filenames):
+    for filename in filenames:
         tsd = tsutils.date_slice(tsutils.read_iso_ts(filename, dense=dense),
                                  start_date=start_date, end_date=end_date)
         try:
             result = result.join(tsd,
                                  how=how,
-                                 rsuffix='_{0}'.format(os.path.splitext(os.path.basename(filename))[0]))
+                                 rsuffix='_{0}'.format(os.path.splitext(
+                                     os.path.basename(filename))[0]))
         except NameError:
             result = tsd
     return tsutils.printiso(result, float_format=float_format)
@@ -251,7 +253,7 @@ def describe(input_ts='-', start_date=None, end_date=None):
 def peak_detection(method='rel',
                    type='peak',
                    window=24,
-                   #pad_len=5,  eventually used for fft
+                   pad_len=5,
                    points=9,
                    lock_frequency=False,
                    float_format='%g',
@@ -571,7 +573,8 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
         jtsd = pd.DataFrame(tsd[tsd.columns[col]])
 
         try:
-            newtsd = newtsd.join(jtsd, lsuffix='_{0}'.format(index), how='outer')
+            newtsd = newtsd.join(jtsd,
+                                 lsuffix='_{0}'.format(index), how='outer')
         except NameError:
             newtsd = jtsd
     return tsutils.printiso(newtsd)
@@ -609,7 +612,7 @@ def stdtozrxp(
     for i in range(len(tsd)):
         print(('{0.year:04d}{0.month:02d}{0.day:02d}{0.hour:02d}'
                '{0.minute:02d}{0.second:02d}, {1}').format(
-            tsd.index[i], tsd[tsd.columns[0]][i]))
+                   tsd.index[i], tsd[tsd.columns[0]][i]))
 
 
 @mando.command
@@ -840,7 +843,7 @@ def aggregate(
             'daily': 'D',
             'monthly': 'M',
             'yearly': 'A'
-            }
+           }
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date)
@@ -1122,33 +1125,33 @@ def unstack(
 
 
 mark_dict = {
-".":"point",
-",":"pixel",
-"o":"circle",
-"v":"triangle_down",
-"^":"triangle_up",
-"<":"triangle_left",
-">":"triangle_right",
-"1":"tri_down",
-"2":"tri_up",
-"3":"tri_left",
-"4":"tri_right",
-"8":"octagon",
-"s":"square",
-"p":"pentagon",
-"*":"star",
-"h":"hexagon1",
-"H":"hexagon2",
-"+":"plus",
-"D":"diamond",
-"d":"thin_diamond",
-"|":"vline",
-"_":"hline"
-}
+    ".":"point",
+    ",":"pixel",
+    "o":"circle",
+    "v":"triangle_down",
+    "^":"triangle_up",
+    "<":"triangle_left",
+    ">":"triangle_right",
+    "1":"tri_down",
+    "2":"tri_up",
+    "3":"tri_left",
+    "4":"tri_right",
+    "8":"octagon",
+    "s":"square",
+    "p":"pentagon",
+    "*":"star",
+    "h":"hexagon1",
+    "H":"hexagon2",
+    "+":"plus",
+    "D":"diamond",
+    "d":"thin_diamond",
+    "|":"vline",
+    "_":"hline"
+    }
 
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
 
-@mando.command
+@mando.command(formatter_class=argparse.RawTextHelpFormatter)
 def plot(
         ofilename='plot.png',
         type='time',
@@ -1190,8 +1193,7 @@ def plot(
     :param type: The plot type.  Can be 'time', 'xy', 'double_mass', 'boxplot',
        'scatter_matrix', 'lag_plot', 'autocorrelation', 'bootstrap', or
        'probability_density', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
-       'histogram', 'norm_xaxis', 'norm_yaxis'.
-       Defaults to 'time'.
+       'histogram', 'norm_xaxis', 'norm_yaxis'.  Defaults to 'time'.
     :param xtitle: Title of x-axis, defaults depend on ``type``.
     :param ytitle: Title of y-axis, defaults depend on ``type``.
     :param title: Title of chart, defaults to ''.
@@ -1200,138 +1202,77 @@ def plot(
     :param legend: Whether to display the legend. Defaults to True.
     :param legend_names: Legend would normally use the time-series names
        associated with the input data.  The 'legend_names' option allows you to
-       override the names in the data set.  You must supply a comma
-       separated list of strings for each time-series in the data set.
-       Defaults to None.
-    :param subplots: boolean, default False.
-       Make separate subplots for each time series
-    :param sharex: boolean, default True
-       In case subplots=True, share x axis
-    :param sharey: boolean, default False
-       In case subplots=True, share y axis
-    :param style: comma separated matplotlib style strings
-       matplotlib line style per time-series.  Just combine codes in
-       'ColorLineMarker' order, for example
-       'r--*' is a red dashed line with star marker.
-
-       =========================
+       override the names in the data set.  You must supply a comma separated
+       list of strings for each time-series in the data set.  Defaults to None.
+    :param subplots: boolean, default False.  Make separate subplots for each
+       time series
+    :param sharex: boolean, default True In case subplots=True, share x axis
+    :param sharey: boolean, default False In case subplots=True, share y axis
+    :param style: comma separated matplotlib style strings matplotlib line
+       style per time-series.  Just combine codes in 'ColorLineMarker' order,
+       for example 'r--*' is a red dashed line with star marker.
 
        Colors - Single Character Codes:
-
        'b'  blue
-
        'g'  green
-
        'r'  red
-
        'c'  cyan
-
        'm'  magenta
-
        'y'  yellow
-
        'k'  black
-
        'w'  white
-
        ---------------------
-
        Grays - Float:
-
        '0.75'  0.75 gray
-
        ---------------------
-
        Colors - HTML Color Names
-
        'red'
-
        'burlywood'
-
        'chartreuse'
-
        ...etc.
-
        Color reference:
        http://matplotlib.org/api/colors_api.html
 
-       =========================
-
        Lines
-
        '-'     solid
-
        '--'    dashed
-
        '-.'    dash_dot
-
        ':'     dotted
-
        'None'  draw nothing
-
        ' '     draw nothing
-
        ''      draw nothing
-
        Line reference:
        http://matplotlib.org/api/artist_api.html
 
-       =========================
-
        Markers
-
        '.'     point
-
        'o'     circle
-
        'v'     triangle down
-
        '^'     triangle up
-
        '<'     triangle left
-
        '>'     triangle right
-
        '1'     tri_down
-
        '2'     tri_up
-
        '3'     tri_left
-
        '4'     tri_right
-
        '8'     octagon
-
        's'     square
-
        'p'     pentagon
-
        '*'     star
-
        'h'     hexagon1
-
        'H'     hexagon2
-
        '+'     plus
-
        'x'     x
-
        'D'     diamond
-
        'd'     thin diamond
-
        '|'     vline
-
        '_'     hline
-
        'None'     nothing
-
        ' '     nothing
-
        ''     nothing
-
        Marker reference:
        http://matplotlib.org/api/markers_api.html
+
     :param logx: boolean, default False
        For line plots, use log scaling on x axis
        DEPRECATED: use '--xaxis="log"' instead.
@@ -1418,7 +1359,7 @@ def plot(
             if nlim[1] is None:
                 nlim[1] = 0.99
             if (nlim[0] <= 0 or nlim[0] >= 1 or
-                nlim[1] <= 0 or nlim[1] >= 1):
+                    nlim[1] <= 0 or nlim[1] >= 1):
                 raise ValueError('''
 *
 *   Both limits must be between 0 and 1 for the
@@ -1598,28 +1539,28 @@ def plot(
                             color=lcolor,
                             marker=marker,
                             label=lnames[colindex]
-                            )
+                           )
             elif logx is True and logy is False:
                 ax.semilogx(oxdata, oydata,
                             linestyle=linest,
                             color=lcolor,
                             marker=marker,
                             label=lnames[colindex]
-                            )
+                           )
             elif logx is True and logy is True:
                 ax.loglog(oxdata, oydata,
                           linestyle=linest,
                           color=lcolor,
                           marker=marker,
                           label=lnames[colindex]
-                          )
+                         )
             else:
                 ax.plot(oxdata, oydata,
                         linestyle=linest,
                         color=lcolor,
                         marker=marker,
                         label=lnames[colindex]
-                        )
+                       )
         if type in ['norm_xaxis', 'norm_yaxis']:
             xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
             xtmaj_str = ['1', '10', '50', '90', '99']
@@ -1628,7 +1569,7 @@ def plot(
                                        pd.np.linspace(0.1, 0.9, 9),
                                        pd.np.linspace(0.9, 0.99, 10),
                                        pd.np.linspace(0.99, 0.999, 10),
-                                       ])
+                                      ])
             xtmaj = norm.ppf(xtmaj)
             xtmin = norm.ppf(xtmin)
             norm_axis.set_major_locator(FixedLocator(xtmaj))
@@ -1701,7 +1642,11 @@ def plot(
         bootstrap_plot(tsd, size=bootstrap_size, samples=bootstrap_samples,
                        color='gray',
                        figsize=figsize)
-    elif type == 'bar' or type == 'bar_stacked' or type == 'barh' or type == 'barh_stacked':
+    elif (type == 'bar' or
+          type == 'bar_stacked' or
+          type == 'barh' or
+          type == 'barh_stacked'
+         ):
         stacked = False
         if type[-7:] == 'stacked':
             stacked = True
@@ -1730,10 +1675,10 @@ def plot(
             else:
                 taxis = ax.yaxis
             for index, i in enumerate(taxis.get_majorticklabels()):
-                 if index % label_skip:
-                     nticklabels.append(' ')
-                 else:
-                     nticklabels.append(i.get_text()[:endchar])
+                if index % label_skip:
+                    nticklabels.append(' ')
+                else:
+                    nticklabels.append(i.get_text()[:endchar])
             taxis.set_ticklabels(nticklabels)
             plt.setp(taxis.get_majorticklabels(), rotation=label_rotation)
         plt.xlabel(xtitle)
@@ -1762,7 +1707,7 @@ def plot(
     plt.savefig(ofilename)
 
 
-def _dtw(ts_a, ts_b, d = lambda x,y: abs(x-y), window=10000):
+def _dtw(ts_a, ts_b, d=lambda x, y: abs(x-y), window=10000):
     """Returns the DTW similarity distance between two 2-D
     timeseries numpy arrays.
 
@@ -1802,7 +1747,6 @@ def _dtw(ts_a, ts_b, d = lambda x,y: abs(x-y), window=10000):
             choices = cost[i - 1, j - 1], cost[i, j-1], cost[i-1, j]
             cost[i, j] = min(choices) + d(ts_a[i], ts_b[j])
 
-    print(cost)
     # Return DTW distance given window
     return cost[-1, -1]
 
@@ -1811,7 +1755,8 @@ def dtw(window=10000,
         input_ts='-',
         start_date=None,
         end_date=None):
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts, dense=False),
+    '''Dynamic Time Warping'''
+    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts, dense=True),
                              start_date=start_date,
                              end_date=end_date)
 
@@ -1868,9 +1813,9 @@ def normalization(mode='minmax',
     Returns the normalization of the time series.
 
     :param mode: 'minmax' or 'zscore'.  Default is 'minmax'
-                 'minmax' is (X-Xmin)/(Xmax-Xmin).
-                 'zscore' is X-mean(X)/stddev(X)
-                 'pct_rank' is rank(X)*100/N
+        'minmax' is min_limit + (X-Xmin)/(Xmax-Xmin)*(max_limit - min_limit)
+        'zscore' is X-mean(X)/stddev(X)
+        'pct_rank' is rank(X)*100/N
     :param min_limit: Defaults to 0.  Defines the minimum limit of
         the minmax normalization.
     :param max_limit: Defaults to 1.  Defines the maximum limit of
@@ -1897,7 +1842,10 @@ def normalization(mode='minmax',
         otsd = pd.DataFrame()
 
     if mode == 'minmax':
-        tsd = min_limit + (tsd - tsd.min())/(tsd.max() - tsd.min())
+        tsd = (min_limit +
+               (tsd - tsd.min())/
+               (tsd.max() - tsd.min())*
+               (max_limit - min_limit))
     elif mode == 'zscore':
         tsd = (tsd - tsd.mean())/tsd.std()
     elif mode == 'pct_rank':
@@ -1915,6 +1863,7 @@ def normalization(mode='minmax',
 
 
 def main():
+    ''' Main '''
     if not os.path.exists('debug_tstoolbox'):
         sys.tracebacklimit = 0
     mando.main()

@@ -89,7 +89,7 @@ def fill_by_correlation(method='move2',
                         maximum_lag=0,
                         interval='guess',
                         transform='log10',
-                        choose_best=True,
+                        choose_best='dtw',
                         print_input=False,
                         input_ts='-'):
     '''

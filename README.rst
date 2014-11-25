@@ -22,7 +22,7 @@ Usage - Command Line
 --------------------
 Just run 'tstoolbox' to get a list of subcommands
 
-.. program-output:: tstoolbox
+.. program-output:: tstoolbox --help
 
 The default for all of the subcommands is to accept data from stdin (typically
 a pipe).  If a subcommand accepts an input file for an argument, you can use
@@ -39,6 +39,10 @@ accumulate
 ~~~~~~~~~~
 .. program-output:: tstoolbox accumulate --help
 
+add_trend
+~~~~~~~~~
+.. program-output:: tstoolbox add_trend --help
+
 aggregate
 ~~~~~~~~~
 .. program-output:: tstoolbox aggregate --help
@@ -46,6 +50,10 @@ aggregate
 calculate_fdc
 ~~~~~~~~~~~~~
 .. program-output:: tstoolbox calculate_fdc --help
+
+clip
+~~~~
+.. program-output:: tstoolbox clip --help
 
 convert
 ~~~~~~~
@@ -71,6 +79,10 @@ filter
 ~~~~~~
 .. program-output:: tstoolbox filter --help
 
+normalization
+~~~~~~~~~~~~~
+.. program-output:: tstoolbox normalization --help
+
 peak_detection
 ~~~~~~~~~~~~~~
 .. program-output:: tstoolbox peak_detection --help
@@ -87,9 +99,17 @@ read
 ~~~~
 .. program-output:: tstoolbox read --help
 
+remove_trend
+~~~~~~~~~~~~
+.. program-output:: tstoolbox remove_trend --help
+
 rolling_window
 ~~~~~~~~~~~~~~
 .. program-output:: tstoolbox rolling_window --help
+
+stack
+~~~~~
+.. program-output:: tstoolbox stack --help
 
 stdtozrxp
 ~~~~~~~~~
@@ -98,6 +118,10 @@ stdtozrxp
 tstopickle
 ~~~~~~~~~~
 .. program-output:: tstoolbox tstopickle --help
+
+unstack
+~~~~~~~
+.. program-output:: tstoolbox unstack --help
 
 Usage - API
 -----------

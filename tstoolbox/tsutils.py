@@ -21,7 +21,7 @@ def date_slice(input_tsd, start_date=None, end_date=None):
 
     if input_tsd.index.is_all_dates:
         accdate = []
-        for testdate,alpha_omega in [(start_date, 0), (end_date, -1)]:
+        for testdate, alpha_omega in [(start_date, 0), (end_date, -1)]:
             if testdate is None:
                 tdate = input_tsd.index[alpha_omega]
             else:
@@ -85,7 +85,7 @@ def asbestfreq(data):
                'S': 1000000000,
                'L': 1000000,
                'U': 1000,
-               }
+              }
 
     finterval = codemap.setdefault(pandacode, None)
 
@@ -137,7 +137,6 @@ def _printiso(tsd, date_format=None, sep=',',
               float_format='%g'):
     ''' Separate so can use in tests.
     '''
-    import sys
     sys.tracebacklimit = 1000
     try:
         if tsd.index.is_all_dates:
@@ -152,7 +151,6 @@ def _printiso(tsd, date_format=None, sep=',',
         return
 
 def test_cli():
-    import sys
     import traceback
     try:
         oldtracebacklimit = sys.tracebacklimit
@@ -168,7 +166,7 @@ def test_cli():
     return cli
 
 
-def printiso(tsd, sparse=False, date_format=None,
+def printiso(tsd, date_format=None,
              sep=',', float_format='%g'):
     '''
     Default output format for tstoolbox, wdmtoolbox, swmmtoolbox,

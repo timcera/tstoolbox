@@ -38,10 +38,7 @@ test_sinwave='Datetime,0,0_peak,0_valley\n2000-01-01 00:00:00,0.0,,\n2000-01-01 
 
 class TestFilter(TestCase):
     def setUp(self):
-        dindex = pd.date_range('2000-01-01T00:00:00', periods=24, freq='H')
-        self.ats = pd.np.arange(0, 360, 15)
-        self.ats = pd.np.sin(2*pd.np.pi*self.ats/360)
-        self.ats = pd.DataFrame(self.ats, index=dindex)
+        self.ats = tstoolbox.read(os.path.join('tests', 'data_sine.csv'))
         self.ats.index.name = 'Datetime'
         self.ats.columns = ['Value']
 
@@ -61,35 +58,35 @@ class TestFilter(TestCase):
         self.fft_highpass.columns = ['Value_filter']
         self.fft_highpass = self.ats.join(self.fft_highpass)
 
-    #def test_filter_flat(self):
-    #    out = tstoolbox.filter('flat',
-    #                           input_ts='tests/data_sine.csv',
-    #                           print_input=True)
-    #    self.maxDiff = None
-    #    assert_frame_equal(out, self.flat_3)
+    def test_filter_flat(self):
+        out = tstoolbox.filter('flat',
+                               input_ts='tests/data_sine.csv',
+                               print_input=True)
+        self.maxDiff = None
+        assert_frame_equal(out, self.flat_3)
 
-    #def test_filter_hanning(self):
-    #    out = tstoolbox.filter('hanning',
-    #                           input_ts='tests/data_sine.csv',
-    #                           print_input=True)
-    #    self.maxDiff = None
-    #    assert_frame_equal(out, self.hanning)
+    def test_filter_hanning(self):
+        out = tstoolbox.filter('hanning',
+                               input_ts='tests/data_sine.csv',
+                               print_input=True)
+        self.maxDiff = None
+        assert_frame_equal(out, self.hanning)
 
-    #def test_filter_fft_lowpass(self):
-    #    out = tstoolbox.filter('fft_lowpass',
-    #                           input_ts='tests/data_sine.csv',
-    #                           print_input=True,
-    #                           cutoff_period=12)
-    #    self.maxDiff = None
-    #    assert_frame_equal(out, self.fft_lowpass)
+    def test_filter_fft_lowpass(self):
+        out = tstoolbox.filter('fft_lowpass',
+                               input_ts='tests/data_sine.csv',
+                               print_input=True,
+                               cutoff_period=12)
+        self.maxDiff = None
+        assert_frame_equal(out, self.fft_lowpass)
 
-    #def test_filter_fft_highpass(self):
-    #    out = tstoolbox.filter('fft_highpass',
-    #                           input_ts='tests/data_sine.csv',
-    #                           print_input=True,
-    #                           cutoff_period=12)
-    #    self.maxDiff = None
-    #    assert_frame_equal(out, self.fft_highpass)
+    def test_filter_fft_highpass(self):
+        out = tstoolbox.filter('fft_highpass',
+                               input_ts='tests/data_sine.csv',
+                               print_input=True,
+                               cutoff_period=12)
+        self.maxDiff = None
+        assert_frame_equal(out, self.fft_highpass)
 
 #    def test_filter_flat_cli(self):
 #        args = 'tstoolbox filter flat --input_ts=self.ats --print_input=True'
