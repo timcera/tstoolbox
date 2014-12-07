@@ -9,6 +9,15 @@ python:
   - 3.3
   - 3.4
 
+before_install:
+  # In order to install matplotlib
+  - apt-get install -y libpng freetype
+
+  # set up a virtualenv and activate the python version that you want to use
+  - mkdir -p $HOME/bldve/
+  - virtualenv -p $SHIPPABLE_PYTHON  $HOME/bldve/
+  - source $HOME/bldve/bin/activate
+
 install:
   - pip install numpy scipy matplotlib pandas nose mando
 
