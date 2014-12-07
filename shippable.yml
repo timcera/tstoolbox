@@ -11,7 +11,7 @@ python:
 
 before_install:
   # In order to install matplotlib
-  - apt-get install -y libpng-dev libfreetype6-dev python${SHIPPABLE_PYTHON}-dev
+  - sudo apt-get install -y libpng-dev libfreetype6-dev python${SHIPPABLE_PYTHON}-dev
 
   # set up a virtualenv and activate the python version that you want to use
   - mkdir -p $HOME/bldve/
