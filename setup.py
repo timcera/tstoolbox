@@ -24,6 +24,7 @@ install_requires = [
     'pandas >= 0.8.1',
     'python-dateutil >= 2.1',
     'mando >= 0.3.2',
+    'matplotlib',
 ]
 
 
