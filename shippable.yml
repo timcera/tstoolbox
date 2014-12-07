@@ -3,7 +3,6 @@ language: python
 build_image: shippableimages/ubuntu1204_python
 
 python:
-  - 2.6
   - 2.7
   - 3.1
   - 3.3
@@ -11,7 +10,7 @@ python:
 
 before_install:
   # In order to install matplotlib
-  - apt-get install -y libpng-dev libfreetype6-dev
+  - apt-get install -y libpng-dev libfreetype6-dev python-dev
 
   # set up a virtualenv and activate the python version that you want to use
   - mkdir -p $HOME/bldve/
