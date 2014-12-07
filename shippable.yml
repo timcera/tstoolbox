@@ -10,7 +10,6 @@ python:
   - 3.4
 
 install:
-  - pip install nose
-  - pip install mando
+  - pip install numpy scipy matplotlib pandas nose mando
 
 script: nosetests --with-doctest
