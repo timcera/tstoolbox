@@ -4,15 +4,15 @@ language: python
 
 python:
   - 2.6
-    #  - 2.7
-    #  - 3.2
-    #  - 3.3
-    #  - 3.4
+  - 2.7
+  - 3.2
+  - 3.3
+  - 3.4
 
 before_install:
   - env
   # In order to install matplotlib
-  - sudo apt-get install -y libpng-dev libfreetype6-dev python${SHIPPABLE_PYTHON}-dev
+  - sudo apt-get install -y libpng-dev libfreetype6-dev python${VIRTUALENV_PYTHON}-dev
 
   # set up a virtualenv and activate the python version that you want to use
   - mkdir -p $HOME/bldve/
