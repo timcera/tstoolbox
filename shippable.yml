@@ -30,6 +30,7 @@ before_script:
   - mkdir -p shippable/codecoverage
 
 script:
-  - nosetests --with-doctest --with-xunit --xunit-file=shippable/testresults/nosetests.xml
-  - which python && coverage run --with-doctest
+  - nosetests --with-coverage --with-doctest --with-xunit --xunit-file=shippable/testresults/nosetests.xml
   - which python && coverage xml --include="ts*/*" --omit="tests/*" --omit=".tox/*" -o shippable/codecoverage/coverage.xml 
+
+cache: true
