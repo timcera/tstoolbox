@@ -20,6 +20,16 @@ before_install:
   - source $HOME/bldve/bin/activate
 
 install:
-  - pip install numpy scipy matplotlib pandas nose mando
+  # Would be nice to just have argparse installed for 2.6, but don't
+  # know a way to put the logic inside the shippable.yml
+  - pip install numpy scipy matplotlib pandas nose mando argparse
+  - python setup.py install
 
-script: nosetests --with-doctest
+before_script:
+  - mkdir -p shippable/testresults
+  - mkdir -p shippable/codecoverage
+
+script:
+  - nosetests --with-doctest --with-xunit --xunit-file=shippable/testresults/nosetests.xml
+  - which python && coverage run --with-doctest
+  - which python && coverage xml --include="ts*/*" --omit="tests/*" --omit=".tox/*" -o shippable/codecoverage/coverage.xml 
