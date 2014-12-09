@@ -45,9 +45,9 @@ class TestPeakDetect(TestCase):
         self.compare = self.compare.join(pd.Series(pd.np.zeros(len(self.ats)).astype('f'), index=self.ats.index, name='0_valley'))
         self.compare.index.name = 'Datetime'
         self.compare['0_peak'] = pd.np.nan
-        self.compare['0_peak'][self.compare[0] == 1.0] = 1.0
+        self.compare.loc[self.compare[0] == 1, '0_peak'] = 1
         self.compare['0_valley'] = pd.np.nan
-        self.compare['0_valley'][self.compare[0] == -1.0] = -1.0
+        self.compare.loc[self.compare[0] == -1, '0_valley'] = -1
 
     def test_peak_rel_direct(self):
         out = tstoolbox.peak_detection(input_ts=self.ats, print_input=True, type='both')
