@@ -6,10 +6,6 @@ Python library to work with time-series.
 
 TSToolbox should work with Python 2.7+ and 3.0+.
 
-Other Work
-----------
-http://timcera.bitbucket.org
-
 Table of Contents
 -----------------
 .. toctree::
@@ -20,10 +16,7 @@ Table of Contents
    authors
    license
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+Related Projects
+----------------
+http://timcera.bitbucket.org
 

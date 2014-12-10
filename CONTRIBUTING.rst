@@ -12,8 +12,7 @@ Types of Contributions
 
 Report Bugs
 ~~~~~~~~~~~
-
-Report bugs at https://bitbucket.org/timcera/tstoolbox
+Report bugs at https://bitbucket.org/timcera/tstoolbox/issues?status=new&status=open
 
 If you are reporting a bug, please include:
 
@@ -23,26 +22,22 @@ If you are reporting a bug, please include:
 
 Fix Bugs
 ~~~~~~~~
-
 Look through the bitbucket issues for bugs. Anything tagged with "bug"
 is open to whoever wants to implement it.
 
 Implement Features
 ~~~~~~~~~~~~~~~~~~
-
 Look through the bitbucket issues for features. Anything tagged with "feature"
 is open to whoever wants to implement it.
 
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
-
 TSToolbox could always use more documentation, whether as part of the 
 official TSToolbox docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
 ~~~~~~~~~~~~~~~
-
 The best way to send feedback is to file an issue at https://bitbucket.org/timcera/tstoolbox
 
 If you are proposing a feature:
@@ -54,15 +49,18 @@ If you are proposing a feature:
 
 Get Started!
 ------------
-
 Ready to contribute? Here's how to set up `tstoolbox` for local development.
 
-1. Fork the `tstoolbox` repo on bitbucket.
+1. Fork the `tstoolbox` repo on bitbucket at
+   https://bitbucket.org/timcera/tstoolbox/fork.
+
 2. Clone your fork locally::
 
     $ git clone git@bitbucket.org:your_bitbucket_login/tstoolbox.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+3. Install your local copy into a virtualenv. Assuming you have
+   virtualenvwrapper installed, this is how you set up your fork for local
+   development::
 
     $ mkvirtualenv tstoolbox
     $ cd tstoolbox
@@ -80,11 +78,13 @@ Ready to contribute? Here's how to set up `tstoolbox` for local development.
 
    Now you can make your changes locally.
 
-6. When you're done making changes, check that your changes pass flake8 and the tests, including testing other Python versions with tox::
+6. When you're done making changes, check that your changes pass flake8 and the
+   tests, including testing other Python versions with tox::
 
     $ tox
 
-   Bring the htmlcov/index.html file up into a browser to make sure that the code has appropriate test coverage.
+   Bring the htmlcov/index.html file up into a browser to make sure that the
+   code has appropriate test coverage.
 
 7. Commit your changes and push your branch to bitbucket::
 
@@ -96,7 +96,6 @@ Ready to contribute? Here's how to set up `tstoolbox` for local development.
 
 Pull Request Guidelines
 -----------------------
-
 Before you submit a pull request, check that it meets these guidelines:
 
 1. The pull request should include tests.
@@ -104,3 +103,4 @@ Before you submit a pull request, check that it meets these guidelines:
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
 3. The pull request should work for Python 2.7, and 3.3.
+
