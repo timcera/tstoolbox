@@ -77,7 +77,7 @@ class TestAddTrend(TestCase):
                 df.index.name = 'index'
                 df.columns = ['data']
                 self.fps[(tstep, testpc)] = tempfile.mkstemp()
-                df.to_csv(self.fps[(tstep, testpc)], sep=',', header=True)
+                df.to_csv(self.fps[(tstep, testpc)][1], sep=',', header=True)
 
 
     def test_ts_intervals(self):
@@ -135,7 +135,7 @@ class TestAddTrend(TestCase):
                    }
 
         for key in self.fps:
-            df = tstoolbox.read(self.fps[key].name)
+            df = tstoolbox.read(self.fps[key][1])
             inferred_code = df.index.inferred_freq
             if inferred_code is None:
                 continue
@@ -148,6 +148,6 @@ class TestAddTrend(TestCase):
 
     def tearDown(self):
         for key in self.fps:
-            fname = self.fps[key].name
+            fname = self.fps[key][1]
             if os.path.exists(fname):
                 os.remove(fname)
