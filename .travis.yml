@@ -13,25 +13,14 @@ before_install:
   # In order to install matplotlib
   - sudo apt-get install -y libpng-dev libfreetype6-dev python${VIRTUALENV_PYTHON}-dev libopenblas-dev liblapack-dev gfortran
 
-  # set up a virtualenv and activate the python version that you want to use
-  - mkdir -p $HOME/bldve-${VIRTUALENV_PYTHON}/
-  - virtualenv -p $SHIPPABLE_PYTHON $HOME/bldve-${VIRTUALENV_PYTHON}/
-  - source $HOME/bldve-${VIRTUALENV_PYTHON}/bin/activate
-
 install:
-  - if [[ "${VIRTUALENV_PYTHON}" == "2.6" ]]; then pip install argparse; fi
-  - pip install numpy scipy matplotlib pandas nose mando coverage
+  - if [[ "${TRAVIS_PYTHON_VERSION}" == "2.6" ]]; then pip install argparse; fi
+  - pip install numpy scipy matplotlib pandas mando coverage
   - python setup.py install
-
-before_script:
-  - mkdir -p shippable/testresults
-  - mkdir -p shippable/codecoverage
+  - pip install coveralls
 
 script:
-  - oldIFS="${IFS}"
-  - IFS='/' read -a arr <<< "${REPO_NAME}"
-  - PKG="${arr[1]}"
-  - IFS="${oldIFS}"
-  - nosetests --with-doctest --with-xunit --xunit-file=shippable/testresults/nosetests.xml --with-coverage --cover-tests --cover-package="${PKG}" --cover-branches --cover-erase #--cover-xml-file=shippable/codecoverage/coverage.xml 
-  - coverage xml -o shippable/codecoverage/coverage.xml 
+  - nosetests --with-doctest --with-coverage --cover-tests --cover-package=tstoolbox --cover-branches --cover-erase
 
+after_success:
+  - coveralls
