@@ -35,4 +35,3 @@ script:
   - nosetests --with-doctest --with-xunit --xunit-file=shippable/testresults/nosetests.xml --with-coverage --cover-tests --cover-package="${PKG}" --cover-branches --cover-erase #--cover-xml-file=shippable/codecoverage/coverage.xml 
   - coverage xml -o shippable/codecoverage/coverage.xml 
 
-cache: true
