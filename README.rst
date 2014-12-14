@@ -2,23 +2,6 @@
 
 TSToolbox - Quick Guide
 =======================
-
-.. image:: https://drone.io/github.com/rubik/mando/status.png
-    :alt: Shippable badge
-    :target: https://shippable.com/bitbucket.com/timcera/tstoolbox
-
-.. image:: https://pypip.in/v/tstoolbox/badge.png?style=flat
-    :alt: Latest release
-    :target: https://pypi.python.org/pypi/tstoolbox
-
-.. image:: https://pypip.in/d/tstoolbox/badge.png?style=flat
-    :alt: PyPI downloads count
-    :target: https://pypi.python.org/pypi/tstoolbox
-
-.. image:: https://pypip.in/license/tstoolbox/badge.png?style=flat
-    :alt: tstoolbox license
-    :target: https://pypi.python.org/pypi/tstoolbox/
-
 The tstoolbox is a Python script to manipulate time-series on the command line
 or by function calls within Python.  Uses pandas (http://pandas.pydata.org/)
 or numpy (http://numpy.scipy.org) for any heavy lifting.
