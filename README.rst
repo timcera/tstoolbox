@@ -1,4 +1,5 @@
 .. include:: ../BADGES.rst
+.. include:: BADGES.rst
 
 TSToolbox - Quick Guide
 =======================
