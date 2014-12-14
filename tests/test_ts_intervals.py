@@ -13,6 +13,8 @@ import shlex
 import subprocess
 import os
 import glob
+import tempfile
+
 try:
     from cStringIO import StringIO
 except:
@@ -65,7 +67,7 @@ def capture(func, *args, **kwds):
 
 class TestAddTrend(TestCase):
     def setUp(self):
-
+        self.fps = {}
         for testpc in pandacodes:
             sdate, periods, nintervals = pd_tstep_minterval[testpc]
             for tstep in range(1, nintervals):
@@ -74,17 +76,11 @@ class TestAddTrend(TestCase):
                 df = pd.DataFrame(pd.np.arange(aperiods), index=dr)
                 df.index.name = 'index'
                 df.columns = ['data']
-                df.to_csv(os.path.join('tests',
-                                       'tmptestdata',
-                                       'datafile_{0}_{1}.csv'.format(
-                                           tstep,
-                                           testpc)), sep=',', header=True)
+                self.fps[(tstep, testpc)] = tempfile.mkstemp()
+                df.to_csv(self.fps[(tstep, testpc)][1], sep=',', header=True)
 
 
     def test_ts_intervals(self):
-        fnames = glob.glob(os.path.join('tests',
-                                        'tmptestdata',
-                                        '*.csv'))
         matches = {
                    '4Q': '1A',
                    '8Q': '2A',
@@ -138,15 +134,12 @@ class TestAddTrend(TestCase):
                    '7D': '1W',
                    }
 
-        for fname in fnames:
-            df = tstoolbox.read(fname)
+        for key in self.fps:
+            df = tstoolbox.read(self.fps[key][1])
             inferred_code = df.index.inferred_freq
             if inferred_code is None:
                 continue
-            tinterval = os.path.split(fname)[1]
-            tinterval = os.path.splitext(tinterval)[0]
-            tinterval, tcode = tinterval.split('_')[1:3]
-            testcode = '{0}{1}'.format(tinterval, tcode)
+            testcode = '{0}{1}'.format(*key)
             if inferred_code[0] not in '123456789':
                 inferred_code = '1' + inferred_code
             if testcode in matches:
@@ -154,9 +147,7 @@ class TestAddTrend(TestCase):
             self.assertEqual(testcode, inferred_code.split('-')[0])
 
     def tearDown(self):
-        fnames = glob.glob(os.path.join('tests',
-                                        'tmptestdata',
-                                        '*.csv'))
-        for fname in fnames:
+        for key in self.fps:
+            fname = self.fps[key][1]
             if os.path.exists(fname):
                 os.remove(fname)

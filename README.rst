@@ -1,3 +1,5 @@
+.. include:: ../BADGES.rst
+
 TSToolbox - Quick Guide
 =======================
 The tstoolbox is a Python script to manipulate time-series on the command line
@@ -20,10 +22,97 @@ distribution then you won't have a problem.
 
 Usage - Command Line
 --------------------
-Just run 'tstoolbox' to get a list of subcommands
+Just run 'tstoolbox --help' to get a list of subcommands
 
-.. program-output:: tstoolbox --help
-
+  accumulate
+            Calculates accumulating statistics.
+  
+  add_trend
+            Adds a trend.
+  
+  aggregate
+            Takes a time series and aggregates to specified
+            frequency, outputs to 'ISO-8601date,value' format.
+  
+  calculate_fdc
+            Returns the frequency distribution curve. DOES NOT
+            return a time-series.
+  
+  clip
+            Returns a time-series with values limited to [a_min,
+            a_max]
+  
+  convert
+            Converts values of a time series by applying a factor
+            and offset. See the 'equation' subcommand for a
+            generalized form of this command.
+  
+  date_slice
+            Prints out data to the screen between start_date and
+            end_date
+  
+  describe
+            Prints out statistics for the time-series.
+  
+  dtw
+            Dynamic Time Warping (beta)
+  
+  equation
+            Applies <equation> to the time series data. The
+            <equation> argument is a string contained in single
+            quotes with 'x' used as the variable representing the
+            input. For example, '(1 - x)*sin(x)'.
+  
+  fill
+            Fills missing values (NaN) with different methods.
+            Missing values can occur because of NaN, or because
+            the time series is sparse. The 'interval' option can
+            insert NaNs to create a dense time series.
+  
+  filter
+            Apply different filters to the time-series.
+  
+  normalization
+              Returns the normalization of the time series.
+    
+  pca
+            Returns the principal components analysis of the time
+            series. Does not return a time-series. (beta)
+  
+  peak_detection
+            Peak and valley detection.
+  
+  pick
+            Will pick a column or list of columns from input.
+            Start with 1.
+  
+  plot
+            Plots.
+  
+  read
+            Collect time series from a list of pickle or csv files
+            then print in the tstoolbox standard format.
+  
+  remove_trend
+            Removes a 'trend'.
+  
+  rolling_window
+            Calculates a rolling window statistic.
+  
+  stack
+            Returns the stack of the input table.
+  
+  stdtozrxp
+            Prints out data to the screen in a WISKI ZRXP format.
+  
+  tstopickle
+            Pickles the data into a Python pickled file. Can be
+            brought back into Python with 'pickle.load' or
+            'numpy.load'. See also 'tstoolbox read'.
+  
+  unstack
+            Returns the unstack of the input table.
+  
 The default for all of the subcommands is to accept data from stdin (typically
 a pipe).  If a subcommand accepts an input file for an argument, you can use
 "--input_ts=input_file_name.csv", or to explicitly specify from stdin (the
@@ -31,97 +120,6 @@ default) "--input_ts='-'" .
 
 For the subcommands that output data it is printed to the screen and you can
 then redirect to a file.
-
-Sub-command Detail
-''''''''''''''''''
-
-accumulate
-~~~~~~~~~~
-.. program-output:: tstoolbox accumulate --help
-
-add_trend
-~~~~~~~~~
-.. program-output:: tstoolbox add_trend --help
-
-aggregate
-~~~~~~~~~
-.. program-output:: tstoolbox aggregate --help
-
-calculate_fdc
-~~~~~~~~~~~~~
-.. program-output:: tstoolbox calculate_fdc --help
-
-clip
-~~~~
-.. program-output:: tstoolbox clip --help
-
-convert
-~~~~~~~
-.. program-output:: tstoolbox convert --help
-
-date_slice
-~~~~~~~~~~
-.. program-output:: tstoolbox date_slice --help
-
-describe
-~~~~~~~~
-.. program-output:: tstoolbox describe --help
-
-equation
-~~~~~~~~
-.. program-output:: tstoolbox equation --help
-
-fill
-~~~~
-.. program-output:: tstoolbox fill --help
-
-filter
-~~~~~~
-.. program-output:: tstoolbox filter --help
-
-normalization
-~~~~~~~~~~~~~
-.. program-output:: tstoolbox normalization --help
-
-peak_detection
-~~~~~~~~~~~~~~
-.. program-output:: tstoolbox peak_detection --help
-
-pick
-~~~~
-.. program-output:: tstoolbox pick --help
-
-plot
-~~~~
-.. program-output:: tstoolbox plot --help
-
-read
-~~~~
-.. program-output:: tstoolbox read --help
-
-remove_trend
-~~~~~~~~~~~~
-.. program-output:: tstoolbox remove_trend --help
-
-rolling_window
-~~~~~~~~~~~~~~
-.. program-output:: tstoolbox rolling_window --help
-
-stack
-~~~~~
-.. program-output:: tstoolbox stack --help
-
-stdtozrxp
-~~~~~~~~~
-.. program-output:: tstoolbox stdtozrxp --help
-
-tstopickle
-~~~~~~~~~~
-.. program-output:: tstoolbox tstopickle --help
-
-unstack
-~~~~~~~
-.. program-output:: tstoolbox unstack --help
 
 Usage - API
 -----------
@@ -137,11 +135,6 @@ Simply import tstoolbox::
     # Then you could call the functions
     ntsd = tstoolbox.fill(method='linear', input_ts='tests/test_fill_01.csv')
 
-    # Once you have a PANDAS DataFrame you can use that as input.
+    # Once you have a PANDAS DataFrame you can use that as input to other 
+    # tstoolbox functions.
     ntsd = tstoolbox.aggregate(statistic='mean', agg_interval='daily', input_ts=ntsd)
-
-Author
-------
-Tim Cera, P.E.
-
-tim at cerazone dot net

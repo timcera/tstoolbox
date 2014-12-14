@@ -1,3 +1,3 @@
 Authors
 =======
-Tim Cera, P.E.
+Tim Cera, P.E. [tim@cerazone.net]

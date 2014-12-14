@@ -11,7 +11,7 @@ from __future__ import absolute_import
 import sys
 import os.path
 import warnings
-import argparse
+from argparse import RawTextHelpFormatter
 warnings.filterwarnings('ignore')
 
 import pandas as pd
@@ -53,25 +53,25 @@ def filter(filter_type,
     '''
     Apply different filters to the time-series.
 
-    :param filter_type: 'flat', 'hanning', 'hamming', 'bartlett', 'blackman',
-        'fft_highpass' and 'fft_lowpass' for Fast Fourier Transform filter in
-        the frequency domain.
-    :param window_len: For the windowed types, 'flat', 'hanning', 'hamming',
-        'bartlett', 'blackman' specifies the length of the window.  Defaults
-        to 5.
-    :param print_input: If set to 'True' will include the input
+    :param filter_type <str>: 'flat', 'hanning', 'hamming', 'bartlett',
+        'blackman', 'fft_highpass' and 'fft_lowpass' for Fast Fourier Transform
+        filter in the frequency domain.
+    :param window_len <int>: For the windowed types, 'flat', 'hanning',
+        'hamming', 'bartlett', 'blackman' specifies the length of the window.
+        Defaults to 5.
+    :param -p, --print_input: If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.  Default is stdin.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.  Default is stdin.
     :param cutoff_period: The period in input time units that will form the
         cutoff between low frequencies (longer periods) and high frequencies
         (shorter periods).  Filter will be smoothed by `window_len` running
         average.  For 'fft_highpass' and 'fft_lowpass'. Default is None and
         must be supplied if using 'fft_highpass' or 'fft_lowpass'.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -182,10 +182,10 @@ def read(filenames, start_date=None, end_date=None, dense=False,
 
     :param filenames: List of comma delimited filenames to read time series
         from.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     :param dense: Set `dense` to True to have missing values inserted such that
         there is a single interval.
     :param how: Use PANDAS concept on how to join the separate DataFrames read
@@ -218,12 +218,12 @@ def date_slice(float_format='%g',
     '''
     Prints out data to the screen between start_date and end_date
 
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
     '''
     return tsutils.printiso(
         tsutils.date_slice(tsutils.read_iso_ts(input_ts),
@@ -236,12 +236,12 @@ def describe(input_ts='-', start_date=None, end_date=None):
     '''
     Prints out statistics for the time-series.
 
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -286,14 +286,14 @@ def peak_detection(method='rel',
         frequency argument of the model function should be locked to the
         value calculated from the raw peaks or if optimization process may
         tinker with it. (default: False)
-    :param print_input: If set to 'True' will include the input columns in
-        the output table.  Default is 'False'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.  Default is stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -p, --print_input: If set to 'True' will include the input columns
+        in the output table.  Default is 'False'.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.  Default is stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
@@ -394,14 +394,14 @@ def convert(
 
     :param factor: Factor to multiply the time series values.
     :param offset: Offset to add to the time series values.
-    :param print_input: If set to 'True' will include the input columns in the
-        output table.  Default is 'False'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -p, --print_input: If set to 'True' will include the input columns
+        in the output table.  Default is 'False'.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -432,14 +432,14 @@ def equation(
         at which 'x' occurs.  This means you can so things like 'x[t] +
         max(x[t-1], x[t+1])*0.6' to add to the current value 0.6 times the
         maximum adjacent value.
-    :param print_input: If set to 'True' will include the input columns in the
-        output table.  Default is 'False'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -p, --print_input: If set to 'True' will include the input columns
+        in the output table.  Default is 'False'.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     x = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                            start_date=start_date,
@@ -523,12 +523,12 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
 
     :param columns: Either an integer to collect a single column or a list of
         integers to collect multiple columns.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -590,12 +590,12 @@ def stdtozrxp(
     Prints out data to the screen in a WISKI ZRXP format.
 
     :param rexchange: The REXCHANGE ID to be written into the zrxp header.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -626,12 +626,12 @@ def tstopickle(
     Python with 'pickle.load' or 'numpy.load'.  See also 'tstoolbox read'.
 
     :param filename: The filename to store the pickled data.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -650,14 +650,14 @@ def accumulate(
     Calculates accumulating statistics.
 
     :param statistic: 'sum', 'max', 'min', 'prod', defaults to 'sum'.
-    :param print_input: If set to 'True' will include the input columns in
-        the output table.  Default is 'False'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -p, --print_input: If set to 'True' will include the input columns
+        in the output table.  Default is 'False'.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -708,14 +708,14 @@ def rolling_window(
         width) 'slepian' (needs width).
     :param center: If set to 'True' the calculation will be made for the
         value at the center of the window.  Default is 'False'.
-    :param print_input: If set to 'True' will include the input columns in
+    :param -p, --print_input: If set to 'True' will include the input columns in
         the output table.  Default is 'False'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -830,14 +830,14 @@ def aggregate(
         Can also be a comma separated list of statistic methods.
     :param agg_interval: The 'hourly', 'daily', 'monthly', 'yearly'
         aggregation intervals, defaults to 'daily'.
-    :param print_input: If set to 'True' will include the input columns in
+    :param -p, --print_input: If set to 'True' will include the input columns in
         the output table.  Default is 'False'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     aggd = {'hourly': 'H',
             'daily': 'D',
@@ -869,14 +869,14 @@ def clip(
     '''
     Returns a time-series with values limited to [a_min, a_max]
 
-    :param print_input: If set to 'True' will include the input columns in
+    :param -p, --print_input: If set to 'True' will include the input columns in
         the output table.  Default is 'False'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -913,14 +913,14 @@ def add_trend(
 
     :param start_offset: The starting value for the applied trend.
     :param end_offset: The ending value for the applied trend.
-    :param print_input: If set to 'True' will include the input columns in
-        the output table.  Default is 'False'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -p, --print_input: If set to 'True' will include the input columns
+        in the output table.  Default is 'False'.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -944,14 +944,14 @@ def remove_trend(
     '''
     Removes a 'trend'.
 
-    :param print_input: If set to 'True' will include the input columns in
-        the output table.  Default is 'False'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -p, --print_input: If set to 'True' will include the input columns
+        in the output table.  Default is 'False'.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -978,12 +978,12 @@ def calculate_fdc(
 
     :param x_plotting_position: 'norm' or 'lin'.  'norm' defines a x
         plotting position Defaults to 'norm'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1013,7 +1013,7 @@ def calculate_fdc(
         print('{0}, {1}, {2}'.format(xdat, ydat, zdat))
 
 
-@mando.command
+@mando.command(formatter_class=RawTextHelpFormatter)
 def stack(
         input_ts='-',
         start_date=None,
@@ -1046,12 +1046,12 @@ def stack(
     2000-01-03,TS3,-0.0004
 
 
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-       stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1063,7 +1063,7 @@ def stack(
     return tsutils.printiso(newtsd)
 
 
-@mando.command
+@mando.command(formatter_class=RawTextHelpFormatter)
 def unstack(
         column_names,
         input_ts='-',
@@ -1097,14 +1097,14 @@ def unstack(
     2000-01-02,1.8,1453.1,0.0002
     2000-01-03,1.9,1683.1,-0.0004
 
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-       stdin.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
     :param columns_labels: The column in the table that holds the column
-    labels.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+        labels.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     tsd.sort(inplace=True)
@@ -1151,7 +1151,7 @@ mark_dict = {
 
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
 
-@mando.command(formatter_class=argparse.RawTextHelpFormatter)
+@mando.command(formatter_class=RawTextHelpFormatter)
 def plot(
         ofilename='plot.png',
         type='time',
@@ -1188,19 +1188,19 @@ def plot(
     '''
     Plots.
 
-    :param ofilename: Output filename for the plot.  Extension defines the
+    :param ofilename <str>: Output filename for the plot.  Extension defines the
        type, ('.png'). Defaults to 'plot.png'.
     :param type: The plot type.  Can be 'time', 'xy', 'double_mass', 'boxplot',
        'scatter_matrix', 'lag_plot', 'autocorrelation', 'bootstrap', or
        'probability_density', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
        'histogram', 'norm_xaxis', 'norm_yaxis'.  Defaults to 'time'.
-    :param xtitle: Title of x-axis, defaults depend on ``type``.
-    :param ytitle: Title of y-axis, defaults depend on ``type``.
-    :param title: Title of chart, defaults to ''.
+    :param xtitle <str>: Title of x-axis, defaults depend on ``type``.
+    :param ytitle <str>: Title of y-axis, defaults depend on ``type``.
+    :param title <str>: Title of chart, defaults to ''.
     :param figsize: The (width, height) of plot as inches.  Defaults to
        (10,6.5).
     :param legend: Whether to display the legend. Defaults to True.
-    :param legend_names: Legend would normally use the time-series names
+    :param legend_names <str>: Legend would normally use the time-series names
        associated with the input data.  The 'legend_names' option allows you to
        override the names in the data set.  You must supply a comma separated
        list of strings for each time-series in the data set.  Defaults to None.
@@ -1208,7 +1208,7 @@ def plot(
        time series
     :param sharex: boolean, default True In case subplots=True, share x axis
     :param sharey: boolean, default False In case subplots=True, share y axis
-    :param style: comma separated matplotlib style strings matplotlib line
+    :param style <str>: comma separated matplotlib style strings matplotlib line
        style per time-series.  Just combine codes in 'ColorLineMarker' order,
        for example 'r--*' is a red dashed line with star marker.
 
@@ -1283,9 +1283,9 @@ def plot(
        Limits for the x-axis
     :param ylim: comma separated lower and upper limits (--ylim 1,1000)
        Limits for the y-axis
-    :param xaxis: defines the type of the xaxis.  One of 'arithmetic',
+    :param xaxis <str>: defines the type of the xaxis.  One of 'arithmetic',
        'log'. Default is 'arithmetic'.
-    :param yaxis: defines the type of the yaxis.  One of 'arithmetic',
+    :param yaxis <str>: defines the type of the yaxis.  One of 'arithmetic',
        'log'. Default is 'arithmetic'.
     :param secondary_y: boolean or sequence, default False
        Whether to plot on the secondary y-axis If a list/tuple, which
@@ -1293,7 +1293,7 @@ def plot(
     :param mark_right: boolean, default True :
        When using a secondary_y axis, should the legend label the axis of the
        various time-series automatically
-    :param scatter_matrix_diagonal: If plot type is 'scatter_matrix', this
+    :param scatter_matrix_diagonal <str>: If plot type is 'scatter_matrix', this
        specifies the plot along the diagonal.  Defaults to
        'probability_density'.
     :param bootstrap_size: The size of the random subset for 'bootstrap' plot.
@@ -1305,18 +1305,18 @@ def plot(
        distribution common with frequency distribution curves.
        Defaults to False.
        DEPRECATED: use '--type="norm_xaxis"' or '--type="norm_yaxis"' instead.
-    :param xy_match_line: Will add a match line where x == y.  Default is ''.
+    :param xy_match_line <str>: Will add a match line where x == y.  Default is ''.
        Set to a line style code.
     :param grid: boolean, default True
        Whether to plot grid lines on the major ticks.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-       stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
-    :param label_rotation: Rotation for major labels for bar plots.
-    :param label_skip: Skip for major labels for bar plots.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
+    :param label_rotation <int>: Rotation for major labels for bar plots.
+    :param label_skip <int>: Skip for major labels for bar plots.
     '''
 
     # Need to work around some old option defaults with the implemntation of
@@ -1781,12 +1781,12 @@ def pca(n_components=None,
     return a time-series.
 
     :param n_components: The number of groups to separate the time series into.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-       stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     from sklearn.decomposition import PCA
 
@@ -1822,14 +1822,14 @@ def normalization(mode='minmax',
         the minmax normalization.
     :param pct_rank_method: Defaults to 'average'.  Defines how tied ranks
         are broken.  Can be 'average', 'min', 'max', 'first', 'dense'.
-    :param print_input: If set to 'True' will include the input
+    :param -p, --print_input: If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
-    :param input_ts: Filename with data in 'ISOdate,value' format or '-' for
-       stdin.
-    :param start_date: The start_date of the series in ISOdatetime format, or
-        'None' for beginning.
-    :param end_date: The end_date of the series in ISOdatetime format, or
-        'None' for end.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
+        format, or 'None' for end.
     '''
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
