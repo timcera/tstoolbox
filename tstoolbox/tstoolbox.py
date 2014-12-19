@@ -451,7 +451,7 @@ def equation(
     equation = equation.replace(' ', '')
 
     tsearch = re.search(r'\[.*?t.*?\]', equation)
-    nsearch = re.search(r'x[1-9][0-9]*?', equation)
+    nsearch = re.search(r'x[1-9][0-9]*', equation)
     # This beasty is so users can use 't' in their equations
     # Indices of 'x' are a function of 't' and can possibly be negative or
     # greater than the length of the DataFrame.
@@ -462,12 +462,12 @@ def equation(
     # DataFrame.
     # UGLY!
     if tsearch and nsearch:
-        testeval = re.findall(r'x[1-9][0-9]*?\[(.*?t.*?)\]',
+        testeval = re.findall(r'x[1-9][0-9]*\[(.*?t.*?)\]',
                               equation)
-        nequation = re.sub(r'x([1-9][0-9]*?)\[(.*?t.*?)\]',
+        nequation = re.sub(r'x([1-9][0-9]*)\[(.*?t.*?)\]',
                            r'x.ix[\2,\1-1]',
                            equation)
-        nequation = re.sub(r'x([1-9][0-9]*?)',
+        nequation = re.sub(r'x([1-9][0-9]*)',
                            r'x.ix[t,\1-1]',
                            nequation)
         y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
@@ -506,7 +506,7 @@ def equation(
                 y.ix[t, :] = pd.np.nan
     elif nsearch:
         y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
-        nequation = re.sub(r'x([1-9][0-9]*?)',
+        nequation = re.sub(r'x([1-9][0-9]*)',
                            r'x.ix[:,\1-1]',
                            equation)
         y.ix[:, 0] = eval(nequation)

@@ -54,6 +54,9 @@ class TestEquation(TestCase):
             'Value1':ts2, '__equation':ts3}, index=dindex, dtype='float32')
         self.equation_multiple_cols_01.index.name = 'Datetime'
 
+        self.equation_result = pd.DataFrame({'__equation':pd.np.array(ts2)*10},
+            index=dindex, dtype='float32')
+
         self.equation_multiple_cols_01_cli = capture(tsutils._printiso, self.equation_multiple_cols_01)
 
         ts3 = [50.1, 95.1, 38.9, 27.7, 11.7, 8.7]
@@ -110,6 +113,12 @@ class TestEquation(TestCase):
         out = tstoolbox.equation('x + 0.6*maximum(x[t-1], x[t+1]) + x[t]', input_ts='tests/data_flat.csv', print_input=True)
         self.maxDiff = None
         assert_frame_equal(out, self.equation_multiple_cols_04)
+
+    def test_equation_cols_over_nine(self):
+        input_ts = tstoolbox.read('tests/data_multiple_cols.csv,tests/data_multiple_cols.csv,tests/data_multiple_cols.csv,tests/data_multiple_cols.csv,tests/data_multiple_cols.csv')
+        out = tstoolbox.equation('x10*10', input_ts=input_ts)
+        self.maxDiff = None
+        assert_frame_equal(out, self.equation_result)
 
     def test_equation_cli(self):
         args = 'tstoolbox equation "x*4 + 2" --input_ts="tests/data_simple.csv"  --print_input=True'
