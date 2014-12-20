@@ -1024,7 +1024,6 @@ def stack(
     The stack command takes the standard table and converts to a three column
     table.
 
-
     From:
 
     Datetime,TS1,TS2,TS3
@@ -1121,6 +1120,7 @@ def unstack(
     levels = newtsd.columns.levels
     labels = newtsd.columns.labels
     newtsd.columns = levels[1][labels[1]]
+    newtsd.rename(columns=lambda x: ''.join([i for i in x if i not in '\'" ']))
     return tsutils.printiso(newtsd)
 
 
