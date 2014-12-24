@@ -197,16 +197,14 @@ def read(filenames, start_date=None, end_date=None, dense=False,
         reading in.
     '''
     filenames = filenames.split(',')
+    result = pd.DataFrame()
     for filename in filenames:
         tsd = tsutils.date_slice(tsutils.read_iso_ts(filename, dense=dense),
                                  start_date=start_date, end_date=end_date)
-        try:
-            result = result.join(tsd,
-                                 how=how,
-                                 rsuffix='_{0}'.format(os.path.splitext(
-                                     os.path.basename(filename))[0]))
-        except NameError:
-            result = tsd
+        result = result.join(tsd,
+                             how=how,
+                             rsuffix='_{0}'.format(os.path.splitext(
+                                 os.path.basename(filename))[0]))
     return tsutils.printiso(result, float_format=float_format)
 
 
@@ -569,14 +567,12 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
     if len(ncolumns) == 1:
         return tsutils.printiso(pd.DataFrame(tsd[tsd.columns[ncolumns]]))
 
+    newtsd = pd.DataFrame()
     for index, col in enumerate(ncolumns):
         jtsd = pd.DataFrame(tsd[tsd.columns[col]])
 
-        try:
-            newtsd = newtsd.join(jtsd,
-                                 lsuffix='_{0}'.format(index), how='outer')
-        except NameError:
-            newtsd = jtsd
+        newtsd = newtsd.join(jtsd,
+                             lsuffix='_{0}'.format(index), how='outer')
     return tsutils.printiso(newtsd)
 
 
@@ -848,13 +844,11 @@ def aggregate(
                              start_date=start_date,
                              end_date=end_date)
     methods = statistic.split(',')
+    newts = pd.DataFrame()
     for method in methods:
         tmptsd = tsd.resample(aggd[agg_interval], how=method)
         tmptsd.rename(columns=lambda x: x + '_' + method, inplace=True)
-        try:
-            newts = newts.join(tmptsd, how='outer')
-        except NameError:
-            newts = tmptsd
+        newts = newts.join(tmptsd, how='outer')
     return tsutils.print_input(print_input, tsd, newts, '')
 
 
