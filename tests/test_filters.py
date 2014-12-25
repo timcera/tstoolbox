@@ -34,7 +34,32 @@ def capture(func, *args, **kwds):
     return out
 
 
-test_sinwave='Datetime,0,0_peak,0_valley\n2000-01-01 00:00:00,0.0,,\n2000-01-01 01:00:00,0.258819045103,,\n2000-01-01 02:00:00,0.5,,\n2000-01-01 03:00:00,0.707106781187,,\n2000-01-01 04:00:00,0.866025403784,,\n2000-01-01 05:00:00,0.965925826289,,\n2000-01-01 06:00:00,1.0,1.0,\n2000-01-01 07:00:00,0.965925826289,,\n2000-01-01 08:00:00,0.866025403784,,\n2000-01-01 09:00:00,0.707106781187,,\n2000-01-01 10:00:00,0.5,,\n2000-01-01 11:00:00,0.258819045103,,\n2000-01-01 12:00:00,1.22464679915e-16,,\n2000-01-01 13:00:00,-0.258819045103,,\n2000-01-01 14:00:00,-0.5,,\n2000-01-01 15:00:00,-0.707106781187,,\n2000-01-01 16:00:00,-0.866025403784,,\n2000-01-01 17:00:00,-0.965925826289,,\n2000-01-01 18:00:00,-1.0,,-1.0\n2000-01-01 19:00:00,-0.965925826289,,\n2000-01-01 20:00:00,-0.866025403784,,\n2000-01-01 21:00:00,-0.707106781187,,\n2000-01-01 22:00:00,-0.5,,\n2000-01-01 23:00:00,-0.258819045103,,\n'
+test_sinwave='''Datetime,0,0_peak,0_valley
+2000-01-01 00:00:00,0.0,,
+2000-01-01 01:00:00,0.258819045103,,
+2000-01-01 02:00:00,0.5,,
+2000-01-01 03:00:00,0.707106781187,,
+2000-01-01 04:00:00,0.866025403784,,
+2000-01-01 05:00:00,0.965925826289,,
+2000-01-01 06:00:00,1.0,1.0,
+2000-01-01 07:00:00,0.965925826289,,
+2000-01-01 08:00:00,0.866025403784,,
+2000-01-01 09:00:00,0.707106781187,,
+2000-01-01 10:00:00,0.5,,
+2000-01-01 11:00:00,0.258819045103,,
+2000-01-01 12:00:00,1.22464679915e-16,,
+2000-01-01 13:00:00,-0.258819045103,,
+2000-01-01 14:00:00,-0.5,,
+2000-01-01 15:00:00,-0.707106781187,,
+2000-01-01 16:00:00,-0.866025403784,,
+2000-01-01 17:00:00,-0.965925826289,,
+2000-01-01 18:00:00,-1.0,,-1.0
+2000-01-01 19:00:00,-0.965925826289,,
+2000-01-01 20:00:00,-0.866025403784,,
+2000-01-01 21:00:00,-0.707106781187,,
+2000-01-01 22:00:00,-0.5,,
+2000-01-01 23:00:00,-0.258819045103,,
+'''
 
 class TestFilter(TestCase):
     def setUp(self):
@@ -91,13 +116,19 @@ class TestFilter(TestCase):
 #    def test_filter_flat_cli(self):
 #        args = 'tstoolbox filter flat --input_ts=self.ats --print_input=True'
 #        args = shlex.split(args)
-#        out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
+#        out = subprocess.Popen(args,
+#            stdout=subprocess.PIPE,
+#            stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
 #        self.maxDiff = None
 #        self.assertEqual(out, test_sinwave)
 #
 #    def test_filter_hanning_cli(self):
-#        args = 'tstoolbox filter  hanning --input_ts=self.ats, --print_input=True)'
+#        args = ('tstoolbox filter  hanning '
+#                '--input_ts=self.ats, '
+#                '--print_input=True)')
 #        args = shlex.split(args)
-#        out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
+#        out = subprocess.Popen(args,
+#            stdout=subprocess.PIPE,
+#            stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
 #        self.maxDiff = None
 #        self.assertEqual(out, test_sinwave)

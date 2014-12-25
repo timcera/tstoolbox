@@ -32,9 +32,11 @@ def capture(func, *args, **kwds):
 
 class TestRead(TestCase):
     def setUp(self):
-        self.stacked = pd.DataFrame.from_csv('tests/data_stacked.csv', index_col=0)
+        self.stacked = pd.DataFrame.from_csv('tests/data_stacked.csv',
+                                             index_col=0)
         self.stacked.index.name = 'Datetime'
-        self.unstacked = pd.DataFrame.from_csv('tests/data_unstacked.csv', index_col=0)
+        self.unstacked = pd.DataFrame.from_csv('tests/data_unstacked.csv',
+                                               index_col=0)
         self.unstacked.rename(columns=lambda x: x.strip('\'\" '))
         self.unstacked.index.name = 'Datetime'
 

@@ -56,7 +56,9 @@ class TestConvert(TestCase):
         assert_frame_equal(out, self.compare_direct_01)
 
     def test_convert_direct_02(self):
-        out = tstoolbox.convert(input_ts='tests/data_simple.csv', factor=2, offset=2)
+        out = tstoolbox.convert(input_ts='tests/data_simple.csv',
+                                factor=2,
+                                offset=2)
         assert_frame_equal(out, self.compare_direct_02)
 
     def test_convert_cli_01(self):
@@ -66,7 +68,10 @@ class TestConvert(TestCase):
         self.assertEqual(out[0], self.compare_cli_01)
 
     def test_convert_cli_02(self):
-        args = 'tstoolbox convert --factor=2 --offset=2 --input_ts="tests/data_simple.csv"'
+        args = ('tstoolbox convert '
+                '--factor=2 '
+                '--offset=2 '
+                '--input_ts="tests/data_simple.csv"')
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.compare_cli_02)

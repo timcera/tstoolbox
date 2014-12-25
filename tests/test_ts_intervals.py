@@ -72,7 +72,8 @@ class TestAddTrend(TestCase):
             sdate, periods, nintervals = pd_tstep_minterval[testpc]
             for tstep in range(1, nintervals):
                 aperiods = periods//tstep
-                dr = pd.date_range(sdate, periods=aperiods, freq='{0}{1}'.format(tstep,testpc))
+                dr = pd.date_range(sdate, periods=aperiods,
+                                   freq='{0}{1}'.format(tstep, testpc))
                 df = pd.DataFrame(pd.np.arange(aperiods), index=dr)
                 df.index.name = 'index'
                 df.columns = ['data']

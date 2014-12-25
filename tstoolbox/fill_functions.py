@@ -37,10 +37,10 @@ def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
     :param interval: Will try to insert missing intervals.  Can give any
         of the pandas offset aliases, 'guess' (to try and figure the
         interval), or None to not insert missing intervals.
-    :param -p, --print_input: If set to 'True' will include the input columns in the
-        output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
+    :param -p, --print_input: If set to 'True' will include the input columns
+        in the output table.  Default is 'False'.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     if print_input is True:
@@ -102,10 +102,10 @@ def fill_by_correlation(method='move2',
     :param interval: Will try to insert missing intervals.  Can give any
         of the pandas offset aliases, 'guess' (to try and figure the
         interval), or None to not insert missing intervals.
-    :param -p, --print_input: If set to 'True' will include the input columns in the
-        output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format or '-' for
-        stdin.
+    :param -p, --print_input: If set to 'True' will include the input columns
+        in the output table.  Default is 'False'.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     if print_input is True:

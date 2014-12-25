@@ -18,8 +18,6 @@ try:
 except:
     from io import StringIO
 
-import pandas
-
 from tstoolbox import tstoolbox
 
 
@@ -82,7 +80,8 @@ class TestAddTrend(TestCase):
 2011-01-02 22:00:00,2.95745
 2011-01-02 23:00:00,3
 """
-        self.add_trend_direct = tstoolbox.date_slice(input_ts=self.add_trend_cli)
+        self.add_trend_direct = tstoolbox.date_slice(
+            input_ts=self.add_trend_cli)
         self.add_trend_direct.index.name = 'Datetime'
 
     def test_add_trend_direct(self):

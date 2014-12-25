@@ -35,7 +35,8 @@ class TestAggregate(TestCase):
         dr = pandas.date_range('2011-01-01', periods=2, freq='D')
 
         ts = pandas.TimeSeries([2, 2], index=dr)
-        self.aggregate_direct_mean = pandas.DataFrame(ts, columns=['Value_mean'])
+        self.aggregate_direct_mean = pandas.DataFrame(ts,
+                                                      columns=['Value_mean'])
         self.aggregate_direct_mean.index.name = 'Datetime'
 
         ts = pandas.TimeSeries([48, 48], index=dr)
@@ -53,21 +54,29 @@ class TestAggregate(TestCase):
 """
 
     def test_aggregate_direct_mean(self):
-        out = tstoolbox.aggregate(statistic='mean', agg_interval='daily', input_ts='tests/data_flat.csv')
+        out = tstoolbox.aggregate(statistic='mean',
+                                  agg_interval='daily',
+                                  input_ts='tests/data_flat.csv')
         assert_frame_equal(out, self.aggregate_direct_mean)
 
     def test_aggregate_direct_sum(self):
-        out = tstoolbox.aggregate(statistic='sum', agg_interval='daily', input_ts='tests/data_flat.csv')
+        out = tstoolbox.aggregate(statistic='sum',
+                                  agg_interval='daily',
+                                  input_ts='tests/data_flat.csv')
         assert_frame_equal(out, self.aggregate_direct_sum)
 
     def test_aggregate_cli_mean(self):
-        args = 'tstoolbox aggregate --statistic="mean" --input_ts="tests/data_flat.csv"'
+        args = ('tstoolbox aggregate '
+                '--statistic="mean" '
+                '--input_ts="tests/data_flat.csv"')
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
         self.assertEqual(out, self.aggregate_cli_mean)
 
     def test_aggregate_cli_sum(self):
-        args = 'tstoolbox aggregate --statistic="sum" --input_ts="tests/data_flat.csv"'
+        args = ('tstoolbox aggregate '
+                '--statistic="sum" '
+                '--input_ts="tests/data_flat.csv"')
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
         self.assertEqual(out, self.aggregate_cli_sum)

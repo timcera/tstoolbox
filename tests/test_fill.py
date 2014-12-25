@@ -38,7 +38,8 @@ class TestFill(TestCase):
     def setUp(self):
         dindex = pd.date_range('2011-01-01T00:00:00', periods=26, freq='H')
         self.ats = pd.np.ones((26))*2
-        self.ats = pd.DataFrame(self.ats, index=dindex, columns=['Value_with_missing_fill'])
+        self.ats = pd.DataFrame(self.ats,
+            index=dindex, columns=['Value_with_missing_fill'])
         self.ats.index.name = 'Datetime'
 
         self.ats_cli = capture(tsutils._printiso, self.ats)
@@ -89,56 +90,78 @@ class TestFill(TestCase):
         assert_frame_equal(out, self.ffill_compare)
 
     def test_fill_bfill(self):
-        out = tstoolbox.fill(method='bfill', input_ts='tests/data_missing.csv')
+        out = tstoolbox.fill(method='bfill',
+            input_ts='tests/data_missing.csv')
         self.maxDiff = None
         assert_frame_equal(out, self.bfill_compare)
 
     def test_fill_linear(self):
-        out = tstoolbox.fill(method='linear', input_ts='tests/data_missing.csv')
+        out = tstoolbox.fill(method='linear',
+            input_ts='tests/data_missing.csv')
         self.maxDiff = None
         assert_frame_equal(out, self.linear_compare)
 
     def test_fill_nearest(self):
-        out = tstoolbox.fill(method='nearest', input_ts='tests/data_missing.csv')
+        out = tstoolbox.fill(method='nearest',
+            input_ts='tests/data_missing.csv')
         self.maxDiff = None
         assert_frame_equal(out, self.nearest_compare)
 
     def test_fill_mean(self):
-        out = tstoolbox.fill(method='mean', input_ts='tests/data_missing.csv')
+        out = tstoolbox.fill(method='mean',
+            input_ts='tests/data_missing.csv')
         self.maxDiff = None
         assert_frame_equal(out, self.mean_compare)
 
     def test_fill_ffill_cli(self):
         args = 'tstoolbox fill --input_ts=tests/data_missing.csv'
         args = shlex.split(args)
-        out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
+        out = subprocess.Popen(args,
+            stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
         self.maxDiff = None
         self.assertEqual(out, self.ffill_compare_cli)
 
     def test_fill_bfill_cli(self):
-        args = 'tstoolbox fill --method="bfill" --input_ts=tests/data_missing.csv'
+        args = ('tstoolbox fill '
+                '--method="bfill" '
+                '--input_ts=tests/data_missing.csv')
         args = shlex.split(args)
-        out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
+        out = subprocess.Popen(args,
+            stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
         self.maxDiff = None
         self.assertEqual(out, self.bfill_compare_cli)
 
     def test_fill_linear_cli(self):
-        args = 'tstoolbox fill --method="linear" --input_ts=tests/data_missing.csv'
+        args = ('tstoolbox fill '
+                '--method="linear" '
+                '--input_ts=tests/data_missing.csv')
         args = shlex.split(args)
-        out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
+        out = subprocess.Popen(args,
+            stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
         self.maxDiff = None
         self.assertEqual(out, self.linear_compare_cli)
 
     def test_fill_nearest_cli(self):
-        args = 'tstoolbox fill --method="nearest" --input_ts=tests/data_missing.csv'
+        args = ('tstoolbox fill '
+                '--method="nearest" '
+                '--input_ts=tests/data_missing.csv')
         args = shlex.split(args)
-        out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
+        out = subprocess.Popen(args,
+            stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
         self.maxDiff = None
         self.assertEqual(out, self.nearest_compare_cli)
 
     def test_fill_mean_cli(self):
-        args = 'tstoolbox fill --method="mean" --input_ts=tests/data_missing.csv'
+        args = ('tstoolbox fill '
+                '--method="mean" '
+                '--input_ts=tests/data_missing.csv')
         args = shlex.split(args)
-        out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
+        out = subprocess.Popen(args,
+            stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
         self.maxDiff = None
         self.assertEqual(out, self.mean_compare_cli)

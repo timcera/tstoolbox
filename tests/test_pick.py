@@ -45,7 +45,8 @@ class TestPick(TestCase):
                 index=dr)
         self.pick_multiple_direct = pandas.DataFrame(ts2,
                 columns=['Value1'])
-        self.pick_multiple_direct = self.pick_multiple_direct.join(pandas.DataFrame(ts1, columns=['Value']))
+        self.pick_multiple_direct = self.pick_multiple_direct.join(
+            pandas.DataFrame(ts1, columns=['Value']))
 
         self.pick_cli = capture(tsutils._printiso, self.pick_multiple_direct)
 

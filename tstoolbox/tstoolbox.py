@@ -1299,8 +1299,8 @@ def plot(
        distribution common with frequency distribution curves.
        Defaults to False.
        DEPRECATED: use '--type="norm_xaxis"' or '--type="norm_yaxis"' instead.
-    :param xy_match_line <str>: Will add a match line where x == y.  Default is ''.
-       Set to a line style code.
+    :param xy_match_line <str>: Will add a match line where x == y.  Default is
+       ''.  Set to a line style code.
     :param grid: boolean, default True
        Whether to plot grid lines on the major ticks.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format

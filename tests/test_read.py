@@ -40,7 +40,8 @@ class TestRead(TestCase):
         self.read_direct.index.name = 'Datetime'
 
         self.read_multiple_direct = pandas.DataFrame(ts, columns=['Value'])
-        self.read_multiple_direct = self.read_multiple_direct.join(pandas.Series(ts, name='Value_data_simple'))
+        self.read_multiple_direct = self.read_multiple_direct.join(
+            pandas.Series(ts, name='Value_data_simple'))
         self.read_multiple_direct.index.name = 'Datetime'
 
         self.read_cli = b"""Datetime,Value

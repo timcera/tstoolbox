@@ -42,7 +42,6 @@ class TestDescribe(TestCase):
             843.901292, 0.000000, 158.425000, 578.800000, 1253.450000,
             4902.000000], index=index, columns=['Area'])
         self.date_slice.index.name = 'Datetime'
-        #self.date_slice_cli = capture(tsutils._printiso, self.date_slice)
         self.date_slice_cli = capture(tsutils._printiso, self.date_slice)
 
     def test_date_slice(self):
@@ -50,8 +49,10 @@ class TestDescribe(TestCase):
         out.index.name = 'UniqueID'
         assert_frame_equal(out, self.date_slice)
 
-    #def test_date_slice_cli(self):
-    #    args = 'tstoolbox describe --input_ts="tests/data_sunspot.csv"'
-    #    args = shlex.split(args)
-    #    out = subprocess.Popen(args, stdout=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
-    #    self.assertEqual(out, self.date_slice_cli)
+    def test_date_slice_cli(self):
+        args = 'tstoolbox describe --input_ts="tests/data_sunspot.csv"'
+        args = shlex.split(args)
+        out = subprocess.Popen(args,
+                               stdout=subprocess.PIPE,
+                               stdin=subprocess.PIPE).communicate()[0]
+        self.assertEqual(out, self.date_slice_cli)

@@ -37,19 +37,25 @@ def capture(func, *args, **kwds):
 
 class TestDescribe(TestCase):
     def setUp(self):
-        self.data_0_to_1 = tstoolbox.read('tests/data_sunspot_normalized_0_to_1.csv')
-        self.data_10_to_20 = tstoolbox.read('tests/data_sunspot_normalized_10_to_20.csv')
-        self.data_zscore = tstoolbox.read('tests/data_sunspot_normalized_zscore.csv')
+        self.data_0_to_1 = tstoolbox.read(
+            'tests/data_sunspot_normalized_0_to_1.csv')
+        self.data_10_to_20 = tstoolbox.read(
+            'tests/data_sunspot_normalized_10_to_20.csv')
+        self.data_zscore = tstoolbox.read(
+            'tests/data_sunspot_normalized_zscore.csv')
 
     def test_normalize_0_to_1(self):
         out = tstoolbox.normalization(input_ts='tests/data_sunspot.csv')
         assert_frame_equal(out, self.data_0_to_1)
 
     def test_normalize_10_to_20(self):
-        out = tstoolbox.normalization(min_limit=10, max_limit=20, input_ts='tests/data_sunspot.csv')
+        out = tstoolbox.normalization(min_limit=10,
+                                      max_limit=20,
+                                      input_ts='tests/data_sunspot.csv')
         assert_frame_equal(out, self.data_10_to_20)
 
     def test_normalize(self):
-        out = tstoolbox.normalization(mode='zscore', input_ts='tests/data_sunspot.csv')
+        out = tstoolbox.normalization(mode='zscore',
+                                      input_ts='tests/data_sunspot.csv')
         assert_frame_equal(out, self.data_zscore)
 
