@@ -12,28 +12,12 @@ import shlex
 import subprocess
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
-import sys
-try:
-    from cStringIO import StringIO
-except:
-    from io import StringIO
-
 import pandas as pd
 
 from tstoolbox import tstoolbox
 import tstoolbox.tsutils as tsutils
 
-
-def capture(func, *args, **kwds):
-    sys.stdout = StringIO()      # capture output
-    out = func(*args, **kwds)
-    out = sys.stdout.getvalue()  # release output
-    try:
-        out = bytes(out, 'utf-8')
-    except:
-        pass
-    return out
-
+from capture import capture
 
 class TestDescribe(TestCase):
     def setUp(self):

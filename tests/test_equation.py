@@ -12,27 +12,13 @@ import shlex
 import subprocess
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
-import sys
-try:
-    from cStringIO import StringIO
-except:
-    from io import StringIO
+
+from capture import capture
 
 import pandas as pd
 
 from tstoolbox import tstoolbox
 import tstoolbox.tsutils as tsutils
-
-
-def capture(func, *args, **kwds):
-    sys.stdout = StringIO()      # capture output
-    out = func(*args, **kwds)
-    out = sys.stdout.getvalue()  # release output
-    try:
-        out = bytes(out, 'utf-8')
-    except:
-        pass
-    return out
 
 
 class TestEquation(TestCase):
@@ -96,30 +82,41 @@ class TestEquation(TestCase):
             self.equation_multiple_cols_04)
 
     def test_equation(self):
+        ''' Test equation API
+        '''
         out = tstoolbox.equation('x*4 + 2',
                                  input_ts='tests/data_simple.csv',
                                  print_input=True)
         assert_frame_equal(out, self.equation)
 
     def test_equation_multiple_cols_01(self):
+        ''' Test of equation API with multiple columns and numpy functions.
+        '''
         out = tstoolbox.equation('sin(x1)*4 + cos(x2)*2',
                                  input_ts='tests/data_multiple_cols.csv',
                                  print_input=True)
         assert_frame_equal(out, self.equation_multiple_cols_01)
 
     def test_equation_multiple_cols_02(self):
+        ''' Test of equation API with mulitple columns.
+        '''
         out = tstoolbox.equation('x1 + x2',
                                  input_ts='tests/data_multiple_cols.csv',
                                  print_input=True)
         assert_frame_equal(out, self.equation_multiple_cols_02)
 
     def test_equation_multiple_cols_03(self):
+        ''' Test of equation API with multiple columns and using different
+            times records.
+        '''
         out = tstoolbox.equation('x1[t] + 0.6*maximum(x1[t-1], x1[t+1]) + x2',
                                  input_ts='tests/data_multiple_cols.csv',
                                  print_input=True)
         assert_frame_equal(out, self.equation_multiple_cols_03)
 
     def test_equation_multiple_cols_04(self):
+        ''' Test of equation API using different time records.
+        '''
         out = tstoolbox.equation('x[t] + 0.6*maximum(x[t-1], x[t+1]) + x[t]',
                                  input_ts='tests/data_flat.csv',
                                  print_input=True)
@@ -127,7 +124,9 @@ class TestEquation(TestCase):
         assert_frame_equal(out, self.equation_multiple_cols_04)
 
     def test_equation_multiple_cols_05(self):
-        # Almost same as test_equation_multiple_cols_04
+        ''' Test of equation API using different time records.
+            Almost same as test_equation_multiple_cols_04
+        '''
         out = tstoolbox.equation('x + 0.6*maximum(x[t-1], x[t+1]) + x[t]',
                                  input_ts='tests/data_flat.csv',
                                  print_input=True)
@@ -135,6 +134,8 @@ class TestEquation(TestCase):
         assert_frame_equal(out, self.equation_multiple_cols_04)
 
     def test_equation_cols_over_nine(self):
+        ''' Test of using equation API with columns over 9.
+        '''
         input_ts = tstoolbox.read('tests/data_multiple_cols.csv,'
                                   'tests/data_multiple_cols.csv,'
                                   'tests/data_multiple_cols.csv,'
@@ -145,6 +146,8 @@ class TestEquation(TestCase):
         assert_frame_equal(out, self.equation_result)
 
     def test_equation_cli(self):
+        ''' Test of equation CLI.
+        '''
         args = ('tstoolbox equation "x*4 + 2" '
                 '--input_ts="tests/data_simple.csv"  '
                 '--print_input=True')
@@ -156,6 +159,8 @@ class TestEquation(TestCase):
         self.assertEqual(out, self.equation_cli)
 
     def test_equation_multiple_cols_01_cli(self):
+        ''' Test of equation API with multiple columns.
+        '''
         args = ('tstoolbox equation "sin(x1)*4 + cos(x2)*2" '
                 '--input_ts="tests/data_multiple_cols.csv" '
                 '--print_input=True')
@@ -167,6 +172,8 @@ class TestEquation(TestCase):
         self.assertEqual(out, self.equation_multiple_cols_01_cli)
 
     def test_equation_multiple_cols_02_cli(self):
+        ''' Test of equation CLI with multiple columns.
+        '''
         args = ('tstoolbox equation "x1 + x2" '
                 '--input_ts="tests/data_multiple_cols.csv" '
                 '--print_input=True')
@@ -178,6 +185,9 @@ class TestEquation(TestCase):
         self.assertEqual(out, self.equation_multiple_cols_02_cli)
 
     def test_equation_multiple_cols_03_cli(self):
+        ''' Test of equation CLI with multiple columns and
+            time records.
+        '''
         args = ('tstoolbox equation '
                 '"x1[t] + 0.6*maximum(x1[t-1], x1[t+1]) + x2" '
                 '--input_ts="tests/data_multiple_cols.csv" '
@@ -191,6 +201,8 @@ class TestEquation(TestCase):
         self.assertEqual(out, self.equation_multiple_cols_03_cli)
 
     def test_equation_multiple_cols_04_cli(self):
+        ''' Test of equation CLI with multiple time records.
+        '''
         args = ('tstoolbox equation '
                 '"x[t] + 0.6*maximum(x[t-1], x[t+1]) + x[t]" '
                 '--input_ts="tests/data_flat.csv" '
@@ -203,7 +215,9 @@ class TestEquation(TestCase):
         self.assertEqual(out, self.equation_multiple_cols_04_cli)
 
     def test_equation_multiple_cols_05_cli(self):
-        # Almost same as test_equation_multiple_cols_04_cli
+        ''' Test of equation with multiple time records.
+            Almost same as test_equation_multiple_cols_04_cli
+        '''
         args = ('tstoolbox equation '
                 '"x + 0.6*maximum(x[t-1], x[t+1]) + x[t]" '
                 '--input_ts="tests/data_flat.csv" '

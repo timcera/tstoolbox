@@ -8,17 +8,11 @@ test_ts_intervals
 Tests for `tstoolbox` module.
 """
 
-import sys
 import shlex
 import subprocess
 import os
 import glob
 import tempfile
-
-try:
-    from cStringIO import StringIO
-except:
-    from io import StringIO
 
 import pandas
 
@@ -57,12 +51,6 @@ pd_tstep_minterval = {
                       'L': ('2000-01-01', 1000, 2),
                       'U': ('2000-01-01', 1000, 2),
                      }
-
-def capture(func, *args, **kwds):
-    sys.stdout = StringIO()      # capture output
-    out = func(*args, **kwds)
-    out = sys.stdout.getvalue()  # release output
-    return out
 
 
 class TestAddTrend(TestCase):

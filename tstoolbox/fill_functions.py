@@ -11,7 +11,7 @@ from . import tsutils
 
 
 @mando.command
-def fill(method='ffill', interval='guess', print_input=False,  input_ts='-'):
+def fill(method='ffill', interval='guess', print_input=False, input_ts='-'):
     '''
     Fills missing values (NaN) with different methods.  Missing values can
         occur because of NaN, or because the time series is sparse.  The

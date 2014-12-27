@@ -10,30 +10,15 @@ Tests for `tstoolbox` module.
 
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
-import sys
 import subprocess
 import shlex
-try:
-    from cStringIO import StringIO
-except:
-    from io import StringIO
 
 import pandas
 
 import tstoolbox.tsutils as tsutils
 from tstoolbox import tstoolbox
 
-
-def capture(func, *args, **kwds):
-    sys.stdout = StringIO()      # capture output
-    out = func(*args, **kwds)
-    out = sys.stdout.getvalue()  # release output
-    try:
-        out = bytes(out, 'utf8')
-    except:
-        pass
-    return out
-
+from capture import capture
 
 class TestRollingWindow(TestCase):
     def setUp(self):

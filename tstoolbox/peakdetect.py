@@ -47,7 +47,7 @@ def _boolrelextrema(data, comparator,
     array([False, False,  True, False, False], dtype=bool)
     """
 
-    if((int(order) != order) or (order < 1)):
+    if (int(order) != order) or (order < 1):
         raise ValueError('Order must be an int >= 1')
 
     datalen = data.shape[axis]
@@ -60,7 +60,7 @@ def _boolrelextrema(data, comparator,
         results &= comparator(main, plus)
         minus = np.take(data, locs - shift, axis=axis, mode=mode)
         results &= comparator(main, minus)
-        if(~results.any()):
+        if ~results.any():
             return results
     return results
 

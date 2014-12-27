@@ -10,27 +10,16 @@ Tests for `tstoolbox` module.
 
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
-import sys
 import shlex
 import subprocess
-try:
-    from cStringIO import StringIO
-except:
-    from io import StringIO
 
 import pandas as pd
 
 from tstoolbox import tstoolbox
 
+from capture import capture
 
-def capture(func, *args, **kwds):
-    sys.stdout = StringIO()      # capture output
-    out = func(*args, **kwds)
-    out = sys.stdout.getvalue()  # release output
-    return out
-
-
-output_peak_detection=b'''Datetime,0,0_peak,0_valley
+output_peak_detection = b'''Datetime,0,0_peak,0_valley
 2000-01-01 00:00:00,0,,
 2000-01-01 01:00:00,0.258819,,
 2000-01-01 02:00:00,0.5,,

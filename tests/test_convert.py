@@ -10,24 +10,14 @@ Tests for `tstoolbox` module.
 
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
-import sys
 import subprocess
 import shlex
-try:
-    from cStringIO import StringIO
-except:
-    from io import StringIO
+
+from capture import capture
 
 import pandas
 
 from tstoolbox import tstoolbox
-
-
-def capture(func, *args, **kwds):
-    sys.stdout = StringIO()      # capture output
-    out = func(*args, **kwds)
-    out = sys.stdout.getvalue()  # release output
-    return out
 
 
 class TestConvert(TestCase):
@@ -52,22 +42,30 @@ class TestConvert(TestCase):
 """
 
     def test_convert_direct_01(self):
+        ''' Test of convert API with default factor and offset.
+        '''
         out = tstoolbox.convert(input_ts='tests/data_simple.csv')
         assert_frame_equal(out, self.compare_direct_01)
 
     def test_convert_direct_02(self):
+        ''' Test of convert API with set factor and offset.
+        '''
         out = tstoolbox.convert(input_ts='tests/data_simple.csv',
                                 factor=2,
                                 offset=2)
         assert_frame_equal(out, self.compare_direct_02)
 
     def test_convert_cli_01(self):
+        ''' Test of CLI convert with default factor and offset.
+        '''
         args = 'tstoolbox convert --input_ts="tests/data_simple.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.compare_cli_01)
 
     def test_convert_cli_02(self):
+        ''' Test of CLI convert set factor and offset.
+        '''
         args = ('tstoolbox convert '
                 '--factor=2 '
                 '--offset=2 '

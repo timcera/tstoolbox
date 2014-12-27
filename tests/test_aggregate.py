@@ -10,28 +10,20 @@ Tests for `tstoolbox` module.
 
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
-import sys
 import shlex
 import subprocess
-try:
-    from cStringIO import StringIO
-except:
-    from io import StringIO
+
+from capture import capture
 
 import pandas
 
 from tstoolbox import tstoolbox
 
 
-def capture(func, *args, **kwds):
-    sys.stdout = StringIO()      # capture output
-    out = func(*args, **kwds)
-    out = sys.stdout.getvalue()  # release output
-    return out
-
-
 class TestAggregate(TestCase):
     def setUp(self):
+        ''' Setup
+        '''
         dr = pandas.date_range('2011-01-01', periods=2, freq='D')
 
         ts = pandas.TimeSeries([2, 2], index=dr)
@@ -54,18 +46,24 @@ class TestAggregate(TestCase):
 """
 
     def test_aggregate_direct_mean(self):
+        ''' Test daily mean aggregation
+        '''
         out = tstoolbox.aggregate(statistic='mean',
                                   agg_interval='daily',
                                   input_ts='tests/data_flat.csv')
         assert_frame_equal(out, self.aggregate_direct_mean)
 
     def test_aggregate_direct_sum(self):
+        ''' Test daily mean summation
+        '''
         out = tstoolbox.aggregate(statistic='sum',
                                   agg_interval='daily',
                                   input_ts='tests/data_flat.csv')
         assert_frame_equal(out, self.aggregate_direct_sum)
 
     def test_aggregate_cli_mean(self):
+        ''' Test CLI mean, daily (by default) aggregation
+        '''
         args = ('tstoolbox aggregate '
                 '--statistic="mean" '
                 '--input_ts="tests/data_flat.csv"')
@@ -74,6 +72,8 @@ class TestAggregate(TestCase):
         self.assertEqual(out, self.aggregate_cli_mean)
 
     def test_aggregate_cli_sum(self):
+        ''' Test CLI summation, daily (by default) aggregation
+        '''
         args = ('tstoolbox aggregate '
                 '--statistic="sum" '
                 '--input_ts="tests/data_flat.csv"')

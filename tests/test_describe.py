@@ -12,27 +12,13 @@ import shlex
 import subprocess
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
-import sys
-try:
-    from cStringIO import StringIO
-except:
-    from io import StringIO
+
+from capture import capture
 
 import pandas as pd
 
 from tstoolbox import tstoolbox
 import tstoolbox.tsutils as tsutils
-
-
-def capture(func, *args, **kwds):
-    sys.stdout = StringIO()      # capture output
-    out = func(*args, **kwds)
-    out = sys.stdout.getvalue()  # release output
-    try:
-        out = bytes(out, 'utf-8')
-    except:
-        pass
-    return out
 
 
 class TestDescribe(TestCase):
@@ -44,12 +30,16 @@ class TestDescribe(TestCase):
         self.date_slice.index.name = 'Datetime'
         self.date_slice_cli = capture(tsutils._printiso, self.date_slice)
 
-    def test_date_slice(self):
+    def test_describe(self):
+        ''' Test of describe API.
+        '''
         out = tstoolbox.describe(input_ts='tests/data_sunspot.csv')
         out.index.name = 'UniqueID'
         assert_frame_equal(out, self.date_slice)
 
-    def test_date_slice_cli(self):
+    def test_describe_cli(self):
+        ''' Test of describe CLI.
+        '''
         args = 'tstoolbox describe --input_ts="tests/data_sunspot.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args,

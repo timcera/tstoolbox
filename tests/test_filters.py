@@ -10,13 +10,7 @@ Tests for `tstoolbox` module.
 
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
-import sys
 import os
-
-try:
-    from cStringIO import StringIO
-except:
-    from io import StringIO
 
 import shlex
 import subprocess
@@ -26,15 +20,9 @@ import pandas as pd
 from tstoolbox import tstoolbox
 import tstoolbox.tsutils as tsutils
 
+from capture import capture
 
-def capture(func, *args, **kwds):
-    sys.stdout = StringIO()      # capture output
-    out = func(*args, **kwds)
-    out = sys.stdout.getvalue()  # release output
-    return out
-
-
-test_sinwave='''Datetime,0,0_peak,0_valley
+test_sinwave = '''Datetime,0,0_peak,0_valley
 2000-01-01 00:00:00,0.0,,
 2000-01-01 01:00:00,0.258819045103,,
 2000-01-01 02:00:00,0.5,,

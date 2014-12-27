@@ -180,20 +180,20 @@ def read(filenames, start_date=None, end_date=None, dense=False,
     Collect time series from a list of pickle or csv files then print
     in the tstoolbox standard format.
 
-    :param filenames: List of comma delimited filenames to read time series
-        from.
+    :param filenames <str>: List of comma delimited filenames to read time
+        series from.
     :param -s, --start_date <str>: The start_date of the series in ISOdatetime
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
     :param dense: Set `dense` to True to have missing values inserted such that
         there is a single interval.
-    :param how: Use PANDAS concept on how to join the separate DataFrames read
-        from each file.  Default how='outer' which is the union, 'inner' is the
-        intersection, 'left' is only those values from the second file that
-        match indices in the first, 'right' is only values in the first file
-        that match indices in the second.  The 'left' and 'right' options for
-        'how' might be a problem if you have more than 2 files that you are
+    :param how <str>: Use PANDAS concept on how to join the separate DataFrames
+        read from each file.  Default how='outer' which is the union, 'inner'
+        is the intersection, 'left' is only those values from the second file
+        that match indices in the first, 'right' is only values in the first
+        file that match indices in the second.  The 'left' and 'right' options
+        for 'how' might be a problem if you have more than 2 files that you are
         reading in.
     '''
     filenames = filenames.split(',')
@@ -262,13 +262,13 @@ def peak_detection(method='rel',
     '''
     Peak and valley detection.
 
-    :param type: 'peak', 'valley', or 'both' to determine what should be
+    :param type <str>: 'peak', 'valley', or 'both' to determine what should be
         returned.  Default is 'peak'.
-    :param method: 'rel', 'minmax', 'zero_crossing', 'parabola', 'sine'
+    :param method <str>: 'rel', 'minmax', 'zero_crossing', 'parabola', 'sine'
         methods are available.  The different algorithms have different
         strengths and weaknesses.  The 'rel' algorithm is the default.
-    :param window: There will not usually be multiple peaks within the window
-        number of values.  The different `method`s use this variable in
+    :param window <int>: There will not usually be multiple peaks within the
+        window number of values.  The different `method`s use this variable in
         different ways.
         For 'rel' the window keyword specifies how many points on each side
         to require a `comparator`(n,n+x) = True.
@@ -277,8 +277,8 @@ def peak_detection(method='rel',
         '(sample / period) / f' where '4 >= f >= 1.25' might be a good value
         For 'zero_crossing' the window keyword is the dimension of the
         smoothing window; should be an odd integer
-    :param points: For 'parabola' and 'sine' methods. How many points around
-        the peak should be used during curve fitting, must be odd
+    :param points <int>: For 'parabola' and 'sine' methods. How many points
+        around the peak should be used during curve fitting, must be odd
         (default: 9)
     :param lock_frequency: For 'sine method only.  Specifies if the
         frequency argument of the model function should be locked to the
@@ -390,8 +390,8 @@ def convert(
     Converts values of a time series by applying a factor and offset.  See the
         'equation' subcommand for a generalized form of this command.
 
-    :param factor: Factor to multiply the time series values.
-    :param offset: Offset to add to the time series values.
+    :param factor <float>: Factor to multiply the time series values.
+    :param offset <float>: Offset to add to the time series values.
     :param -p, --print_input: If set to 'True' will include the input columns
         in the output table.  Default is 'False'.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
@@ -422,7 +422,7 @@ def equation(
         string contained in single quotes with 'x' used as the variable
         representing the input.  For example, '(1 - x)*sin(x)'.
 
-    :param equation: String contained in single quotes that defines the
+    :param equation <str>: String contained in single quotes that defines the
         equation.  The input variable place holder is 'x'.  Mathematical
         functions in the 'np' (numpy) name space can be used.  For example,
         'x*4 + 2', 'x**2 + cos(x)', and 'tan(x*pi/180)' are all valid
@@ -621,7 +621,7 @@ def tstopickle(
     Pickles the data into a Python pickled file.  Can be brought back into
     Python with 'pickle.load' or 'numpy.load'.  See also 'tstoolbox read'.
 
-    :param filename: The filename to store the pickled data.
+    :param filename <str>: The filename to store the pickled data.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
         or '-' for stdin.
     :param -s, --start_date <str>: The start_date of the series in ISOdatetime
@@ -645,7 +645,7 @@ def accumulate(
     '''
     Calculates accumulating statistics.
 
-    :param statistic: 'sum', 'max', 'min', 'prod', defaults to 'sum'.
+    :param statistic <str>: 'sum', 'max', 'min', 'prod', defaults to 'sum'.
     :param -p, --print_input: If set to 'True' will include the input columns
         in the output table.  Default is 'False'.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
@@ -688,20 +688,20 @@ def rolling_window(
     '''
     Calculates a rolling window statistic.
 
-    :param span: The number of previous intervals to include in the
+    :param span <int>: The number of previous intervals to include in the
         calculation of the statistic. If `span` is equal to 0 will give an
         expanding rolling window.
-    :param statistic: One of 'mean', 'corr', 'count', 'cov', 'kurtosis',
+    :param statistic <str>: One of 'mean', 'corr', 'count', 'cov', 'kurtosis',
         'median', 'skew', 'stdev', 'sum', 'variance', 'expw_mean',
         'expw_stdev', 'expw_variance' 'expw_corr', 'expw_cov' used to calculate
         the statistic, defaults to 'mean'.
-    :param wintype: The 'mean' and 'sum' `statistic` calculation can also be
-        weighted according to the `wintype` windows.  Some of the following
+    :param wintype <str>: The 'mean' and 'sum' `statistic` calculation can also
+        be weighted according to the `wintype` windows.  Some of the following
         windows require additional keywords identified in parenthesis:
         'boxcar', 'triang', 'blackman', 'hamming', 'bartlett', 'parzen',
         'bohman', 'blackmanharris', 'nuttall', 'barthann', 'kaiser' (needs
-        beta), 'gaussian' (needs std), 'general_gaussian' (needs power,
-        width) 'slepian' (needs width).
+        beta), 'gaussian' (needs std), 'general_gaussian' (needs power, width)
+        'slepian' (needs width).
     :param center: If set to 'True' the calculation will be made for the
         value at the center of the window.  Default is 'False'.
     :param -p, --print_input: If set to 'True' will include the input columns in
@@ -821,10 +821,10 @@ def aggregate(
     Takes a time series and aggregates to specified frequency, outputs to
         'ISO-8601date,value' format.
 
-    :param statistic: 'mean', 'sum', 'std', 'max', 'min', 'median', 'first',
-        or 'last' to calculate the aggregation, defaults to 'mean'.
+    :param statistic <str>: 'mean', 'sum', 'std', 'max', 'min', 'median',
+        'first', or 'last' to calculate the aggregation, defaults to 'mean'.
         Can also be a comma separated list of statistic methods.
-    :param agg_interval: The 'hourly', 'daily', 'monthly', 'yearly'
+    :param agg_interval <str>: The 'hourly', 'daily', 'monthly', 'yearly'
         aggregation intervals, defaults to 'daily'.
     :param -p, --print_input: If set to 'True' will include the input columns in
         the output table.  Default is 'False'.
@@ -905,8 +905,8 @@ def add_trend(
     '''
     Adds a trend.
 
-    :param start_offset: The starting value for the applied trend.
-    :param end_offset: The ending value for the applied trend.
+    :param start_offset <float>: The starting value for the applied trend.
+    :param end_offset <float>: The ending value for the applied trend.
     :param -p, --print_input: If set to 'True' will include the input columns
         in the output table.  Default is 'False'.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
@@ -970,7 +970,7 @@ def calculate_fdc(
     '''
     Returns the frequency distribution curve.  DOES NOT return a time-series.
 
-    :param x_plotting_position: 'norm' or 'lin'.  'norm' defines a x
+    :param x_plotting_position <str>: 'norm' or 'lin'.  'norm' defines a x
         plotting position Defaults to 'norm'.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
         or '-' for stdin.
@@ -1184,9 +1184,9 @@ def plot(
 
     :param ofilename <str>: Output filename for the plot.  Extension defines the
        type, ('.png'). Defaults to 'plot.png'.
-    :param type: The plot type.  Can be 'time', 'xy', 'double_mass', 'boxplot',
-       'scatter_matrix', 'lag_plot', 'autocorrelation', 'bootstrap', or
-       'probability_density', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
+    :param type <str>: The plot type.  Can be 'time', 'xy', 'double_mass',
+       'boxplot', 'scatter_matrix', 'lag_plot', 'autocorrelation', 'bootstrap',
+       or 'probability_density', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
        'histogram', 'norm_xaxis', 'norm_yaxis'.  Defaults to 'time'.
     :param xtitle <str>: Title of x-axis, defaults depend on ``type``.
     :param ytitle <str>: Title of y-axis, defaults depend on ``type``.
@@ -1774,7 +1774,8 @@ def pca(n_components=None,
     Returns the principal components analysis of the time series.  Does not
     return a time-series.
 
-    :param n_components: The number of groups to separate the time series into.
+    :param n_components <int>: The number of groups to separate the time series
+        into.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
         or '-' for stdin.
     :param -s, --start_date <str>: The start_date of the series in ISOdatetime
@@ -1806,16 +1807,16 @@ def normalization(mode='minmax',
     '''
     Returns the normalization of the time series.
 
-    :param mode: 'minmax' or 'zscore'.  Default is 'minmax'
+    :param mode <str>: 'minmax' or 'zscore'.  Default is 'minmax'
         'minmax' is min_limit + (X-Xmin)/(Xmax-Xmin)*(max_limit - min_limit)
         'zscore' is X-mean(X)/stddev(X)
         'pct_rank' is rank(X)*100/N
-    :param min_limit: Defaults to 0.  Defines the minimum limit of
+    :param min_limit <float>: Defaults to 0.  Defines the minimum limit of
         the minmax normalization.
-    :param max_limit: Defaults to 1.  Defines the maximum limit of
+    :param max_limit <float>: Defaults to 1.  Defines the maximum limit of
         the minmax normalization.
-    :param pct_rank_method: Defaults to 'average'.  Defines how tied ranks
-        are broken.  Can be 'average', 'min', 'max', 'first', 'dense'.
+    :param pct_rank_method <str>: Defaults to 'average'.  Defines how tied
+        ranks are broken.  Can be 'average', 'min', 'max', 'first', 'dense'.
     :param -p, --print_input: If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format

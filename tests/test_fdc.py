@@ -9,25 +9,14 @@ Tests for `tstoolbox` module.
 """
 
 from pandas.util.testing import TestCase
-import sys
-try:
-    from cStringIO import StringIO
-except:
-    from io import StringIO
 
 from tstoolbox import tstoolbox
 
-
-def capture(func, *args, **kwds):
-    sys.stdout = StringIO()      # capture output
-    out = func(*args, **kwds)
-    out = sys.stdout.getvalue()  # release output
-    return out
-
+from capture import capture
 
 class TestFDC(TestCase):
     def linebyline(self, out, teststr):
-        for test1, test2 in zip(out.split('\n'), teststr.split('\n')):
+        for test1, test2 in zip(out.decode().split('\n'), teststr.split('\n')):
             if not test1:
                 continue
             if 'Exceed' in test1:
@@ -41,6 +30,8 @@ class TestFDC(TestCase):
                 self.assertAlmostEqual(t1, t2)
 
     def test_flat_norm(self):
+        ''' Test linear ramp CLI calculation of the FDC.
+        '''
         out = capture(tstoolbox.calculate_fdc,
                       input_ts='tests/data_flat_01.csv')
         teststr = """Exceedance, Value, Exceedance_Label
@@ -74,6 +65,8 @@ class TestFDC(TestCase):
         self.linebyline(out, teststr)
 
     def test_flat_linear(self):
+        ''' Test FDC API with linear plotting position.
+        '''
         out = capture(tstoolbox.calculate_fdc,
                       x_plotting_position='lin',
                       input_ts='tests/data_flat_01.csv')
@@ -108,6 +101,8 @@ class TestFDC(TestCase):
         self.linebyline(out, teststr)
 
     def test_sunspot(self):
+        ''' Test normal plotting position FDC API.
+        '''
         out = capture(tstoolbox.calculate_fdc,
                       x_plotting_position='norm',
                       input_ts='tests/data_sunspot.csv')
