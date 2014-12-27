@@ -29,16 +29,22 @@ class TestDescribe(TestCase):
             'tests/data_sunspot_normalized_zscore.csv')
 
     def test_normalize_0_to_1(self):
+        ''' Test the normalization API function from 0 to 1.
+        '''
         out = tstoolbox.normalization(input_ts='tests/data_sunspot.csv')
         assert_frame_equal(out, self.data_0_to_1)
 
     def test_normalize_10_to_20(self):
+        ''' Test the normalization API function from 10 to 20.
+        '''
         out = tstoolbox.normalization(min_limit=10,
                                       max_limit=20,
                                       input_ts='tests/data_sunspot.csv')
         assert_frame_equal(out, self.data_10_to_20)
 
     def test_normalize(self):
+        ''' Test the normalization API function using the zscore method.
+        '''
         out = tstoolbox.normalization(mode='zscore',
                                       input_ts='tests/data_sunspot.csv')
         assert_frame_equal(out, self.data_zscore)

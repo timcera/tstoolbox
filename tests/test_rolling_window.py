@@ -41,16 +41,25 @@ class TestRollingWindow(TestCase):
                 self.compare_rolling_window_mean)
 
     def test_rolling_window_sum(self):
+        ''' API test: Rolling window sum for data_simple.csv is 9.1 for all
+            time steps.
+        '''
         out = tstoolbox.rolling_window(statistic='sum',
                                        input_ts='tests/data_simple.csv')
         assert_frame_equal(out, self.compare_rolling_window_sum)
 
     def test_rolling_window_mean(self):
+        ''' API test: Rolling window mean for data_simple.csv is 4.55 for all
+            time steps.
+        '''
         out = tstoolbox.rolling_window(statistic='mean',
                                        input_ts='tests/data_simple.csv')
         assert_frame_equal(out, self.compare_rolling_window_mean)
 
     def test_rolling_window_sum_cli(self):
+        ''' CLI test: Rolling window mean for data_simple.csv is 9.1 for all
+            time steps.
+        '''
         args = ('tstoolbox rolling_window '
                 '--statistic="sum" '
                 '--input_ts="tests/data_simple.csv"')
@@ -59,6 +68,9 @@ class TestRollingWindow(TestCase):
         self.assertEqual(out[0], self.compare_rolling_window_sum_cli)
 
     def test_rolling_window_mean_cli(self):
+        ''' CLI test: Rolling window sum for data_simple.csv is 4.55 for all
+            time steps.
+        '''
         args = ('tstoolbox rolling_window '
                 '--statistic="mean" '
                 '--input_ts="tests/data_simple.csv"')
