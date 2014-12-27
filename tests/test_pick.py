@@ -35,10 +35,16 @@ class TestPick(TestCase):
         self.pick_cli = capture(tsutils._printiso, self.pick_multiple_direct)
 
     def test_pick(self):
+        ''' Test the pick API by picking the 2nd then the 1st column,
+            effectively reversing the order of the columns.
+        '''
         out = tstoolbox.pick('2,1', input_ts='tests/data_multiple_cols.csv')
         assert_frame_equal(out, self.pick_multiple_direct)
 
     def test_pick_cli(self):
+        ''' Test the pick API by picking the 2nd then the 1st column,
+            effectively reversing the order of the columns.
+        '''
         args = 'tstoolbox pick 2,1 --input_ts="tests/data_multiple_cols.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()

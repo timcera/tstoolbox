@@ -55,6 +55,11 @@ pd_tstep_minterval = {
 
 class TestAddTrend(TestCase):
     def setUp(self):
+        ''' Creates a whole bunch of time-series at different intervals in
+            'pandacodes' and different number of intervals, the maximum number
+            of intervals is the third term in each entry in pd_tstep_minterval.
+            Then writes them out to files that will be read in the tests.
+        '''
         self.fps = {}
         for testpc in pandacodes:
             sdate, periods, nintervals = pd_tstep_minterval[testpc]
@@ -70,6 +75,13 @@ class TestAddTrend(TestCase):
 
 
     def test_ts_intervals(self):
+        ''' Test many intervals to make sure tstoolbox makes a good guess.
+        '''
+
+        # 'matches' lists out things that should match but tstoolbox will give
+        # the simpler answer.  For example 4 quarters is equal to a 1 year
+        # interval.  Also difficult for tstoolbox to figure out that a 2 month
+        # interval isn't a 1 month interval with gaps.
         matches = {
                    '4Q': '1A',
                    '8Q': '2A',
@@ -136,6 +148,8 @@ class TestAddTrend(TestCase):
             self.assertEqual(testcode, inferred_code.split('-')[0])
 
     def tearDown(self):
+        ''' Remove the temporary files.
+        '''
         for key in self.fps:
             fname = self.fps[key][1]
             if os.path.exists(fname):

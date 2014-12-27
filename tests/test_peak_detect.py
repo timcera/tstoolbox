@@ -100,6 +100,8 @@ class TestPeakDetect(TestCase):
         self.compare.loc[self.compare[0] == -1, '0_valley'] = -1
 
     def test_peak_rel_direct(self):
+        ''' Test peak detection API using the default method.
+        '''
         out = tstoolbox.peak_detection(input_ts=self.ats,
                                        print_input=True,
                                        type='both')
@@ -107,6 +109,8 @@ class TestPeakDetect(TestCase):
         assert_frame_equal(out, self.compare)
 
     def test_peak_minmax_direct(self):
+        ''' Test peak detection API using the minmax method.
+        '''
         out = tstoolbox.peak_detection(method='minmax',
                                        window=3,
                                        input_ts=self.ats,
@@ -116,6 +120,8 @@ class TestPeakDetect(TestCase):
         assert_frame_equal(out, self.compare)
 
     def test_peak_zero_crossing_direct(self):
+        ''' Test peak detection API using the zero_crossing method.
+        '''
         out = tstoolbox.peak_detection(method='zero_crossing',
                                        window=3,
                                        input_ts=self.ats,
@@ -138,6 +144,8 @@ class TestPeakDetect(TestCase):
 #        assert_frame_equal(out, self.compare)
 
     def test_peak_sine_direct(self):
+        ''' Test peak detection API using the 'sine' method.
+        '''
         out = tstoolbox.peak_detection(method='sine',
                                        points=9,
                                        input_ts=self.ats,
@@ -148,6 +156,8 @@ class TestPeakDetect(TestCase):
 
     # CLI...
     def test_peak_rel_cli(self):
+        ''' Test peak detection CLI using the default method.
+        '''
         args = 'tstoolbox peak_detection --type="both" --print_input=True'
         args = shlex.split(args)
         out = subprocess.Popen(args,
@@ -157,6 +167,8 @@ class TestPeakDetect(TestCase):
         self.assertEqual(out, output_peak_detection)
 
     def test_peak_minmax_cli(self):
+        ''' Test peak detection CLI using the minmax method.
+        '''
         args = ('tstoolbox peak_detection '
                 '--window=3 '
                 '--method="minmax" '
@@ -170,6 +182,8 @@ class TestPeakDetect(TestCase):
         self.assertEqual(out, output_peak_detection)
 
     def test_peak_zero_crossing_cli(self):
+        ''' Test peak detection CLI using the zero_crossing method.
+        '''
         args = ('tstoolbox peak_detection '
                 '--method="zero_crossing" '
                 '--type="both" '
@@ -193,6 +207,8 @@ class TestPeakDetect(TestCase):
     #    self.assertEqual(out, output_peak_detection)
 
     def test_peak_sine_cli(self):
+        ''' Test peak detection CLI using the 'sine' method.
+        '''
         args = ('tstoolbox peak_detection '
                 '--method="sine" '
                 '--type="both" '

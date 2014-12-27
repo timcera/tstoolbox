@@ -5,7 +5,9 @@
 test_read
 ----------------------------------
 
-Tests for `tstoolbox` module.
+Tests for `tstoolbox.read`
+
+read is used by many other tests.
 """
 
 from pandas.util.testing import TestCase
@@ -54,30 +56,42 @@ class TestRead(TestCase):
         self.read_tsstep_2_daily.index.name = 'Datetime'
 
     def test_read_direct(self):
+        ''' Test read API for single column - daily.
+        '''
         out = tstoolbox.read('tests/data_simple.csv')
         assert_frame_equal(out, self.read_direct)
 
     def test_read_mulitple_direct(self):
+        ''' Test read API for multiple columns - daily.
+        '''
         out = tstoolbox.read('tests/data_simple.csv,tests/data_simple.csv')
         assert_frame_equal(out, self.read_multiple_direct)
 
     def test_read_bi_monthly(self):
+        ''' Test read API for bi monthly time series.
+        '''
         out = tstoolbox.read('tests/data_bi_daily.csv')
         assert_frame_equal(out, self.read_tsstep_2_daily)
 
     def test_read_cli(self):
+        ''' Test read CLI for single column - daily.
+        '''
         args = 'tstoolbox read tests/data_simple.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.read_cli)
 
     def test_read_mulitple_cli(self):
+        ''' Test read CLI for multiple columns - daily.
+        '''
         args = 'tstoolbox read tests/data_simple.csv,tests/data_simple.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.read_multiple_cli)
 
     def test_read_bi_monthly_cli(self):
+        ''' Test read CLI for bi monthly time series.
+        '''
         args = 'tstoolbox read tests/data_bi_daily.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()

@@ -93,14 +93,14 @@ class TestFill(TestCase):
         self.mean_compare_cli = capture(tsutils._printiso, self.mean_compare)
 
     def test_fill_ffill_direct(self):
-        ''' Test forward fill.
+        ''' Test forward fill API.
         '''
         out = tstoolbox.fill(input_ts='tests/data_missing.csv')
         self.maxDiff = None
         assert_frame_equal(out, self.ffill_compare)
 
     def test_fill_bfill(self):
-        ''' Test backward fill.
+        ''' Test backward fill API.
         '''
         out = tstoolbox.fill(method='bfill',
             input_ts='tests/data_missing.csv')
@@ -108,7 +108,7 @@ class TestFill(TestCase):
         assert_frame_equal(out, self.bfill_compare)
 
     def test_fill_linear(self):
-        ''' Test linear interpolation fill.
+        ''' Test linear interpolation fill API.
         '''
         out = tstoolbox.fill(method='linear',
             input_ts='tests/data_missing.csv')
@@ -116,7 +116,7 @@ class TestFill(TestCase):
         assert_frame_equal(out, self.linear_compare)
 
     def test_fill_nearest(self):
-        ''' Test nearest fill.
+        ''' Test nearest fill API.
         '''
         out = tstoolbox.fill(method='nearest',
             input_ts='tests/data_missing.csv')
@@ -124,7 +124,7 @@ class TestFill(TestCase):
         assert_frame_equal(out, self.nearest_compare)
 
     def test_fill_mean(self):
-        ''' Test fill with mean.
+        ''' Test fill with mean API.
         '''
         out = tstoolbox.fill(method='mean',
             input_ts='tests/data_missing.csv')
@@ -132,6 +132,8 @@ class TestFill(TestCase):
         assert_frame_equal(out, self.mean_compare)
 
     def test_fill_ffill_cli(self):
+        ''' Test forward fill CLI
+        '''
         args = 'tstoolbox fill --input_ts=tests/data_missing.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args,
@@ -141,6 +143,8 @@ class TestFill(TestCase):
         self.assertEqual(out, self.ffill_compare_cli)
 
     def test_fill_bfill_cli(self):
+        ''' Test backward fill CLI.
+        '''
         args = ('tstoolbox fill '
                 '--method="bfill" '
                 '--input_ts=tests/data_missing.csv')
@@ -152,6 +156,8 @@ class TestFill(TestCase):
         self.assertEqual(out, self.bfill_compare_cli)
 
     def test_fill_linear_cli(self):
+        ''' Test linear fill CLI.
+        '''
         args = ('tstoolbox fill '
                 '--method="linear" '
                 '--input_ts=tests/data_missing.csv')
@@ -163,6 +169,8 @@ class TestFill(TestCase):
         self.assertEqual(out, self.linear_compare_cli)
 
     def test_fill_nearest_cli(self):
+        ''' Test nearest fill CLI.
+        '''
         args = ('tstoolbox fill '
                 '--method="nearest" '
                 '--input_ts=tests/data_missing.csv')
@@ -174,6 +182,8 @@ class TestFill(TestCase):
         self.assertEqual(out, self.nearest_compare_cli)
 
     def test_fill_mean_cli(self):
+        ''' Test mean fill CLI.
+        '''
         args = ('tstoolbox fill '
                 '--method="mean" '
                 '--input_ts=tests/data_missing.csv')
