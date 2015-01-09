@@ -1178,7 +1178,8 @@ def plot(
         start_date=None,
         end_date=None,
         label_rotation=None,
-        label_skip=1):
+        label_skip=1,
+        drawstyle='default'):
     '''
     Plots.
 
@@ -1311,6 +1312,11 @@ def plot(
         format, or 'None' for end.
     :param label_rotation <int>: Rotation for major labels for bar plots.
     :param label_skip <int>: Skip for major labels for bar plots.
+    :param drawstyle <str>: 'default' connects the points with lines. The steps
+        variants produce step-plots. 'steps' is equivalent to 'steps-pre' and
+        is maintained for backward-compatibility.
+        ACCEPTS: ['default' | 'steps' | 'steps-pre' | 'steps-mid'
+        | 'steps-post']
     '''
 
     # Need to work around some old option defaults with the implemntation of
@@ -1476,7 +1482,7 @@ def plot(
         tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
                  ylim=ylim, secondary_y=secondary_y, mark_right=mark_right,
-                 figsize=figsize)
+                 figsize=figsize, drawstyle=drawstyle)
         plt.xlabel(xtitle or 'Time')
         plt.ylabel(ytitle)
         if legend is True:
@@ -1553,7 +1559,8 @@ def plot(
                         linestyle=linest,
                         color=lcolor,
                         marker=marker,
-                        label=lnames[colindex]
+                        label=lnames[colindex],
+                        drawstyle=drawstyle
                        )
         if type in ['norm_xaxis', 'norm_yaxis']:
             xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
