@@ -1724,20 +1724,20 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x-y), window=10000):
     # Create cost matrix via broadcasting with large int
     ts_a, ts_b = pd.np.array(ts_a), pd.np.array(ts_b)
     M, N = len(ts_a), len(ts_b)
-    cost = sys.maxint * pd.np.ones((M, N))
+    cost = sys.maxsize * pd.np.ones((M, N))
 
     # Initialize the first row and column
     cost[0, 0] = d(ts_a[0], ts_b[0])
-    for i in xrange(1, M):
+    for i in range(1, M):
         cost[i, 0] = cost[i-1, 0] + d(ts_a[i], ts_b[0])
 
-    for j in xrange(1, N):
+    for j in range(1, N):
         cost[0, j] = cost[0, j-1] + d(ts_a[0], ts_b[j])
 
     # Populate rest of cost matrix within window
-    for i in xrange(1, M):
-        for j in xrange(max(1, i - window),
-                        min(N, i + window)):
+    for i in range(1, M):
+        for j in range(max(1, i - window),
+                       min(N, i + window)):
             choices = cost[i - 1, j - 1], cost[i, j-1], cost[i-1, j]
             cost[i, j] = min(choices) + d(ts_a[i], ts_b[j])
 
