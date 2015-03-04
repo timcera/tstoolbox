@@ -30,9 +30,9 @@ class TestRead(TestCase):
         self.read_direct = pandas.DataFrame(ts, columns=['Value'])
         self.read_direct.index.name = 'Datetime'
 
-        self.read_multiple_direct = pandas.DataFrame(ts, columns=['Value'])
+        self.read_multiple_direct = pandas.DataFrame(ts, columns=['data_simple.Value0'])
         self.read_multiple_direct = self.read_multiple_direct.join(
-            pandas.Series(ts, name='Value_data_simple'))
+            pandas.Series(ts, name='data_simple.Value1'))
         self.read_multiple_direct.index.name = 'Datetime'
 
         self.read_cli = b"""Datetime,Value
@@ -40,7 +40,7 @@ class TestRead(TestCase):
 2000-01-02,4.6
 """
 
-        self.read_multiple_cli = b"""Datetime,Value,Value_data_simple
+        self.read_multiple_cli = b"""Datetime,data_simple.Value0,data_simple.Value1
 2000-01-01,4.5,4.5
 2000-01-02,4.6,4.6
 """
@@ -81,7 +81,7 @@ class TestRead(TestCase):
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.read_cli)
 
-    def test_read_mulitple_cli(self):
+    def test_read_multiple_cli(self):
         ''' Test read CLI for multiple columns - daily.
         '''
         args = 'tstoolbox read tests/data_simple.csv,tests/data_simple.csv'

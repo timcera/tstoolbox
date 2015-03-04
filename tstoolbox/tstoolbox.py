@@ -190,21 +190,26 @@ def read(filenames, start_date=None, end_date=None, dense=False,
         there is a single interval.
     :param how <str>: Use PANDAS concept on how to join the separate DataFrames
         read from each file.  Default how='outer' which is the union, 'inner'
-        is the intersection, 'left' is only those values from the second file
-        that match indices in the first, 'right' is only values in the first
-        file that match indices in the second.  The 'left' and 'right' options
-        for 'how' might be a problem if you have more than 2 files that you are
-        reading in.
+        is the intersection,
     '''
     filenames = filenames.split(',')
-    result = pd.DataFrame()
-    for filename in filenames:
-        tsd = tsutils.date_slice(tsutils.read_iso_ts(filename, dense=dense),
-                                 start_date=start_date, end_date=end_date)
-        result = result.join(tsd,
-                             how=how,
-                             rsuffix='_{0}'.format(os.path.splitext(
-                                 os.path.basename(filename))[0]))
+    result = pd.concat([tsutils.date_slice(
+                        tsutils.read_iso_ts(i,
+                                            dense=dense,
+                                            extended_columns=True),
+                        start_date=start_date,
+                        end_date=end_date) for i in filenames],
+                        join=how,
+                        axis=1)
+
+    colnames = ['.'.join(i.split('.')[1:]) for i in result.columns]
+    if len(colnames) == len(set(colnames)):
+        result.columns = colnames
+    else:
+        result.columns = [i if result.columns.tolist().count(i) == 1
+                          else i + str(index)
+                          for index,i in enumerate(result.columns)]
+
     return tsutils.printiso(result, float_format=float_format)
 
 
