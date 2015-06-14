@@ -21,9 +21,9 @@ def date_slice(input_tsd, start_date=None, end_date=None):
 
     if input_tsd.index.is_all_dates:
         accdate = []
-        for testdate, alpha_omega in [(start_date, 0), (end_date, -1)]:
+        for testdate in [start_date, end_date]:
             if testdate is None:
-                tdate = input_tsd.index[alpha_omega]
+                tdate = None
             else:
                 tdate = pd.Timestamp(testdate)
                 # Is this comparison cheaper than the .join?
@@ -277,6 +277,7 @@ def read_iso_ts(indat, dense=True, parse_dates=True, extended_columns=False):
                                           delimiters=', \t:|')
             has_header = csv.Sniffer().has_header(readsome)
         except:
+            # This is an assumption.
             has_header = True
 
         if extended_columns is True:

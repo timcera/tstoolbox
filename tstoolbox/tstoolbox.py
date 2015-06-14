@@ -414,6 +414,73 @@ def convert(
                                float_format='%g')
 
 
+def parse_equation(equation):
+    import re
+    # Get rid of spaces
+    nequation = equation.replace(' ', '')
+
+    # Does the equation contain any x[t]?
+    tsearch = re.search(r'\[.*?t.*?\]', nequation)
+
+    # Does the equation contain any x1, x2, ...etc.?
+    nsearch = re.search(r'x[1-9][0-9]*', nequation)
+
+    # This beasty is so users can use 't' in their equations
+    # Indices of 'x' are a function of 't' and can possibly be negative or
+    # greater than the length of the DataFrame.
+    # Correctly (I think) handles negative indices and indices greater
+    # than the length by setting to nan
+    # AssertionError happens when index negative.
+    # IndexError happens when index is greater than the length of the
+    # DataFrame.
+    # UGLY!
+
+    # testeval is just a list of the 't' expressions in the equation.
+    # for example 'x[t]+0.6*max(x[t+1],x[t-1]' would have
+    # testeval = ['t', 't+1', 't-1']
+    testeval = set()
+    # If there is both function of t and column terms x1, x2, ...etc.
+    if tsearch and nsearch:
+        testeval.update(re.findall(r'x[1-9][0-9]*\[(.*?t.*?)\]',
+                                   nequation))
+        # replace 'x1[t+1]' with 'x.ix[t+1,1-1]'
+        # replace 'x2[t+7]' with 'x.ix[t+7,2-1]'
+        # ...etc
+        nequation = re.sub(r'x([1-9][0-9]*)\[(.*?t.*?)\]',
+                           r'x.ix[\2,\1-1]',
+                           nequation)
+        # replace 'x1' with 'x.ix[t,1-1]'
+        # replace 'x4' with 'x.ix[t,4-1]'
+        nequation = re.sub(r'x([1-9][0-9]*)',
+                           r'x.ix[t,\1-1]',
+                           nequation)
+    # If there is only a function of t, i.e. x[t]
+    elif tsearch:
+        testeval.update(re.findall(r'x\[(.*?t.*?)\]',
+                                   nequation))
+        nequation = re.sub(r'x\[(.*?t.*?)\]',
+                           r'xxix[\1,:]',
+                           nequation)
+        # Replace 'x' with underlying equation, but not the 'x' in a word,
+        # like 'maximum'.
+        nequation = re.sub(r'(?<![a-zA-Z])x(?![a-zA-Z\[])',
+                           r'xxix[t,:]',
+                           nequation)
+        nequation = re.sub(r'xxix',
+                           r'x.ix',
+                           nequation)
+
+    elif nsearch:
+        nequation = re.sub(r'x([1-9][0-9]*)',
+                           r'x.ix[:,\1-1]',
+                           nequation)
+
+    try:
+        testeval.remove('t')
+    except KeyError:
+        pass
+    return tsearch, nsearch, testeval, nequation
+
 @mando.command
 def equation(
         equation,
@@ -432,7 +499,7 @@ def equation(
         functions in the 'np' (numpy) name space can be used.  For example,
         'x*4 + 2', 'x**2 + cos(x)', and 'tan(x*pi/180)' are all valid
         <equation> strings.  The variable 't' is special representing the time
-        at which 'x' occurs.  This means you can so things like 'x[t] +
+        at which 'x' occurs.  This means you can do things like 'x[t] +
         max(x[t-1], x[t+1])*0.6' to add to the current value 0.6 times the
         maximum adjacent value.
     :param -p, --print_input: If set to 'True' will include the input columns
@@ -448,31 +515,8 @@ def equation(
                            start_date=start_date,
                            end_date=end_date).astype('f')
 
-    import re
-
-    # Get rid of spaces
-    equation = equation.replace(' ', '')
-
-    tsearch = re.search(r'\[.*?t.*?\]', equation)
-    nsearch = re.search(r'x[1-9][0-9]*', equation)
-    # This beasty is so users can use 't' in their equations
-    # Indices of 'x' are a function of 't' and can possibly be negative or
-    # greater than the length of the DataFrame.
-    # Correctly (I think) handles negative indices and indices greater
-    # than the length by setting to nan
-    # AssertionError happens when index negative.
-    # IndexError happens when index is greater than the length of the
-    # DataFrame.
-    # UGLY!
+    tsearch, nsearch, testeval, nequation = parse_equation(equation)
     if tsearch and nsearch:
-        testeval = re.findall(r'x[1-9][0-9]*\[(.*?t.*?)\]',
-                              equation)
-        nequation = re.sub(r'x([1-9][0-9]*)\[(.*?t.*?)\]',
-                           r'x.ix[\2,\1-1]',
-                           equation)
-        nequation = re.sub(r'x([1-9][0-9]*)',
-                           r'x.ix[t,\1-1]',
-                           nequation)
         y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
         for t in range(len(x)):
             try:
@@ -485,20 +529,6 @@ def equation(
         y = pd.DataFrame(y, columns=['_'], dtype='float32')
     elif tsearch:
         y = x.copy()
-        testeval = re.findall(r'x\[(.*?t.*?)\]',
-                              equation)
-        nequation = re.sub(r'x\[(.*?t.*?)\]',
-                           r'xxix[\1,:]',
-                           equation)
-        # Replace 'x' with underlying equation, but not the 'x' in a word,
-        # like 'maximum'.
-        nequation = re.sub(r'(?<![a-zA-Z])x(?![a-zA-Z\[])',
-                           r'xxix[t,:]',
-                           nequation)
-        nequation = re.sub(r'xxix',
-                           r'x.ix',
-                           nequation)
-
         for t in range(len(x)):
             try:
                 for tst in testeval:
@@ -509,9 +539,6 @@ def equation(
                 y.ix[t, :] = pd.np.nan
     elif nsearch:
         y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
-        nequation = re.sub(r'x([1-9][0-9]*)',
-                           r'x.ix[:,\1-1]',
-                           equation)
         y.ix[:, 0] = eval(nequation)
     else:
         y = eval(equation)
