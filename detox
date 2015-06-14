@@ -1,0 +1,35 @@
+#!/bin/bash
+
+envs=(2.6 2.7 3.3 3.4)
+
+for env in ${envs[@]}; do
+    echo "${env}"
+    conda create -q -n python${env} python=${env} setuptools \
+                                                  atlas \
+                                                  numpy \
+                                                  scipy \
+                                                  matplotlib \
+                                                  nose \
+                                                  dateutil \
+                                                  pandas \
+                                                  pip \
+                                                  coverage \
+                                                  flake8
+
+    source activate python${env}
+    pip install mando
+    if [[ ${env} == '2.6' ]]; then pip install argparse; fi
+    pip uninstall -y tstoolbox
+    rm -rf build
+    pip install --upgrade --no-deps ../tstoolbox/
+
+    nosetests --with-doctest --with-coverage --cover-tests --cover-package=tstoolbox --cover-branches --cover-erase
+done
+
+
+coverage erase
+coverage run `which nosetests` --with-doctest
+coverage report --include="tstoolbox/*" --omit="tests/*"
+coverage html --include="tstoolbox/*" --omit="tests/*"
+flake8 tstoolbox/__init__.py tstoolbox/tsutils.py --exit-zero
+

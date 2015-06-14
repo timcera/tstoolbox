@@ -21,9 +21,9 @@ def date_slice(input_tsd, start_date=None, end_date=None):
 
     if input_tsd.index.is_all_dates:
         accdate = []
-        for testdate, alpha_omega in [(start_date, 0), (end_date, -1)]:
+        for testdate in [start_date, end_date]:
             if testdate is None:
-                tdate = input_tsd.index[alpha_omega]
+                tdate = None
             else:
                 tdate = pd.Timestamp(testdate)
                 # Is this comparison cheaper than the .join?
@@ -128,6 +128,8 @@ def print_input(iftrue, intds, output, suffix,
 
 
 def _apply_across_columns(func, xtsd, **kwds):
+    ''' Apply a function to each column in turn.
+    '''
     for col in xtsd.columns:
         xtsd[col] = func(xtsd[col], **kwds)
     return xtsd
@@ -151,6 +153,8 @@ def _printiso(tsd, date_format=None, sep=',',
         return
 
 def test_cli():
+    ''' The strcutre to test the cli.
+    '''
     import traceback
     try:
         oldtracebacklimit = sys.tracebacklimit
@@ -194,7 +198,7 @@ def openinput(filein):
     return open(filein, 'rb')
 
 
-def read_iso_ts(indat, dense=True, parse_dates=True):
+def read_iso_ts(indat, dense=True, parse_dates=True, extended_columns=False):
     '''
     Reads the format printed by 'print_iso' and maybe other formats.
     '''
@@ -273,26 +277,35 @@ def read_iso_ts(indat, dense=True, parse_dates=True):
                                           delimiters=', \t:|')
             has_header = csv.Sniffer().has_header(readsome)
         except:
+            # This is an assumption.
             has_header = True
 
+        if extended_columns is True:
+            fname = os.path.splitext(os.path.basename(fpi.name))[0]
+            fstr = '{0}.{1}'
+        else:
+            fname = ''
+            fstr = '{1}'
+        if fname == '<stdin>':
+            fname = '_'
         if has_header:
             result = pd.io.parsers.read_table(fpi, header=0,
                                               dialect=dialect,
                                               index_col=index_col,
                                               parse_dates=True,
                                               skipinitialspace=True)
-            result.columns = [i.strip() for i in result.columns]
+            result.columns = [fstr.format(fname, i.strip())
+                              for i in result.columns]
         else:
             result = pd.io.parsers.read_table(fpi, header=None,
                                               dialect=dialect,
                                               index_col=0,
                                               parse_dates=True,
                                               skipinitialspace=True)
-            fname = os.path.splitext(fpi.name)
             if len(result.columns) == 1:
-                result.columns = [fname[0]]
+                result.columns = [fname]
             else:
-                result.columns = ['{0}_{1}'.format(fname[0], i)
+                result.columns = [fstr.format(fname, i.strip())
                                   for i in result.columns]
 
     if result.index.is_all_dates is True:

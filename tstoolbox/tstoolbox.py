@@ -190,21 +190,26 @@ def read(filenames, start_date=None, end_date=None, dense=False,
         there is a single interval.
     :param how <str>: Use PANDAS concept on how to join the separate DataFrames
         read from each file.  Default how='outer' which is the union, 'inner'
-        is the intersection, 'left' is only those values from the second file
-        that match indices in the first, 'right' is only values in the first
-        file that match indices in the second.  The 'left' and 'right' options
-        for 'how' might be a problem if you have more than 2 files that you are
-        reading in.
+        is the intersection,
     '''
     filenames = filenames.split(',')
-    result = pd.DataFrame()
-    for filename in filenames:
-        tsd = tsutils.date_slice(tsutils.read_iso_ts(filename, dense=dense),
-                                 start_date=start_date, end_date=end_date)
-        result = result.join(tsd,
-                             how=how,
-                             rsuffix='_{0}'.format(os.path.splitext(
-                                 os.path.basename(filename))[0]))
+    result = pd.concat([tsutils.date_slice(
+                        tsutils.read_iso_ts(i,
+                                            dense=dense,
+                                            extended_columns=True),
+                        start_date=start_date,
+                        end_date=end_date) for i in filenames],
+                        join=how,
+                        axis=1)
+
+    colnames = ['.'.join(i.split('.')[1:]) for i in result.columns]
+    if len(colnames) == len(set(colnames)):
+        result.columns = colnames
+    else:
+        result.columns = [i if result.columns.tolist().count(i) == 1
+                          else i + str(index)
+                          for index,i in enumerate(result.columns)]
+
     return tsutils.printiso(result, float_format=float_format)
 
 
@@ -409,6 +414,73 @@ def convert(
                                float_format='%g')
 
 
+def parse_equation(equation):
+    import re
+    # Get rid of spaces
+    nequation = equation.replace(' ', '')
+
+    # Does the equation contain any x[t]?
+    tsearch = re.search(r'\[.*?t.*?\]', nequation)
+
+    # Does the equation contain any x1, x2, ...etc.?
+    nsearch = re.search(r'x[1-9][0-9]*', nequation)
+
+    # This beasty is so users can use 't' in their equations
+    # Indices of 'x' are a function of 't' and can possibly be negative or
+    # greater than the length of the DataFrame.
+    # Correctly (I think) handles negative indices and indices greater
+    # than the length by setting to nan
+    # AssertionError happens when index negative.
+    # IndexError happens when index is greater than the length of the
+    # DataFrame.
+    # UGLY!
+
+    # testeval is just a list of the 't' expressions in the equation.
+    # for example 'x[t]+0.6*max(x[t+1],x[t-1]' would have
+    # testeval = ['t', 't+1', 't-1']
+    testeval = set()
+    # If there is both function of t and column terms x1, x2, ...etc.
+    if tsearch and nsearch:
+        testeval.update(re.findall(r'x[1-9][0-9]*\[(.*?t.*?)\]',
+                                   nequation))
+        # replace 'x1[t+1]' with 'x.ix[t+1,1-1]'
+        # replace 'x2[t+7]' with 'x.ix[t+7,2-1]'
+        # ...etc
+        nequation = re.sub(r'x([1-9][0-9]*)\[(.*?t.*?)\]',
+                           r'x.ix[\2,\1-1]',
+                           nequation)
+        # replace 'x1' with 'x.ix[t,1-1]'
+        # replace 'x4' with 'x.ix[t,4-1]'
+        nequation = re.sub(r'x([1-9][0-9]*)',
+                           r'x.ix[t,\1-1]',
+                           nequation)
+    # If there is only a function of t, i.e. x[t]
+    elif tsearch:
+        testeval.update(re.findall(r'x\[(.*?t.*?)\]',
+                                   nequation))
+        nequation = re.sub(r'x\[(.*?t.*?)\]',
+                           r'xxix[\1,:]',
+                           nequation)
+        # Replace 'x' with underlying equation, but not the 'x' in a word,
+        # like 'maximum'.
+        nequation = re.sub(r'(?<![a-zA-Z])x(?![a-zA-Z\[])',
+                           r'xxix[t,:]',
+                           nequation)
+        nequation = re.sub(r'xxix',
+                           r'x.ix',
+                           nequation)
+
+    elif nsearch:
+        nequation = re.sub(r'x([1-9][0-9]*)',
+                           r'x.ix[:,\1-1]',
+                           nequation)
+
+    try:
+        testeval.remove('t')
+    except KeyError:
+        pass
+    return tsearch, nsearch, testeval, nequation
+
 @mando.command
 def equation(
         equation,
@@ -427,7 +499,7 @@ def equation(
         functions in the 'np' (numpy) name space can be used.  For example,
         'x*4 + 2', 'x**2 + cos(x)', and 'tan(x*pi/180)' are all valid
         <equation> strings.  The variable 't' is special representing the time
-        at which 'x' occurs.  This means you can so things like 'x[t] +
+        at which 'x' occurs.  This means you can do things like 'x[t] +
         max(x[t-1], x[t+1])*0.6' to add to the current value 0.6 times the
         maximum adjacent value.
     :param -p, --print_input: If set to 'True' will include the input columns
@@ -443,31 +515,8 @@ def equation(
                            start_date=start_date,
                            end_date=end_date).astype('f')
 
-    import re
-
-    # Get rid of spaces
-    equation = equation.replace(' ', '')
-
-    tsearch = re.search(r'\[.*?t.*?\]', equation)
-    nsearch = re.search(r'x[1-9][0-9]*', equation)
-    # This beasty is so users can use 't' in their equations
-    # Indices of 'x' are a function of 't' and can possibly be negative or
-    # greater than the length of the DataFrame.
-    # Correctly (I think) handles negative indices and indices greater
-    # than the length by setting to nan
-    # AssertionError happens when index negative.
-    # IndexError happens when index is greater than the length of the
-    # DataFrame.
-    # UGLY!
+    tsearch, nsearch, testeval, nequation = parse_equation(equation)
     if tsearch and nsearch:
-        testeval = re.findall(r'x[1-9][0-9]*\[(.*?t.*?)\]',
-                              equation)
-        nequation = re.sub(r'x([1-9][0-9]*)\[(.*?t.*?)\]',
-                           r'x.ix[\2,\1-1]',
-                           equation)
-        nequation = re.sub(r'x([1-9][0-9]*)',
-                           r'x.ix[t,\1-1]',
-                           nequation)
         y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
         for t in range(len(x)):
             try:
@@ -480,20 +529,6 @@ def equation(
         y = pd.DataFrame(y, columns=['_'], dtype='float32')
     elif tsearch:
         y = x.copy()
-        testeval = re.findall(r'x\[(.*?t.*?)\]',
-                              equation)
-        nequation = re.sub(r'x\[(.*?t.*?)\]',
-                           r'xxix[\1,:]',
-                           equation)
-        # Replace 'x' with underlying equation, but not the 'x' in a word,
-        # like 'maximum'.
-        nequation = re.sub(r'(?<![a-zA-Z])x(?![a-zA-Z\[])',
-                           r'xxix[t,:]',
-                           nequation)
-        nequation = re.sub(r'xxix',
-                           r'x.ix',
-                           nequation)
-
         for t in range(len(x)):
             try:
                 for tst in testeval:
@@ -504,9 +539,6 @@ def equation(
                 y.ix[t, :] = pd.np.nan
     elif nsearch:
         y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
-        nequation = re.sub(r'x([1-9][0-9]*)',
-                           r'x.ix[:,\1-1]',
-                           equation)
         y.ix[:, 0] = eval(nequation)
     else:
         y = eval(equation)
@@ -1731,20 +1763,20 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x-y), window=10000):
     # Create cost matrix via broadcasting with large int
     ts_a, ts_b = pd.np.array(ts_a), pd.np.array(ts_b)
     M, N = len(ts_a), len(ts_b)
-    cost = sys.maxint * pd.np.ones((M, N))
+    cost = sys.maxsize * pd.np.ones((M, N))
 
     # Initialize the first row and column
     cost[0, 0] = d(ts_a[0], ts_b[0])
-    for i in xrange(1, M):
+    for i in range(1, M):
         cost[i, 0] = cost[i-1, 0] + d(ts_a[i], ts_b[0])
 
-    for j in xrange(1, N):
+    for j in range(1, N):
         cost[0, j] = cost[0, j-1] + d(ts_a[0], ts_b[j])
 
     # Populate rest of cost matrix within window
-    for i in xrange(1, M):
-        for j in xrange(max(1, i - window),
-                        min(N, i + window)):
+    for i in range(1, M):
+        for j in range(max(1, i - window),
+                       min(N, i + window)):
             choices = cost[i - 1, j - 1], cost[i, j-1], cost[i-1, j]
             cost[i, j] = min(choices) + d(ts_a[i], ts_b[j])
 
