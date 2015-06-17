@@ -113,6 +113,12 @@ def filter(filter_type,
             else:
                 w = eval('pd.np.' + filter_type + '(window_len)')
             tsd[col].values[:] = pd.np.convolve(w / w.sum(), s, mode='valid')
+        else:
+            raise ValueError('''
+*
+*   Filter type {0} not implemented.
+*
+'''.format(filter_type))
     return tsutils.print_input(print_input, otsd, tsd, '_filter',
                                float_format=float_format)
 

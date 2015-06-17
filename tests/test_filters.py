@@ -58,13 +58,9 @@ class TestFilter(TestCase):
 
         self.flat_3 = self.ats.join(tstoolbox.read(os.path.join('tests', 'data_filter_flat.csv')))
 
-        self.hanning = self.ats.copy()
-        self.hanning.columns = ['Value_filter']
-        self.hanning = self.ats.join(self.hanning)
+        self.hanning = self.ats.join(tstoolbox.read(os.path.join('tests', 'data_filter_hanning.csv')))
 
-        self.fft_lowpass = self.ats.copy()
-        self.fft_lowpass.columns = ['Value_filter']
-        self.fft_lowpass = self.ats.join(self.fft_lowpass)
+        self.fft_lowpass = self.ats.join(tstoolbox.read(os.path.join('tests', 'data_filter_fft_lowpass.csv')))
 
         self.fft_highpass = self.ats.copy()
         self.fft_highpass.columns = ['Value_filter']
@@ -77,20 +73,21 @@ class TestFilter(TestCase):
         self.maxDiff = None
         assert_frame_equal(out, self.flat_3)
 
-#    def test_filter_hanning(self):
-#        out = tstoolbox.filter('hanning',
-#                               input_ts='tests/data_sine.csv',
-#                               print_input=True)
-#        self.maxDiff = None
-#        assert_frame_equal(out, self.hanning)
-#
-#    def test_filter_fft_lowpass(self):
-#        out = tstoolbox.filter('fft_lowpass',
-#                               input_ts='tests/data_sine.csv',
-#                               print_input=True,
-#                               cutoff_period=12)
-#        self.maxDiff = None
-#        assert_frame_equal(out, self.fft_lowpass)
+    def test_filter_hanning(self):
+        out = tstoolbox.filter('hanning',
+                               input_ts='tests/data_sine.csv',
+                               print_input=True)
+        print(out)
+        self.maxDiff = None
+        assert_frame_equal(out, self.hanning)
+
+    def test_filter_fft_lowpass(self):
+        out = tstoolbox.filter('fft_lowpass',
+                               input_ts='tests/data_sine.csv',
+                               print_input=True,
+                               cutoff_period=50)
+        self.maxDiff = None
+        assert_frame_equal(out, self.fft_lowpass)
 #
 #    def test_filter_fft_highpass(self):
 #        out = tstoolbox.filter('fft_highpass',
@@ -99,15 +96,15 @@ class TestFilter(TestCase):
 #                               cutoff_period=12)
 #        self.maxDiff = None
 #        assert_frame_equal(out, self.fft_highpass)
-
+#
 #    def test_filter_flat_cli(self):
-#        args = 'tstoolbox filter flat --input_ts=self.ats --print_input=True'
+#        args = "tstoolbox filter flat --input_ts='tests/data_sine.csv' --print_input"
 #        args = shlex.split(args)
 #        out = subprocess.Popen(args,
 #            stdout=subprocess.PIPE,
-#            stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
+#            stdin=subprocess.PIPE).communicate(input=os.path.join('tests', 'data_sine.csv'))[0]
 #        self.maxDiff = None
-#        self.assertEqual(out, test_sinwave)
+#        self.assertEqual(out, self.flat_3)
 #
 #    def test_filter_hanning_cli(self):
 #        args = ('tstoolbox filter  hanning '
