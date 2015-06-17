@@ -85,7 +85,7 @@ def asbestfreq(data):
                'S': 1000000000,
                'L': 1000000,
                'U': 1000,
-              }
+               }
 
     finterval = codemap.setdefault(pandacode, None)
 
@@ -152,6 +152,7 @@ def _printiso(tsd, date_format=None, sep=',',
     except IOError:
         return
 
+
 def test_cli():
     ''' The strcutre to test the cli.
     '''
@@ -182,6 +183,7 @@ def printiso(tsd, date_format=None,
                   date_format=date_format, sep=sep)
     else:
         return tsd
+
 
 def openinput(filein):
     """

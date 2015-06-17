@@ -1,3 +1,4 @@
+''' Collection of peak detection algorithms '''
 
 from __future__ import print_function
 
@@ -66,6 +67,9 @@ def _boolrelextrema(data, comparator,
 
 
 def _argrel(data, axis=0, window=1):
+    """
+    Private function to find relative min and max of data.
+    """
     tmpmin = _argrelmin(data, axis=axis, order=window)
     tmpmax = _argrelmax(data, axis=axis, order=window)
     return (zip(tmpmax[0], data[tmpmax[0]]), zip(tmpmin[0], data[tmpmin[0]]))
@@ -118,11 +122,19 @@ def _argrelextrema(data, comparator,
 
 
 def _datacheck_peakdetect(x_axis, y_axis):
+    '''
+    Checks x and y axis, creating an x data_set if necessary.
+    '''
     if x_axis is None:
         x_axis = range(len(y_axis))
 
     if len(y_axis) != len(x_axis):
-        raise ValueError
+        raise ValueError('''
+*
+*   The length of y values must equal the length of x values.  Instead the
+*   length of y values is {0} and the length of x values is {0}.
+*
+'''.format(len(y_axis), len(x_axis)))
 
     # needs to be a numpy array
     y_axis = np.array(y_axis)

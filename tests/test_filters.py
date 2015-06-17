@@ -10,6 +10,7 @@ Tests for `tstoolbox` module.
 
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
+from pandas.util.testing import assertRaisesRegexp
 import os
 
 import shlex
@@ -18,7 +19,7 @@ import subprocess
 import pandas as pd
 
 from tstoolbox import tstoolbox
-import tstoolbox.tsutils as tsutils
+from tstoolbox import tsutils
 
 from capture import capture
 
@@ -55,9 +56,7 @@ class TestFilter(TestCase):
         self.ats.index.name = 'Datetime'
         self.ats.columns = ['Value']
 
-        self.flat_3 = self.ats.copy()
-        self.flat_3.columns = ['Value_filter']
-        self.flat_3 = self.ats.join(self.flat_3)
+        self.flat_3 = self.ats.join(tstoolbox.read(os.path.join('tests', 'data_filter_flat.csv')))
 
         self.hanning = self.ats.copy()
         self.hanning.columns = ['Value_filter']
@@ -71,13 +70,13 @@ class TestFilter(TestCase):
         self.fft_highpass.columns = ['Value_filter']
         self.fft_highpass = self.ats.join(self.fft_highpass)
 
-#    def test_filter_flat(self):
-#        out = tstoolbox.filter('flat',
-#                               input_ts='tests/data_sine.csv',
-#                               print_input=True)
-#        self.maxDiff = None
-#        assert_frame_equal(out, self.flat_3)
-#
+    def test_filter_flat(self):
+        out = tstoolbox.filter('flat',
+                               input_ts='tests/data_sine.csv',
+                               print_input=True)
+        self.maxDiff = None
+        assert_frame_equal(out, self.flat_3)
+
 #    def test_filter_hanning(self):
 #        out = tstoolbox.filter('hanning',
 #                               input_ts='tests/data_sine.csv',

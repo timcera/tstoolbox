@@ -1,11 +1,9 @@
-#!/usr/bin/env python
-
-from __future__ import print_function
-
 """
 The filter.py module contains a group of functions to filter
 time-series values.
 """
+
+from __future__ import print_function
 
 #===imports======================
 import numpy as np
