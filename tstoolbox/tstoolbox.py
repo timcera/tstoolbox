@@ -208,7 +208,7 @@ def read(filenames, start_date=None, end_date=None, dense=False,
     else:
         result.columns = [i if result.columns.tolist().count(i) == 1
                           else i + str(index)
-                          for index,i in enumerate(result.columns)]
+                          for index, i in enumerate(result.columns)]
 
     return tsutils.printiso(result, float_format=float_format)
 
@@ -414,7 +414,10 @@ def convert(
                                float_format='%g')
 
 
-def parse_equation(equation):
+def _parse_equation(equation):
+    '''
+    Private function to parse the equation used in the calculations.
+    '''
     import re
     # Get rid of spaces
     nequation = equation.replace(' ', '')
@@ -515,7 +518,7 @@ def equation(
                            start_date=start_date,
                            end_date=end_date).astype('f')
 
-    tsearch, nsearch, testeval, nequation = parse_equation(equation)
+    tsearch, nsearch, testeval, nequation = _parse_equation(equation)
     if tsearch and nsearch:
         y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
         for t in range(len(x)):
@@ -845,6 +848,8 @@ def rolling_window(
 def aggregate(
         statistic='mean',
         agg_interval='daily',
+        ninterval=1,
+        start_interval=1,
         print_input=False,
         input_ts='-',
         start_date=None,
@@ -858,6 +863,8 @@ def aggregate(
         Can also be a comma separated list of statistic methods.
     :param agg_interval <str>: The 'hourly', 'daily', 'monthly', 'yearly'
         aggregation intervals, defaults to 'daily'.
+    :param ninterval <int>: The number of agg_interval to use for the
+        aggregation.  Defaults to 1.
     :param -p, --print_input: If set to 'True' will include the input columns in
         the output table.  Default is 'False'.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
@@ -878,7 +885,9 @@ def aggregate(
     methods = statistic.split(',')
     newts = pd.DataFrame()
     for method in methods:
-        tmptsd = tsd.resample(aggd[agg_interval], how=method)
+        tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
+                                                aggd[agg_interval]),
+                                                how=method)
         tmptsd.rename(columns=lambda x: x + '_' + method, inplace=True)
         newts = newts.join(tmptsd, how='outer')
     return tsutils.print_input(print_input, tsd, newts, '')
@@ -1367,9 +1376,12 @@ def plot(
                              start_date=start_date,
                              end_date=end_date)
 
-    # This defines the xlim and ylim as lists rather than strings.
-    # Might prove useful in the future in a more generic spot.
-    def know_your_limits(xylimits, axis='arithmetic'):
+    def _know_your_limits(xylimits, axis='arithmetic'):
+        '''
+        This defines the xlim and ylim as lists rather than strings.
+        Might prove useful in the future in a more generic spot.
+        It normalizes the different representiations.
+        '''
         if isinstance(xylimits, str):
             nlim = []
             for lim in xylimits.split(','):
@@ -1506,8 +1518,8 @@ def plot(
 *
 '''.format(yaxis))
 
-    xlim = know_your_limits(xlim, axis=xaxis)
-    ylim = know_your_limits(ylim, axis=yaxis)
+    xlim = _know_your_limits(xlim, axis=xaxis)
+    ylim = _know_your_limits(ylim, axis=yaxis)
 
     plt.figure(figsize=figsize)
     if type == 'time':
