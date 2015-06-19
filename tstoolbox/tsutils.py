@@ -56,17 +56,24 @@ def asbestfreq(data):
     except ValueError:
         pass
 
+    infer_freq = pd.infer_freq(data.index)
+    if infer_freq is not None:
+        return data.asfreq(infer_freq), infer_freq
+
     pandacodes = ['A', 'AS', 'BA', 'BAS',    # Annual
                   'Q', 'QS', 'BQ', 'BQS',    # Quarterly
                   'M', 'MS', 'BM', 'BMS',    # Monthly
                   'W',                       # Weekly
                   'D', 'B',                  # Daily
-                  'H', 'T', 'S', 'L', 'U']   # Intra-daily
+                  'H', 'T'] #, 'S', 'L', 'U']   # Intra-daily
 
     # This first loop gets the basic offset alias
     cnt = data.count()
     for pandacode in pandacodes:
-        tstfreq = data.asfreq('{0}'.format(pandacode))
+        try:
+            tstfreq = data.asfreq('{0}'.format(pandacode))
+        except ValueError:
+            continue
         # Following test would work if NO missing data.
         if np.all(tstfreq.count() == cnt):
             break

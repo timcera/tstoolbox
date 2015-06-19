@@ -1226,7 +1226,8 @@ def plot(
         end_date=None,
         label_rotation=None,
         label_skip=1,
-        drawstyle='default'):
+        drawstyle='default',
+        por=False):
     '''
     Plots.
 
@@ -1365,7 +1366,8 @@ def plot(
         is maintained for backward-compatibility.
         ACCEPTS: ['default' | 'steps' | 'steps-pre' | 'steps-mid'
         | 'steps-post']
-    '''
+    :param por: Plot from first good value to last good value.  Strip NANs from
+        beginning and end.  '''
 
     # Need to work around some old option defaults with the implemntation of
     # mando
@@ -1382,6 +1384,12 @@ def plot(
     tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts, dense=False),
                              start_date=start_date,
                              end_date=end_date)
+
+    if por is True:
+        tsd.dropna(inplace=True, how='all')
+        tsd = tsutils.date_slice(tsutils.read_iso_ts(tsd, dense=True),
+                                 start_date=start_date,
+                                 end_date=end_date)
 
     def _know_your_limits(xylimits, axis='arithmetic'):
         '''
