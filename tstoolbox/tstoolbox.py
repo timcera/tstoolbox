@@ -1567,7 +1567,7 @@ def plot(
             else:
                 style = zip(colors*(len(tsd.columns)//len(colors) + 1),
                             ['.-'] * len(tsd.columns))
-        style = [i + j for i, j in style]
+            style = [i + j for i, j in style]
         if type == 'double_mass':
             tsd = tsd.cumsum()
         if type in ['norm_xaxis',
