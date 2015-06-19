@@ -1235,7 +1235,8 @@ def plot(
     :param type <str>: The plot type.  Can be 'time', 'xy', 'double_mass',
        'boxplot', 'scatter_matrix', 'lag_plot', 'autocorrelation', 'bootstrap',
        or 'probability_density', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
-       'histogram', 'norm_xaxis', 'norm_yaxis'.  Defaults to 'time'.
+       'histogram', 'norm_xaxis', 'norm_yaxis', 'weibull_xaxis',
+       'weibull_yaxis'.  Defaults to 'time'.
     :param xtitle <str>: Title of x-axis, defaults depend on ``type``.
     :param ytitle <str>: Title of y-axis, defaults depend on ``type``.
     :param title <str>: Title of chart, defaults to ''.
@@ -1401,7 +1402,7 @@ def plot(
             nlim = xylimits
 
 
-        if axis == 'normal':
+        if axis == 'norm' or axis == 'weibull':
             if nlim is None:
                 nlim = [None, None]
             if nlim[0] is None:
@@ -1413,7 +1414,7 @@ def plot(
                 raise ValueError('''
 *
 *   Both limits must be between 0 and 1 for the
-*   'normal' axis.  Instead you have {0}
+*   'normal' or weibull axis.  Instead you have {0}
 *
 '''.format(nlim))
 
@@ -1502,27 +1503,30 @@ def plot(
     if yaxis == 'log':
         logy = True
 
-    if type == 'norm_xaxis':
-        xaxis = 'normal'
-        if xaxis != 'arithmetic':
+    if (type == 'norm_xaxis' or
+        type == 'weibull_xaxis' or
+        type == 'norm_yaxis' or
+        type == 'weibull_yaxis'):
+        axtype, axist = type.split('_')
+        if axtype == 'norm' and axist == 'xaxis':
+            xaxis = 'normal'
             import warnings
             warnings.warn('''
 *
-*   The --type=norm_xaxis cannot also have the xaxis set to {0}.
+*   The --type={1} cannot also have the xaxis set to {0}.
 *   The {0} setting for xaxis is ignored.
 *
-'''.format(xaxis))
+'''.format(xaxis, type))
 
-    if type == 'norm_yaxis':
-        yaxis = 'normal'
-        if yaxis != 'arithmetic':
+        if axtype == 'norm' and axist == 'yaxis':
+            yaxis = 'normal'
             import warnings
             warnings.warn('''
 *
-*   The --type=norm_yaxis cannot also have the yaxis set to {0}.
+*   The --type={1} cannot also have the yaxis set to {0}.
 *   The {0} setting for yaxis is ignored.
 *
-'''.format(yaxis))
+'''.format(yaxis, type))
 
     xlim = _know_your_limits(xlim, axis=xaxis)
     ylim = _know_your_limits(ylim, axis=yaxis)
@@ -1537,20 +1541,35 @@ def plot(
         plt.ylabel(ytitle)
         if legend is True:
             plt.legend(loc='best')
-    elif type in ['xy', 'double_mass', 'norm_xaxis', 'norm_yaxis']:
+    elif type in ['xy',
+                  'double_mass',
+                  'norm_xaxis',
+                  'norm_yaxis',
+                  'weibull_xaxis',
+                  'weibull_yaxis']:
         # PANDAS was not doing the right thing with xy plots
         # if you wanted lines between markers.
         # Fell back to using raw matplotlib.
         # Boy I do not like matplotlib.
         fig, ax = plt.subplots(figsize=figsize)
-        if style is None and type == 'xy':
-            style = '*' * len(tsd.columns)
-            style = ','.join(style).split(',')  # weird but it works
+        if style is None:
+            if type in ['xy']:
+                style = zip(colors*(len(tsd.columns)//len(colors) + 1),
+                            ['*'] * len(tsd.columns))
+            else:
+                style = zip(colors*(len(tsd.columns)//len(colors) + 1),
+                            ['-'] * len(tsd.columns))
+        style = [i + j for i, j in style]
         if type == 'double_mass':
             tsd = tsd.cumsum()
-        if type in ['norm_xaxis', 'norm_yaxis']:
-            # scipy is not a PANDAS required library
+        if type in ['norm_xaxis',
+                    'norm_yaxis']:
             from scipy.stats.distributions import norm
+            ys = tsd.iloc[:, :]
+            colcnt = tsd.shape[1]
+        elif type in ['weibull_xaxis',
+                      'weibull_yaxis']:
+            from scipy.stats.distributions import exponweib
             ys = tsd.iloc[:, :]
             colcnt = tsd.shape[1]
         else:
@@ -1570,18 +1589,28 @@ def plot(
                 marker = lstyle[0]
                 linest = lstyle[1:]
 
-            if type in ['norm_xaxis', 'norm_yaxis']:
+            if type in ['norm_xaxis',
+                        'norm_yaxis',
+                        'weibull_xaxis',
+                        'weibull_yaxis']:
                 oydata = pd.np.array(ys.iloc[:, colindex].dropna())
                 oydata = pd.np.sort(oydata)[::-1]
                 n = len(oydata)
-                oxdata = norm.ppf(pd.np.linspace(1./(n+1), 1-1./(n+1), n))
                 norm_axis = ax.xaxis
             else:
                 oxdata = xs[:, colindex]
                 oydata = ys[:, colindex]
-            if type == 'norm_yaxis':
+
+            if type in ['norm_xaxis', 'norm_yaxis']:
+                oxdata = norm.ppf(pd.np.linspace(1./(n+1), 1-1./(n+1), n))
+            elif type in ['weibull_xaxis', 'weibull_yaxis']:
+                oxdata = exponweib.ppf(pd.np.linspace(1./(n+1), 1-1./(n+1), n),
+                                       1,
+                                       1)
+
+            if type in ['norm_yaxis', 'weibull_yaxis']:
                 oxdata, oydata = oydata, oxdata
-                norm_axis = ax.yaxis
+                dist_axis = ax.yaxis
 
             if logy is True and logx is False:
                 ax.semilogy(oxdata, oydata,
@@ -1612,7 +1641,8 @@ def plot(
                         label=lnames[colindex],
                         drawstyle=drawstyle
                        )
-        if type in ['norm_xaxis', 'norm_yaxis']:
+        if type in ['norm_xaxis', 'norm_yaxis',
+                    'weibull_xaxis', 'weibull_yaxis']:
             xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
             xtmaj_str = ['1', '10', '50', '90', '99']
             xtmin = pd.np.concatenate([pd.np.linspace(0.001, 0.01, 10),
@@ -1621,18 +1651,31 @@ def plot(
                                        pd.np.linspace(0.9, 0.99, 10),
                                        pd.np.linspace(0.99, 0.999, 10),
                                       ])
-            xtmaj = norm.ppf(xtmaj)
-            xtmin = norm.ppf(xtmin)
+            if type in ['norm_xaxis', 'norm_yaxis']:
+                xtmaj = norm.ppf(xtmaj)
+                xtmin = norm.ppf(xtmin)
+            else:
+                xtmaj = exponweib.ppf(xtmaj, 1, 1)
+                xtmin = exponweib.ppf(xtmin, 1, 1)
             norm_axis.set_major_locator(FixedLocator(xtmaj))
             norm_axis.set_minor_locator(FixedLocator(xtmin))
-            if type == 'norm_xaxis':
+
+            if type in ['norm_xaxis', 'weibull_xaxis']:
                 ax.set_xticklabels(xtmaj_str)
-                ax.set_xlim(norm.ppf([0.01, 0.99]))
+                if type in ['norm_xaxis']:
+                    ax.set_xlim(norm.ppf([0.01, 0.99]))
+                else:
+                    ax.set_xlim(exponweib.ppf([0.01, 0.99], 1, 1))
                 ax.set_ylim(ylim)
-            if type == 'norm_yaxis':
+
+            if type in ['norm_yaxis', 'weibull_yaxis']:
                 ax.set_yticklabels(xtmaj_str)
-                ax.set_ylim(norm.ppf(ylim))
+                if type in ['norm_yaxis']:
+                    ax.set_ylim(norm.ppf(ylim))
+                else:
+                    ax.set_ylim(exponweib.ppf(ylim, 1, 1))
                 ax.set_xlim(xlim)
+
         if xy_match_line:
             if isinstance(xy_match_line, str):
                 xymsty = xy_match_line
@@ -1649,7 +1692,10 @@ def plot(
         ax.set_ylabel(ytitle or tsd.columns[1])
         if legend is True:
             ax.legend(loc='best')
-        if type not in ['norm_xaxis', 'norm_yaxis']:
+        if type not in ['norm_xaxis',
+                        'norm_yaxis',
+                        'weibull_xaxis',
+                        'weibull_yaxis']:
             ax.set_xlim(xlim)
             ax.set_ylim(ylim)
     elif type == 'probability_density':
