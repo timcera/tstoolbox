@@ -49,7 +49,8 @@ def filter(filter_type,
            float_format='%g',
            input_ts='-',
            start_date=None,
-           end_date=None):
+           end_date=None,
+           columns=None):
     '''
     Apply different filters to the time-series.
 
@@ -72,10 +73,15 @@ def filter(filter_type,
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
     from tstoolbox import filters
 
     if len(tsd.values) < window_len:
@@ -181,7 +187,7 @@ def zero_crossings(y_axis, window=11):
 
 @mando.command
 def read(filenames, start_date=None, end_date=None, dense=False,
-         float_format='%g', how='outer'):
+         float_format='%g', how='outer', columns=None):
     '''
     Collect time series from a list of pickle or csv files then print
     in the tstoolbox standard format.
@@ -197,14 +203,19 @@ def read(filenames, start_date=None, end_date=None, dense=False,
     :param how <str>: Use PANDAS concept on how to join the separate DataFrames
         read from each file.  Default how='outer' which is the union, 'inner'
         is the intersection,
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
     filenames = filenames.split(',')
-    result = pd.concat([tsutils.date_slice(
+    result = pd.concat([tsutils._common_kwds(
                         tsutils.read_iso_ts(i,
                                             dense=dense,
                                             extended_columns=True),
                         start_date=start_date,
-                        end_date=end_date) for i in filenames],
+                        end_date=end_date,
+                        pick=columns) for i in filenames],
                         join=how,
                         axis=1)
 
@@ -223,7 +234,8 @@ def read(filenames, start_date=None, end_date=None, dense=False,
 def date_slice(float_format='%g',
                start_date=None,
                end_date=None,
-               input_ts='-'):
+               input_ts='-',
+               columns=None):
     '''
     Prints out data to the screen between start_date and end_date
 
@@ -233,15 +245,20 @@ def date_slice(float_format='%g',
         format, or 'None' for end.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
         or '-' for stdin.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
     return tsutils.printiso(
-        tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+        tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                            start_date=start_date,
-                           end_date=end_date), float_format=float_format)
+                           end_date=end_date,
+                           pick=columns), float_format=float_format)
 
 
 @mando.command
-def describe(input_ts='-', start_date=None, end_date=None):
+def describe(input_ts='-', start_date=None, end_date=None, columns=None):
     '''
     Prints out statistics for the time-series.
 
@@ -251,10 +268,15 @@ def describe(input_ts='-', start_date=None, end_date=None):
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
     return tsutils.printiso(tsd.describe())
 
 
@@ -269,7 +291,8 @@ def peak_detection(method='rel',
                    print_input='',
                    input_ts='-',
                    start_date=None,
-                   end_date=None):
+                   end_date=None,
+                   columns=None):
     '''
     Peak and valley detection.
 
@@ -303,6 +326,10 @@ def peak_detection(method='rel',
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
@@ -323,9 +350,10 @@ def peak_detection(method='rel',
 *
 '''.format(method))
 
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
 
     window = int(window)
     kwds = {}
@@ -396,7 +424,8 @@ def convert(
         float_format='%g',
         input_ts='-',
         start_date=None,
-        end_date=None):
+        end_date=None,
+        columns=None):
     '''
     Converts values of a time series by applying a factor and offset.  See the
         'equation' subcommand for a generalized form of this command.
@@ -411,10 +440,15 @@ def convert(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
     tmptsd = tsd * factor + offset
     return tsutils.print_input(print_input, tsd, tmptsd, '_convert',
                                float_format='%g')
@@ -497,7 +531,8 @@ def equation(
         float_format='%g',
         input_ts='-',
         start_date=None,
-        end_date=None):
+        end_date=None,
+        columns=None):
     '''
     Applies <equation> to the time series data.  The <equation> argument is a
         string contained in single quotes with 'x' used as the variable
@@ -519,10 +554,15 @@ def equation(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    x = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    x = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                            start_date=start_date,
-                           end_date=end_date).astype('f')
+                           end_date=end_date,
+                           pick=columns).astype('f')
 
     tsearch, nsearch, testeval, nequation = _parse_equation(equation)
     if tsearch and nsearch:
@@ -558,10 +598,12 @@ def equation(
 @mando.command
 def pick(columns, input_ts='-', start_date=None, end_date=None):
     '''
-    Will pick a column or list of columns from input.  Start with 1.
+    Will pick a column or list of columns from input.  Can use column names or
+    column numbers.  If using numbers, column number 1 is the first column.
 
-    :param columns: Either an integer to collect a single column or a list of
-        integers to collect multiple columns.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
         or '-' for stdin.
     :param -s, --start_date <str>: The start_date of the series in ISOdatetime
@@ -569,52 +611,13 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date)
+    return tsutils.printiso(
+               tsutils._common_kwds(
+                   tsutils.read_iso_ts(input_ts),
+                   start_date=start_date,
+                   end_date=end_date,
+                   pick=columns))
 
-    columns = columns.split(',')
-    ncolumns = []
-    for i in columns:
-        if i in tsd.columns:
-            ncolumns.append(tsd.columns.tolist().index(i))
-            continue
-        else:
-            try:
-                target_col = int(i)
-            except:
-                raise ValueError('''
-*
-*   The name {0} isn't in the list of column names
-*   {1}.
-*
-'''.format(i, tsd.columns))
-            if target_col < 1:
-                raise ValueError('''
-*
-*   The request column index {0} must be greater than 0.
-*   First column is index 1.
-*
-'''.format(i))
-            if target_col > len(tsd.columns):
-                raise ValueError('''
-*
-*   The request column index {0} must be less than the
-*   number of columns {1}.
-*
-'''.format(i, len(tsd.columns)))
-            ncolumns.append(target_col - 1)
-
-    if len(ncolumns) == 1:
-        return tsutils.printiso(pd.DataFrame(tsd[tsd.columns[ncolumns]]))
-
-    newtsd = pd.DataFrame()
-    for index, col in enumerate(ncolumns):
-        jtsd = pd.DataFrame(tsd[tsd.columns[col]])
-
-        newtsd = newtsd.join(jtsd,
-                             lsuffix='_{0}'.format(index), how='outer')
-    return tsutils.printiso(newtsd)
 
 
 @mando.command
@@ -622,7 +625,8 @@ def stdtozrxp(
         rexchange=None,
         input_ts='-',
         start_date=None,
-        end_date=None):
+        end_date=None,
+        columns=None):
     '''
     Prints out data to the screen in a WISKI ZRXP format.
 
@@ -633,10 +637,15 @@ def stdtozrxp(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
     if len(tsd.columns) > 1:
         raise ValueError('''
 *
@@ -657,7 +666,8 @@ def tstopickle(
         filename,
         input_ts='-',
         start_date=None,
-        end_date=None):
+        end_date=None,
+        columns=None):
     '''
     Pickles the data into a Python pickled file.  Can be brought back into
     Python with 'pickle.load' or 'numpy.load'.  See also 'tstoolbox read'.
@@ -669,10 +679,15 @@ def tstopickle(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
     pd.core.common.save(tsd, filename)
 
 
@@ -682,7 +697,8 @@ def accumulate(
         print_input=False,
         input_ts='-',
         start_date=None,
-        end_date=None):
+        end_date=None,
+        columns=None):
     '''
     Calculates accumulating statistics.
 
@@ -695,10 +711,15 @@ def accumulate(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
     if statistic == 'sum':
         ntsd = tsd.cumsum()
     elif statistic == 'max':
@@ -725,7 +746,8 @@ def rolling_window(
         print_input=False,
         input_ts='-',
         start_date=None,
-        end_date=None):
+        end_date=None,
+        columns=None):
     '''
     Calculates a rolling window statistic.
 
@@ -753,10 +775,15 @@ def rolling_window(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
     if span is None:
         span = len(tsd)
     else:
@@ -859,7 +886,8 @@ def aggregate(
         print_input=False,
         input_ts='-',
         start_date=None,
-        end_date=None):
+        end_date=None,
+        columns=None):
     '''
     Takes a time series and aggregates to specified frequency, outputs to
         'ISO-8601date,value' format.
@@ -879,15 +907,20 @@ def aggregate(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
     aggd = {'hourly': 'H',
             'daily': 'D',
             'monthly': 'M',
             'yearly': 'A'
            }
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
     methods = statistic.split(',')
     newts = pd.DataFrame()
     for method in methods:
@@ -906,7 +939,8 @@ def clip(
         start_date=None,
         end_date=None,
         print_input=False,
-        input_ts='-'):
+        input_ts='-',
+        columns=None):
     '''
     Returns a time-series with values limited to [a_min, a_max]
 
@@ -918,10 +952,15 @@ def clip(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
     for col in tsd.columns:
         if a_min is None:
             try:
@@ -948,7 +987,8 @@ def add_trend(
         start_date=None,
         end_date=None,
         print_input=False,
-        input_ts='-'):
+        input_ts='-',
+        columns=None):
     '''
     Adds a trend.
 
@@ -962,10 +1002,15 @@ def add_trend(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
     ntsd = tsd.copy().astype('f')
     ntsd.ix[:, :] = pd.np.nan
     ntsd.ix[0, :] = float(start_offset)
@@ -981,7 +1026,8 @@ def remove_trend(
         start_date=None,
         end_date=None,
         print_input=False,
-        input_ts='-'):
+        input_ts='-',
+        columns=None):
     '''
     Removes a 'trend'.
 
@@ -993,10 +1039,15 @@ def remove_trend(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
     ntsd = tsd.copy()
     for col in tsd.columns:
         index = tsd.index.astype('l')
@@ -1013,7 +1064,8 @@ def calculate_fdc(
         x_plotting_position='norm',
         input_ts='-',
         start_date=None,
-        end_date=None):
+        end_date=None,
+        columns=None):
     '''
     Returns the frequency distribution curve.  DOES NOT return a time-series.
 
@@ -1025,10 +1077,15 @@ def calculate_fdc(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
     if len(tsd.columns) > 1:
         raise ValueError('''
 *
@@ -1058,7 +1115,8 @@ def calculate_fdc(
 def stack(
         input_ts='-',
         start_date=None,
-        end_date=None):
+        end_date=None,
+        columns=None):
     '''
     Returns the stack of the input table.
 
@@ -1092,10 +1150,15 @@ def stack(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
 
     newtsd = pd.DataFrame(tsd.stack()).reset_index(1)
     newtsd.sort(['level_1'], inplace=True)
@@ -1108,7 +1171,8 @@ def unstack(
         column_names,
         input_ts='-',
         start_date=None,
-        end_date=None):
+        end_date=None,
+        columns=None):
     '''
     Returns the unstack of the input table.
 
@@ -1145,12 +1209,17 @@ def unstack(
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     tsd.sort(inplace=True)
-    tsd = tsutils.date_slice(tsd,
+    tsd = tsutils._common_kwds(tsd,
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
 
     index = [tsd.index.values, tsd[column_names].values]
     cols = list(tsd.columns)
@@ -1227,19 +1296,42 @@ def plot(
         label_rotation=None,
         label_skip=1,
         drawstyle='default',
-        por=False):
+        por=False,
+        columns=None):
     '''
     Plots.
 
     :param ofilename <str>: Output filename for the plot.  Extension defines the
        type, ('.png'). Defaults to 'plot.png'.
-    :param type <str>: The plot type.  Can be 'time', 'xy', 'double_mass',
-       'boxplot', 'scatter_matrix', 'lag_plot', 'autocorrelation', 'bootstrap',
-       or 'probability_density', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
-       'histogram', 'norm_xaxis', 'norm_yaxis', 'weibull_xaxis',
-       'weibull_yaxis'.  Defaults to 'time'.
-    :param xtitle <str>: Title of x-axis, defaults depend on ``type``.
-    :param ytitle <str>: Title of y-axis, defaults depend on ``type``.
+    :param type <str>: The plot type.  Defaults to 'time'.
+       Can be one of the following:
+       'time' - standard time series plot,
+       'xy' - (x,y) plot, also know as a scatter plot,
+       'double_mass' - (x,y) plot of the cumulative sum of x and y,
+       'boxplot' - box extends from lower to upper quartile, with line at the
+           median.  Depending on the statistics, the wiskers represent the
+           range of the data or 1.5 times the inter-quartile range (Q3 - Q1),
+       'scatter_matrix' - plots all columns against each other,
+       'lag_plot' - indicates structure in the data,
+       'autocorrelation' - plot autocorrelation,
+       'bootstrap' - visually asses aspects of a data set by plotting random
+           selections of values,
+       'probability_density' - sometime called kernel density estimation (KDE),
+       'bar' - sometimes calles a column plot,
+       'barh' - a horizontal bar plot,
+       'bar_stacked' - sometimes called a stacked column,
+       'barh_stacked' - a horizontal stacked bar plot,
+       'histogram' - calculate and create a histogram plot,
+       'norm_xaxis' - sort, calculatate probablitiies, and plot data against
+           an x axis normal distribution,
+       'norm_yaxis' - sort, calculatate probablitiies, and plot data against
+           an y axis normal distribution,
+       'weibull_xaxis' - sort, calculate and plot data against an x axis
+           weibull distribution,
+       'weibull_yaxis' - sort, calculate and plot data against an y axis
+           weibull distribution,
+    :param xtitle <str>: Title of x-axis, default depend on ``type``.
+    :param ytitle <str>: Title of y-axis, default depend on ``type``.
     :param title <str>: Title of chart, defaults to ''.
     :param figsize: The (width, height) of plot as inches.  Defaults to
        (10,6.5).
@@ -1367,7 +1459,12 @@ def plot(
         ACCEPTS: ['default' | 'steps' | 'steps-pre' | 'steps-mid'
         | 'steps-post']
     :param por: Plot from first good value to last good value.  Strip NANs from
-        beginning and end.  '''
+        beginning and end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
+    '''
 
     # Need to work around some old option defaults with the implemntation of
     # mando
@@ -1381,13 +1478,14 @@ def plot(
     import matplotlib.pyplot as plt
     from matplotlib.ticker import FixedLocator
 
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts, dense=False),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts, dense=False),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
 
     if por is True:
         tsd.dropna(inplace=True, how='all')
-        tsd = tsutils.date_slice(tsutils.read_iso_ts(tsd, dense=True),
+        tsd = tsutils._common_kwds(tsutils.read_iso_ts(tsd, dense=True),
                                  start_date=start_date,
                                  end_date=end_date)
 
@@ -1859,11 +1957,20 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x-y), window=10000):
 def dtw(window=10000,
         input_ts='-',
         start_date=None,
-        end_date=None):
-    '''Dynamic Time Warping'''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts, dense=True),
+        end_date=None,
+        columns=None):
+    '''Dynamic Time Warping
+
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
+    '''
+
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts, dense=True),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
 
     process = {}
     for i in tsd.columns:
@@ -1880,7 +1987,8 @@ def dtw(window=10000,
 def pca(n_components=None,
         input_ts='-',
         start_date=None,
-        end_date=None):
+        end_date=None,
+        columns=None):
     '''
     Returns the principal components analysis of the time series.  Does not
     return a time-series.
@@ -1893,12 +2001,17 @@ def pca(n_components=None,
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
     from sklearn.decomposition import PCA
 
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
 
     pca = PCA(n_components)
     pca.fit(tsd.dropna(how='any'))
@@ -1914,7 +2027,8 @@ def normalization(mode='minmax',
                   float_format='%g',
                   input_ts='-',
                   start_date=None,
-                  end_date=None):
+                  end_date=None,
+                  columns=None):
     '''
     Returns the normalization of the time series.
 
@@ -1936,10 +2050,15 @@ def normalization(mode='minmax',
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
         format, or 'None' for end.
+    :param columns: Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces. As used in
+        'pick' command.
     '''
-    tsd = tsutils.date_slice(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
-                             end_date=end_date)
+                             end_date=end_date,
+                             pick=columns)
 
     # Trying to save some memory
     if print_input:

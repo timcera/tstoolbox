@@ -14,7 +14,61 @@ import pandas as pd
 import numpy as np
 
 
-def date_slice(input_tsd, start_date=None, end_date=None):
+def _common_kwds(input_tsd, start_date=None, end_date=None, pick=None):
+    ntsd = input_tsd
+    if pick is not None:
+        ntsd = _pick(ntsd, pick)
+    if start_date is not None or end_date is not None:
+        ntsd = _date_slice(ntsd, start_date=start_date, end_date=end_date)
+    return ntsd
+
+
+def _pick(tsd, columns):
+    columns = columns.split(',')
+    ncolumns = []
+    for i in columns:
+        if i in tsd.columns:
+            ncolumns.append(tsd.columns.tolist().index(i))
+            continue
+        else:
+            try:
+                target_col = int(i)
+            except:
+                raise ValueError('''
+*
+*   The name {0} isn't in the list of column names
+*   {1}.
+*
+'''.format(i, tsd.columns))
+            if target_col < 1:
+                raise ValueError('''
+*
+*   The request column index {0} must be greater than 0.
+*   First column is index 1.
+*
+'''.format(i))
+            if target_col > len(tsd.columns):
+                raise ValueError('''
+*
+*   The request column index {0} must be less than the
+*   number of columns {1}.
+*
+'''.format(i, len(tsd.columns)))
+            ncolumns.append(target_col - 1)
+
+    if len(ncolumns) == 1:
+        return pd.DataFrame(tsd[tsd.columns[ncolumns]])
+
+    newtsd = pd.DataFrame()
+    for index, col in enumerate(ncolumns):
+        jtsd = pd.DataFrame(tsd[tsd.columns[col]])
+
+        newtsd = newtsd.join(jtsd,
+                             lsuffix='_{0}'.format(index), how='outer')
+    return newtsd
+
+
+def _date_slice(input_tsd, start_date=None, end_date=None):
     '''
     Private function to slice time series.
     '''
@@ -65,7 +119,7 @@ def asbestfreq(data):
                   'M', 'MS', 'BM', 'BMS',    # Monthly
                   'W',                       # Weekly
                   'D', 'B',                  # Daily
-                  'H', 'T'] #, 'S', 'L', 'U']   # Intra-daily
+                  'H', 'T']  # , 'S', 'L', 'U']   # Intra-daily
 
     # This first loop gets the basic offset alias
     cnt = data.count()
