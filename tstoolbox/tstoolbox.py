@@ -877,7 +877,7 @@ def rolling_window(
     return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
 
 
-@mando.command
+@mando.command(formatter_class=RawTextHelpFormatter)
 def aggregate(
         statistic='mean',
         agg_interval='daily',
@@ -895,8 +895,67 @@ def aggregate(
     :param statistic <str>: 'mean', 'sum', 'std', 'max', 'min', 'median',
         'first', or 'last' to calculate the aggregation, defaults to 'mean'.
         Can also be a comma separated list of statistic methods.
-    :param agg_interval <str>: The 'hourly', 'daily', 'monthly', 'yearly'
-        aggregation intervals, defaults to 'daily'.
+    :param agg_interval <str>: Any of the PANDAS offset codes.
+        -----   -----------
+        Alias   Description
+        -----   -----------
+        B       business day frequency
+        C       custom business day frequency (experimental)
+        D       calendar day frequency
+        W       weekly frequency
+        M       month end frequency
+        BM      business month end frequency
+        CBM     custom business month end frequency
+        MS      month start frequency
+        BMS     business month start frequency
+        CBMS    custom business month start frequency
+        Q       quarter end frequency
+        BQ      business quarter endfrequency
+        QS      quarter start frequency
+        BQS     business quarter start frequency
+        A       year end frequency
+        BA      business year end frequency
+        AS      year start frequency
+        BAS     business year start frequency
+        H       hourly frequency
+        T       minutely frequency
+        S       secondly frequency
+        L       milliseonds
+        U       microseconds
+        N       nanoseconds
+
+        Weekly has the following anchored frequencies:
+        W-SUN   weekly frequency (sundays). Same as 'W'.
+        W-MON   weekly frequency (mondays)
+        W-TUE   weekly frequency (tuesdays)
+        W-WED   weekly frequency (wednesdays)
+        W-THU   weekly frequency (thursdays)
+        W-FRI   weekly frequency (fridays)
+        W-SAT   weekly frequency (saturdays)
+
+        Quarterly frequencies (Q, BQ, QS, BQS) and
+        annual frequencies (A, BA, AS, BAS) have the following anchoring
+        suffixes:
+        -DEC    year ends in December (same as 'Q' and 'A')
+        -JAN    year ends in January
+        -FEB    year ends in February
+        -MAR    year ends in March
+        -APR    year ends in April
+        -MAY    year ends in May
+        -JUN    year ends in June
+        -JUL    year ends in July
+        -AUG    year ends in August
+        -SEP    year ends in September
+        -OCT    year ends in October
+        -NOV    year ends in November
+
+        There are some deprecated aggregation interval names in tstoolbox:
+        hourly  H
+        daily   D
+        monthly M
+        yearly  A
+
+        Defaults to D (daily).
     :param ninterval <int>: The number of agg_interval to use for the
         aggregation.  Defaults to 1.
     :param -p, --print_input: If set to 'True' will include the input columns in
@@ -917,6 +976,11 @@ def aggregate(
             'monthly': 'M',
             'yearly': 'A'
            }
+    try:
+        agg_interval = aggd[agg_interval]
+    except KeyError:
+        pass
+
     tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
@@ -925,7 +989,7 @@ def aggregate(
     newts = pd.DataFrame()
     for method in methods:
         tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                aggd[agg_interval]),
+                                                agg_interval),
                                                 how=method)
         tmptsd.rename(columns=lambda x: x + '_' + method, inplace=True)
         newts = newts.join(tmptsd, how='outer')
@@ -1710,14 +1774,13 @@ def plot(
             if type in ['norm_xaxis', 'norm_yaxis']:
                 oxdata = norm.ppf(pd.np.linspace(1./(n+1), 1-1./(n+1), n))
             elif type in ['weibull_xaxis', 'weibull_yaxis']:
-                oxdata = exponweib.ppf(pd.np.linspace(1./(n+1), 1-1./(n+1), n),
-                                       1,
-                                       1)
+                oxdata = exponweib.ppf(pd.np.linspace(1./(n+1), 1-1./(n+1), n), 1, 1)
 
             if type in ['norm_yaxis', 'weibull_yaxis']:
                 oxdata, oydata = oydata, oxdata
-                dist_axis = ax.yaxis
+                norm_axis = ax.yaxis
 
+            # Make the plot for each column
             if logy is True and logx is False:
                 ax.semilogy(oxdata, oydata,
                             linestyle=linest,
@@ -1747,6 +1810,8 @@ def plot(
                         label=lnames[colindex],
                         drawstyle=drawstyle
                        )
+
+        # Make it pretty
         if type in ['norm_xaxis', 'norm_yaxis',
                     'weibull_xaxis', 'weibull_yaxis']:
             xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
@@ -1773,14 +1838,16 @@ def plot(
                 else:
                     ax.set_xlim(exponweib.ppf([0.01, 0.99], 1, 1))
                 ax.set_ylim(ylim)
-
-            if type in ['norm_yaxis', 'weibull_yaxis']:
+            elif type in ['norm_yaxis', 'weibull_yaxis']:
                 ax.set_yticklabels(xtmaj_str)
                 if type in ['norm_yaxis']:
                     ax.set_ylim(norm.ppf(ylim))
                 else:
                     ax.set_ylim(exponweib.ppf(ylim, 1, 1))
                 ax.set_xlim(xlim)
+            else:
+                ax.set_xlim(xlim)
+                ax.set_ylim(ylim)
 
         if xy_match_line:
             if isinstance(xy_match_line, str):
@@ -1794,16 +1861,23 @@ def plot(
             ax.plot([mint, maxt], [mint, maxt], xymsty, zorder=1)
             ax.set_ylim(nylim)
             ax.set_xlim(nxlim)
+
+        if type in ['xy', 'double_mass']:
+            xtitle = xtitle or tsd.columns[0]
+            ytitle = ytitle or tsd.columns[1]
+        if type in ['norm_xaxis']:
+            xtitle = xtitle or 'Normally Distributed Plotting Position'
+            ytitle = ytitle or tsd.columns[0]
+        if type in ['weibull_xaxis']:
+            xtitle = xtitle or 'Weibull Distributed Plotting Position'
+            ytitle = ytitle or tsd.columns[0]
+        if type in ['norm_yaxis', 'weibull_yaxis']:
+            xtitle, ytitle = ytitle, xtitle
+
         ax.set_xlabel(xtitle or tsd.columns[0])
         ax.set_ylabel(ytitle or tsd.columns[1])
         if legend is True:
             ax.legend(loc='best')
-        if type not in ['norm_xaxis',
-                        'norm_yaxis',
-                        'weibull_xaxis',
-                        'weibull_yaxis']:
-            ax.set_xlim(xlim)
-            ax.set_ylim(ylim)
     elif type == 'probability_density':
         tsd.plot(kind='kde', legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,

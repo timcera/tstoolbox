@@ -14,7 +14,12 @@ import pandas as pd
 import numpy as np
 
 
-def _common_kwds(input_tsd, start_date=None, end_date=None, pick=None):
+def _common_kwds(input_tsd,
+                 start_date=None,
+                 end_date=None,
+                 pick=None,
+                 group=None,
+                 group_start=None):
     ntsd = input_tsd
     if pick is not None:
         ntsd = _pick(ntsd, pick)
@@ -110,62 +115,46 @@ def asbestfreq(data):
     except ValueError:
         pass
 
-    infer_freq = pd.infer_freq(data.index)
+    # pd.infer_freq would fail if given a large dataset
+    if len(data.index) > 100:
+        slic = slice(None, 99)
+    else:
+        slic = slice(None, None)
+    infer_freq = pd.infer_freq(data.index[slic])
     if infer_freq is not None:
         return data.asfreq(infer_freq), infer_freq
 
-    pandacodes = ['A', 'AS', 'BA', 'BAS',    # Annual
-                  'Q', 'QS', 'BQ', 'BQS',    # Quarterly
-                  'M', 'MS', 'BM', 'BMS',    # Monthly
-                  'W',                       # Weekly
-                  'D', 'B',                  # Daily
-                  'H', 'T']  # , 'S', 'L', 'U']   # Intra-daily
+    # At this point pd.infer_freq failed probably because of missing values.
+    # Use the median of the intervals to test a new interval.
+    # The following algorithm would not capture things like BQ, BQS, QS, B,
+    # ...etc.
+    med = np.median(np.diff(data.index.values))
+    if   med < 1000:
+        infer_freq = '{0}N'.format(med)
+    elif med < 1000000:
+        infer_freq = '{0}U'.format(med//1000)
+    elif med < 1000000000:
+        infer_freq = '{0}L'.format(med//1000000)
+    elif med < 60000000000:
+        infer_freq = '{0}S'.format(med//1000000000)
+    elif med < 3600000000000:
+        infer_freq = '{0}T'.format(med//60000000000)
+    elif med < 86400000000000:
+        infer_freq = '{0}H'.format(med//3600000000000)
+    elif med < 604800000000000:
+        infer_freq = '{0}D'.format(med//86400000000000)
+    elif med < 2678400000000000:
+        infer_freq = '{0}W'.format(med//604800000000000)
+    elif med < 7948800000000000:
+        infer_freq = '{0}M'.format(med//2678400000000000)
+    else:
+        infer_freq = '{0}Q'.format(med//7948800)
 
-    # This first loop gets the basic offset alias
-    cnt = data.count()
-    for pandacode in pandacodes:
-        try:
-            tstfreq = data.asfreq('{0}'.format(pandacode))
-        except ValueError:
-            continue
-        # Following test would work if NO missing data.
-        if np.all(tstfreq.count() == cnt):
-            break
+    if infer_freq is not None:
+        return data.asfreq(infer_freq), infer_freq
 
-    # Now need to find the tstep, for example bi-weekly = '2W'
-
-    # Start with the minimum interval after dropping all NaNs.
-    interval = np.unique(tstfreq.dropna(how='all').index.values[1:] -
-                         tstfreq.dropna(how='all').index.values[:-1])
-    minterval = np.min(interval)
-
-    codemap = {'W': 604800000000000,
-               'D': 86400000000000,
-               'H': 3600000000000,
-               'T': 60000000000,
-               'S': 1000000000,
-               'L': 1000000,
-               'U': 1000,
-               }
-
-    finterval = codemap.setdefault(pandacode, None)
-
-    tstep = 1
-    if finterval == minterval:
-        return tstfreq, pandacode
-    elif finterval is not None:
-        try:
-            for tstep in range(int(minterval)//int(finterval) + 1, 0, -1):
-                tstfreq = data.asfreq('{0}{1}'.format(tstep, pandacode))
-                if np.all(tstfreq.count() == cnt):
-                    break
-        except AttributeError:
-            # Maybe figure out how to handle inconsistent intervals, like 'M'.
-            # That would go here....
-            pass
-
-    return tstfreq, '{0}{1}'.format(tstep, pandacode)
-
+    # Give up
+    return data, infer_freq
 
 # Utility
 def print_input(iftrue, intds, output, suffix,
