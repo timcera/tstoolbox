@@ -78,7 +78,7 @@ def date_slice(input_tsd, start_date=None, end_date=None):
     This is here for a while until I fix my other toolboxes to
     use _common_kwds instead.
     '''
-    return _date_slice(input_tsd, start_date=start_date, end_date=end_date):
+    return _date_slice(input_tsd, start_date=start_date, end_date=end_date)
 
 def _date_slice(input_tsd, start_date=None, end_date=None):
     '''
