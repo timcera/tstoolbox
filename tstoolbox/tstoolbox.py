@@ -78,7 +78,7 @@ def filter(filter_type,
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -209,7 +209,7 @@ def read(filenames, start_date=None, end_date=None, dense=False,
         'pick' command.
     '''
     filenames = filenames.split(',')
-    result = pd.concat([tsutils._common_kwds(
+    result = pd.concat([tsutils.common_kwds(
                         tsutils.read_iso_ts(i,
                                             dense=dense,
                                             extended_columns=True),
@@ -251,7 +251,7 @@ def date_slice(float_format='%g',
         'pick' command.
     '''
     return tsutils.printiso(
-        tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+        tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                            start_date=start_date,
                            end_date=end_date,
                            pick=columns), float_format=float_format)
@@ -273,7 +273,7 @@ def describe(input_ts='-', start_date=None, end_date=None, columns=None):
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -350,7 +350,7 @@ def peak_detection(method='rel',
 *
 '''.format(method))
 
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -445,7 +445,7 @@ def convert(
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -559,7 +559,7 @@ def equation(
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    x = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                            start_date=start_date,
                            end_date=end_date,
                            pick=columns).astype('f')
@@ -612,7 +612,7 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
         format, or 'None' for end.
     '''
     return tsutils.printiso(
-               tsutils._common_kwds(
+               tsutils.common_kwds(
                    tsutils.read_iso_ts(input_ts),
                    start_date=start_date,
                    end_date=end_date,
@@ -642,7 +642,7 @@ def stdtozrxp(
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -684,7 +684,7 @@ def tstopickle(
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -716,7 +716,7 @@ def accumulate(
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -780,7 +780,7 @@ def rolling_window(
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -981,7 +981,7 @@ def aggregate(
     except KeyError:
         pass
 
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -1021,7 +1021,7 @@ def clip(
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -1071,7 +1071,7 @@ def add_trend(
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -1108,7 +1108,7 @@ def remove_trend(
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -1146,7 +1146,7 @@ def calculate_fdc(
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -1219,7 +1219,7 @@ def stack(
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -1267,8 +1267,8 @@ def unstack(
 
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
         or '-' for stdin.
-    :param columns_labels: The column in the table that holds the column
-        labels.
+    :param column_names: The column in the table that holds the column
+        names of the unstacked data.
     :param -s, --start_date <str>: The start_date of the series in ISOdatetime
         format, or 'None' for beginning.
     :param -e, --end_date <str>: The end_date of the series in ISOdatetime
@@ -1280,7 +1280,7 @@ def unstack(
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     tsd.sort(inplace=True)
-    tsd = tsutils._common_kwds(tsd,
+    tsd = tsutils.common_kwds(tsd,
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -1542,14 +1542,14 @@ def plot(
     import matplotlib.pyplot as plt
     from matplotlib.ticker import FixedLocator
 
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts, dense=False),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dense=False),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
 
     if por is True:
         tsd.dropna(inplace=True, how='all')
-        tsd = tsutils._common_kwds(tsutils.read_iso_ts(tsd, dense=True),
+        tsd = tsutils.common_kwds(tsutils.read_iso_ts(tsd, dense=True),
                                  start_date=start_date,
                                  end_date=end_date)
 
@@ -2041,7 +2041,7 @@ def dtw(window=10000,
         'pick' command.
     '''
 
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts, dense=True),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dense=True),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -2082,7 +2082,7 @@ def pca(n_components=None,
     '''
     from sklearn.decomposition import PCA
 
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -2129,7 +2129,7 @@ def normalization(mode='minmax',
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
     '''
-    tsd = tsutils._common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)

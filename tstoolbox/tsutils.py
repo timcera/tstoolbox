@@ -14,17 +14,18 @@ import pandas as pd
 import numpy as np
 
 
-def _common_kwds(input_tsd,
-                 start_date=None,
-                 end_date=None,
-                 pick=None,
-                 group=None,
-                 group_start=None):
+def common_kwds(input_tsd,
+                start_date=None,
+                end_date=None,
+                pick=None,
+                force_freq=None):
     ntsd = input_tsd
     if pick is not None:
         ntsd = _pick(ntsd, pick)
     if start_date is not None or end_date is not None:
         ntsd = _date_slice(ntsd, start_date=start_date, end_date=end_date)
+    if force_freq is not None:
+        ntsd = asbestfreq(ntsd, force_freq=force_freq)
     return ntsd
 
 
@@ -76,9 +77,10 @@ def _pick(tsd, columns):
 def date_slice(input_tsd, start_date=None, end_date=None):
     '''
     This is here for a while until I fix my other toolboxes to
-    use _common_kwds instead.
+    use common_kwds instead.
     '''
     return _date_slice(input_tsd, start_date=start_date, end_date=end_date)
+
 
 def _date_slice(input_tsd, start_date=None, end_date=None):
     '''
@@ -106,11 +108,39 @@ def _date_slice(input_tsd, start_date=None, end_date=None):
     else:
         return input_tsd
 
+_annuals = {
+            0: 'DEC',
+            1: 'JAN',
+            2: 'FEB',
+            3: 'MAR',
+            4: 'APR',
+            5: 'MAY',
+            6: 'JUN',
+            7: 'JUL',
+            8: 'AUG',
+            9: 'SEP',
+            10: 'OCT',
+            11: 'NOV',
+            12: 'DEC',
+            }
 
-def asbestfreq(data):
+_weeklies = {
+             0: 'MON',
+             1: 'TUE',
+             2: 'WED',
+             3: 'THU',
+             4: 'FRI',
+             5: 'SAT',
+             6: 'SUN',
+             }
+
+def asbestfreq(data, force_freq=None):
     ''' This uses PANDAS .asfreq.  Basically, how low
     can you go and maintain the same number of values.
     '''
+
+    if force_freq is not None:
+        return data.asfreq(force_freq)
 
     # Since pandas doesn't set data.index.freq and data.index.freqstr when
     # using .asfreq, this function returns that PANDAS time offset alias code
@@ -135,33 +165,56 @@ def asbestfreq(data):
     # Use the median of the intervals to test a new interval.
     # The following algorithm would not capture things like BQ, BQS, QS, B,
     # ...etc.
-    med = np.median(np.diff(data.index.values))
-    if   med < 1000:
-        infer_freq = '{0}N'.format(med)
-    elif med < 1000000:
-        infer_freq = '{0}U'.format(med//1000)
-    elif med < 1000000000:
-        infer_freq = '{0}L'.format(med//1000000)
-    elif med < 60000000000:
-        infer_freq = '{0}S'.format(med//1000000000)
-    elif med < 3600000000000:
-        infer_freq = '{0}T'.format(med//60000000000)
-    elif med < 86400000000000:
-        infer_freq = '{0}H'.format(med//3600000000000)
-    elif med < 604800000000000:
-        infer_freq = '{0}D'.format(med//86400000000000)
-    elif med < 2678400000000000:
-        infer_freq = '{0}W'.format(med//604800000000000)
-    elif med < 7948800000000000:
-        infer_freq = '{0}M'.format(med//2678400000000000)
-    else:
-        infer_freq = '{0}Q'.format(med//7948800)
+    if np.alltrue(data.index.is_year_end):
+        infer_freq = 'A'
+    elif np.alltrue(data.index.is_year_start):
+        infer_freq = 'AS'
+    elif np.alltrue(data.index.is_quarter_end):
+        infer_freq = 'Q'
+    elif np.alltrue(data.index.is_quarter_start):
+        infer_freq = 'QS'
+    elif np.alltrue(data.index.is_month_end):
+        if np.all(data.index.month == data.index[0].month):
+            # Actually yearly with different ends
+            infer_freq = 'A-{0}'.format(_annuals[data.index[0].month])
+        else:
+            infer_freq = 'M'
+    elif np.alltrue(data.index.is_month_start):
+        if np.all(data.index.month == data.index[0].month):
+            # Actually yearly with different start
+            infer_freq = 'A-{0}'.format(_annuals[data.index[0].month] - 1)
+        else:
+            infer_freq = 'MS'
+
+    mininterval = np.min(np.diff(data.index.values))
+    if mininterval < 0:
+        raise ValueError
+    if mininterval < 1000:
+        infer_freq = '{0}N'.format(mininterval)
+    elif mininterval < 1000000:
+        infer_freq = '{0}U'.format(mininterval//1000)
+    elif mininterval < 1000000000:
+        infer_freq = '{0}L'.format(mininterval//1000000)
+    elif mininterval < 60000000000:
+        infer_freq = '{0}S'.format(mininterval//1000000000)
+    elif mininterval < 3600000000000:
+        infer_freq = '{0}T'.format(mininterval//60000000000)
+    elif mininterval < 86400000000000:
+        infer_freq = '{0}H'.format(mininterval//3600000000000)
+    elif mininterval < 604800000000000:
+        infer_freq = '{0}D'.format(mininterval//86400000000000)
+    elif mininterval < 2419200000000000:
+        infer_freq = '{0}W'.format(mininterval//604800000000000)
+        if np.all(data.index.dayofweek == data.index[0].dayofweek):
+            infer_freq = infer_freq + '-{0}'.format(
+                    _weeklies[data.index[0].dayofweek])
 
     if infer_freq is not None:
         return data.asfreq(infer_freq), infer_freq
 
     # Give up
     return data, infer_freq
+
 
 # Utility
 def print_input(iftrue, intds, output, suffix,
@@ -211,7 +264,7 @@ def _printiso(tsd, date_format=None, sep=',',
 
 
 def test_cli():
-    ''' The strcutre to test the cli.
+    ''' The structure to test the cli.
     '''
     import traceback
     try:
