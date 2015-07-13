@@ -739,7 +739,7 @@ def accumulate(
 
 @mando.command
 def rolling_window(
-        span=2,
+        span=None,
         statistic='mean',
         wintype=None,
         center=False,
@@ -747,13 +747,15 @@ def rolling_window(
         input_ts='-',
         start_date=None,
         end_date=None,
-        columns=None):
+        columns=None,
+        freq=None,
+        groupby=None):
     '''
     Calculates a rolling window statistic.
 
-    :param span <int>: The number of previous intervals to include in the
+    :param span: The number of previous intervals to include in the
         calculation of the statistic. If `span` is equal to 0 will give an
-        expanding rolling window.
+        expanding rolling window.  Defaults to 2.
     :param statistic <str>: One of 'mean', 'corr', 'count', 'cov', 'kurtosis',
         'median', 'skew', 'stdev', 'sum', 'variance', 'expw_mean',
         'expw_stdev', 'expw_variance' 'expw_corr', 'expw_cov' used to calculate
@@ -779,102 +781,209 @@ def rolling_window(
         column numbers.  If using numbers, column number 1 is the first column.
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
+    :param groupby: Time offset to groupby.  Any PANDAS time offset.  This
+        option supports what is probably an unusual situation where the
+        rolling_window is performed separately within each groupby period.
+        -----   -----------
+        Alias   Description
+        -----   -----------
+        B       business day frequency
+        C       custom business day frequency (experimental)
+        D       calendar day frequency
+        W       weekly frequency
+        M       month end frequency
+        BM      business month end frequency
+        CBM     custom business month end frequency
+        MS      month start frequency
+        BMS     business month start frequency
+        CBMS    custom business month start frequency
+        Q       quarter end frequency
+        BQ      business quarter endfrequency
+        QS      quarter start frequency
+        BQS     business quarter start frequency
+        A       year end frequency
+        BA      business year end frequency
+        AS      year start frequency
+        BAS     business year start frequency
+        H       hourly frequency
+        T       minutely frequency
+        S       secondly frequency
+        L       milliseonds
+        U       microseconds
+        N       nanoseconds
+
+        Weekly has the following anchored frequencies:
+        W-SUN   weekly frequency (sundays). Same as 'W'.
+        W-MON   weekly frequency (mondays)
+        W-TUE   weekly frequency (tuesdays)
+        W-WED   weekly frequency (wednesdays)
+        W-THU   weekly frequency (thursdays)
+        W-FRI   weekly frequency (fridays)
+        W-SAT   weekly frequency (saturdays)
+
+        Quarterly frequencies (Q, BQ, QS, BQS) and
+        annual frequencies (A, BA, AS, BAS) have the following anchoring
+        suffixes:
+        -DEC    year ends in December (same as 'Q' and 'A')
+        -JAN    year ends in January
+        -FEB    year ends in February
+        -MAR    year ends in March
+        -APR    year ends in April
+        -MAY    year ends in May
+        -JUN    year ends in June
+        -JUL    year ends in July
+        -AUG    year ends in August
+        -SEP    year ends in September
+        -OCT    year ends in October
+        -NOV    year ends in November
+
+        Defaults to None.
     '''
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
     if span is None:
-        span = len(tsd)
-    else:
-        span = int(span)
-    window_list = [
-        'boxcar',
-        'triang',
-        'blackman',
-        'hamming',
-        'bartlett',
-        'parzen',
-        'bohman',
-        'blackmanharris',
-        'nuttall',
-        'barthann',
-        'kaiser',
-        'gaussian',
-        'general_gaussian',
-        'slepian',
-        ]
-    if wintype in window_list and statistic in ['mean', 'sum']:
-        meantest = statistic == 'mean'
-        newts = pd.stats.moments.rolling_window(
-            tsd, span, wintype, center=center, mean=meantest)
-    elif statistic == 'mean':
-        if span == 0:
-            newts = pd.stats.moments.expanding_mean(tsd, center=center)
+        span = 2
+
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              groupby=groupby)
+
+    def _process_tsd(tsd,
+                     statistic='mean',
+                     span=None,
+                     center=False,
+                     wintype=None,
+                     freq=None):
+        if span is None:
+            span = len(tsd)
         else:
-            newts = pd.stats.moments.rolling_mean(tsd, span, center=center)
-    elif statistic == 'corr':
-        if span == 0:
-            newts = pd.stats.moments.expanding_corr(tsd, center=center)
+            span = int(span)
+        window_list = [
+            'boxcar',
+            'triang',
+            'blackman',
+            'hamming',
+            'bartlett',
+            'parzen',
+            'bohman',
+            'blackmanharris',
+            'nuttall',
+            'barthann',
+            'kaiser',
+            'gaussian',
+            'general_gaussian',
+            'slepian',
+            ]
+        if wintype in window_list and statistic in ['mean', 'sum']:
+            meantest = statistic == 'mean'
+            newts = pd.stats.moments.rolling_window(
+                tsd, span, wintype, center=center, mean=meantest, freq=freq)
+        elif statistic == 'mean':
+            if span == 0:
+                newts = pd.stats.moments.expanding_mean(tsd, center=center, freq=freq)
+            else:
+                newts = pd.stats.moments.rolling_mean(tsd, span, center=center, freq=freq)
+        elif statistic == 'max':
+            if span == 0:
+                newts = pd.stats.moments.expanding_max(tsd, center=center, freq=freq)
+            else:
+                newts = pd.stats.moments.rolling_max(tsd, span, center=center, freq=freq)
+        elif statistic == 'min':
+            if span == 0:
+                newts = pd.stats.moments.expanding_min(tsd, center=center, freq=freq)
+            else:
+                newts = pd.stats.moments.rolling_min(tsd, span, center=center, freq=freq)
+        elif statistic == 'corr':
+            if span == 0:
+                newts = pd.stats.moments.expanding_corr(tsd, center=center, freq=freq)
+            else:
+                newts = pd.stats.moments.rolling_corr(tsd, span, center=center, freq=freq)
+        elif statistic == 'cov':
+            if span == 0:
+                newts = pd.stats.moments.expanding_cov(tsd, center=center, freq=freq)
+            else:
+                newts = pd.stats.moments.rolling_cov(tsd, span, center=center, freq=freq)
+        elif statistic == 'count':
+            if span == 0:
+                newts = pd.stats.moments.expanding_count(tsd, center=center, freq=freq)
+            else:
+                newts = pd.stats.moments.rolling_count(tsd, span, center=center, freq=freq)
+        elif statistic == 'kurtosis':
+            if span == 0:
+                newts = pd.stats.moments.expanding_kurt(tsd, center=center, freq=freq)
+            else:
+                newts = pd.stats.moments.rolling_kurt(tsd, span, center=center, freq=freq)
+        elif statistic == 'median':
+            if span == 0:
+                newts = pd.stats.moments.expanding_median(tsd, center=center, freq=freq)
+            else:
+                newts = pd.stats.moments.rolling_median(tsd, span, center=center, freq=freq)
+        elif statistic == 'skew':
+            if span == 0:
+                newts = pd.stats.moments.expanding_skew(tsd, center=center, freq=freq)
+            else:
+                newts = pd.stats.moments.rolling_skew(tsd, span, center=center, freq=freq)
+        elif statistic == 'stdev':
+            if span == 0:
+                newts = pd.stats.moments.expanding_std(tsd, center=center, freq=freq)
+            else:
+                newts = pd.stats.moments.rolling_std(tsd, span, center=center, freq=freq)
+        elif statistic == 'sum':
+            if span == 0:
+                newts = pd.stats.moments.expanding_sum(tsd, center=center, freq=freq)
+            else:
+                newts = pd.stats.moments.rolling_sum(tsd, span, center=center, freq=freq)
+        elif statistic == 'variance':
+            if span == 0:
+                newts = pd.stats.moments.expanding_var(tsd, center=center, freq=freq)
+            else:
+                newts = pd.stats.moments.rolling_var(tsd, span, center=center, freq=freq)
+        elif statistic == 'expw_mean':
+            newts = pd.stats.moments.ewma(tsd, span=span, center=center, freq=freq)
+        elif statistic == 'expw_stdev':
+            newts = pd.stats.moments.ewmstd(tsd, span=span, center=center, freq=freq)
+        elif statistic == 'expw_variance':
+            newts = pd.stats.moments.ewmvar(tsd, span=span, center=center, freq=freq)
+        elif statistic == 'expw_corr':
+            newts = pd.stats.moments.ewmcorr(tsd, span=span, center=center, freq=freq)
+        elif statistic == 'expw_cov':
+            newts = pd.stats.moments.ewmcov(tsd, span=span, center=center, freq=freq)
         else:
-            newts = pd.stats.moments.rolling_corr(tsd, span, center=center)
-    elif statistic == 'cov':
-        if span == 0:
-            newts = pd.stats.moments.expanding_cov(tsd, center=center)
-        else:
-            newts = pd.stats.moments.rolling_cov(tsd, span, center=center)
-    elif statistic == 'count':
-        if span == 0:
-            newts = pd.stats.moments.expanding_count(tsd, center=center)
-        else:
-            newts = pd.stats.moments.rolling_count(tsd, span, center=center)
-    elif statistic == 'kurtosis':
-        if span == 0:
-            newts = pd.stats.moments.expanding_kurt(tsd, center=center)
-        else:
-            newts = pd.stats.moments.rolling_kurt(tsd, span, center=center)
-    elif statistic == 'median':
-        if span == 0:
-            newts = pd.stats.moments.expanding_median(tsd, center=center)
-        else:
-            newts = pd.stats.moments.rolling_median(tsd, span, center=center)
-    elif statistic == 'skew':
-        if span == 0:
-            newts = pd.stats.moments.expanding_skew(tsd, center=center)
-        else:
-            newts = pd.stats.moments.rolling_skew(tsd, span, center=center)
-    elif statistic == 'stdev':
-        if span == 0:
-            newts = pd.stats.moments.expanding_std(tsd, center=center)
-        else:
-            newts = pd.stats.moments.rolling_std(tsd, span, center=center)
-    elif statistic == 'sum':
-        if span == 0:
-            newts = pd.stats.moments.expanding_sum(tsd, center=center)
-        else:
-            newts = pd.stats.moments.rolling_sum(tsd, span, center=center)
-    elif statistic == 'variance':
-        if span == 0:
-            newts = pd.stats.moments.expanding_var(tsd, center=center)
-        else:
-            newts = pd.stats.moments.rolling_var(tsd, span, center=center)
-    elif statistic == 'expw_mean':
-        newts = pd.stats.moments.ewma(tsd, span=span, center=center)
-    elif statistic == 'expw_stdev':
-        newts = pd.stats.moments.ewmstd(tsd, span=span, center=center)
-    elif statistic == 'expw_variance':
-        newts = pd.stats.moments.ewmvar(tsd, span=span, center=center)
-    elif statistic == 'expw_corr':
-        newts = pd.stats.moments.ewmcorr(tsd, span=span, center=center)
-    elif statistic == 'expw_cov':
-        newts = pd.stats.moments.ewmcov(tsd, span=span, center=center)
-    else:
-        raise ValueError('''
+            raise ValueError('''
 *
 *   Statistic '{0}' is not implemented.
 *
 '''.format(statistic))
-    return tsutils.print_input(print_input, tsd, newts, '_' + statistic)
+        return newts
+
+    tmptsd = []
+    if isinstance(tsd, pd.DataFrame):
+        for nspan in str(span).split(','):
+            tmptsd.append(_process_tsd(tsd,
+                               statistic=statistic,
+                               span=nspan,
+                               center=center,
+                               wintype=wintype,
+                               freq=freq))
+    else:
+        for nspan in str(span).split(','):
+            jtsd = pd.DataFrame()
+            for name, gb in tsd:
+                jtsd = jtsd.append(_process_tsd(gb,
+                                                statistic=statistic,
+                                                span=nspan,
+                                                center=center,
+                                                wintype=wintype,
+                                                freq=freq))
+            tmptsd.append(jtsd)
+    ntsd = pd.concat(tmptsd, join='outer', axis=1)
+
+    ntsd.columns = [i[0] + '_' + i[1] for i in zip(ntsd.columns,
+                                                   str(span).split(','))]
+    return tsutils.print_input(print_input,
+                               tsd,
+                               ntsd,
+                               '_' + statistic)
 
 
 @mando.command(formatter_class=RawTextHelpFormatter)
@@ -895,7 +1004,8 @@ def aggregate(
     :param statistic <str>: 'mean', 'sum', 'std', 'max', 'min', 'median',
         'first', or 'last' to calculate the aggregation, defaults to 'mean'.
         Can also be a comma separated list of statistic methods.
-    :param agg_interval <str>: Any of the PANDAS offset codes.
+    :param agg_interval <str>: The interval to aggragate the time series.
+        Any of the PANDAS offset codes.
         -----   -----------
         Alias   Description
         -----   -----------
@@ -1323,7 +1433,20 @@ mark_dict = {
     "_":"hline"
     }
 
-colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k',
+          'aliceblue',
+          'antiquewhite',
+          'aqua',
+          'aquamarine',
+          'azure',
+          'beige',
+          'bisque',
+          'blanchedalmond',
+          'blueviolet',
+          'burlywood',
+          'cadetblue',
+          'chartreuse',
+          'chocolate']
 
 @mando.command(formatter_class=RawTextHelpFormatter)
 def plot(
@@ -1352,6 +1475,8 @@ def plot(
         bootstrap_samples=500,
         norm_xaxis=False,
         norm_yaxis=False,
+        lognorm_xaxis=False,
+        lognorm_yaxis=False,
         xy_match_line='',
         grid=None,
         input_ts='-',
@@ -1361,7 +1486,10 @@ def plot(
         label_skip=1,
         drawstyle='default',
         por=False,
-        columns=None):
+        columns=None,
+        invert_xaxis=False,
+        invert_yaxis=False,
+        plotting_position='weibull'):
     '''
     Plots.
 
@@ -1390,6 +1518,10 @@ def plot(
            an x axis normal distribution,
        'norm_yaxis' - sort, calculatate probablitiies, and plot data against
            an y axis normal distribution,
+       'lognorm_xaxis' - sort, calculatate probablitiies, and plot data against
+           an x axis lognormal distribution,
+       'lognorm_yaxis' - sort, calculatate probablitiies, and plot data against
+           an y axis lognormal distribution,
        'weibull_xaxis' - sort, calculate and plot data against an x axis
            weibull distribution,
        'weibull_yaxis' - sort, calculate and plot data against an y axis
@@ -1528,6 +1660,24 @@ def plot(
         column numbers.  If using numbers, column number 1 is the first column.
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
+    :param force_freq: Force this frequency for the plot.  WARNING: you may
+        lose data if not careful with this option.  In general, letting the
+        algorithm determine the frequency should always work, but this option
+        will override.  Use PANDAS offset codes,
+    :param invert_xaxis: Invert the x-axis.
+    :param invert_yaxis: Invert the y-axis.
+    :plotting_position: 'california', 'hazen', or 'weibull'.  The default is
+        'weibull'.
+
+        'california': m/n
+        'hazen': (2m - 1)/(2n)
+        'weibull': m/(n + 1)
+
+        Where 'm' is the sorted rank of the y value, and 'n' is the total
+        number of values to be plotted.
+
+        Only used for norm_xaxis, norm_yaxis, lognorm_xaxis, lognorm_yaxis,
+        weibull_xaxis, and weibull_yaxis.
     '''
 
     # Need to work around some old option defaults with the implemntation of
@@ -1572,7 +1722,7 @@ def plot(
             nlim = xylimits
 
 
-        if axis == 'norm' or axis == 'weibull':
+        if axis in ['norm', 'lognormal', 'weibull']:
             if nlim is None:
                 nlim = [None, None]
             if nlim[0] is None:
@@ -1673,13 +1823,10 @@ def plot(
     if yaxis == 'log':
         logy = True
 
-    if (type == 'norm_xaxis' or
-        type == 'weibull_xaxis' or
-        type == 'norm_yaxis' or
-        type == 'weibull_yaxis'):
-        axtype, axist = type.split('_')
-        if axtype == 'norm' and axist == 'xaxis':
-            xaxis = 'normal'
+    if type in ['norm_xaxis', 'lognorm_xaxis', 'weibull_xaxis']:
+        xaxis = 'normal'
+        if logx is True:
+            logx = False
             import warnings
             warnings.warn('''
 *
@@ -1688,8 +1835,10 @@ def plot(
 *
 '''.format(xaxis, type))
 
-        if axtype == 'norm' and axist == 'yaxis':
-            yaxis = 'normal'
+    if type in ['norm_yaxis', 'lognorm_yaxis', 'weibull_yaxis']:
+        yaxis = 'normal'
+        if logy is True:
+            logy = False
             import warnings
             warnings.warn('''
 *
@@ -1715,6 +1864,8 @@ def plot(
                   'double_mass',
                   'norm_xaxis',
                   'norm_yaxis',
+                  'lognorm_xaxis',
+                  'lognorm_yaxis',
                   'weibull_xaxis',
                   'weibull_yaxis']:
         # PANDAS was not doing the right thing with xy plots
@@ -1735,11 +1886,19 @@ def plot(
         if type in ['norm_xaxis',
                     'norm_yaxis']:
             from scipy.stats.distributions import norm
+            ppf = norm.ppf
+            ys = tsd.iloc[:, :]
+            colcnt = tsd.shape[1]
+        elif type in ['lognorm_xaxis',
+                      'lognorm_yaxis']:
+            from scipy.stats.distributions import lognorm
+            ppf = lognorm.freeze(0.5, loc=0).ppf
             ys = tsd.iloc[:, :]
             colcnt = tsd.shape[1]
         elif type in ['weibull_xaxis',
                       'weibull_yaxis']:
-            from scipy.stats.distributions import exponweib
+            def ppf(y):
+                return pd.np.log(-pd.np.log((1-pd.np.array(y))))
             ys = tsd.iloc[:, :]
             colcnt = tsd.shape[1]
         else:
@@ -1759,24 +1918,32 @@ def plot(
                 marker = lstyle[0]
                 linest = lstyle[1:]
 
-            if type in ['norm_xaxis',
-                        'norm_yaxis',
-                        'weibull_xaxis',
-                        'weibull_yaxis']:
+            if type in ['norm_xaxis', 'norm_yaxis',
+                        'lognorm_xaxis', 'lognorm_yaxis',
+                        'weibull_xaxis', 'weibull_yaxis']:
                 oydata = pd.np.array(ys.iloc[:, colindex].dropna())
                 oydata = pd.np.sort(oydata)[::-1]
                 n = len(oydata)
                 norm_axis = ax.xaxis
+                if plotting_position == 'weibull':
+                    oxdata = ppf(pd.np.linspace(1./(n+1), 1-1./(n+1), n))
+                elif plotting_postion == 'california':
+                    oxdata = ppf(pd.np.linspace(1./n, 1., n))
+                elif plotting_position == 'hazen':
+                    oxdata = ppf(pd.np.linspace(1./(2*n), 1-1./(2*n), n))
+                else:
+                    raise ValueError('''
+*
+*    The plotting_position option accepts 'weibull', 'california', and 'hazen'
+*    plotting position options, you gave {0}.
+*
+'''.format(plotting_position))
+
             else:
                 oxdata = xs[:, colindex]
                 oydata = ys[:, colindex]
 
-            if type in ['norm_xaxis', 'norm_yaxis']:
-                oxdata = norm.ppf(pd.np.linspace(1./(n+1), 1-1./(n+1), n))
-            elif type in ['weibull_xaxis', 'weibull_yaxis']:
-                oxdata = exponweib.ppf(pd.np.linspace(1./(n+1), 1-1./(n+1), n), 1, 1)
-
-            if type in ['norm_yaxis', 'weibull_yaxis']:
+            if type in ['norm_yaxis', 'lognorm_yaxis', 'weibull_yaxis']:
                 oxdata, oydata = oydata, oxdata
                 norm_axis = ax.yaxis
 
@@ -1813,6 +1980,7 @@ def plot(
 
         # Make it pretty
         if type in ['norm_xaxis', 'norm_yaxis',
+                    'lognorm_xaxis', 'lognorm_yaxis',
                     'weibull_xaxis', 'weibull_yaxis']:
             xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
             xtmaj_str = ['1', '10', '50', '90', '99']
@@ -1822,32 +1990,24 @@ def plot(
                                        pd.np.linspace(0.9, 0.99, 10),
                                        pd.np.linspace(0.99, 0.999, 10),
                                       ])
-            if type in ['norm_xaxis', 'norm_yaxis']:
-                xtmaj = norm.ppf(xtmaj)
-                xtmin = norm.ppf(xtmin)
-            else:
-                xtmaj = exponweib.ppf(xtmaj, 1, 1)
-                xtmin = exponweib.ppf(xtmin, 1, 1)
+            xtmaj = ppf(xtmaj)
+            xtmin = ppf(xtmin)
+
             norm_axis.set_major_locator(FixedLocator(xtmaj))
             norm_axis.set_minor_locator(FixedLocator(xtmin))
 
-            if type in ['norm_xaxis', 'weibull_xaxis']:
-                ax.set_xticklabels(xtmaj_str)
-                if type in ['norm_xaxis']:
-                    ax.set_xlim(norm.ppf([0.01, 0.99]))
-                else:
-                    ax.set_xlim(exponweib.ppf([0.01, 0.99], 1, 1))
-                ax.set_ylim(ylim)
-            elif type in ['norm_yaxis', 'weibull_yaxis']:
-                ax.set_yticklabels(xtmaj_str)
-                if type in ['norm_yaxis']:
-                    ax.set_ylim(norm.ppf(ylim))
-                else:
-                    ax.set_ylim(exponweib.ppf(ylim, 1, 1))
-                ax.set_xlim(xlim)
-            else:
-                ax.set_xlim(xlim)
-                ax.set_ylim(ylim)
+        if type in ['norm_xaxis', 'lognorm_xaxis', 'weibull_xaxis']:
+            ax.set_xticklabels(xtmaj_str)
+            ax.set_ylim(ylim)
+            ax.set_xlim(ppf([0.01, 0.99]))
+
+        elif type in ['norm_yaxis', 'lognorm_yaxis', 'weibull_yaxis']:
+            ax.set_yticklabels(xtmaj_str)
+            ax.set_xlim(xlim)
+            ax.set_ylim(ppf(ylim))
+        else:
+            ax.set_xlim(xlim)
+            ax.set_ylim(ylim)
 
         if xy_match_line:
             if isinstance(xy_match_line, str):
@@ -1865,11 +2025,14 @@ def plot(
         if type in ['xy', 'double_mass']:
             xtitle = xtitle or tsd.columns[0]
             ytitle = ytitle or tsd.columns[1]
-        if type in ['norm_xaxis']:
-            xtitle = xtitle or 'Normally Distributed Plotting Position'
+        elif type in ['norm_xaxis']:
+            xtitle = xtitle or 'Normal Distribution'
             ytitle = ytitle or tsd.columns[0]
-        if type in ['weibull_xaxis']:
-            xtitle = xtitle or 'Weibull Distributed Plotting Position'
+        elif type in ['lognorm_xaxis']:
+            xtitle = xtitle or 'Log Normal Distribution'
+            ytitle = ytitle or tsd.columns[0]
+        elif type in ['weibull_xaxis']:
+            xtitle = xtitle or 'Weibull Distribution'
             ytitle = ytitle or tsd.columns[0]
         if type in ['norm_yaxis', 'weibull_yaxis']:
             xtitle, ytitle = ytitle, xtitle
@@ -1934,15 +2097,15 @@ def plot(
                       style=style, logx=logx, logy=logy, xlim=xlim,
                       ylim=ylim,
                       figsize=figsize)
-        freq = tsutils.asbestfreq(tsd)[1]
+        freq = tsutils.asbestfreq(tsd, force_freq=force_freq)[1]
         if freq is not None:
-            if freq[0] == 'A':
+            if 'A' in freq:
                 endchar = 4
-            elif freq[0] == 'M':
+            elif 'M' in freq:
                 endchar = 7
-            elif freq[0] == 'D':
+            elif 'D' in freq:
                 endchar = 10
-            elif freq[0] == 'H':
+            elif 'H' in freq:
                 endchar = 13
             else:
                 endchar = None
@@ -1979,6 +2142,10 @@ def plot(
         grid = True
     else:
         grid = False
+    if invert_xaxis is True:
+        plt.gca().invert_xaxis()
+    if invert_yaxis is True:
+        plt.gca().invert_yaxis()
     plt.grid(grid)
     plt.title(title)
     plt.savefig(ofilename)

@@ -1,29 +1,48 @@
 #!/bin/bash
 
+program=tstoolbox
+
+pkgs="\
+     setuptools \
+     atlas \
+     numpy \
+     scipy \
+     matplotlib \
+     nose \
+     dateutil \
+     pandas \
+     pip \
+     coverage \
+     flake8 \
+     "
+
 envs=(2.6 2.7 3.3 3.4)
 
 for env in ${envs[@]}; do
     echo "${env}"
-    conda create -q -n python${env} python=${env} setuptools \
-                                                  atlas \
-                                                  numpy \
-                                                  scipy \
-                                                  matplotlib \
-                                                  nose \
-                                                  dateutil \
-                                                  pandas \
-                                                  pip \
-                                                  coverage \
-                                                  flake8
+
+    conda env list | grep -q "^python${env} "
+    if [ $? -eq 0 ]; then
+        echo "conda update -q -n python${env} ${pkgs}"
+        conda update -q -n python${env} ${pkgs}
+    else
+        conda create -q -n python${env} python=${env} ${pkgs}
+    fi
 
     source activate python${env}
     pip install mando
     if [[ ${env} == '2.6' ]]; then pip install argparse; fi
-    pip uninstall -y tstoolbox
+    pip uninstall -y ${program}
     rm -rf build
-    pip install --upgrade --no-deps ../tstoolbox/
+    pip install --upgrade --no-deps ../${program}/
 
-    nosetests --with-doctest --with-coverage --cover-tests --cover-package=tstoolbox --cover-branches --cover-erase
+    nosetests \
+        --with-doctest \
+        --with-coverage \
+        --cover-tests \
+        --cover-package=${program} \
+        --cover-branches \
+        --cover-erase
 done
 
 

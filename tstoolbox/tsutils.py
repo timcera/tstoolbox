@@ -18,7 +18,8 @@ def common_kwds(input_tsd,
                 start_date=None,
                 end_date=None,
                 pick=None,
-                force_freq=None):
+                force_freq=None,
+                groupby=None):
     ntsd = input_tsd
     if pick is not None:
         ntsd = _pick(ntsd, pick)
@@ -26,6 +27,11 @@ def common_kwds(input_tsd,
         ntsd = _date_slice(ntsd, start_date=start_date, end_date=end_date)
     if force_freq is not None:
         ntsd = asbestfreq(ntsd, force_freq=force_freq)
+    if groupby is not None:
+        if groupby == 'months_across_years':
+            return ntsd.groupby(lambda x: x.month)
+        else:
+            return ntsd.groupby(pd.TimeGrouper(groupby))
     return ntsd
 
 
@@ -134,13 +140,23 @@ _weeklies = {
              6: 'SUN',
              }
 
+
 def asbestfreq(data, force_freq=None):
-    ''' This uses PANDAS .asfreq.  Basically, how low
-    can you go and maintain the same number of values.
+    '''
+    This uses several techniques.
+    1. If data.index.freqstr is None, just return.
+    2. If force_freq or data.index.inferred_freq is set use .asfreq.
+    3. Use pd.infer_freq - fails if any missing
+    4. Use .is_* functions to establish A, AS, A-*, AS-*, Q, QS, M, MS
+    5. Use minimum interval to establish the fixed time periods up to weekly
+    6. Gives up returning None for PANDAS offset string
     '''
 
     if force_freq is not None:
         return data.asfreq(force_freq)
+
+    if data.index.freq is not None:
+        return data
 
     # Since pandas doesn't set data.index.freq and data.index.freqstr when
     # using .asfreq, this function returns that PANDAS time offset alias code
@@ -148,7 +164,7 @@ def asbestfreq(data, force_freq=None):
 
     # This gets most of the frequencies...
     try:
-        return data.asfreq(data.index.inferred_freq), data.index.inferred_freq
+        return data.asfreq(data.index.inferred_freq)
     except ValueError:
         pass
 
@@ -159,11 +175,10 @@ def asbestfreq(data, force_freq=None):
         slic = slice(None, None)
     infer_freq = pd.infer_freq(data.index[slic])
     if infer_freq is not None:
-        return data.asfreq(infer_freq), infer_freq
+        return data.asfreq(infer_freq)
 
     # At this point pd.infer_freq failed probably because of missing values.
-    # Use the median of the intervals to test a new interval.
-    # The following algorithm would not capture things like BQ, BQS, QS, B,
+    # The following algorithm would not capture things like BQ, BQS
     # ...etc.
     if np.alltrue(data.index.is_year_end):
         infer_freq = 'A'
@@ -186,6 +201,11 @@ def asbestfreq(data, force_freq=None):
         else:
             infer_freq = 'MS'
 
+    if infer_freq is not None:
+        return data.asfreq(infer_freq)
+
+    # Use the minimum of the intervals to test a new interval.
+    # Should work for fixed intervals.
     mininterval = np.min(np.diff(data.index.values))
     if mininterval < 0:
         raise ValueError
@@ -208,12 +228,14 @@ def asbestfreq(data, force_freq=None):
         if np.all(data.index.dayofweek == data.index[0].dayofweek):
             infer_freq = infer_freq + '-{0}'.format(
                     _weeklies[data.index[0].dayofweek])
+        else:
+            infer_freq = 'D'
 
     if infer_freq is not None:
-        return data.asfreq(infer_freq), infer_freq
+        return data.asfreq(infer_freq)
 
     # Give up
-    return data, infer_freq
+    return data
 
 
 # Utility
@@ -310,12 +332,20 @@ def openinput(filein):
     return open(filein, 'rb')
 
 
-def read_iso_ts(indat, dense=True, parse_dates=True, extended_columns=False):
+def read_iso_ts(indat,
+                dense=True,
+                parse_dates=True,
+                extended_columns=False,
+                force_freq=None):
     '''
     Reads the format printed by 'print_iso' and maybe other formats.
     '''
     import csv
     from pandas.compat import StringIO
+
+    if force_freq is not None:
+        # force_freq implies a dense series
+        dense = True
 
     index_col = 0
     if parse_dates is False:
@@ -338,7 +368,7 @@ def read_iso_ts(indat, dense=True, parse_dates=True, extended_columns=False):
         if indat.index.is_all_dates:
             indat.index.name = 'Datetime'
             if dense:
-                return asbestfreq(indat)[0]
+                return asbestfreq(indat, force_freq=force_freq)
             else:
                 return indat
         else:
@@ -425,7 +455,7 @@ def read_iso_ts(indat, dense=True, parse_dates=True, extended_columns=False):
 
         if dense:
             try:
-                return asbestfreq(result)[0]
+                return asbestfreq(result, force_freq=force_freq)
             except ValueError:
                 return result
     else:

@@ -47,7 +47,7 @@ def fill(method='ffill', interval='guess', print_input=False, input_ts='-'):
         ntsd = tsd.copy()
     else:
         ntsd = tsd
-    ntsd = tsutils.asbestfreq(ntsd)[0]
+    ntsd = tsutils.asbestfreq(ntsd)
     offset = ntsd.index[1] - ntsd.index[0]
     predf = pd.DataFrame(dict(zip(tsd.columns, tsd.mean().values)),
                          index=[tsd.index[0] - offset])
@@ -112,7 +112,7 @@ def fill_by_correlation(method='move2',
         ntsd = tsd.copy()
     else:
         ntsd = tsd
-    ntsd = tsutils.asbestfreq(ntsd)[0]
+    ntsd = tsutils.asbestfreq(ntsd)
 
     if transform == 'log10':
         ntsd = pd.np.log10(ntsd)
