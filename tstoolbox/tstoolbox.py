@@ -1954,7 +1954,7 @@ def plot(
                 oydata = pd.np.sort(oydata)[::-1]
                 n = len(oydata)
                 norm_axis = ax.xaxis
-                oxdata = ppf(_set_plotting_position(n, plotting_postion))
+                oxdata = ppf(_set_plotting_position(n, plotting_position))
             else:
                 oxdata = xs[:, colindex]
                 oydata = ys[:, colindex]
