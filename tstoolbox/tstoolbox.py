@@ -1701,8 +1701,8 @@ def plot(
         will override.  Use PANDAS offset codes,
     :param invert_xaxis: Invert the x-axis.
     :param invert_yaxis: Invert the y-axis.
-    :plotting_position: 'california', 'hazen', or 'weibull'.  The default is
-        'weibull'.
+    :param plotting_position <str>: 'california', 'hazen', or 'weibull'.  The
+        default is 'weibull'.
 
         'california': m/n
         'hazen': (2m - 1)/(2n)
