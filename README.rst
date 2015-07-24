@@ -6,15 +6,15 @@
     :target: https://coveralls.io/r/timcera/tstoolbox?branch=master
     :height: 20
 
-.. image:: https://pypip.in/v/tstoolbox/badge.png?style=flat
+.. image:: https://img.shields.io/pypi/v/tstoolbox.svg
     :alt: Latest release
     :target: https://pypi.python.org/pypi/tstoolbox
 
-.. image:: https://pypip.in/d/tstoolbox/badge.png?style=flat
+.. image:: https://img.shields.io/pypi/dm/tstoolbox.svg
     :alt: PyPI downloads count
     :target: https://pypi.python.org/pypi/tstoolbox
 
-.. image:: https://pypip.in/license/tstoolbox/badge.png?style=flat
+.. image:: https://img.shields.io/pypi/l/tstoolbox.svg
     :alt: tstoolbox license
     :target: https://pypi.python.org/pypi/tstoolbox/
 
