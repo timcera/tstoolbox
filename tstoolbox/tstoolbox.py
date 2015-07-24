@@ -969,9 +969,14 @@ def rolling_window(
         for nspan in str(span).split(','):
             jtsd = pd.DataFrame()
             for name, gb in tsd:
+                # Assume span should be yearly if 365 or 366 and you have
+                # groupby yearly.
+                xspan = nspan
+                if len(gb) in [365, 366] and int(nspan) in [365, 366]:
+                    xspan = None
                 jtsd = jtsd.append(_process_tsd(gb,
                                                 statistic=statistic,
-                                                span=nspan,
+                                                span=xspan,
                                                 center=center,
                                                 wintype=wintype,
                                                 freq=freq))
