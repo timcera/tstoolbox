@@ -68,7 +68,7 @@ class TestFDC(TestCase):
         ''' Test FDC API with linear plotting position.
         '''
         out = capture(tstoolbox.calculate_fdc,
-                      x_plotting_position='lin',
+                      plotting_position='california',
                       input_ts='tests/data_flat_01.csv')
         teststr = """Exceedance, Value, Exceedance_Label
 0.037037037037, 2, 0.037037037037
@@ -104,7 +104,7 @@ class TestFDC(TestCase):
         ''' Test normal plotting position FDC API.
         '''
         out = capture(tstoolbox.calculate_fdc,
-                      x_plotting_position='norm',
+                      plotting_position='weibull',
                       input_ts='tests/data_sunspot.csv')
         fp = open('tests/sunspot_area_fdc_compare.txt', 'r')
         teststr = ''.join(fp.readlines())

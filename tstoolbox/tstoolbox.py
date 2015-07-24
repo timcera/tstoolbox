@@ -1235,7 +1235,8 @@ def remove_trend(
 
 @mando.command
 def calculate_fdc(
-        x_plotting_position='norm',
+        percent_point_function=None,
+        plotting_position='weibull',
         input_ts='-',
         start_date=None,
         end_date=None,
@@ -1243,8 +1244,18 @@ def calculate_fdc(
     '''
     Returns the frequency distribution curve.  DOES NOT return a time-series.
 
-    :param x_plotting_position <str>: 'norm' or 'lin'.  'norm' defines a x
-        plotting position Defaults to 'norm'.
+    :param percent_point_function <str>: The distribution used to shift the
+        plotting position values.  Choose from 'norm', 'lognorm',
+        'weibull', and None.  Default is None.
+    :param plotting_position <str>: 'california', 'hazen', or 'weibull'.  The
+        default is 'weibull'.
+
+        'california': m/n
+        'hazen': (2m - 1)/(2n)
+        'weibull': m/(n + 1)
+
+        Where 'm' is the sorted rank of the y value, and 'n' is the total
+        number of values to be plotted.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
         or '-' for stdin.
     :param -s, --start_date <str>: The start_date of the series in ISOdatetime
@@ -1260,29 +1271,22 @@ def calculate_fdc(
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
-    if len(tsd.columns) > 1:
+
+    cnt = tsd.count(axis='rows')
+    if pd.np.any(cnt != cnt[0]):
         raise ValueError('''
 *
-*   This function currently only works with one time-series at a time.
-*   You gave it {0}.
+*   All columns of data must have the same counts.  You have
+*   {0}.
 *
-'''.format(len(tsd.columns)))
+'''.format(cnt))
 
-    cnt = tsd[tsd.columns[0]].count()
-    a_tmp = 1. / (cnt + 1)
-    b_tmp = 1 - a_tmp
-    if x_plotting_position == 'norm':
-        from scipy.stats.distributions import norm
-        plotpos = norm.ppf(linspace(a_tmp, b_tmp, cnt))
-        xlabel = norm.cdf(plotpos)
-    if x_plotting_position == 'lin':
-        plotpos = linspace(a_tmp, b_tmp, cnt)
-        xlabel = plotpos
-    ydata = tsd[tsd.columns[0]].dropna()
-    ydata.sort(ascending=False)
-    print('Exceedance, Value, Exceedance_Label')
-    for xdat, ydat, zdat in zip(plotpos, ydata.values, xlabel):
-        print('{0}, {1}, {2}'.format(xdat, ydat, zdat))
+    cnt = cnt[0]
+    ppf = _set_ppf(percent_point_function)
+    xdat = ppf(_set_plotting_position(cnt, plotting_position))
+    tsd = tsd.apply(sorted, axis=0)
+    tsd.index = xdat
+    return tsutils.printiso(tsd)
 
 
 @mando.command(formatter_class=RawTextHelpFormatter)
@@ -1448,6 +1452,37 @@ colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k',
           'chartreuse',
           'chocolate']
 
+def _set_ppf(ptype):
+    if ptype == 'norm':
+        from scipy.stats.distributions import norm
+        return norm.ppf
+    elif ptype == 'lognorm':
+        from scipy.stats.distributions import lognorm
+        return lognorm.freeze(0.5, loc=0).ppf
+    elif ptype == 'weibull':
+        def ppf(y):
+            return pd.np.log(-pd.np.log((1-pd.np.array(y))))
+        return ppf
+    elif ptype is None:
+        def ppf(y):
+            return y
+        return ppf
+
+def _set_plotting_position(n, plotting_position='weibull'):
+    if plotting_position == 'weibull':
+        return pd.np.linspace(1./(n+1), 1-1./(n+1), n)
+    elif plotting_position == 'california':
+        return pd.np.linspace(1./n, 1., n)
+    elif plotting_position == 'hazen':
+        return pd.np.linspace(1./(2*n), 1-1./(2*n), n)
+    else:
+        raise ValueError('''
+*
+*    The plotting_position option accepts 'weibull', 'california', and 'hazen'
+*    plotting position options, you gave {0}.
+*
+'''.format(plotting_position))
+
 @mando.command(formatter_class=RawTextHelpFormatter)
 def plot(
         ofilename='plot.png',
@@ -1509,18 +1544,18 @@ def plot(
        'bootstrap' - visually asses aspects of a data set by plotting random
            selections of values,
        'probability_density' - sometime called kernel density estimation (KDE),
-       'bar' - sometimes calles a column plot,
+       'bar' - sometimes called a column plot,
        'barh' - a horizontal bar plot,
        'bar_stacked' - sometimes called a stacked column,
        'barh_stacked' - a horizontal stacked bar plot,
        'histogram' - calculate and create a histogram plot,
-       'norm_xaxis' - sort, calculatate probablitiies, and plot data against
+       'norm_xaxis' - sort, calculate probabilities, and plot data against
            an x axis normal distribution,
-       'norm_yaxis' - sort, calculatate probablitiies, and plot data against
+       'norm_yaxis' - sort, calculate probabilities, and plot data against
            an y axis normal distribution,
-       'lognorm_xaxis' - sort, calculatate probablitiies, and plot data against
+       'lognorm_xaxis' - sort, calculate probabilities, and plot data against
            an x axis lognormal distribution,
-       'lognorm_yaxis' - sort, calculatate probablitiies, and plot data against
+       'lognorm_yaxis' - sort, calculate probabilities, and plot data against
            an y axis lognormal distribution,
        'weibull_xaxis' - sort, calculate and plot data against an x axis
            weibull distribution,
@@ -1881,30 +1916,24 @@ def plot(
                 style = zip(colors*(len(tsd.columns)//len(colors) + 1),
                             ['.-'] * len(tsd.columns))
             style = [i + j for i, j in style]
+
         if type == 'double_mass':
             tsd = tsd.cumsum()
+
         if type in ['norm_xaxis',
-                    'norm_yaxis']:
-            from scipy.stats.distributions import norm
-            ppf = norm.ppf
-            ys = tsd.iloc[:, :]
-            colcnt = tsd.shape[1]
-        elif type in ['lognorm_xaxis',
-                      'lognorm_yaxis']:
-            from scipy.stats.distributions import lognorm
-            ppf = lognorm.freeze(0.5, loc=0).ppf
-            ys = tsd.iloc[:, :]
-            colcnt = tsd.shape[1]
-        elif type in ['weibull_xaxis',
-                      'weibull_yaxis']:
-            def ppf(y):
-                return pd.np.log(-pd.np.log((1-pd.np.array(y))))
+                    'norm_yaxis',
+                    'lognorm_xaxis',
+                    'lognorm_yaxis',
+                    'weibull_xaxis',
+                    'weibull_yaxis']:
+            ppf = _set_ppf(type.split('_')[0])
             ys = tsd.iloc[:, :]
             colcnt = tsd.shape[1]
         else:
             xs = pd.np.array(tsd.iloc[:, 0::2])
             ys = pd.np.array(tsd.iloc[:, 1::2])
             colcnt = tsd.shape[1]//2
+
         for colindex in range(colcnt):
             lstyle = style[colindex]
             lcolor = 'b'
@@ -1925,20 +1954,7 @@ def plot(
                 oydata = pd.np.sort(oydata)[::-1]
                 n = len(oydata)
                 norm_axis = ax.xaxis
-                if plotting_position == 'weibull':
-                    oxdata = ppf(pd.np.linspace(1./(n+1), 1-1./(n+1), n))
-                elif plotting_postion == 'california':
-                    oxdata = ppf(pd.np.linspace(1./n, 1., n))
-                elif plotting_position == 'hazen':
-                    oxdata = ppf(pd.np.linspace(1./(2*n), 1-1./(2*n), n))
-                else:
-                    raise ValueError('''
-*
-*    The plotting_position option accepts 'weibull', 'california', and 'hazen'
-*    plotting position options, you gave {0}.
-*
-'''.format(plotting_position))
-
+                oxdata = ppf(_set_plotting_position(n, plotting_postion))
             else:
                 oxdata = xs[:, colindex]
                 oydata = ys[:, colindex]
