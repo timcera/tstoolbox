@@ -1245,7 +1245,8 @@ def calculate_fdc(
         input_ts='-',
         start_date=None,
         end_date=None,
-        columns=None):
+        columns=None,
+        sort_order='ascending'):
     '''
     Returns the frequency distribution curve.  DOES NOT return a time-series.
 
@@ -1271,7 +1272,8 @@ def calculate_fdc(
         column numbers.  If using numbers, column number 1 is the first column.
         To pick multiple columns; separate by commas with no spaces. As used in
         'pick' command.
-    '''
+    :param sort_order <str>: Either 'ascending' or 'descending'.  Defaults to
+        'ascending'.  '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
@@ -1286,10 +1288,13 @@ def calculate_fdc(
 *
 '''.format(cnt))
 
+    reverse = False
+    if sort_order == 'descending':
+        reverse = True
     cnt = cnt[0]
     ppf = _set_ppf(percent_point_function)
     xdat = ppf(_set_plotting_position(cnt, plotting_position))
-    tsd = tsd.apply(sorted, axis=0)
+    tsd = tsd.apply(sorted, axis=0, reverse=reverse)
     tsd.index = xdat
     return tsutils.printiso(tsd)
 
