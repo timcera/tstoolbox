@@ -1293,7 +1293,7 @@ def calculate_fdc(
         reverse = True
     cnt = cnt[0]
     ppf = _set_ppf(percent_point_function)
-    xdat = ppf(_set_plotting_position(cnt, plotting_position))
+    xdat = ppf(_set_plotting_position(cnt, plotting_position))*100
     tsd = tsd.apply(sorted, axis=0, reverse=reverse)
     tsd.index = xdat
     return tsutils.printiso(tsd)
