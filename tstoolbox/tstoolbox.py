@@ -1437,8 +1437,7 @@ def unstack(
   or 'None' for beginning.
  :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
   'None' for end.
- :param columns:
-  Columns to pick out of input.  Can use column names
+ :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
   1 is the first column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
@@ -1650,8 +1649,8 @@ def plot(
  :param subplots:  boolean, default False.  Make separate subplots for
   each time series
  :param sharex:  boolean, default True In case subplots=True, share
-  x axis :param sharey: boolean, default False In case
-  subplots=True, share y axis
+  x axis
+ :param sharey:  boolean, default False In case subplots=True, share y axis
  :param style <str>:  Comma separated matplotlib style strings matplotlib
   line style per time-series.  Just combine codes in
   'ColorLineMarker' order, for example 'r--*' is a red
@@ -1712,26 +1711,24 @@ def plot(
   'd'     thin diamond
   '|'     vline
   '_'     hline
-  'None'     nothing
+  'None'  nothing
   ' '     nothing
-  ''     nothing
+  ''      nothing
   Marker reference:
   http://matplotlib.org/api/markers_api.html
 
- :param logx:  Boolean, default False For line plots, use log
-  scaling on x axis
-  DEPRECATED: use '--xaxis="log"' instead.
- :param logy:  Boolean, default False For line plots, use log
-  scaling on y axis
-  DEPRECATED: use '--yaxis="log"' instead.
+ :param logx:  DEPRECATED: use '--xaxis="log"' instead.
+ :param logy:  DEPRECATED: use '--yaxis="log"' instead.
  :param xlim:  Comma separated lower and upper limits
-  (--xlim 1,1000) Limits for the x-axis
+  (--xlim 1,1000) Limits for the x-axis.  Default is based on range of
+  x values.
  :param ylim:  Comma separated lower and upper limits
-  (--ylim 1,1000) Limits for the y-axis
- :param xaxis <str>:  Defines the type of the xaxis.  One of 'arithmetic',
-  'log'. Default is 'arithmetic'.
- :param yaxis <str>:  Defines the type of the yaxis.  One of 'arithmetic',
-    'log'. Default is 'arithmetic'.
+  (--ylim 1,1000) Limits for the y-axis.  Default is based on range of
+  y values.
+ :param xaxis <str>:  Defines the type of the xaxis.  One of
+  'arithmetic', 'log'. Default is 'arithmetic'.
+ :param yaxis <str>:  Defines the type of the yaxis.  One of
+  'arithmetic', 'log'. Default is 'arithmetic'.
  :param secondary_y:  Boolean or sequence, default False Whether to plot on
   the secondary y-axis If a list/tuple, which
   time-series to plot on secondary y-axis
@@ -1745,12 +1742,10 @@ def plot(
   Defaults to 50.
  :param bootstrap_samples:  The number of random subsets of 'bootstrap_size'.
   Defaults to 500.
- :param norm_xaxis:  Only available with xy plots.  Whether the x-axis
-  should be labels with the normal distribution common
-  with frequency distribution curves.  Defaults to
-  False.
-  DEPRECATED: use '--type="norm_xaxis"' or
-  '--type="norm_yaxis"' instead.
+ :param norm_xaxis:  DEPRECATED: use '--type="norm_xaxis"' instead.
+ :param norm_yaxis:  DEPRECATED: use '--type="norm_yaxis"' instead.
+ :param lognorm_xaxis:  DEPRECATED: use '--type="lognorm_xaxis"' instead.
+ :param lognorm_yaxis:  DEPRECATED: use '--type="lognorm_yaxis"' instead.
  :param xy_match_line <str>:  Will add a match line where x == y.  Default is ''.
   Set to a line style code.
  :param grid:  Boolean, default True Whether to plot grid lines on
@@ -1761,10 +1756,9 @@ def plot(
   or 'None' for beginning.
  :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
   'None' for end.
- :param label_rotation <int>: Rotation for major labels for bar plots.
- :param label_skip <int>: Skip for major labels for bar plots.
- :param drawstyle <str>:
-  'default' connects the points with lines. The steps
+ :param label_rotation <int>:  Rotation for major labels for bar plots.
+ :param label_skip <int>:  Skip for major labels for bar plots.
+ :param drawstyle <str>:  'default' connects the points with lines. The steps
   variants produce step-plots. 'steps' is equivalent to
   'steps-pre' and is maintained for
   backward-compatibility.
@@ -1782,8 +1776,8 @@ def plot(
   general, letting the algorithm determine the
   frequency should always work, but this option will
   override.  Use PANDAS offset codes,
- :param invert_xaxis: Invert the x-axis.
- :param invert_yaxis: Invert the y-axis.
+ :param invert_xaxis:  Invert the x-axis.
+ :param invert_yaxis:  Invert the y-axis.
  :param plotting_position <str>:  'california', 'hazen', or 'weibull'.  The default is
   'weibull'.
 
