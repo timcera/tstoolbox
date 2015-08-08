@@ -41,7 +41,7 @@ _offset_aliases = {
     }
 
 
-@mando.command
+@mando.command(formatter_class=RawTextHelpFormatter)
 def filter(filter_type,
            print_input=False,
            cutoff_period=None,
@@ -52,31 +52,34 @@ def filter(filter_type,
            end_date=None,
            columns=None):
     '''
-    Apply different filters to the time-series.
+ Apply different filters to the time-series.
 
-    :param filter_type <str>: 'flat', 'hanning', 'hamming', 'bartlett',
-        'blackman', 'fft_highpass' and 'fft_lowpass' for Fast Fourier Transform
-        filter in the frequency domain.
-    :param window_len <int>: For the windowed types, 'flat', 'hanning',
-        'hamming', 'bartlett', 'blackman' specifies the length of the window.
-        Defaults to 5.
-    :param -p, --print_input: If set to 'True' will include the input
-        columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.  Default is stdin.
-    :param cutoff_period: The period in input time units that will form the
-        cutoff between low frequencies (longer periods) and high frequencies
-        (shorter periods).  Filter will be smoothed by `window_len` running
-        average.  For 'fft_highpass' and 'fft_lowpass'. Default is None and
-        must be supplied if using 'fft_highpass' or 'fft_lowpass'.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param filter_type <str>:  'flat', 'hanning', 'hamming', 'bartlett', 'blackman',
+  'fft_highpass' and 'fft_lowpass' for Fast Fourier
+  Transform filter in the frequency domain.
+ :param window_len <int>:  For the windowed types, 'flat', 'hanning', 'hamming',
+  'bartlett', 'blackman' specifies the length of the
+  window.  Defaults to 5.
+ :param -p, --print_input:  If set to 'True' will include the input columns in
+  the output table.  Default is 'False'.
+ :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format or '-'
+  for stdin.  Default is stdin.
+ :param cutoff_period:  The period in input time units that will form the
+  cutoff between low frequencies (longer periods) and
+  high frequencies (shorter periods).  Filter will be
+  smoothed by `window_len` running average.  For
+  'fft_highpass' and 'fft_lowpass'. Default is None and
+  must be supplied if using 'fft_highpass' or
+  'fft_lowpass'.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -189,24 +192,25 @@ def zero_crossings(y_axis, window=11):
 def read(filenames, start_date=None, end_date=None, dense=False,
          float_format='%g', how='outer', columns=None):
     '''
-    Collect time series from a list of pickle or csv files then print
-    in the tstoolbox standard format.
+ Collect time series from a list of pickle or csv files then print
+ in the tstoolbox standard format.
 
-    :param filenames <str>: List of comma delimited filenames to read time
-        series from.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param dense: Set `dense` to True to have missing values inserted such that
-        there is a single interval.
-    :param how <str>: Use PANDAS concept on how to join the separate DataFrames
-        read from each file.  Default how='outer' which is the union, 'inner'
-        is the intersection,
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param filenames <str>:  List of comma delimited filenames to read time series
+  from.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param dense:  Set `dense` to True to have missing values inserted
+  such that there is a single interval.
+ :param how <str>:  Use PANDAS concept on how to join the separate
+  DataFrames read from each file.  Default how='outer'
+  which is the union, 'inner' is the intersection,
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     filenames = filenames.split(',')
     result = pd.concat([tsutils.common_kwds(
@@ -237,18 +241,19 @@ def date_slice(float_format='%g',
                input_ts='-',
                columns=None):
     '''
-    Prints out data to the screen between start_date and end_date
+ Prints out data to the screen between start_date and end_date
 
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     return tsutils.printiso(
         tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
@@ -260,18 +265,19 @@ def date_slice(float_format='%g',
 @mando.command
 def describe(input_ts='-', start_date=None, end_date=None, columns=None):
     '''
-    Prints out statistics for the time-series.
+ Prints out statistics for the time-series.
 
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -294,42 +300,50 @@ def peak_detection(method='rel',
                    end_date=None,
                    columns=None):
     '''
-    Peak and valley detection.
+ Peak and valley detection.
 
-    :param type <str>: 'peak', 'valley', or 'both' to determine what should be
-        returned.  Default is 'peak'.
-    :param method <str>: 'rel', 'minmax', 'zero_crossing', 'parabola', 'sine'
-        methods are available.  The different algorithms have different
-        strengths and weaknesses.  The 'rel' algorithm is the default.
-    :param window <int>: There will not usually be multiple peaks within the
-        window number of values.  The different `method`s use this variable in
-        different ways.
-        For 'rel' the window keyword specifies how many points on each side
-        to require a `comparator`(n,n+x) = True.
-        For 'minmax' the window keyword is the distance to look ahead from a
-        peak candidate to determine if it is the actual peak
-        '(sample / period) / f' where '4 >= f >= 1.25' might be a good value
-        For 'zero_crossing' the window keyword is the dimension of the
-        smoothing window; should be an odd integer
-    :param points <int>: For 'parabola' and 'sine' methods. How many points
-        around the peak should be used during curve fitting, must be odd
-        (default: 9)
-    :param lock_frequency: For 'sine method only.  Specifies if the
-        frequency argument of the model function should be locked to the
-        value calculated from the raw peaks or if optimization process may
-        tinker with it. (default: False)
-    :param -p, --print_input: If set to 'True' will include the input columns
-        in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.  Default is stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param type <str>:  'peak', 'valley', or 'both' to determine what should
+  be returned.  Default is 'peak'.
+ :param method <str>:  'rel', 'minmax', 'zero_crossing', 'parabola', 'sine'
+  methods are available.  The different algorithms have
+  different strengths and weaknesses.  The 'rel'
+  algorithm is the default.
+ :param window <int>:  There will not usually be multiple peaks within the
+  window number of values.  The different `method`s use
+  this variable in different ways.  For 'rel' the
+  window keyword specifies how many points on each side
+  to require a `comparator`(n,n+x) = True.  For
+  'minmax' the window keyword is the distance to look
+  ahead from a peak candidate to determine if it is the
+  actual peak.
+
+   '(sample / period) / f' where '4 >= f >= 1.25'
+   might be a good value
+
+  For 'zero_crossing' the window keyword is the
+  dimension of the smoothing window; should be an odd
+  integer
+ :param points <int>:  For 'parabola' and 'sine' methods. How many points
+  around the peak should be used during curve fitting,
+  must be odd (default: 9)
+ :param lock_frequency:  For 'sine method only.  Specifies if the frequency
+  argument of the model function should be locked to
+  the value calculated from the raw peaks or if
+  optimization process may tinker with it. (default:
+  False)
+ :param -p, --print_input:  If set to 'True' will include the input columns in
+  the output table.  Default is 'False'.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.  Default is stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
@@ -427,23 +441,25 @@ def convert(
         end_date=None,
         columns=None):
     '''
-    Converts values of a time series by applying a factor and offset.  See the
-        'equation' subcommand for a generalized form of this command.
+ Converts values of a time series by applying a factor and offset.
+ See the 'equation' subcommand for a generalized form of this
+ command.
 
-    :param factor <float>: Factor to multiply the time series values.
-    :param offset <float>: Offset to add to the time series values.
-    :param -p, --print_input: If set to 'True' will include the input columns
-        in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param factor <float>:  Factor to multiply the time series values.
+ :param offset <float>:  Offset to add to the time series values.
+ :param -p, --print_input:  If set to 'True' will include the input columns in
+  the output table.  Default is 'False'.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -534,30 +550,36 @@ def equation(
         end_date=None,
         columns=None):
     '''
-    Applies <equation> to the time series data.  The <equation> argument is a
-        string contained in single quotes with 'x' used as the variable
-        representing the input.  For example, '(1 - x)*sin(x)'.
+ Applies <equation> to the time series data.  The <equation> argument is a
+ string contained in single quotes with 'x' used as the variable
+ representing the input.  For example, '(1 - x)*sin(x)'.
 
-    :param equation <str>: String contained in single quotes that defines the
-        equation.  The input variable place holder is 'x'.  Mathematical
-        functions in the 'np' (numpy) name space can be used.  For example,
-        'x*4 + 2', 'x**2 + cos(x)', and 'tan(x*pi/180)' are all valid
-        <equation> strings.  The variable 't' is special representing the time
-        at which 'x' occurs.  This means you can do things like 'x[t] +
-        max(x[t-1], x[t+1])*0.6' to add to the current value 0.6 times the
-        maximum adjacent value.
-    :param -p, --print_input: If set to 'True' will include the input columns
-        in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param equation <str>:  String contained in single quotes that defines the
+  equation.  The input variable place holder is 'x'.
+  Mathematical functions in the 'np' (numpy) name space
+  can be used.  For example,
+     'x*4 + 2',
+     'x**2 + cos(x)', and
+     'tan(x*pi/180)' are all valid
+  <equation> strings.  The variable 't' is special
+  representing the time at which 'x' occurs.  This
+  means you can do things like
+      'x[t] + max(x[t-1], x[t+1])*0.6'
+  to add to the current value 0.6 times the maximum
+  adjacent value.
+ :param -p, --print_input:  If set to 'True' will include the input columns in
+  the output table.  Default is 'False'.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                            start_date=start_date,
@@ -598,18 +620,19 @@ def equation(
 @mando.command
 def pick(columns, input_ts='-', start_date=None, end_date=None):
     '''
-    Will pick a column or list of columns from input.  Can use column names or
-    column numbers.  If using numbers, column number 1 is the first column.
+ Will pick a column or list of columns from input.  Can use column names or
+ column numbers.  If using numbers, column number 1 is the first column.
 
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
     '''
     return tsutils.printiso(
                tsutils.common_kwds(
@@ -628,19 +651,20 @@ def stdtozrxp(
         end_date=None,
         columns=None):
     '''
-    Prints out data to the screen in a WISKI ZRXP format.
+ Prints out data to the screen in a WISKI ZRXP format.
 
-    :param rexchange: The REXCHANGE ID to be written into the zrxp header.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param rexchange:  The REXCHANGE ID to be written into the zrxp header.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -669,20 +693,21 @@ def tstopickle(
         end_date=None,
         columns=None):
     '''
-    Pickles the data into a Python pickled file.  Can be brought back into
-    Python with 'pickle.load' or 'numpy.load'.  See also 'tstoolbox read'.
+ Pickles the data into a Python pickled file.  Can be brought back into
+ Python with 'pickle.load' or 'numpy.load'.  See also 'tstoolbox read'.
 
-    :param filename <str>: The filename to store the pickled data.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param filename <str>:  The filename to store the pickled data.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -700,21 +725,22 @@ def accumulate(
         end_date=None,
         columns=None):
     '''
-    Calculates accumulating statistics.
+ Calculates accumulating statistics.
 
-    :param statistic <str>: 'sum', 'max', 'min', 'prod', defaults to 'sum'.
-    :param -p, --print_input: If set to 'True' will include the input columns
-        in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param statistic <str>:  'sum', 'max', 'min', 'prod', defaults to 'sum'.
+ :param -p, --print_input:  If set to 'True' will include the input columns in
+  the output table.  Default is 'False'.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -751,93 +777,100 @@ def rolling_window(
         freq=None,
         groupby=None):
     '''
-    Calculates a rolling window statistic.
+ Calculates a rolling window statistic.
 
-    :param span: The number of previous intervals to include in the
-        calculation of the statistic. If `span` is equal to 0 will give an
-        expanding rolling window.  Defaults to 2.
-    :param statistic <str>: One of 'mean', 'corr', 'count', 'cov', 'kurtosis',
-        'median', 'skew', 'stdev', 'sum', 'variance', 'expw_mean',
-        'expw_stdev', 'expw_variance' 'expw_corr', 'expw_cov' used to calculate
-        the statistic, defaults to 'mean'.
-    :param wintype <str>: The 'mean' and 'sum' `statistic` calculation can also
-        be weighted according to the `wintype` windows.  Some of the following
-        windows require additional keywords identified in parenthesis:
-        'boxcar', 'triang', 'blackman', 'hamming', 'bartlett', 'parzen',
-        'bohman', 'blackmanharris', 'nuttall', 'barthann', 'kaiser' (needs
-        beta), 'gaussian' (needs std), 'general_gaussian' (needs power, width)
-        'slepian' (needs width).
-    :param center: If set to 'True' the calculation will be made for the
-        value at the center of the window.  Default is 'False'.
-    :param -p, --print_input: If set to 'True' will include the input columns in
-        the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
-    :param groupby: Time offset to groupby.  Any PANDAS time offset.  This
-        option supports what is probably an unusual situation where the
-        rolling_window is performed separately within each groupby period.
-        -----   -----------
-        Alias   Description
-        -----   -----------
-        B       business day frequency
-        C       custom business day frequency (experimental)
-        D       calendar day frequency
-        W       weekly frequency
-        M       month end frequency
-        BM      business month end frequency
-        CBM     custom business month end frequency
-        MS      month start frequency
-        BMS     business month start frequency
-        CBMS    custom business month start frequency
-        Q       quarter end frequency
-        BQ      business quarter endfrequency
-        QS      quarter start frequency
-        BQS     business quarter start frequency
-        A       year end frequency
-        BA      business year end frequency
-        AS      year start frequency
-        BAS     business year start frequency
-        H       hourly frequency
-        T       minutely frequency
-        S       secondly frequency
-        L       milliseonds
-        U       microseconds
-        N       nanoseconds
+ :param span:  The number of previous intervals to include in the
+  calculation of the statistic. If `span` is equal to
+  0 will give an expanding rolling window.  Defaults to
+  2.
+ :param statistic <str>:  One of 'mean', 'corr', 'count', 'cov', 'kurtosis',
+  'median', 'skew', 'stdev', 'sum', 'variance',
+  'expw_mean', 'expw_stdev', 'expw_variance'
+  'expw_corr', 'expw_cov' used to calculate the
+  statistic, defaults to 'mean'.
+ :param wintype <str>:  The 'mean' and 'sum' `statistic` calculation can also
+  be weighted according to the `wintype` windows.  Some
+  of the following windows require additional keywords
+  identified in parenthesis: 'boxcar', 'triang',
+  'blackman', 'hamming', 'bartlett', 'parzen',
+  'bohman', 'blackmanharris', 'nuttall', 'barthann',
+  'kaiser' (needs beta), 'gaussian' (needs std),
+  'general_gaussian' (needs power, width) 'slepian'
+  (needs width).
+ :param center:  If set to 'True' the calculation will be made for the
+  value at the center of the window.  Default is
+  'False'.
+ :param -p, --print_input:  If set to 'True' will include the input columns in
+  the output table.  Default is 'False'.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
+ :param groupby:  Time offset to groupby.  Any PANDAS time offset.
+  This option supports what is probably an unusual
+  situation where the rolling_window is performed
+  separately within each groupby period.
+  -----   -----------
+  Alias   Description
+  -----   -----------
+  B       business day frequency
+  C       custom business day frequency (experimental)
+  D       calendar day frequency
+  W       weekly frequency
+  M       month end frequency
+  BM      business month end frequency
+  CBM     custom business month end frequency
+  MS      month start frequency
+  BMS     business month start frequency
+  CBMS    custom business month start frequency
+  Q       quarter end frequency
+  BQ      business quarter endfrequency
+  QS      quarter start frequency
+  BQS     business quarter start frequency
+  A       year end frequency
+  BA      business year end frequency
+  AS      year start frequency
+  BAS     business year start frequency
+  H       hourly frequency
+  T       minutely frequency
+  S       secondly frequency
+  L       milliseonds
+  U       microseconds
+  N       nanoseconds
 
-        Weekly has the following anchored frequencies:
-        W-SUN   weekly frequency (sundays). Same as 'W'.
-        W-MON   weekly frequency (mondays)
-        W-TUE   weekly frequency (tuesdays)
-        W-WED   weekly frequency (wednesdays)
-        W-THU   weekly frequency (thursdays)
-        W-FRI   weekly frequency (fridays)
-        W-SAT   weekly frequency (saturdays)
+  Weekly has the following anchored frequencies:
+  W-SUN   weekly frequency (sundays). Same as 'W'.
+  W-MON   weekly frequency (mondays)
+  W-TUE   weekly frequency (tuesdays)
+  W-WED   weekly frequency (wednesdays)
+  W-THU   weekly frequency (thursdays)
+  W-FRI   weekly frequency (fridays)
+  W-SAT   weekly frequency (saturdays)
 
-        Quarterly frequencies (Q, BQ, QS, BQS) and
-        annual frequencies (A, BA, AS, BAS) have the following anchoring
-        suffixes:
-        -DEC    year ends in December (same as 'Q' and 'A')
-        -JAN    year ends in January
-        -FEB    year ends in February
-        -MAR    year ends in March
-        -APR    year ends in April
-        -MAY    year ends in May
-        -JUN    year ends in June
-        -JUL    year ends in July
-        -AUG    year ends in August
-        -SEP    year ends in September
-        -OCT    year ends in October
-        -NOV    year ends in November
+  Quarterly frequencies (Q, BQ, QS, BQS) and
+  annual frequencies (A, BA, AS, BAS) have the following anchoring
+  suffixes:
+  -DEC    year ends in December (same as 'Q' and 'A')
+  -JAN    year ends in January
+  -FEB    year ends in February
+  -MAR    year ends in March
+  -APR    year ends in April
+  -MAY    year ends in May
+  -JUN    year ends in June
+  -JUL    year ends in July
+  -AUG    year ends in August
+  -SEP    year ends in September
+  -OCT    year ends in October
+  -NOV    year ends in November
 
-        Defaults to None.
+  Defaults to None.
     '''
     if span is None:
         span = 2
@@ -1003,88 +1036,90 @@ def aggregate(
         end_date=None,
         columns=None):
     '''
-    Takes a time series and aggregates to specified frequency, outputs to
-        'ISO-8601date,value' format.
+ Takes a time series and aggregates to specified frequency, outputs to
+ 'ISO-8601date,value' format.
 
-    :param statistic <str>: 'mean', 'sum', 'std', 'max', 'min', 'median',
-        'first', or 'last' to calculate the aggregation, defaults to 'mean'.
-        Can also be a comma separated list of statistic methods.
-    :param agg_interval <str>: The interval to aggragate the time series.
-        Any of the PANDAS offset codes.
-        -----   -----------
-        Alias   Description
-        -----   -----------
-        B       business day frequency
-        C       custom business day frequency (experimental)
-        D       calendar day frequency
-        W       weekly frequency
-        M       month end frequency
-        BM      business month end frequency
-        CBM     custom business month end frequency
-        MS      month start frequency
-        BMS     business month start frequency
-        CBMS    custom business month start frequency
-        Q       quarter end frequency
-        BQ      business quarter endfrequency
-        QS      quarter start frequency
-        BQS     business quarter start frequency
-        A       year end frequency
-        BA      business year end frequency
-        AS      year start frequency
-        BAS     business year start frequency
-        H       hourly frequency
-        T       minutely frequency
-        S       secondly frequency
-        L       milliseonds
-        U       microseconds
-        N       nanoseconds
+ :param statistic <str>:  'mean', 'sum', 'std', 'max', 'min', 'median',
+  'first', or 'last' to calculate the aggregation,
+  defaults to 'mean'.  Can also be a comma separated
+  list of statistic methods.
+ :param agg_interval <str>:  The interval to aggragate the time series.  Any of
+  the PANDAS offset codes.
+  -----   -----------
+  Alias   Description
+  -----   -----------
+  B       business day frequency
+  C       custom business day frequency (experimental)
+  D       calendar day frequency
+  W       weekly frequency
+  M       month end frequency
+  BM      business month end frequency
+  CBM     custom business month end frequency
+  MS      month start frequency
+  BMS     business month start frequency
+  CBMS    custom business month start frequency
+  Q       quarter end frequency
+  BQ      business quarter endfrequency
+  QS      quarter start frequency
+  BQS     business quarter start frequency
+  A       year end frequency
+  BA      business year end frequency
+  AS      year start frequency
+  BAS     business year start frequency
+  H       hourly frequency
+  T       minutely frequency
+  S       secondly frequency
+  L       milliseonds
+  U       microseconds
+  N       nanoseconds
 
-        Weekly has the following anchored frequencies:
-        W-SUN   weekly frequency (sundays). Same as 'W'.
-        W-MON   weekly frequency (mondays)
-        W-TUE   weekly frequency (tuesdays)
-        W-WED   weekly frequency (wednesdays)
-        W-THU   weekly frequency (thursdays)
-        W-FRI   weekly frequency (fridays)
-        W-SAT   weekly frequency (saturdays)
+  Weekly has the following anchored frequencies:
+  W-SUN   weekly frequency (sundays). Same as 'W'.
+  W-MON   weekly frequency (mondays)
+  W-TUE   weekly frequency (tuesdays)
+  W-WED   weekly frequency (wednesdays)
+  W-THU   weekly frequency (thursdays)
+  W-FRI   weekly frequency (fridays)
+  W-SAT   weekly frequency (saturdays)
 
-        Quarterly frequencies (Q, BQ, QS, BQS) and
-        annual frequencies (A, BA, AS, BAS) have the following anchoring
-        suffixes:
-        -DEC    year ends in December (same as 'Q' and 'A')
-        -JAN    year ends in January
-        -FEB    year ends in February
-        -MAR    year ends in March
-        -APR    year ends in April
-        -MAY    year ends in May
-        -JUN    year ends in June
-        -JUL    year ends in July
-        -AUG    year ends in August
-        -SEP    year ends in September
-        -OCT    year ends in October
-        -NOV    year ends in November
+  Quarterly frequencies (Q, BQ, QS, BQS) and
+  annual frequencies (A, BA, AS, BAS) have the following anchoring
+  suffixes:
+  -DEC    year ends in December (same as 'Q' and 'A')
+  -JAN    year ends in January
+  -FEB    year ends in February
+  -MAR    year ends in March
+  -APR    year ends in April
+  -MAY    year ends in May
+  -JUN    year ends in June
+  -JUL    year ends in July
+  -AUG    year ends in August
+  -SEP    year ends in September
+  -OCT    year ends in October
+  -NOV    year ends in November
 
-        There are some deprecated aggregation interval names in tstoolbox:
-        hourly  H
-        daily   D
-        monthly M
-        yearly  A
+  There are some deprecated aggregation interval names in tstoolbox:
+  hourly  H
+  daily   D
+  monthly M
+  yearly  A
 
-        Defaults to D (daily).
-    :param ninterval <int>: The number of agg_interval to use for the
-        aggregation.  Defaults to 1.
-    :param -p, --print_input: If set to 'True' will include the input columns in
-        the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+  Defaults to D (daily).
+ :param ninterval <int>:  The number of agg_interval to use for the
+  aggregation.  Defaults to 1.
+ :param -p, --print_input:  If set to 'True' will include the input columns in
+  the output table.  Default is 'False'.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     aggd = {'hourly': 'H',
             'daily': 'D',
@@ -1121,20 +1156,21 @@ def clip(
         input_ts='-',
         columns=None):
     '''
-    Returns a time-series with values limited to [a_min, a_max]
+ Returns a time-series with values limited to [a_min, a_max]
 
-    :param -p, --print_input: If set to 'True' will include the input columns in
-        the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param -p, --print_input:  If set to 'True' will include the input columns in
+  the output table.  Default is 'False'.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1169,22 +1205,23 @@ def add_trend(
         input_ts='-',
         columns=None):
     '''
-    Adds a trend.
+ Adds a trend.
 
-    :param start_offset <float>: The starting value for the applied trend.
-    :param end_offset <float>: The ending value for the applied trend.
-    :param -p, --print_input: If set to 'True' will include the input columns
-        in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param start_offset <float>:  The starting value for the applied trend.
+ :param end_offset <float>:  The ending value for the applied trend.
+ :param -p, --print_input:  If set to 'True' will include the input columns in
+  the output table.  Default is 'False'.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1208,20 +1245,21 @@ def remove_trend(
         input_ts='-',
         columns=None):
     '''
-    Removes a 'trend'.
+ Removes a 'trend'.
 
-    :param -p, --print_input: If set to 'True' will include the input columns
-        in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param -p, --print_input:  If set to 'True' will include the input columns in
+  the output table.  Default is 'False'.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1248,32 +1286,34 @@ def calculate_fdc(
         columns=None,
         sort_order='ascending'):
     '''
-    Returns the frequency distribution curve.  DOES NOT return a time-series.
+ Returns the frequency distribution curve.  DOES NOT return a time-series.
 
-    :param percent_point_function <str>: The distribution used to shift the
-        plotting position values.  Choose from 'norm', 'lognorm',
-        'weibull', and None.  Default is None.
-    :param plotting_position <str>: 'california', 'hazen', or 'weibull'.  The
-        default is 'weibull'.
+ :param percent_point_function <str>:  The distribution used to shift the plotting position
+  values.  Choose from 'norm', 'lognorm', 'weibull',
+  and None.  Default is None.
+ :param plotting_position <str>:  'california', 'hazen', or 'weibull'.  The default is
+  'weibull'.
 
-        'california': m/n
-        'hazen': (2m - 1)/(2n)
-        'weibull': m/(n + 1)
+     'california': m/n
+     'hazen': (2m - 1)/(2n)
+     'weibull': m/(n + 1)
 
-        Where 'm' is the sorted rank of the y value, and 'n' is the total
-        number of values to be plotted.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
-    :param sort_order <str>: Either 'ascending' or 'descending'.  Defaults to
-        'ascending'.  '''
+  Where 'm' is the sorted rank of the y value, and 'n'
+  is the total number of values to be plotted.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
+ :param sort_order <str>:  Either 'ascending' or 'descending'.  Defaults to
+  'ascending'.
+  '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
@@ -1306,42 +1346,42 @@ def stack(
         end_date=None,
         columns=None):
     '''
-    Returns the stack of the input table.
+ Returns the stack of the input table.
 
-    The stack command takes the standard table and converts to a three column
-    table.
+ The stack command takes the standard table and
+ converts to a three column table.
 
-    From:
+ From:
 
-    Datetime,TS1,TS2,TS3
-    2000-01-01 00:00:00,1.2,1018.2,0.0032
-    2000-01-02 00:00:00,1.8,1453.1,0.0002
-    2000-01-03 00:00:00,1.9,1683.1,-0.0004
+ Datetime,TS1,TS2,TS3
+ 2000-01-01 00:00:00,1.2,1018.2,0.0032
+ 2000-01-02 00:00:00,1.8,1453.1,0.0002
+ 2000-01-03 00:00:00,1.9,1683.1,-0.0004
 
-    To:
+ To:
 
-    Datetime,Columns,Values
-    2000-01-01,TS1,1.2
-    2000-01-02,TS1,1.8
-    2000-01-03,TS1,1.9
-    2000-01-01,TS2,1018.2
-    2000-01-02,TS2,1453.1
-    2000-01-03,TS2,1683.1
-    2000-01-01,TS3,0.0032
-    2000-01-02,TS3,0.0002
-    2000-01-03,TS3,-0.0004
+ Datetime,Columns,Values
+ 2000-01-01,TS1,1.2
+ 2000-01-02,TS1,1.8
+ 2000-01-03,TS1,1.9
+ 2000-01-01,TS2,1018.2
+ 2000-01-02,TS2,1453.1
+ 2000-01-03,TS2,1683.1
+ 2000-01-01,TS3,0.0032
+ 2000-01-02,TS3,0.0002
+ 2000-01-03,TS3,-0.0004
 
-
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1362,45 +1402,47 @@ def unstack(
         end_date=None,
         columns=None):
     '''
-    Returns the unstack of the input table.
+ Returns the unstack of the input table.
 
-    The unstack command takes the stacked table and converts to a
-    standard tstoolbox table.
+ The unstack command takes the stacked table and converts to a
+ standard tstoolbox table.
+
+ From:
+
+ Datetime,Columns,Values
+ 2000-01-01,TS1,1.2
+ 2000-01-02,TS1,1.8
+ 2000-01-03,TS1,1.9
+ 2000-01-01,TS2,1018.2
+ 2000-01-02,TS2,1453.1
+ 2000-01-03,TS2,1683.1
+ 2000-01-01,TS3,0.0032
+ 2000-01-02,TS3,0.0002
+ 2000-01-03,TS3,-0.0004
 
 
-    From:
+ To:
 
-    Datetime,Columns,Values
-    2000-01-01,TS1,1.2
-    2000-01-02,TS1,1.8
-    2000-01-03,TS1,1.9
-    2000-01-01,TS2,1018.2
-    2000-01-02,TS2,1453.1
-    2000-01-03,TS2,1683.1
-    2000-01-01,TS3,0.0032
-    2000-01-02,TS3,0.0002
-    2000-01-03,TS3,-0.0004
+ Datetime,TS1,TS2,TS3
+ 2000-01-01,1.2,1018.2,0.0032
+ 2000-01-02,1.8,1453.1,0.0002
+ 2000-01-03,1.9,1683.1,-0.0004
 
-
-    To:
-
-    Datetime,TS1,TS2,TS3
-    2000-01-01,1.2,1018.2,0.0032
-    2000-01-02,1.8,1453.1,0.0002
-    2000-01-03,1.9,1683.1,-0.0004
-
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param column_names: The column in the table that holds the column
-        names of the unstacked data.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param column_names:  The column in the table that holds the column names
+  of the unstacked data.
+ :param -s, --start_date <str>:
+  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:
+  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     tsd.sort(inplace=True)
@@ -1536,193 +1578,224 @@ def plot(
         invert_yaxis=False,
         plotting_position='weibull'):
     '''
-    Plots.
+ Plots.
 
-    :param ofilename <str>: Output filename for the plot.  Extension defines the
-       type, ('.png'). Defaults to 'plot.png'.
-    :param type <str>: The plot type.  Defaults to 'time'.
-       Can be one of the following:
-       'time' - standard time series plot,
-       'xy' - (x,y) plot, also know as a scatter plot,
-       'double_mass' - (x,y) plot of the cumulative sum of x and y,
-       'boxplot' - box extends from lower to upper quartile, with line at the
-           median.  Depending on the statistics, the wiskers represent the
-           range of the data or 1.5 times the inter-quartile range (Q3 - Q1),
-       'scatter_matrix' - plots all columns against each other,
-       'lag_plot' - indicates structure in the data,
-       'autocorrelation' - plot autocorrelation,
-       'bootstrap' - visually asses aspects of a data set by plotting random
-           selections of values,
-       'probability_density' - sometime called kernel density estimation (KDE),
-       'bar' - sometimes called a column plot,
-       'barh' - a horizontal bar plot,
-       'bar_stacked' - sometimes called a stacked column,
-       'barh_stacked' - a horizontal stacked bar plot,
-       'histogram' - calculate and create a histogram plot,
-       'norm_xaxis' - sort, calculate probabilities, and plot data against
-           an x axis normal distribution,
-       'norm_yaxis' - sort, calculate probabilities, and plot data against
-           an y axis normal distribution,
-       'lognorm_xaxis' - sort, calculate probabilities, and plot data against
-           an x axis lognormal distribution,
-       'lognorm_yaxis' - sort, calculate probabilities, and plot data against
-           an y axis lognormal distribution,
-       'weibull_xaxis' - sort, calculate and plot data against an x axis
-           weibull distribution,
-       'weibull_yaxis' - sort, calculate and plot data against an y axis
-           weibull distribution,
-    :param xtitle <str>: Title of x-axis, default depend on ``type``.
-    :param ytitle <str>: Title of y-axis, default depend on ``type``.
-    :param title <str>: Title of chart, defaults to ''.
-    :param figsize: The (width, height) of plot as inches.  Defaults to
-       (10,6.5).
-    :param legend: Whether to display the legend. Defaults to True.
-    :param legend_names <str>: Legend would normally use the time-series names
-       associated with the input data.  The 'legend_names' option allows you to
-       override the names in the data set.  You must supply a comma separated
-       list of strings for each time-series in the data set.  Defaults to None.
-    :param subplots: boolean, default False.  Make separate subplots for each
-       time series
-    :param sharex: boolean, default True In case subplots=True, share x axis
-    :param sharey: boolean, default False In case subplots=True, share y axis
-    :param style <str>: comma separated matplotlib style strings matplotlib line
-       style per time-series.  Just combine codes in 'ColorLineMarker' order,
-       for example 'r--*' is a red dashed line with star marker.
+ :param ofilename <str>:  Output filename for the plot.  Extension defines the
+  type, ('.png'). Defaults to 'plot.png'.
+ :param type <str>:  The plot type.  Defaults to 'time'.
+  Can be one of the following:
 
-       Colors - Single Character Codes:
-       'b'  blue
-       'g'  green
-       'r'  red
-       'c'  cyan
-       'm'  magenta
-       'y'  yellow
-       'k'  black
-       'w'  white
-       ---------------------
-       Grays - Float:
-       '0.75'  0.75 gray
-       ---------------------
-       Colors - HTML Color Names
-       'red'
-       'burlywood'
-       'chartreuse'
-       ...etc.
-       Color reference:
-       http://matplotlib.org/api/colors_api.html
+  'time' - standard time series plot,
+  'xy' - (x,y) plot, also know as a scatter plot,
+  'double_mass' - (x,y) plot of the cumulative sum of
+                  x and y,
+  'boxplot'
+          box extends from lower to upper quartile,
+          with line at the median.  Depending on the
+          statistics, the wiskers represent the range
+          of the data or 1.5 times the inter-quartile
+          range (Q3 - Q1),
+  'scatter_matrix'
+          plots all columns against each other,
+  'lag_plot'
+          indicates structure in the data,
+  'autocorrelation'
+          plot autocorrelation,
+  'bootstrap'
+          visually asses aspects of a data set by
+          plotting random selections of values,
+  'probability_density'
+          sometime called kernel density estimation
+          (KDE),
+  'bar'
+          sometimes called a column plot,
+  'barh'
+          a horizontal bar plot,
+  'bar_stacked'
+          sometimes called a stacked column,
+  'barh_stacked'
+          a horizontal stacked bar plot,
+  'histogram'
+          calculate and create a histogram plot,
+  'norm_xaxis'
+          sort, calculate probabilities, and plot data
+          against an x axis normal distribution,
+  'norm_yaxis'
+          sort, calculate probabilities, and plot data
+          against an y axis normal distribution,
+  'lognorm_xaxis'
+          sort, calculate probabilities, and plot data
+          against an x axis lognormal distribution,
+  'lognorm_yaxis'
+          sort, calculate probabilities, and plot data
+          against an y axis lognormal distribution,
+  'weibull_xaxis'
+          sort, calculate and plot data against an
+          x axis weibull distribution,
+  'weibull_yaxis'
+          sort, calculate and plot data against an
+          y axis weibull distribution,
+ :param xtitle <str>:  Title of x-axis, default depend on ``type``.
+ :param ytitle <str>:  Title of y-axis, default depend on ``type``.
+ :param title <str>:  Title of chart, defaults to ''.
+ :param figsize:  The (width, height) of plot as inches.  Defaults to
+  (10,6.5).
+ :param legend:  Whether to display the legend. Defaults to True.
+ :param legend_names <str>:  Legend would normally use the time-series names
+  associated with the input data.  The 'legend_names'
+  option allows you to override the names in the data
+  set.  You must supply a comma separated list of
+  strings for each time-series in the data set.
+  Defaults to None.
+ :param subplots:  boolean, default False.  Make separate subplots for
+  each time series
+ :param sharex:  boolean, default True In case subplots=True, share
+  x axis :param sharey: boolean, default False In case
+  subplots=True, share y axis
+ :param style <str>:  Comma separated matplotlib style strings matplotlib
+  line style per time-series.  Just combine codes in
+  'ColorLineMarker' order, for example 'r--*' is a red
+  dashed line with star marker.
 
-       Lines
-       '-'     solid
-       '--'    dashed
-       '-.'    dash_dot
-       ':'     dotted
-       'None'  draw nothing
-       ' '     draw nothing
-       ''      draw nothing
-       Line reference:
-       http://matplotlib.org/api/artist_api.html
+  Colors - Single Character Codes:
+  'b'  blue
+  'g'  green
+  'r'  red
+  'c'  cyan
+  'm'  magenta
+  'y'  yellow
+  'k'  black
+  'w'  white
+  ---------------------
+  Grays - Float:
+  '0.75'  0.75 gray
+  ---------------------
+  Colors - HTML Color Names
+  'red'
+  'burlywood'
+  'chartreuse'
+  ...etc.
+  Color reference:
+  http://matplotlib.org/api/colors_api.html
 
-       Markers
-       '.'     point
-       'o'     circle
-       'v'     triangle down
-       '^'     triangle up
-       '<'     triangle left
-       '>'     triangle right
-       '1'     tri_down
-       '2'     tri_up
-       '3'     tri_left
-       '4'     tri_right
-       '8'     octagon
-       's'     square
-       'p'     pentagon
-       '*'     star
-       'h'     hexagon1
-       'H'     hexagon2
-       '+'     plus
-       'x'     x
-       'D'     diamond
-       'd'     thin diamond
-       '|'     vline
-       '_'     hline
-       'None'     nothing
-       ' '     nothing
-       ''     nothing
-       Marker reference:
-       http://matplotlib.org/api/markers_api.html
+  Lines
+  '-'     solid
+  '--'    dashed
+  '-.'    dash_dot
+  ':'     dotted
+  'None'  draw nothing
+  ' '     draw nothing
+  ''      draw nothing
+  Line reference:
+  http://matplotlib.org/api/artist_api.html
 
-    :param logx: boolean, default False
-       For line plots, use log scaling on x axis
-       DEPRECATED: use '--xaxis="log"' instead.
-    :param logy: boolean, default False
-       For line plots, use log scaling on y axis
-       DEPRECATED: use '--yaxis="log"' instead.
-    :param xlim: comma separated lower and upper limits (--xlim 1,1000)
-       Limits for the x-axis
-    :param ylim: comma separated lower and upper limits (--ylim 1,1000)
-       Limits for the y-axis
-    :param xaxis <str>: defines the type of the xaxis.  One of 'arithmetic',
-       'log'. Default is 'arithmetic'.
-    :param yaxis <str>: defines the type of the yaxis.  One of 'arithmetic',
-       'log'. Default is 'arithmetic'.
-    :param secondary_y: boolean or sequence, default False
-       Whether to plot on the secondary y-axis If a list/tuple, which
-       time-series to plot on secondary y-axis
-    :param mark_right: boolean, default True :
-       When using a secondary_y axis, should the legend label the axis of the
-       various time-series automatically
-    :param scatter_matrix_diagonal <str>: If plot type is 'scatter_matrix', this
-       specifies the plot along the diagonal.  Defaults to
-       'probability_density'.
-    :param bootstrap_size: The size of the random subset for 'bootstrap' plot.
-       Defaults to 50.
-    :param bootstrap_samples: The number of random subsets of
-       'bootstrap_size'.  Defaults to 500.
-    :param norm_xaxis: Only available with xy plots.
-       Whether the x-axis should be labels with the normal
-       distribution common with frequency distribution curves.
-       Defaults to False.
-       DEPRECATED: use '--type="norm_xaxis"' or '--type="norm_yaxis"' instead.
-    :param xy_match_line <str>: Will add a match line where x == y.  Default is
-       ''.  Set to a line style code.
-    :param grid: boolean, default True
-       Whether to plot grid lines on the major ticks.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param label_rotation <int>: Rotation for major labels for bar plots.
-    :param label_skip <int>: Skip for major labels for bar plots.
-    :param drawstyle <str>: 'default' connects the points with lines. The steps
-        variants produce step-plots. 'steps' is equivalent to 'steps-pre' and
-        is maintained for backward-compatibility.
-        ACCEPTS: ['default' | 'steps' | 'steps-pre' | 'steps-mid'
-        | 'steps-post']
-    :param por: Plot from first good value to last good value.  Strip NANs from
-        beginning and end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
-    :param force_freq: Force this frequency for the plot.  WARNING: you may
-        lose data if not careful with this option.  In general, letting the
-        algorithm determine the frequency should always work, but this option
-        will override.  Use PANDAS offset codes,
-    :param invert_xaxis: Invert the x-axis.
-    :param invert_yaxis: Invert the y-axis.
-    :param plotting_position <str>: 'california', 'hazen', or 'weibull'.  The
-        default is 'weibull'.
+  Markers
+  '.'     point
+  'o'     circle
+  'v'     triangle down
+  '^'     triangle up
+  '<'     triangle left
+  '>'     triangle right
+  '1'     tri_down
+  '2'     tri_up
+  '3'     tri_left
+  '4'     tri_right
+  '8'     octagon
+  's'     square
+  'p'     pentagon
+  '*'     star
+  'h'     hexagon1
+  'H'     hexagon2
+  '+'     plus
+  'x'     x
+  'D'     diamond
+  'd'     thin diamond
+  '|'     vline
+  '_'     hline
+  'None'     nothing
+  ' '     nothing
+  ''     nothing
+  Marker reference:
+  http://matplotlib.org/api/markers_api.html
 
-        'california': m/n
-        'hazen': (2m - 1)/(2n)
-        'weibull': m/(n + 1)
+ :param logx:  Boolean, default False For line plots, use log
+  scaling on x axis
+  DEPRECATED: use '--xaxis="log"' instead.
+ :param logy:  Boolean, default False For line plots, use log
+  scaling on y axis
+  DEPRECATED: use '--yaxis="log"' instead.
+ :param xlim:  Comma separated lower and upper limits
+  (--xlim 1,1000) Limits for the x-axis
+ :param ylim:  Comma separated lower and upper limits
+  (--ylim 1,1000) Limits for the y-axis
+ :param xaxis <str>:  Defines the type of the xaxis.  One of 'arithmetic',
+  'log'. Default is 'arithmetic'.
+ :param yaxis <str>:  Defines the type of the yaxis.  One of 'arithmetic',
+    'log'. Default is 'arithmetic'.
+ :param secondary_y:  Boolean or sequence, default False Whether to plot on
+  the secondary y-axis If a list/tuple, which
+  time-series to plot on secondary y-axis
+ :param mark_right:  Boolean, default True : When using a secondary_y
+  axis, should the legend label the axis of the various
+  time-series automatically
+ :param scatter_matrix_diagonal <str>:  If plot type is 'scatter_matrix', this specifies the
+  plot along the diagonal.  Defaults to
+  'probability_density'.
+ :param bootstrap_size:  The size of the random subset for 'bootstrap' plot.
+  Defaults to 50.
+ :param bootstrap_samples:  The number of random subsets of 'bootstrap_size'.
+  Defaults to 500.
+ :param norm_xaxis:  Only available with xy plots.  Whether the x-axis
+  should be labels with the normal distribution common
+  with frequency distribution curves.  Defaults to
+  False.
+  DEPRECATED: use '--type="norm_xaxis"' or
+  '--type="norm_yaxis"' instead.
+ :param xy_match_line <str>:  Will add a match line where x == y.  Default is ''.
+  Set to a line style code.
+ :param grid:  Boolean, default True Whether to plot grid lines on
+  the major ticks.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param label_rotation <int>: Rotation for major labels for bar plots.
+ :param label_skip <int>: Skip for major labels for bar plots.
+ :param drawstyle <str>:
+  'default' connects the points with lines. The steps
+  variants produce step-plots. 'steps' is equivalent to
+  'steps-pre' and is maintained for
+  backward-compatibility.
+  ACCEPTS: ['default' | 'steps' | 'steps-pre'
+           | 'steps-mid' | 'steps-post']
+ :param por:  Plot from first good value to last good value.  Strip
+  NANs from beginning and end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
+ :param force_freq:  Force this frequency for the plot.  WARNING: you may
+  lose data if not careful with this option.  In
+  general, letting the algorithm determine the
+  frequency should always work, but this option will
+  override.  Use PANDAS offset codes,
+ :param invert_xaxis: Invert the x-axis.
+ :param invert_yaxis: Invert the y-axis.
+ :param plotting_position <str>:  'california', 'hazen', or 'weibull'.  The default is
+  'weibull'.
 
-        Where 'm' is the sorted rank of the y value, and 'n' is the total
-        number of values to be plotted.
+     'california': m/n
+     'hazen': (2m - 1)/(2n)
+     'weibull': m/(n + 1)
 
-        Only used for norm_xaxis, norm_yaxis, lognorm_xaxis, lognorm_yaxis,
-        weibull_xaxis, and weibull_yaxis.
+  Where 'm' is the sorted rank of the y value, and 'n'
+  is the total number of values to be plotted.
+
+  Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
+  lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
     '''
 
     # Need to work around some old option defaults with the implemntation of
@@ -2226,12 +2299,14 @@ def dtw(window=10000,
         start_date=None,
         end_date=None,
         columns=None):
-    '''Dynamic Time Warping
+    '''
+ Dynamic Time Warping
 
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dense=True),
@@ -2257,21 +2332,23 @@ def pca(n_components=None,
         end_date=None,
         columns=None):
     '''
-    Returns the principal components analysis of the time series.  Does not
-    return a time-series.
+ Returns the principal components analysis of the time series.  Does not
+ return a time-series.
 
-    :param n_components <int>: The number of groups to separate the time series
-        into.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param n_components <int>:  The number of groups to separate the time series
+  into.
+ :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
+     or '-' for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:
+  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     from sklearn.decomposition import PCA
 
@@ -2297,30 +2374,43 @@ def normalization(mode='minmax',
                   end_date=None,
                   columns=None):
     '''
-    Returns the normalization of the time series.
+ Returns the normalization of the time series.
 
-    :param mode <str>: 'minmax' or 'zscore'.  Default is 'minmax'
-        'minmax' is min_limit + (X-Xmin)/(Xmax-Xmin)*(max_limit - min_limit)
-        'zscore' is X-mean(X)/stddev(X)
-        'pct_rank' is rank(X)*100/N
-    :param min_limit <float>: Defaults to 0.  Defines the minimum limit of
-        the minmax normalization.
-    :param max_limit <float>: Defaults to 1.  Defines the maximum limit of
-        the minmax normalization.
-    :param pct_rank_method <str>: Defaults to 'average'.  Defines how tied
-        ranks are broken.  Can be 'average', 'min', 'max', 'first', 'dense'.
-    :param -p, --print_input: If set to 'True' will include the input
-        columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>: The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns: Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
-        To pick multiple columns; separate by commas with no spaces. As used in
-        'pick' command.
+ :param mode <str>:  'minmax', 'zscore', or 'pct_rank'.  Default is
+  'minmax'
+
+  'minmax' is
+
+   min_limit +
+   (X-Xmin)/(Xmax-Xmin)*(max_limit-min_limit)
+
+  'zscore' is
+
+   X-mean(X)/stddev(X)
+
+  'pct_rank' is
+
+   rank(X)*100/N
+ :param min_limit <float>:  Defaults to 0.  Defines the minimum limit of the
+  minmax normalization.
+ :param max_limit <float>:  Defaults to 1.  Defines the maximum limit of the
+  minmax normalization.
+ :param pct_rank_method <str>:  Defaults to 'average'.  Defines how tied ranks are
+  broken.  Can be 'average', 'min', 'max', 'first',
+  'dense'.
+ :param -p, --print_input:  If set to 'True' will include the input columns in
+  the output table.  Default is 'False'.
+ :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
+  for stdin.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param columns:  Columns to pick out of input.  Can use column names
+  or column numbers.  If using numbers, column number
+  1 is the first column.  To pick multiple columns;
+  separate by commas with no spaces. As used in 'pick'
+  command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,

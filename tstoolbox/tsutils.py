@@ -272,15 +272,23 @@ def _printiso(tsd, date_format=None, sep=',',
     ''' Separate so can use in tests.
     '''
     sys.tracebacklimit = 1000
-    try:
+
+    if tsd.index.name is None:
         if tsd.index.is_all_dates:
             tsd.index.name = 'Datetime'
-            tsd.to_csv(sys.stdout, float_format=float_format,
-                       date_format=date_format, sep=sep)
         else:
             tsd.index.name = 'UniqueID'
-            tsd.to_csv(sys.stdout, float_format=float_format,
-                       date_format=date_format, sep=sep)
+    elif tsd.index.is_all_dates:
+        # Someone made the decision about the name
+        # This is how I include time zone info by tacking on to the
+        # index.name.
+        if 'datetime' not in tsd.index.name.lower():
+            tsd.index.name = 'Datetime'
+    else:
+        tsd.index.name = 'UniqueID'
+    try:
+        tsd.to_csv(sys.stdout, float_format=float_format,
+                   date_format=date_format, sep=sep)
     except IOError:
         return
 
