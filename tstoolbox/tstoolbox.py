@@ -42,6 +42,50 @@ _offset_aliases = {
 
 
 @mando.command(formatter_class=RawTextHelpFormatter)
+def createts(
+             input_ts=None,
+             start_date=None,
+             end_date=None,
+             freq=None
+             ):
+    '''
+ Create empty time series.  Just produce the time-stamps.
+
+ :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format or '-'
+  for stdin.  Default is stdin.  If supplied, the
+  result will just be the input index.
+ :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
+  or 'None' for beginning.
+ :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
+  'None' for end.
+ :param freq:  To use this form --start_date and --end_date must be supplied also.
+  The pandas date offset code used to create the index.
+    '''
+    if input_ts is not None:
+        columns = None
+        tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                                  start_date=start_date,
+                                  end_date=end_date,
+                                  pick=columns)
+        tsd = pd.DataFrame(index=tsd.index)
+    elif start_date is None or end_date is None or freq is None:
+        raise ValueError('''
+*
+*   If input_ts is None, then start_date, end_date, and freq must be supplied.
+*   Instead you have:
+*   start_date = {0},
+*   end_date = {0},
+*   freq = {0}
+*
+'''.format(start_date, end_date, freq))
+    else:
+        tsd = pd.DataFrame(index=pd.date_range(start=start_date,
+                                               end=end_date,
+                                               freq=freq))
+    return tsutils.printiso(tsd)
+
+
+@mando.command(formatter_class=RawTextHelpFormatter)
 def filter(filter_type,
            print_input=False,
            cutoff_period=None,
