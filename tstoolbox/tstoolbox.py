@@ -307,12 +307,13 @@ def date_slice(float_format='%g',
 
 
 @mando.command
-def describe(input_ts='-', start_date=None, end_date=None, columns=None):
+def describe(input_ts='-', transpose=False, start_date=None, end_date=None, columns=None):
     '''
  Prints out statistics for the time-series.
 
  :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
   for stdin.
+ :param transpose:  If 'transpose' option is used, will transpose describe output.
  :param -s, --start_date <str>:  The start_date of the series in ISOdatetime format,
   or 'None' for beginning.
  :param -e, --end_date <str>:  The end_date of the series in ISOdatetime format, or
@@ -327,6 +328,8 @@ def describe(input_ts='-', start_date=None, end_date=None, columns=None):
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
+    if transpose is True:
+        return tsutils.printiso(tsd.describe().transpose())
     return tsutils.printiso(tsd.describe())
 
 
@@ -1488,7 +1491,6 @@ def unstack(
   command.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
-    tsd.sort(inplace=True)
     tsd = tsutils.common_kwds(tsd,
                              start_date=start_date,
                              end_date=end_date,

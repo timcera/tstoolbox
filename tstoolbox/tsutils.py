@@ -38,9 +38,13 @@ def common_kwds(input_tsd,
 def _pick(tsd, columns):
     columns = columns.split(',')
     ncolumns = []
+
     for i in columns:
         if i in tsd.columns:
             ncolumns.append(tsd.columns.tolist().index(i))
+            continue
+        elif i == tsd.index.name:
+            ncolumns.append(tsd.index.name)
             continue
         else:
             try:
@@ -52,11 +56,11 @@ def _pick(tsd, columns):
 *   {1}.
 *
 '''.format(i, tsd.columns))
-            if target_col < 1:
+            if target_col < 0:
                 raise ValueError('''
 *
-*   The request column index {0} must be greater than 0.
-*   First column is index 1.
+*   The request column index {0} must be greater than or equal to 0.
+*   First column is index 1, index is column 0.
 *
 '''.format(i))
             if target_col > len(tsd.columns):
@@ -66,14 +70,18 @@ def _pick(tsd, columns):
 *   number of columns {1}.
 *
 '''.format(i, len(tsd.columns)))
-            ncolumns.append(target_col - 1)
+
+            ncolumns.append(target_col)
 
     if len(ncolumns) == 1:
         return pd.DataFrame(tsd[tsd.columns[ncolumns]])
 
     newtsd = pd.DataFrame()
     for index, col in enumerate(ncolumns):
-        jtsd = pd.DataFrame(tsd[tsd.columns[col]])
+        if col == 0:
+            jtsd = pd.DataFrame(tsd.index)
+        else:
+            jtsd = pd.DataFrame(tsd[tsd.columns[col - 1]])
 
         newtsd = newtsd.join(jtsd,
                              lsuffix='_{0}'.format(index), how='outer')
@@ -273,22 +281,23 @@ def _printiso(tsd, date_format=None, sep=',',
     '''
     sys.tracebacklimit = 1000
 
-    if tsd.index.name is None:
-        if tsd.index.is_all_dates:
+    print_index = True
+    if tsd.index.is_all_dates:
+        if tsd.index.name is None:
             tsd.index.name = 'Datetime'
-        else:
-            tsd.index.name = 'UniqueID'
-    elif tsd.index.is_all_dates:
         # Someone made the decision about the name
         # This is how I include time zone info by tacking on to the
         # index.name.
-        if 'datetime' not in tsd.index.name.lower():
+        elif 'datetime' not in tsd.index.name.lower():
             tsd.index.name = 'Datetime'
     else:
-        tsd.index.name = 'UniqueID'
+        # This might be overkill, but tstoolbox is for time-series.
+        # Revisit if necessary.
+        print_index = False
+
     try:
         tsd.to_csv(sys.stdout, float_format=float_format,
-                   date_format=date_format, sep=sep)
+                   date_format=date_format, sep=sep, index=print_index)
     except IOError:
         return
 
