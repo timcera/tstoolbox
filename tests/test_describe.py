@@ -27,8 +27,11 @@ class TestDescribe(TestCase):
         self.date_slice = pd.DataFrame([1672.000000, 836.905383,
             843.901292, 0.000000, 158.425000, 578.800000, 1253.450000,
             4902.000000], index=index, columns=['Area'])
+        self.date_slice.index.name = 'Datetime'
+        self.date_slice_cli = capture(tsutils._printiso,
+                                      self.date_slice,
+                                      force_print_index=True)
         self.date_slice.index.name = 'UniqueID'
-        self.date_slice_cli = capture(tsutils._printiso, self.date_slice)
 
     def test_describe(self):
         ''' Test of describe API.

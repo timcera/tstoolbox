@@ -329,8 +329,10 @@ def describe(input_ts='-', transpose=False, start_date=None, end_date=None, colu
                              end_date=end_date,
                              pick=columns)
     if transpose is True:
-        return tsutils.printiso(tsd.describe().transpose())
-    return tsutils.printiso(tsd.describe())
+        return tsutils.printiso(tsd.describe().transpose(),
+                                force_print_index=True)
+    return tsutils.printiso(tsd.describe(),
+                            force_print_index=True)
 
 
 @mando.command
@@ -1505,7 +1507,9 @@ def unstack(
     levels = newtsd.columns.levels
     labels = newtsd.columns.labels
     newtsd.columns = levels[1][labels[1]]
-    newtsd.rename(columns=lambda x: ''.join([i for i in x if i not in '\'" ']))
+
+    # Remove weird characters from column names
+    newtsd.rename(columns=lambda x: ''.join([i for i in str(x) if i not in '\'" ']))
     return tsutils.printiso(newtsd)
 
 

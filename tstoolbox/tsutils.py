@@ -214,7 +214,7 @@ def asbestfreq(data, force_freq=None):
 
     # Use the minimum of the intervals to test a new interval.
     # Should work for fixed intervals.
-    mininterval = np.min(np.diff(data.index.values))
+    mininterval = int(np.min(np.diff(data.index.values)))
     if mininterval < 0:
         raise ValueError
     if mininterval < 1000:
@@ -249,7 +249,8 @@ def asbestfreq(data, force_freq=None):
 # Utility
 def print_input(iftrue, intds, output, suffix,
                 date_format=None, sep=',',
-                float_format='%g'):
+                float_format='%g',
+                force_print_index=False):
     ''' Used when wanting to print the input time series also.
     '''
     if suffix:
@@ -261,10 +262,12 @@ def print_input(iftrue, intds, output, suffix,
                                    how='outer'),
                         date_format=date_format,
                         sep=sep,
-                        float_format=float_format)
+                        float_format=float_format,
+                        force_print_index=force_print_index)
     else:
         return printiso(output, date_format=date_format, sep=sep,
-                        float_format=float_format)
+                        float_format=float_format,
+                        force_print_index=force_print_index)
 
 
 def _apply_across_columns(func, xtsd, **kwds):
@@ -276,7 +279,7 @@ def _apply_across_columns(func, xtsd, **kwds):
 
 
 def _printiso(tsd, date_format=None, sep=',',
-              float_format='%g'):
+              float_format='%g', force_print_index=False):
     ''' Separate so can use in tests.
     '''
     sys.tracebacklimit = 1000
@@ -294,6 +297,12 @@ def _printiso(tsd, date_format=None, sep=',',
         # This might be overkill, but tstoolbox is for time-series.
         # Revisit if necessary.
         print_index = False
+
+    if tsd.index.name == 'UniqueID':
+        print_index = False
+
+    if force_print_index is True:
+        print_index = True
 
     try:
         tsd.to_csv(sys.stdout, float_format=float_format,
@@ -321,7 +330,7 @@ def test_cli():
 
 
 def printiso(tsd, date_format=None,
-             sep=',', float_format='%g'):
+             sep=',', float_format='%g', force_print_index=False):
     '''
     Default output format for tstoolbox, wdmtoolbox, swmmtoolbox,
     and hspfbintoolbox.
@@ -329,7 +338,8 @@ def printiso(tsd, date_format=None,
     tsd.index.name = 'Datetime'
     if test_cli():
         _printiso(tsd, float_format=float_format,
-                  date_format=date_format, sep=sep)
+                  date_format=date_format, sep=sep,
+                  force_print_index=force_print_index)
     else:
         return tsd
 
