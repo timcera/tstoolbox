@@ -691,7 +691,6 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
                    pick=columns))
 
 
-
 @mando.command
 def stdtozrxp(
         rexchange=None,
@@ -1492,16 +1491,16 @@ def unstack(
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)
-    tsd = tsutils.common_kwds(tsd,
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
 
-    index = [tsd.index.values, tsd[column_names].values]
     cols = list(tsd.columns)
     cols.remove(column_names)
-    newtsd = pd.DataFrame(tsd[cols].values, index=index)
+    newtsd = pd.DataFrame(tsd[cols].values,
+                          index=[tsd.index.values,
+                          tsd[column_names].values])
     newtsd = newtsd.unstack()
     newtsd.index.name = 'Datetime'
     levels = newtsd.columns.levels

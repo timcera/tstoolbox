@@ -41,10 +41,10 @@ def _pick(tsd, columns):
 
     for i in columns:
         if i in tsd.columns:
-            ncolumns.append(tsd.columns.tolist().index(i))
+            ncolumns.append(tsd.columns.tolist().index(i) + 1)
             continue
         elif i == tsd.index.name:
-            ncolumns.append(tsd.index.name)
+            ncolumns.append(0)
             continue
         else:
             try:
@@ -73,7 +73,7 @@ def _pick(tsd, columns):
 
             ncolumns.append(target_col)
 
-    if len(ncolumns) == 1:
+    if len(ncolumns) == 1 and ncolumns[0] != 0:
         return pd.DataFrame(tsd[tsd.columns[ncolumns]])
 
     newtsd = pd.DataFrame()

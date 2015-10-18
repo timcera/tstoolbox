@@ -145,7 +145,12 @@ class TestAddTrend(TestCase):
                 inferred_code = '1' + inferred_code
             if testcode in matches:
                 testcode = matches[testcode]
-            self.assertEqual(testcode, inferred_code.split('-')[0])
+            try:
+                self.assertEqual(testcode, inferred_code.split('-')[0])
+            except AssertionError:
+                self.assertEqual([i for i in testcode if not i.isdigit()],
+                                 [i for i in inferred_code.split('-')[0] if not i.isdigit()])
+
 
     def tearDown(self):
         ''' Remove the temporary files.
