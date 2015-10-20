@@ -325,13 +325,16 @@ def describe(input_ts='-', transpose=False, start_date=None, end_date=None, colu
   command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns)
     if transpose is True:
-        return tsutils.printiso(tsd.describe().transpose(),
-                                force_print_index=True)
-    return tsutils.printiso(tsd.describe(),
+        ntsd = tsd.describe().transpose()
+    else:
+        ntsd = tsd.describe()
+
+    ntsd.index.name = 'Statistic'
+    return tsutils.printiso(ntsd,
                             force_print_index=True)
 
 
@@ -1384,7 +1387,8 @@ def calculate_fdc(
     xdat = ppf(_set_plotting_position(cnt, plotting_position))*100
     tsd = tsd.apply(sorted, axis=0, reverse=reverse)
     tsd.index = xdat
-    return tsutils.printiso(tsd)
+    tsd.index.name = 'Plotting_position'
+    return tsutils.printiso(tsd, force_print_index=True)
 
 
 @mando.command(formatter_class=RawTextHelpFormatter)

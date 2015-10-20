@@ -27,6 +27,8 @@ def common_kwds(input_tsd,
         ntsd = _date_slice(ntsd, start_date=start_date, end_date=end_date)
     if force_freq is not None:
         ntsd = asbestfreq(ntsd, force_freq=force_freq)
+    if ntsd.index.is_all_dates:
+        ntsd.index.name = 'Datetime'
     if groupby is not None:
         if groupby == 'months_across_years':
             return ntsd.groupby(lambda x: x.month)
@@ -335,7 +337,15 @@ def printiso(tsd, date_format=None,
     Default output format for tstoolbox, wdmtoolbox, swmmtoolbox,
     and hspfbintoolbox.
     '''
-    tsd.index.name = 'Datetime'
+
+    # Not perfectly true, but likely will use force_print_index for indices
+    # that are not time stamps.
+    if force_print_index is True:
+        if not tsd.index.name:
+            tsd.index.name = 'UniqueID'
+    else:
+        tsd.index.name = 'Datetime'
+
     if test_cli():
         _printiso(tsd, float_format=float_format,
                   date_format=date_format, sep=sep,
