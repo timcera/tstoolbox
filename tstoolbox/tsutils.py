@@ -9,6 +9,10 @@ import os
 import sys
 import gzip
 import bz2
+try:
+    from fractions import gcd
+except ImportError:
+    from math import gcd
 
 import pandas as pd
 import numpy as np
@@ -43,14 +47,18 @@ def _pick(tsd, columns):
 
     for i in columns:
         if i in tsd.columns:
-            ncolumns.append(tsd.columns.tolist().index(i) + 1)
+            # if using column names
+            ncolumns.append(tsd.columns.tolist().index(i))
             continue
         elif i == tsd.index.name:
-            ncolumns.append(0)
+            # if wanting the index
+            # making it -1 that will be evaluated later...
+            ncolumns.append(-1)
             continue
         else:
+            # if using column numbers
             try:
-                target_col = int(i)
+                target_col = int(i) - 1
             except:
                 raise ValueError('''
 *
@@ -62,7 +70,7 @@ def _pick(tsd, columns):
                 raise ValueError('''
 *
 *   The request column index {0} must be greater than or equal to 0.
-*   First column is index 1, index is column 0.
+*   First data column is index 1, index is column 0.
 *
 '''.format(i))
             if target_col > len(tsd.columns):
@@ -73,14 +81,17 @@ def _pick(tsd, columns):
 *
 '''.format(i, len(tsd.columns)))
 
+            # columns names or numbers or index organized into
+            # numbers in ncolumns
             ncolumns.append(target_col)
 
-    if len(ncolumns) == 1 and ncolumns[0] != 0:
+    if len(ncolumns) == 1 and ncolumns[0] != -1:
         return pd.DataFrame(tsd[tsd.columns[ncolumns]])
 
     newtsd = pd.DataFrame()
     for index, col in enumerate(ncolumns):
-        if col == 0:
+        if col == -1:
+            # Use the -1 marker to indicate index
             jtsd = pd.DataFrame(tsd.index)
         else:
             jtsd = pd.DataFrame(tsd[tsd.columns[col - 1]])
@@ -161,7 +172,6 @@ def asbestfreq(data, force_freq=None):
     5. Use minimum interval to establish the fixed time periods up to weekly
     6. Gives up returning None for PANDAS offset string
     '''
-
     if force_freq is not None:
         return data.asfreq(force_freq)
 
@@ -216,25 +226,30 @@ def asbestfreq(data, force_freq=None):
 
     # Use the minimum of the intervals to test a new interval.
     # Should work for fixed intervals.
-    mininterval = int(np.min(np.diff(data.index.values)))
-    if mininterval < 0:
+    ndiff = sorted(set(np.diff(data.index.values.astype(int))))
+    mininterval = int(np.min(ndiff))
+    if mininterval <= 0:
         raise ValueError
-    if mininterval < 1000:
-        infer_freq = '{0}N'.format(mininterval)
-    elif mininterval < 1000000:
-        infer_freq = '{0}U'.format(mininterval//1000)
-    elif mininterval < 1000000000:
-        infer_freq = '{0}L'.format(mininterval//1000000)
-    elif mininterval < 60000000000:
-        infer_freq = '{0}S'.format(mininterval//1000000000)
-    elif mininterval < 3600000000000:
-        infer_freq = '{0}T'.format(mininterval//60000000000)
-    elif mininterval < 86400000000000:
-        infer_freq = '{0}H'.format(mininterval//3600000000000)
-    elif mininterval < 604800000000000:
-        infer_freq = '{0}D'.format(mininterval//86400000000000)
-    elif mininterval < 2419200000000000:
-        infer_freq = '{0}W'.format(mininterval//604800000000000)
+    if len(ndiff) == 1:
+        ngcd = ndiff[0]
+    else:
+        ngcd = reduce(gcd, ndiff)
+    if ngcd < 1000:
+        infer_freq = '{0}N'.format(ngcd)
+    elif ngcd < 1000000:
+        infer_freq = '{0}U'.format(ngcd//1000)
+    elif ngcd < 1000000000:
+        infer_freq = '{0}L'.format(ngcd//1000000)
+    elif ngcd < 60000000000:
+        infer_freq = '{0}S'.format(ngcd//1000000000)
+    elif ngcd < 3600000000000:
+        infer_freq = '{0}T'.format(ngcd//60000000000)
+    elif ngcd < 86400000000000:
+        infer_freq = '{0}H'.format(ngcd//3600000000000)
+    elif ngcd < 604800000000000:
+        infer_freq = '{0}D'.format(ngcd//86400000000000)
+    elif ngcd < 2419200000000000:
+        infer_freq = '{0}W'.format(ngcd//604800000000000)
         if np.all(data.index.dayofweek == data.index[0].dayofweek):
             infer_freq = infer_freq + '-{0}'.format(
                     _weeklies[data.index[0].dayofweek])
