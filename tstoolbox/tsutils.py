@@ -13,6 +13,10 @@ try:
     from fractions import gcd
 except ImportError:
     from math import gcd
+try:
+    from functools import reduce
+except ImportError:
+    pass
 
 import pandas as pd
 import numpy as np
@@ -58,7 +62,7 @@ def _pick(tsd, columns):
         else:
             # if using column numbers
             try:
-                target_col = int(i) - 1
+                target_col = int(i)
             except:
                 raise ValueError('''
 *
