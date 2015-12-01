@@ -49,7 +49,6 @@ class BadKernelValues(Exception):
 
 def _transform(vector, cutoff_period, window_len, lopass=None):
     """
-
     Parameters
     ----------
     vector : array_like, evenly spaced samples in time

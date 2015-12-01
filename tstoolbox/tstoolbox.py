@@ -82,7 +82,7 @@ def createts(
         tsd = pd.DataFrame(index=pd.date_range(start=start_date,
                                                end=end_date,
                                                freq=freq))
-    return tsutils.printiso(tsd)
+    return tsutils.printiso(tsd, force_print_index=True)
 
 
 @mando.command(formatter_class=RawTextHelpFormatter)
@@ -2294,6 +2294,8 @@ def plot(
         plt.gca().invert_yaxis()
     plt.grid(grid)
     plt.title(title)
+    if ofilename is None:
+        return plt
     plt.savefig(ofilename)
 
 
