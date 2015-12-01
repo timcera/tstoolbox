@@ -13,7 +13,7 @@ import subprocess
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
 
-from capture import capture
+from . import capture
 
 import pandas as pd
 
@@ -30,7 +30,7 @@ class TestEquation(TestCase):
                 index=dindex, dtype='float32')
         self.equation.index.name = 'Datetime'
 
-        self.equation_cli = capture(tsutils._printiso, self.equation)
+        self.equation_cli = capture.capture(tsutils._printiso, self.equation)
 
         dindex = pd.date_range('2000-01-01T00:00:00', periods=6, freq='D')
         ts1 = [4.50, 4.60, 4.70, 4.60, 4.50, 4.40]
@@ -48,7 +48,7 @@ class TestEquation(TestCase):
         self.equation_result = pd.DataFrame({'__equation':pd.np.array(ts2)*10},
             index=dindex, dtype='float32')
 
-        self.equation_multiple_cols_01_cli = capture(tsutils._printiso,
+        self.equation_multiple_cols_01_cli = capture.capture(tsutils._printiso,
             self.equation_multiple_cols_01)
 
         ts3 = [50.1, 95.1, 38.9, 27.7, 11.7, 8.7]
@@ -56,7 +56,7 @@ class TestEquation(TestCase):
             'Value1':ts2, '__equation':ts3}, index=dindex, dtype='float32')
         self.equation_multiple_cols_02.index.name = 'Datetime'
 
-        self.equation_multiple_cols_02_cli = capture(tsutils._printiso,
+        self.equation_multiple_cols_02_cli = capture.capture(tsutils._printiso,
             self.equation_multiple_cols_02)
 
         ts3 = [0, 97.92, 41.66, 30.52, 14.46, 0]
@@ -66,7 +66,7 @@ class TestEquation(TestCase):
             'Value1':ts2, '__equation':ts3}, index=dindex, dtype='float32')
         self.equation_multiple_cols_03.index.name = 'Datetime'
 
-        self.equation_multiple_cols_03_cli = capture(tsutils._printiso,
+        self.equation_multiple_cols_03_cli = capture.capture(tsutils._printiso,
                 self.equation_multiple_cols_03, float_format='%.2f')
 
         dindex = pd.date_range('2011-01-01T00:00:00', periods=48, freq='H')
@@ -78,7 +78,7 @@ class TestEquation(TestCase):
             'Value_equation': ts2}, index=dindex, dtype='float32')
         self.equation_multiple_cols_04.index.name = 'Datetime'
 
-        self.equation_multiple_cols_04_cli = capture(tsutils._printiso,
+        self.equation_multiple_cols_04_cli = capture.capture(tsutils._printiso,
             self.equation_multiple_cols_04)
 
     def test_equation(self):

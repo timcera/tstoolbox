@@ -21,8 +21,6 @@ import pandas as pd
 from tstoolbox import tstoolbox
 from tstoolbox import tsutils
 
-from capture import capture
-
 test_sinwave = '''Datetime,0,0_peak,0_valley
 2000-01-01 00:00:00,0.0,,
 2000-01-01 01:00:00,0.258819045103,,

@@ -18,7 +18,7 @@ import pandas
 import tstoolbox.tsutils as tsutils
 from tstoolbox import tstoolbox
 
-from capture import capture
+from . import capture
 
 class TestRollingWindow(TestCase):
     def setUp(self):
@@ -34,10 +34,10 @@ class TestRollingWindow(TestCase):
             ts, columns=['Value_2_mean'])
         self.compare_rolling_window_mean.index.name = 'Datetime'
 
-        self.compare_rolling_window_sum_cli = capture(tsutils._printiso,
+        self.compare_rolling_window_sum_cli = capture.capture(tsutils._printiso,
                 self.compare_rolling_window_sum)
 
-        self.compare_rolling_window_mean_cli = capture(tsutils._printiso,
+        self.compare_rolling_window_mean_cli = capture.capture(tsutils._printiso,
                 self.compare_rolling_window_mean)
 
     def test_rolling_window_sum(self):

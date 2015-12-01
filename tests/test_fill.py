@@ -17,7 +17,7 @@ import pandas as pd
 from tstoolbox import tstoolbox
 import tstoolbox.tsutils as tsutils
 
-from capture import capture
+from . import capture
 
 
 class TestFill(TestCase):
@@ -28,7 +28,7 @@ class TestFill(TestCase):
             index=dindex, columns=['Value_with_missing_fill'])
         self.ats.index.name = 'Datetime'
 
-        self.ats_cli = capture(tsutils._printiso, self.ats)
+        self.ats_cli = capture.capture(tsutils._printiso, self.ats)
 
         self.ffill_compare = self.ats.copy()
         self.ffill_compare['Value_with_missing_fill'][
@@ -36,7 +36,7 @@ class TestFill(TestCase):
         self.ffill_compare['Value_with_missing_fill'][
             '2011-01-01T13:00:00'] = 9
 
-        self.ffill_compare_cli = capture(tsutils._printiso, self.ffill_compare)
+        self.ffill_compare_cli = capture.capture(tsutils._printiso, self.ffill_compare)
 
         self.bfill_compare = self.ats.copy()
         self.bfill_compare['Value_with_missing_fill'][
@@ -44,7 +44,7 @@ class TestFill(TestCase):
         self.bfill_compare['Value_with_missing_fill'][
             '2011-01-01T10:00:00':'2011-01-01T13:00:00'] = 9
 
-        self.bfill_compare_cli = capture(tsutils._printiso, self.bfill_compare)
+        self.bfill_compare_cli = capture.capture(tsutils._printiso, self.bfill_compare)
 
         self.linear_compare = self.ats.copy()
         self.linear_compare['Value_with_missing_fill'][
@@ -58,7 +58,7 @@ class TestFill(TestCase):
         self.linear_compare['Value_with_missing_fill'][
             '2011-01-01T13:00:00'] = 9.0
 
-        self.linear_compare_cli = capture(tsutils._printiso,
+        self.linear_compare_cli = capture.capture(tsutils._printiso,
                                           self.linear_compare)
 
         self.nearest_compare = self.ats.copy()
@@ -67,7 +67,7 @@ class TestFill(TestCase):
         self.nearest_compare['Value_with_missing_fill'][
             '2011-01-01T12:00:00':'2011-01-01T13:00:00'] = 9.0
 
-        self.nearest_compare_cli = capture(tsutils._printiso,
+        self.nearest_compare_cli = capture.capture(tsutils._printiso,
                                            self.nearest_compare)
 
         self.mean_compare = self.ats.copy()
@@ -90,7 +90,7 @@ class TestFill(TestCase):
         self.mean_compare['Value_with_missing_fill'][
             '2011-01-01T23:00:00'] = 2.4210526315789473
 
-        self.mean_compare_cli = capture(tsutils._printiso, self.mean_compare)
+        self.mean_compare_cli = capture.capture(tsutils._printiso, self.mean_compare)
 
     def test_fill_ffill_direct(self):
         ''' Test forward fill API.

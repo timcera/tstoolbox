@@ -12,9 +12,11 @@ from pandas.util.testing import TestCase
 
 from tstoolbox import tstoolbox
 
-from capture import capture
+from . import capture
+
 
 class TestFDC(TestCase):
+
     def linebyline(self, out, teststr):
         for test1, test2 in zip(out.decode().split('\n'), teststr.split('\n')):
             if not test1:
@@ -32,8 +34,8 @@ class TestFDC(TestCase):
     def test_flat_norm(self):
         ''' Test linear ramp CLI calculation of the FDC.
         '''
-        out = capture(tstoolbox.calculate_fdc,
-                      input_ts='tests/data_flat_01.csv')
+        out = capture.capture(tstoolbox.calculate_fdc,
+                              input_ts='tests/data_flat_01.csv')
         teststr = """Exceedance, Value, Exceedance_Label
 -1.78615556126, 2, 0.037037037037
 -1.44610359292, 2, 0.0740740740741
@@ -67,9 +69,9 @@ class TestFDC(TestCase):
     def test_flat_linear(self):
         ''' Test FDC API with linear plotting position.
         '''
-        out = capture(tstoolbox.calculate_fdc,
-                      plotting_position='california',
-                      input_ts='tests/data_flat_01.csv')
+        out = capture.capture(tstoolbox.calculate_fdc,
+                              plotting_position='california',
+                              input_ts='tests/data_flat_01.csv')
         teststr = """Exceedance, Value, Exceedance_Label
 0.037037037037, 2, 0.037037037037
 0.0740740740741, 2, 0.0740740740741
@@ -103,9 +105,9 @@ class TestFDC(TestCase):
     def test_sunspot(self):
         ''' Test normal plotting position FDC API.
         '''
-        out = capture(tstoolbox.calculate_fdc,
-                      plotting_position='weibull',
-                      input_ts='tests/data_sunspot.csv')
+        out = capture.capture(tstoolbox.calculate_fdc,
+                              plotting_position='weibull',
+                              input_ts='tests/data_sunspot.csv')
         fp = open('tests/sunspot_area_fdc_compare.txt', 'r')
         teststr = ''.join(fp.readlines())
         self.linebyline(out, teststr)

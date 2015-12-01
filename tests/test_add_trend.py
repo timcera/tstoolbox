@@ -15,8 +15,6 @@ import subprocess
 
 from tstoolbox import tstoolbox
 
-from capture import capture
-
 
 class TestAddTrend(TestCase):
     def setUp(self):

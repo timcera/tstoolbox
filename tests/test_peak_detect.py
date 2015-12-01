@@ -16,7 +16,6 @@ import pandas as pd
 
 from tstoolbox import tstoolbox
 
-from capture import capture
 
 output_peak_detection = b'''Datetime,0,0_peak,0_valley
 2000-01-01 00:00:00,0,,

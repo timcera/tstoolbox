@@ -13,7 +13,7 @@ import subprocess
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
 
-from capture import capture
+from . import capture
 
 import pandas as pd
 
@@ -25,7 +25,7 @@ class TestDate_slice(TestCase):
     def setUp(self):
         dr = pd.date_range('2011-01-01T12:00:00', periods=3, freq='H')
         self.date_slice = pd.DataFrame([2, 2, 2], index=dr, columns=['Value'])
-        self.date_slice_cli = capture(tsutils._printiso, self.date_slice)
+        self.date_slice_cli = capture.capture(tsutils._printiso, self.date_slice)
 
     def test_date_slice(self):
         ''' Test date_slice API

@@ -13,7 +13,7 @@ import subprocess
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
 
-from capture import capture
+from . import capture
 
 import pandas as pd
 
@@ -22,15 +22,16 @@ import tstoolbox.tsutils as tsutils
 
 
 class TestDescribe(TestCase):
+
     def setUp(self):
         index = ['count', 'mean', 'std', 'min', '25%', '50%', '75%', 'max']
         self.date_slice = pd.DataFrame([1672.000000, 836.905383,
-            843.901292, 0.000000, 158.425000, 578.800000, 1253.450000,
-            4902.000000], index=index, columns=['Area'])
+                                        843.901292, 0.000000, 158.425000, 578.800000, 1253.450000,
+                                        4902.000000], index=index, columns=['Area'])
         self.date_slice.index.name = 'Statistic'
-        self.date_slice_cli = capture(tsutils._printiso,
-                                      self.date_slice,
-                                      force_print_index=True)
+        self.date_slice_cli = capture.capture(tsutils._printiso,
+                                              self.date_slice,
+                                              force_print_index=True)
         self.date_slice.index.name = 'UniqueID'
 
     def test_describe(self):

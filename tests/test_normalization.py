@@ -17,7 +17,6 @@ import pandas as pd
 from tstoolbox import tstoolbox
 import tstoolbox.tsutils as tsutils
 
-from capture import capture
 
 class TestDescribe(TestCase):
     def setUp(self):
@@ -48,4 +47,3 @@ class TestDescribe(TestCase):
         out = tstoolbox.normalization(mode='zscore',
                                       input_ts='tests/data_sunspot.csv')
         assert_frame_equal(out, self.data_zscore)
-

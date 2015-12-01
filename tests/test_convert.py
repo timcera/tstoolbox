@@ -13,8 +13,6 @@ from pandas.util.testing import assert_frame_equal
 import subprocess
 import shlex
 
-from capture import capture
-
 import pandas
 
 from tstoolbox import tstoolbox

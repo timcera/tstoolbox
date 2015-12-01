@@ -17,7 +17,7 @@ import pandas
 from tstoolbox import tstoolbox
 import tstoolbox.tsutils as tsutils
 
-from capture import capture
+from . import capture
 
 class TestPick(TestCase):
     def setUp(self):
@@ -32,7 +32,7 @@ class TestPick(TestCase):
         self.pick_multiple_direct = self.pick_multiple_direct.join(
             pandas.DataFrame(ts1, columns=['Value']))
 
-        self.pick_cli = capture(tsutils._printiso, self.pick_multiple_direct)
+        self.pick_cli = capture.capture(tsutils._printiso, self.pick_multiple_direct)
 
     def test_pick(self):
         ''' Test the pick API by picking the 2nd then the 1st column,

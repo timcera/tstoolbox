@@ -19,7 +19,6 @@ import pandas
 
 from tstoolbox import tstoolbox
 
-from capture import capture
 
 class TestRead(TestCase):
     def setUp(self):
