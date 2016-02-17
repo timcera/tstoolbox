@@ -8,6 +8,8 @@ test_createts
 Tests for `tstoolbox` module.
 """
 
+from __future__ import print_function
+
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal, assert_index_equal
 import shlex

@@ -28,6 +28,8 @@ def common_kwds(input_tsd,
                 pick=None,
                 force_freq=None,
                 groupby=None):
+    '''Collected all common_kwds across sub-commands into this single function.
+    '''
     ntsd = input_tsd
     if pick is not None:
         ntsd = _pick(ntsd, pick)

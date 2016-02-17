@@ -8,6 +8,8 @@ test_peak_detect
 Tests for `tstoolbox` module.
 """
 
+from __future__ import print_function
+
 from pandas.util.testing import TestCase
 from pandas.util.testing import assert_frame_equal
 from pandas.util.testing import assertRaisesRegexp

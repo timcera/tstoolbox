@@ -74,8 +74,8 @@ def createts(
 *   If input_ts is None, then start_date, end_date, and freq must be supplied.
 *   Instead you have:
 *   start_date = {0},
-*   end_date = {0},
-*   freq = {0}
+*   end_date = {1},
+*   freq = {2}
 *
 '''.format(start_date, end_date, freq))
     else:
@@ -1565,6 +1565,8 @@ def _set_ppf(ptype):
         return lognorm.freeze(0.5, loc=0).ppf
     elif ptype == 'weibull':
         def ppf(y):
+            '''Percentage Point Function for the weibull distibution.
+            '''
             return pd.np.log(-pd.np.log((1-pd.np.array(y))))
         return ppf
     elif ptype is None:

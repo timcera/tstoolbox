@@ -132,7 +132,7 @@ def _datacheck_peakdetect(x_axis, y_axis):
         raise ValueError('''
 *
 *   The length of y values must equal the length of x values.  Instead the
-*   length of y values is {0} and the length of x values is {0}.
+*   length of y values is {0} and the length of x values is {1}.
 *
 '''.format(len(y_axis), len(x_axis)))
 
