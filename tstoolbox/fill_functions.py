@@ -13,7 +13,13 @@ from . import tsutils
 
 
 @mando.command
-def fill(method='ffill', interval='guess', print_input=False, input_ts='-'):
+def fill(method='ffill',
+         interval='guess',
+         print_input=False,
+         input_ts='-',
+         start_date=None,
+         end_date=None,
+         columns=None):
     '''
     Fills missing values (NaN) with different methods.  Missing values can
         occur because of NaN, or because the time series is sparse.  The
@@ -43,8 +49,19 @@ def fill(method='ffill', interval='guess', print_input=False, input_ts='-'):
         in the output table.  Default is 'False'.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
         or '-' for stdin.
+    :param -s, --start_date <str>:  The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param -e, --end_date <str>:  The end_date of the series in ISOdatetime
+        format, or 'None' for end.
+    :param columns:  Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first column.
+        To pick multiple columns; separate by commas with no spaces.  As used
+        in 'pick' command.
     '''
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dense=False),
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns)
     if print_input is True:
         ntsd = tsd.copy()
     else:
