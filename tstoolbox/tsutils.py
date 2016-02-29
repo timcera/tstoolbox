@@ -100,7 +100,7 @@ def _pick(tsd, columns):
             # Use the -1 marker to indicate index
             jtsd = pd.DataFrame(tsd.index)
         else:
-            jtsd = pd.DataFrame(tsd[tsd.columns[col - 1]])
+            jtsd = pd.DataFrame(tsd[tsd.columns[col]])
 
         newtsd = newtsd.join(jtsd,
                              lsuffix='_{0}'.format(index), how='outer')
