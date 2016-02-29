@@ -121,7 +121,7 @@ def filter(filter_type,
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -252,7 +252,7 @@ def read(filenames, start_date=None, end_date=None, dense=False,
   which is the union, 'inner' is the intersection,
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -295,7 +295,7 @@ def date_slice(float_format='%g',
   for stdin.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -320,7 +320,7 @@ def describe(input_ts='-', transpose=False, start_date=None, end_date=None, colu
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -393,7 +393,7 @@ def peak_detection(method='rel',
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -509,7 +509,7 @@ def convert(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -629,7 +629,7 @@ def equation(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -673,11 +673,11 @@ def equation(
 def pick(columns, input_ts='-', start_date=None, end_date=None):
     '''
  Will pick a column or list of columns from input.  Can use column names or
- column numbers.  If using numbers, column number 1 is the first column.
+ column numbers.  If using numbers, column number 0 is the first data column.
 
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces.
  :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format or '-'
   for stdin.
@@ -713,7 +713,7 @@ def stdtozrxp(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -756,7 +756,7 @@ def tstopickle(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -789,7 +789,7 @@ def accumulate(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -861,7 +861,7 @@ def rolling_window(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
  :param groupby:  Time offset to groupby.  Any PANDAS time offset.
@@ -1168,7 +1168,7 @@ def aggregate(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -1219,7 +1219,7 @@ def clip(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -1270,7 +1270,7 @@ def add_trend(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -1308,7 +1308,7 @@ def remove_trend(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -1359,7 +1359,7 @@ def calculate_fdc(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
  :param sort_order <str>:  Either 'ascending' or 'descending'.  Defaults to
@@ -1431,7 +1431,7 @@ def stack(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -1491,7 +1491,7 @@ def unstack(
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -1823,7 +1823,7 @@ def plot(
   NANs from beginning and end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
  :param force_freq:  Force this frequency for the plot.  WARNING: you may
@@ -2355,7 +2355,7 @@ def dtw(window=10000,
 
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -2397,7 +2397,7 @@ def pca(n_components=None,
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''
@@ -2459,7 +2459,7 @@ def normalization(mode='minmax',
   'None' for end.
  :param columns:  Columns to pick out of input.  Can use column names
   or column numbers.  If using numbers, column number
-  1 is the first column.  To pick multiple columns;
+  0 is the first data column.  To pick multiple columns;
   separate by commas with no spaces. As used in 'pick'
   command.
     '''

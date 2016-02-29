@@ -54,7 +54,7 @@ def fill(method='ffill',
     :param -e, --end_date <str>:  The end_date of the series in ISOdatetime
         format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first column.
+        column numbers.  If using numbers, column number 0 is the first column.
         To pick multiple columns; separate by commas with no spaces.  As used
         in 'pick' command.
     '''
