@@ -10,7 +10,7 @@ Tests for `tstoolbox` module.
 import shlex
 import subprocess
 from pandas.util.testing import TestCase
-from pandas.util.testing import assert_frame_equal
+from pandas.util.testing import assert_frame_equal, assertRaisesRegexp
 
 import pandas as pd
 
@@ -92,6 +92,94 @@ class TestFill(TestCase):
 
         self.mean_compare_cli = capture.capture(tsutils._printiso, self.mean_compare)
 
+        self.median_compare = self.ats.copy()
+        self.median_compare['Value_with_missing_fill'][
+            '2011-01-01T01:00:00'] = 2.0
+        self.median_compare['Value_with_missing_fill'][
+            '2011-01-01T09:00:00'] = 3.0
+        self.median_compare['Value_with_missing_fill'][
+            '2011-01-01T10:00:00'] = 2.0
+        self.median_compare['Value_with_missing_fill'][
+            '2011-01-01T11:00:00'] = 2.0
+        self.median_compare['Value_with_missing_fill'][
+            '2011-01-01T12:00:00'] = 2.0
+        self.median_compare['Value_with_missing_fill'][
+            '2011-01-01T13:00:00'] = 9.0
+        self.median_compare['Value_with_missing_fill'][
+            '2011-01-01T16:00:00'] = 2.0
+        self.median_compare['Value_with_missing_fill'][
+            '2011-01-01T22:00:00'] = 2.0
+        self.median_compare['Value_with_missing_fill'][
+            '2011-01-01T23:00:00'] = 2.0
+
+        self.median_compare_cli = capture.capture(tsutils._printiso, self.median_compare)
+
+        self.max_compare = self.ats.copy()
+        self.max_compare['Value_with_missing_fill'][
+            '2011-01-01T01:00:00'] = 9.0
+        self.max_compare['Value_with_missing_fill'][
+            '2011-01-01T09:00:00'] = 3.0
+        self.max_compare['Value_with_missing_fill'][
+            '2011-01-01T10:00:00'] = 9.0
+        self.max_compare['Value_with_missing_fill'][
+            '2011-01-01T11:00:00'] = 9.0
+        self.max_compare['Value_with_missing_fill'][
+            '2011-01-01T12:00:00'] = 9.0
+        self.max_compare['Value_with_missing_fill'][
+            '2011-01-01T13:00:00'] = 9.0
+        self.max_compare['Value_with_missing_fill'][
+            '2011-01-01T16:00:00'] = 9.0
+        self.max_compare['Value_with_missing_fill'][
+            '2011-01-01T22:00:00'] = 9.0
+        self.max_compare['Value_with_missing_fill'][
+            '2011-01-01T23:00:00'] = 9.0
+
+        self.max_compare_cli = capture.capture(tsutils._printiso, self.max_compare)
+
+        self.min_compare = self.ats.copy()
+        self.min_compare['Value_with_missing_fill'][
+            '2011-01-01T01:00:00'] = 2.0
+        self.min_compare['Value_with_missing_fill'][
+            '2011-01-01T09:00:00'] = 3.0
+        self.min_compare['Value_with_missing_fill'][
+            '2011-01-01T10:00:00'] = 2.0
+        self.min_compare['Value_with_missing_fill'][
+            '2011-01-01T11:00:00'] = 2.0
+        self.min_compare['Value_with_missing_fill'][
+            '2011-01-01T12:00:00'] = 2.0
+        self.min_compare['Value_with_missing_fill'][
+            '2011-01-01T13:00:00'] = 9.0
+        self.min_compare['Value_with_missing_fill'][
+            '2011-01-01T16:00:00'] = 2.0
+        self.min_compare['Value_with_missing_fill'][
+            '2011-01-01T22:00:00'] = 2.0
+        self.min_compare['Value_with_missing_fill'][
+            '2011-01-01T23:00:00'] = 2.0
+
+        self.min_compare_cli = capture.capture(tsutils._printiso, self.min_compare)
+
+        self.con_compare = self.ats.copy()
+        self.con_compare['Value_with_missing_fill'][
+            '2011-01-01T01:00:00'] = 2.42
+        self.con_compare['Value_with_missing_fill'][
+            '2011-01-01T09:00:00'] = 3.0
+        self.con_compare['Value_with_missing_fill'][
+            '2011-01-01T10:00:00'] = 2.42
+        self.con_compare['Value_with_missing_fill'][
+            '2011-01-01T11:00:00'] = 2.42
+        self.con_compare['Value_with_missing_fill'][
+            '2011-01-01T12:00:00'] = 2.42
+        self.con_compare['Value_with_missing_fill'][
+            '2011-01-01T13:00:00'] = 9.0
+        self.con_compare['Value_with_missing_fill'][
+            '2011-01-01T16:00:00'] = 2.42
+        self.con_compare['Value_with_missing_fill'][
+            '2011-01-01T22:00:00'] = 2.42
+        self.con_compare['Value_with_missing_fill'][
+            '2011-01-01T23:00:00'] = 2.42
+
+        self.con_compare_cli = capture.capture(tsutils._printiso, self.con_compare)
+
     def test_fill_ffill_direct(self):
         ''' Test forward fill API.
         '''
@@ -130,6 +218,46 @@ class TestFill(TestCase):
             input_ts='tests/data_missing.csv')
         self.maxDiff = None
         assert_frame_equal(out, self.mean_compare)
+
+    def test_fill_median(self):
+        ''' Test fill with median API.
+        '''
+        out = tstoolbox.fill(method='median',
+            input_ts='tests/data_missing.csv')
+        self.maxDiff = None
+        assert_frame_equal(out, self.median_compare)
+
+    def test_fill_max(self):
+        ''' Test fill with max API.
+        '''
+        out = tstoolbox.fill(method='max',
+            input_ts='tests/data_missing.csv')
+        self.maxDiff = None
+        assert_frame_equal(out, self.max_compare)
+
+    def test_fill_min(self):
+        ''' Test fill with min API.
+        '''
+        out = tstoolbox.fill(method='min',
+            input_ts='tests/data_missing.csv')
+        self.minDiff = None
+        assert_frame_equal(out, self.min_compare)
+
+    def test_fill_con(self):
+        ''' Test fill with con API.
+        '''
+        out = tstoolbox.fill(method=2.42,
+            input_ts='tests/data_missing.csv')
+        self.conDiff = None
+        assert_frame_equal(out, self.con_compare)
+
+    def test_fill_value(self):
+        ''' Test fill with value API.
+        '''
+        with assertRaisesRegexp(ValueError,
+                r"The allowable values for 'method' are"):
+            out = tstoolbox.fill(method='a',
+                input_ts='tests/data_missing.csv')
 
     def test_fill_ffill_cli(self):
         ''' Test forward fill CLI

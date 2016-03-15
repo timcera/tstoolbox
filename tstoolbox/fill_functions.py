@@ -96,7 +96,13 @@ def fill(method='ffill',
         try:
             ntsd = ntsd.fillna(value=float(method))
         except ValueError:
-            pass
+            raise ValueError('''
+*
+*   The allowable values for 'method' are 'ffill', 'bfill', 'linear',
+*   'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'mean', 'median',
+*   'max', 'min' or a number.  Instead you have {0}.
+*
+'''.format(method))
     ntsd = ntsd.iloc[1:-1]
     tsd.index.name = 'Datetime'
     ntsd.index.name = 'Datetime'

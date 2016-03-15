@@ -34,6 +34,22 @@ class TestPlot(TestCase):
         print(results)
         assert False
 
+    def test_sine_no_legend(self):
+        plt = tstoolbox.plot(input_ts=self.df, ofilename=None, legend=False)
+        plt.savefig(self.fname)
+
+        # different versions of matplotlib have slightly different fonts so I
+        # set the tolerance pretty high to account for this problem.
+        results = compare_images('tests/baseline_images/test_plot/sine_no_legend.png',
+                                 self.fname,
+                                 10)
+        if results is None:
+            return True
+        base, ext = os.path.splitext(self.fname)
+        os.remove('%s-%s%s' % (base, 'failed-diff', ext))
+        print(results)
+        assert False
+
     def tearDown(self):
         ''' Remove the temporary files.
         '''
