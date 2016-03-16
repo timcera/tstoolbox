@@ -9,12 +9,11 @@ Tests for `tstoolbox` module.
 """
 
 from __future__ import print_function
-
-from pandas.util.testing import TestCase
-from pandas.util.testing import assert_frame_equal, assert_index_equal
 import shlex
 import subprocess
 
+from pandas.util.testing import TestCase
+from pandas.util.testing import assert_frame_equal, assert_index_equal, assertRaisesRegexp
 import pandas as pd
 
 from tstoolbox import tstoolbox
@@ -38,7 +37,7 @@ class TestRead(TestCase):
         print(out1)
         assert_index_equal(out, out1)
 
-    def test_unstack_from_dates(self):
+    def test_createts_from_dates(self):
         ''' create a ts file from start/end dates and freq
         '''
         sdate = self.data.index[0]
@@ -48,3 +47,9 @@ class TestRead(TestCase):
         out = tstoolbox.createts(start_date=sdate, end_date=edate, freq=freq).index
         out.name = 'Datetime'
         assert_index_equal(out, self.data.index)
+
+    def test_exception(self):
+        with assertRaisesRegexp(ValueError,
+                r"If input_ts is None, then start_date, end_date"):
+            out = tstoolbox.createts()
+

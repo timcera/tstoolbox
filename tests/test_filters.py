@@ -88,6 +88,28 @@ class TestFilter(TestCase):
                                cutoff_period=50)
         self.maxDiff = None
         assert_frame_equal(out, self.fft_lowpass)
+
+    def test_small_window_len(self):
+        out = tstoolbox.filter('flat',
+                               input_ts='tests/data_sine.csv',
+                               window_len=2)
+        out1 = tstoolbox.read('tests/data_sine.csv')
+        out1.columns = ['Value_filter']
+        # NOp
+        assert_frame_equal(out, out1)
+
+    def test_large_window_len(self):
+        with assertRaisesRegexp(ValueError,
+                "Input vector \(length="):
+            out = tstoolbox.filter('flat',
+                                   input_ts='tests/data_sine.csv',
+                                   window_len=1000)
+
+    def test_filter_type(self):
+        with assertRaisesRegexp(ValueError,
+                r"Filter type "):
+            out = tstoolbox.filter('flatter',
+                                   input_ts='tests/data_sine.csv')
 #
 #    def test_filter_fft_highpass(self):
 #        out = tstoolbox.filter('fft_highpass',
