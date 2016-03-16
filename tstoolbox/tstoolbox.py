@@ -176,62 +176,6 @@ def filter(filter_type,
                                float_format=float_format)
 
 
-def zero_crossings(y_axis, window=11):
-    """
-    Algorithm to find zero crossings. Smooths the curve and finds the
-    zero-crossings by looking for a sign change.
-
-
-    keyword arguments:
-    y_axis -- A list containing the signal over which to find zero-crossings
-    window -- the dimension of the smoothing window; should be an odd integer
-        (default: 11)
-
-    return -- the index for each zero-crossing
-    """
-    # smooth the curve
-    length = len(y_axis)
-    x_axis = pd.np.asarray(range(length), int)
-
-    ymean = y_axis.mean()
-    y_axis = y_axis - ymean
-
-    # discard tail of smoothed signal
-    y_axis = _smooth(y_axis, window)[:length]
-    zero_crossings = pd.np.where(pd.np.diff(pd.np.sign(y_axis)))[0]
-    indices = [x_axis[index] for index in zero_crossings]
-
-    # check if zero-crossings are valid
-#    diff = np.diff(indices)
-#    if diff.std() / diff.mean() > 0.2:
-#        print diff.std() / diff.mean()
-#        print np.diff(indices)
-#        raise(ValueError,
-#            "False zero-crossings found, indicates problem {0} or {1}".format(
-#            "with smoothing window", "problem with offset"))
-    # check if any zero crossings were found
-    if len(zero_crossings) < 1:
-        raise ValueError
-
-    return indices
-    # used this to test the fft function's sensitivity to spectral leakage
-    # return indices + np.asarray(30 * np.random.randn(len(indices)), int)
-
-# Frequency calculation#############################
-#    diff = np.diff(indices)
-#    time_p_period = diff.mean()
-#
-#    if diff.std() / time_p_period > 0.1:
-#        raise ValueError,
-#            "smoothing window too small, false zero-crossing found"
-#
-#    #return frequency
-#    return 1.0 / time_p_period
-##############################################################################
-
-    # return tsutils.print_input(print_input, tsd, tmptsd, '_filter')
-
-
 @mando.command
 def read(filenames, start_date=None, end_date=None, dense=False,
          float_format='%g', how='outer', columns=None):
@@ -814,7 +758,7 @@ def accumulate(
     return tsutils.print_input(print_input, tsd, ntsd, '_' + statistic)
 
 
-@mando.command
+@mando.command(formatter_class=RawTextHelpFormatter)
 def rolling_window(
         span=None,
         statistic='mean',
