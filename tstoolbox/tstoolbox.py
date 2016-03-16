@@ -760,7 +760,7 @@ def accumulate(
 
 @mando.command(formatter_class=RawTextHelpFormatter)
 def rolling_window(
-        span=None,
+        span=2,
         statistic='mean',
         wintype=None,
         center=False,
@@ -867,9 +867,6 @@ def rolling_window(
 
   Defaults to None.
     '''
-    if span is None:
-        span = 2
-
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
