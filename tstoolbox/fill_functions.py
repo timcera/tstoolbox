@@ -20,10 +20,10 @@ def fill(method='ffill',
          start_date=None,
          end_date=None,
          columns=None):
-    '''
-    Fills missing values (NaN) with different methods.  Missing values can
-        occur because of NaN, or because the time series is sparse.  The
-        'interval' option can insert NaNs to create a dense time series.
+    '''Fills missing values (NaN) with different methods.  Missing
+       values can occur because of NaN, or because the time series is
+       sparse.  The 'interval' option can insert NaNs to create a dense
+       time series.
 
     :param method: String contained in single quotes or a number that
         defines the method to use for filling.
@@ -45,18 +45,18 @@ def fill(method='ffill',
     :param interval: Will try to insert missing intervals.  Can give any
         of the pandas offset aliases, 'guess' (to try and figure the
         interval), or None to not insert missing intervals.
-    :param -p, --print_input: If set to 'True' will include the input columns
-        in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param columns:  Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 0 is the first column.
-        To pick multiple columns; separate by commas with no spaces.  As used
-        in 'pick' command.
+    :param -p, --print_input: If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value'
+        format or '-' for stdin.
+    :param -s, --start_date <str>:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param -e, --end_date <str>:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param columns:  Columns to pick out of input.  Can use column names
+        or column numbers.  If using numbers, column number 0 is the
+        first column.  To pick multiple columns; separate by commas with
+        no spaces.  As used in 'pick' command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dense=False),
                               start_date=start_date,
@@ -117,20 +117,21 @@ def fill_by_correlation(method='move2',
                         choose_best='dtw',
                         print_input=False,
                         input_ts='-'):
-    '''
-    Fills missing values (NaN) with different methods.  Missing values can
-        occur because of NaN, or because the time series is sparse.  The
-        'interval' option can insert NaNs to create a dense time series.
+    '''Fills missing values (NaN) with different methods.  Missing
+       values can occur because of NaN, or because the time series is
+       sparse.  The 'interval' option can insert NaNs to create a dense
+       time series.
+
     :param method: String contained in single quotes or a number that
-        defines the method to use for filling.
-        'move2': maintenance of variance extension - 2
+        defines the method to use for filling.  'move2': maintenance of
+        variance extension - 2
     :param interval: Will try to insert missing intervals.  Can give any
         of the pandas offset aliases, 'guess' (to try and figure the
         interval), or None to not insert missing intervals.
-    :param -p, --print_input: If set to 'True' will include the input columns
-        in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
+    :param -p, --print_input: If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
+    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value'
+        format or '-' for stdin.
     '''
     tsd = tsutils.read_iso_ts(input_ts)
     if print_input is True:
