@@ -16,7 +16,7 @@ pkgs="\
      flake8 \
      "
 
-envs=(2.6 2.7 3.3 3.4)
+envs=(2.6 2.7 3.3 3.4 3.5)
 
 for env in ${envs[@]}; do
     echo "${env}"
@@ -30,7 +30,8 @@ for env in ${envs[@]}; do
     fi
 
     source activate python${env}
-    pip install mando
+    conda update pip
+    pip install --no-deps --upgrade ../mando/
     if [[ ${env} == '2.6' ]]; then pip install argparse; fi
     pip uninstall -y ${program}
     rm -rf build
@@ -46,9 +47,15 @@ for env in ${envs[@]}; do
 done
 
 
+source activate python3.4
+
 coverage erase
 coverage run `which nosetests` --with-doctest
 coverage report --include="tstoolbox/*" --omit="tests/*"
 coverage html --include="tstoolbox/*" --omit="tests/*"
 flake8 tstoolbox/__init__.py tstoolbox/tsutils.py --exit-zero
+
+cd docsrc
+make clean
+make html
 
