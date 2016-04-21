@@ -402,10 +402,10 @@ def peak_detection(method='rel',
             datavals = maxpeak
         if c[-7:] == '_valley':
             datavals = minpeak
-        maxx, maxy = list(zip(*datavals))
-        hold = tmptsd[c][array(maxx).astype('i')]
+        maxx, _ = list(zip(*datavals))
+        hold = tmptsd[c][pd.np.array(maxx).astype('i')]
         tmptsd[c][:] = pd.np.nan
-        tmptsd[c][array(maxx).astype('i')] = hold
+        tmptsd[c][pd.np.array(maxx).astype('i')] = hold
 
     tmptsd.index.name = 'Datetime'
     tsd.index.name = 'Datetime'
@@ -448,7 +448,7 @@ def convert(
                              pick=columns)
     tmptsd = tsd * factor + offset
     return tsutils.print_input(print_input, tsd, tmptsd, '_convert',
-                               float_format='%g')
+                               float_format=float_format)
 
 
 def _parse_equation(equation):
@@ -972,7 +972,7 @@ def rolling_window(
     else:
         for nspan in str(span).split(','):
             jtsd = pd.DataFrame()
-            for name, gb in tsd:
+            for _, gb in tsd:
                 # Assume span should be yearly if 365 or 366 and you have
                 # groupby yearly.
                 xspan = nspan
@@ -1000,7 +1000,6 @@ def aggregate(
         statistic='mean',
         agg_interval='daily',
         ninterval=1,
-        start_interval=1,
         print_input=False,
         input_ts='-',
         start_date=None,
@@ -1096,10 +1095,7 @@ def aggregate(
             'monthly': 'M',
             'yearly': 'A'
            }
-    try:
-        agg_interval = aggd[agg_interval]
-    except KeyError:
-        pass
+    agg_interval = aggd.get(agg_interval, agg_interval)
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1570,6 +1566,7 @@ def plot(
         end_date=None,
         label_rotation=None,
         label_skip=1,
+        force_freq=None,
         drawstyle='default',
         por=False,
         columns=None,
@@ -1922,7 +1919,6 @@ def plot(
         style = style.split(',')
 
     if logx is True or logy is True or norm_xaxis is True:
-        import warnings
         warnings.warn('''
 *
 *   The --logx, --logy, and --norm_xaxis  options are deprecated.
@@ -1940,7 +1936,6 @@ def plot(
         xaxis = 'normal'
         if logx is True:
             logx = False
-            import warnings
             warnings.warn('''
 *
 *   The --type={1} cannot also have the xaxis set to {0}.
@@ -1952,7 +1947,6 @@ def plot(
         yaxis = 'normal'
         if logy is True:
             logy = False
-            import warnings
             warnings.warn('''
 *
 *   The --type={1} cannot also have the yaxis set to {0}.
@@ -1985,7 +1979,7 @@ def plot(
         # if you wanted lines between markers.
         # Fell back to using raw matplotlib.
         # Boy I do not like matplotlib.
-        fig, ax = plt.subplots(figsize=figsize)
+        _, ax = plt.subplots(figsize=figsize)
         if style is None:
             if type in ['xy']:
                 style = zip(colors*(len(tsd.columns)//len(colors) + 1),

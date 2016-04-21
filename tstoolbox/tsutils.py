@@ -171,12 +171,13 @@ _weeklies = {
 def asbestfreq(data, force_freq=None):
     '''
     This uses several techniques.
-    1. If data.index.freqstr is None, just return.
-    2. If force_freq or data.index.inferred_freq is set use .asfreq.
-    3. Use pd.infer_freq - fails if any missing
-    4. Use .is_* functions to establish A, AS, A-*, AS-*, Q, QS, M, MS
-    5. Use minimum interval to establish the fixed time periods up to weekly
-    6. Gives up returning None for PANDAS offset string
+    1. If force_freq is set use .asfreq.
+    2. If data.index.freq is not None, just return.
+    3. If data.index.inferred_freq is set use .asfreq.
+    4. Use pd.infer_freq - fails if any missing
+    5. Use .is_* functions to establish A, AS, A-*, AS-*, Q, QS, M, MS
+    6. Use minimum interval to establish the fixed time periods up to weekly
+    7. Gives up returning None for PANDAS offset string
     '''
     if force_freq is not None:
         return data.asfreq(force_freq)

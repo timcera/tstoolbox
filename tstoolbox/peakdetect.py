@@ -173,7 +173,7 @@ def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
         # build list of approximations
         # k = -m as first approximation?
         p0 = (-m, tau, m)
-        popt, pcov = curve_fit(func, x_data, y_data, p0)
+        popt, _ = curve_fit(func, x_data, y_data, p0)
         # retrieve tau and m i.e x and y value of peak
         x, y = popt[1:3]
 
@@ -412,9 +412,9 @@ def _peakdetect_parabola(y_axis, x_axis, points=9):
     min_ = _peakdetect_parabola_fitter(min_raw, x_axis, y_axis, points)
 
     max_peaks = map(lambda x: [x[0], x[1]], max_)
-    max_fitted = map(lambda x: x[-1], max_)
+    # max_fitted = map(lambda x: x[-1], max_)
     min_peaks = map(lambda x: [x[0], x[1]], min_)
-    min_fitted = map(lambda x: x[-1], min_)
+    # min_fitted = map(lambda x: x[-1], min_)
 
     return [max_peaks, min_peaks]
 
@@ -513,7 +513,7 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
 
             # subtract offset from waveshape
             y_data -= offset
-            popt, pcov = curve_fit(func, x_data, y_data, p0)
+            popt, _ = curve_fit(func, x_data, y_data, p0)
             # retrieve tau and A i.e x and y value of peak
             x = popt[-1]
             y = popt[0]
@@ -533,9 +533,9 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
 
     # structure date for output
     max_peaks = map(lambda x: [x[0], x[1]], fitted_peaks[0])
-    max_fitted = map(lambda x: x[-1], fitted_peaks[0])
+    # max_fitted = map(lambda x: x[-1], fitted_peaks[0])
     min_peaks = map(lambda x: [x[0], x[1]], fitted_peaks[1])
-    min_fitted = map(lambda x: x[-1], fitted_peaks[1])
+    # min_fitted = map(lambda x: x[-1], fitted_peaks[1])
 
     return [max_peaks, min_peaks]
 
@@ -675,7 +675,7 @@ def _smooth(x, window_len=11, window='hanning'):
     if window_len < 3:
         return x
 
-    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
+    if window not in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
         raise ValueError
 
     s = np.r_[x[window_len - 1:0:-1], x, x[-1:-window_len:-1]]
@@ -715,7 +715,7 @@ def zero_crossings(y_axis, window=11):
     indices = [x_axis[index] for index in zero_crossings]
 
     # check if zero-crossings are valid
-    diff = np.diff(indices)
+    # diff = np.diff(indices)
 #    if diff.std() / diff.mean() > 0.2:
 #        print diff.std() / diff.mean()
 #        print np.diff(indices)
