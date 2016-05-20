@@ -30,8 +30,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
               'sphinx.ext.todo',
               'sphinx.ext.coverage',
-              'sphinx.ext.pngmath',
-              'sphinx.ext.mathjax',
+              'sphinx.ext.imgmath',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode',
               'sphinxcontrib.programoutput']
@@ -296,3 +295,4 @@ epub_copyright = u'2013, Tim Cera, P.E.'
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
+

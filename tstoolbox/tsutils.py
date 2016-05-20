@@ -64,7 +64,7 @@ def _pick(tsd, columns):
         else:
             # if using column numbers
             try:
-                target_col = int(i)
+                target_col = int(i) - 1
             except:
                 raise ValueError('''
 *
