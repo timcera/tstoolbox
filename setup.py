@@ -21,10 +21,11 @@ install_requires = [
     # List your project dependencies here.
     # For more details, see:
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
-    'pandas >= 0.8.1',
+    'pandas >= 0.17.1',
     'python-dateutil >= 2.1',
-    'mando >= 0.3.2',
+    'mando >= 0.4',
     'matplotlib',
+    'rst2ansi >= 0.1.5',
 ]
 
 
@@ -43,7 +44,7 @@ setup(name='tstoolbox',
           'License :: OSI Approved :: BSD License',
           'Natural Language :: English',
           'Operating System :: OS Independent',
-          'Programming Language :: Python :: 2',
+          'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
           'Topic :: Scientific/Engineering :: Information Analysis',
           'Topic :: Scientific/Engineering',
