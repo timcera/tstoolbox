@@ -10,7 +10,11 @@ python:
 
 # Install packages
 install:
-  - pip install numpy scipy matplotlib pandas
+  - pip install wheel
+  - pip install numpy 
+  - pip install scipy 
+  - pip install matplotlib 
+  - pip install pandas
   - pip install nose dateutil coverage coveralls mando
   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install argparse; fi
   - python setup.py install
