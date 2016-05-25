@@ -8,8 +8,12 @@ python:
   - 3.4
   - 3.5
 
+before_install:
+  - sudo apt-get install libopenblas liblapack
+
 # Install packages
 install:
+  - pip install --upgrade pip
   - pip install wheel
   - pip install numpy 
   - pip install scipy 
