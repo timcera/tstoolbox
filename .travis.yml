@@ -9,7 +9,7 @@ python:
   - 3.5
 
 before_install:
-  - sudo apt-get install libopenblas liblapack
+  - sudo apt-get install lapack openblas 
 
 # Install packages
 install:
