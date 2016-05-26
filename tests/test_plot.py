@@ -26,7 +26,7 @@ class TestPlot(TestCase):
         # set the tolerance pretty high to account for this problem.
         results = compare_images('tests/baseline_images/test_plot/sine.png',
                                  self.fname,
-                                 10)
+                                 12)
         if results is None:
             return True
         base, ext = os.path.splitext(self.fname)
@@ -42,7 +42,7 @@ class TestPlot(TestCase):
         # set the tolerance pretty high to account for this problem.
         results = compare_images('tests/baseline_images/test_plot/sine_no_legend.png',
                                  self.fname,
-                                 10)
+                                 12)
         if results is None:
             return True
         base, ext = os.path.splitext(self.fname)
