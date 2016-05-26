@@ -1,10 +1,7 @@
 language: python
 
 python:
-  - 2.6
   - 2.7
-  - 3.2
-  - 3.3
   - 3.4
   - 3.5
 
@@ -20,8 +17,7 @@ install:
   - pip install scipy 
   - pip install matplotlib 
   - pip install pandas
-  - pip install nose dateutil coverage coveralls mando
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install argparse; fi
+  - pip install nose coverage coveralls mando
   - python setup.py install
 
 script:
