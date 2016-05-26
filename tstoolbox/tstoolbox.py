@@ -11,7 +11,7 @@ from __future__ import absolute_import
 import sys
 import os.path
 import warnings
-from argparse import RawTextHelpFormatter
+from mando.rst_text_formatter import RSTHelpFormatter
 warnings.filterwarnings('ignore')
 
 import pandas as pd
@@ -41,12 +41,13 @@ _offset_aliases = {
     }
 
 
-@mando.command(formatter_class=RawTextHelpFormatter)
+@mando.command(formatter_class=RSTHelpFormatter)
 def createts(
              input_ts=None,
              start_date=None,
              end_date=None,
-             freq=None
+             freq=None,
+             dense=True,
              ):
     '''Create empty time series.  Just produce the time-stamps.
 
@@ -60,13 +61,17 @@ def createts(
     :param freq:  To use this form --start_date and --end_date must be
         supplied also.  The pandas date offset code used to create the
         index.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     if input_ts is not None:
         columns = None
         tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                                   start_date=start_date,
                                   end_date=end_date,
-                                  pick=columns)
+                                  pick=columns,
+                                  dense=dense)
         tsd = pd.DataFrame(index=tsd.index)
     elif start_date is None or end_date is None or freq is None:
         raise ValueError('''
@@ -85,7 +90,7 @@ def createts(
     return tsutils.printiso(tsd, force_print_index=True)
 
 
-@mando.command(formatter_class=RawTextHelpFormatter)
+@mando.command(formatter_class=RSTHelpFormatter)
 def filter(filter_type,
            print_input=False,
            cutoff_period=None,
@@ -94,7 +99,8 @@ def filter(filter_type,
            input_ts='-',
            start_date=None,
            end_date=None,
-           columns=None):
+           columns=None,
+           dense=True):
     '''Apply different filters to the time-series.
 
     :param filter_type <str>:  'flat', 'hanning', 'hamming', 'bartlett',
@@ -121,6 +127,9 @@ def filter(filter_type,
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -170,10 +179,10 @@ def filter(filter_type,
 *
 '''.format(filter_type))
     return tsutils.print_input(print_input, otsd, tsd, '_filter',
-                               float_format=float_format)
+                               float_format=float_format, dense=dense)
 
 
-@mando.command
+@mando.command(formatter_class=RSTHelpFormatter)
 def read(filenames, start_date=None, end_date=None, dense=False,
          float_format='%g', how='outer', columns=None):
     '''Collect time series from a list of pickle or csv files then print
@@ -186,14 +195,19 @@ def read(filenames, start_date=None, end_date=None, dense=False,
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval.
-    :param how <str>:  Use PANDAS concept on how to join the separate
+        such that there is a single interval over the entire time
+        series.
+    :param how <str>:  Use PANDAS concept on how to join
+        the separate
         DataFrames read from each file.  Default how='outer' which is
         the union, 'inner' is the intersection,
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     filenames = filenames.split(',')
     result = pd.concat([tsutils.common_kwds(
@@ -217,12 +231,13 @@ def read(filenames, start_date=None, end_date=None, dense=False,
     return tsutils.printiso(result, float_format=float_format)
 
 
-@mando.command
+@mando.command(formatter_class=RSTHelpFormatter)
 def date_slice(float_format='%g',
                start_date=None,
                end_date=None,
                input_ts='-',
-               columns=None):
+               columns=None,
+               dense=True):
     '''Prints out data to the screen between start_date and end_date
 
     :param -s, --start_date <str>:  The start_date of the series in
@@ -235,6 +250,9 @@ def date_slice(float_format='%g',
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     return tsutils.printiso(
         tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
@@ -243,8 +261,14 @@ def date_slice(float_format='%g',
                            pick=columns), float_format=float_format)
 
 
-@mando.command
-def describe(input_ts='-', transpose=False, start_date=None, end_date=None, columns=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def describe(input_ts='-',
+             transpose=False,
+             start_date=None,
+             end_date=None,
+             columns=None,
+             dense=True,
+            ):
     '''Prints out statistics for the time-series.
 
     :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
@@ -259,6 +283,9 @@ def describe(input_ts='-', transpose=False, start_date=None, end_date=None, colu
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
@@ -274,7 +301,7 @@ def describe(input_ts='-', transpose=False, start_date=None, end_date=None, colu
                             force_print_index=True)
 
 
-@mando.command
+@mando.command(formatter_class=RSTHelpFormatter)
 def peak_detection(method='rel',
                    type='peak',
                    window=24,
@@ -286,7 +313,9 @@ def peak_detection(method='rel',
                    input_ts='-',
                    start_date=None,
                    end_date=None,
-                   columns=None):
+                   columns=None,
+                   dense=True,
+                  ):
     '''Peak and valley detection.
 
     :param type <str>:  'peak', 'valley', or 'both' to determine what
@@ -327,6 +356,9 @@ def peak_detection(method='rel',
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
@@ -413,16 +445,17 @@ def peak_detection(method='rel',
                                float_format=float_format)
 
 
-@mando.command
-def convert(
-        factor=1.0,
-        offset=0.0,
-        print_input=False,
-        float_format='%g',
-        input_ts='-',
-        start_date=None,
-        end_date=None,
-        columns=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def convert(factor=1.0,
+            offset=0.0,
+            print_input=False,
+            float_format='%g',
+            input_ts='-',
+            start_date=None,
+            end_date=None,
+            columns=None,
+            dense=True
+           ):
     '''Converts values of a time series by applying a factor and offset.
        See the 'equation' subcommand for a generalized form of this
        command.
@@ -441,6 +474,9 @@ def convert(
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -521,15 +557,16 @@ def _parse_equation(equation):
         pass
     return tsearch, nsearch, testeval, nequation
 
-@mando.command
-def equation(
-        equation,
-        print_input='',
-        float_format='%g',
-        input_ts='-',
-        start_date=None,
-        end_date=None,
-        columns=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def equation(equation,
+             print_input='',
+             float_format='%g',
+             input_ts='-',
+             start_date=None,
+             end_date=None,
+             columns=None,
+             dense=True
+            ):
     '''Applies <equation> to the time series data.  The <equation>
        argument is a string contained in single quotes with 'x' used as
        the variable representing the input.  For example, '(1
@@ -564,6 +601,9 @@ def equation(
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                            start_date=start_date,
@@ -601,8 +641,13 @@ def equation(
                                float_format=float_format)
 
 
-@mando.command
-def pick(columns, input_ts='-', start_date=None, end_date=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def pick(columns,
+         input_ts='-',
+         start_date=None,
+         end_date=None,
+         dense=True,
+        ):
     '''Will pick a column or list of columns from input.  Can use column
        names or column numbers.  If using numbers, column number 0 is
        the first data column.
@@ -617,6 +662,9 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
         ISOdatetime format, or 'None' for beginning.
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     return tsutils.printiso(
                tsutils.common_kwds(
@@ -626,13 +674,14 @@ def pick(columns, input_ts='-', start_date=None, end_date=None):
                    pick=columns))
 
 
-@mando.command
-def stdtozrxp(
-        rexchange=None,
-        input_ts='-',
-        start_date=None,
-        end_date=None,
-        columns=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def stdtozrxp(rexchange=None,
+              input_ts='-',
+              start_date=None,
+              end_date=None,
+              columns=None,
+              dense=True
+             ):
     '''Prints out data to the screen in a WISKI ZRXP format.
 
     :param rexchange:  The REXCHANGE ID to be written into the zrxp
@@ -647,6 +696,9 @@ def stdtozrxp(
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -667,13 +719,14 @@ def stdtozrxp(
                    tsd.index[i], tsd[tsd.columns[0]][i]))
 
 
-@mando.command
-def tstopickle(
-        filename,
-        input_ts='-',
-        start_date=None,
-        end_date=None,
-        columns=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def tstopickle(filename,
+               input_ts='-',
+               start_date=None,
+               end_date=None,
+               columns=None,
+               dense=True,
+              ):
     '''Pickles the data into a Python pickled file.  Can be brought back
        into Python with 'pickle.load' or 'numpy.load'.  See also
        'tstoolbox read'.
@@ -689,6 +742,9 @@ def tstopickle(
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -697,14 +753,15 @@ def tstopickle(
     pd.core.common.save(tsd, filename)
 
 
-@mando.command
-def accumulate(
-        statistic='sum',
-        print_input=False,
-        input_ts='-',
-        start_date=None,
-        end_date=None,
-        columns=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def accumulate(statistic='sum',
+               print_input=False,
+               input_ts='-',
+               start_date=None,
+               end_date=None,
+               columns=None,
+               dense=True,
+              ):
     '''Calculates accumulating statistics.
 
     :param statistic <str>:  'sum', 'max', 'min', 'prod', defaults to
@@ -721,6 +778,9 @@ def accumulate(
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -743,22 +803,23 @@ def accumulate(
     return tsutils.print_input(print_input, tsd, ntsd, '_' + statistic)
 
 
-@mando.command(formatter_class=RawTextHelpFormatter)
-def rolling_window(
-        span=2,
-        statistic='mean',
-        wintype=None,
-        center=False,
-        print_input=False,
-        input_ts='-',
-        start_date=None,
-        end_date=None,
-        columns=None,
-        freq=None,
-        groupby=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def rolling_window(span=2,
+                   statistic='mean',
+                   wintype=None,
+                   center=False,
+                   print_input=False,
+                   input_ts='-',
+                   start_date=None,
+                   end_date=None,
+                   columns=None,
+                   freq=None,
+                   groupby=None,
+                   dense=True,
+                  ):
     '''Calculates a rolling window statistic.
 
-    :param span:  The number of previous intervals to include in the
+    :param span <str>:  The number of previous intervals to include in the
         calculation of the statistic. If `span` is equal to 0 will give
         an expanding rolling window.  Defaults to 2.
     :param statistic <str>:  One of 'mean', 'corr', 'count', 'cov',
@@ -772,7 +833,7 @@ def rolling_window(
         'bartlett', 'parzen', 'bohman', 'blackmanharris', 'nuttall',
         'barthann', 'kaiser' (needs beta), 'gaussian' (needs std),
         'general_gaussian' (needs power, width) 'slepian' (needs width).
-        :param center:  If set to 'True' the calculation will be made
+    :param center:  If set to 'True' the calculation will be made
         for the value at the center of the window.  Default is 'False'.
     :param -p, --print_input:  If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
@@ -845,6 +906,9 @@ def rolling_window(
         -NOV    year ends in November
 
         Defaults to None.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
@@ -995,16 +1059,16 @@ def rolling_window(
                                '_' + statistic)
 
 
-@mando.command(formatter_class=RawTextHelpFormatter)
-def aggregate(
-        statistic='mean',
-        agg_interval='daily',
-        ninterval=1,
-        print_input=False,
-        input_ts='-',
-        start_date=None,
-        end_date=None,
-        columns=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def aggregate(statistic='mean',
+              agg_interval='daily',
+              ninterval=1,
+              print_input=False,
+              input_ts='-',
+              start_date=None,
+              end_date=None,
+              columns=None,
+              dense=True):
     '''Takes a time series and aggregates to specified frequency,
        outputs to 'ISO-8601date,value' format.
 
@@ -1089,6 +1153,9 @@ def aggregate(
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     aggd = {'hourly': 'H',
             'daily': 'D',
@@ -1112,15 +1179,16 @@ def aggregate(
     return tsutils.print_input(print_input, tsd, newts, '')
 
 
-@mando.command
-def clip(
-        a_min=None,
-        a_max=None,
-        start_date=None,
-        end_date=None,
-        print_input=False,
-        input_ts='-',
-        columns=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def clip(a_min=None,
+         a_max=None,
+         start_date=None,
+         end_date=None,
+         print_input=False,
+         input_ts='-',
+         columns=None,
+         dense=True,
+        ):
     '''Returns a time-series with values limited to [a_min, a_max]
 
     :param -p, --print_input:  If set to 'True' will include the input
@@ -1135,6 +1203,9 @@ def clip(
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1159,15 +1230,16 @@ def clip(
         print_input, tsd, tsd.clip(n_min, n_max), '_clip')
 
 
-@mando.command
-def add_trend(
-        start_offset,
-        end_offset,
-        start_date=None,
-        end_date=None,
-        print_input=False,
-        input_ts='-',
-        columns=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def add_trend(start_offset,
+              end_offset,
+              start_date=None,
+              end_date=None,
+              print_input=False,
+              input_ts='-',
+              columns=None,
+              dense=True,
+             ):
     '''Adds a trend.
 
     :param start_offset <float>:  The starting value for the applied
@@ -1185,6 +1257,9 @@ def add_trend(
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1200,13 +1275,14 @@ def add_trend(
         print_input, tsd, ntsd, '_trend')
 
 
-@mando.command
-def remove_trend(
-        start_date=None,
-        end_date=None,
-        print_input=False,
-        input_ts='-',
-        columns=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def remove_trend(start_date=None,
+                 end_date=None,
+                 print_input=False,
+                 input_ts='-',
+                 columns=None,
+                 dense=True,
+                ):
     '''Removes a 'trend'.
 
     :param -p, --print_input:  If set to 'True' will include the input
@@ -1221,6 +1297,9 @@ def remove_trend(
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1237,15 +1316,15 @@ def remove_trend(
         print_input, tsd, ntsd, '_rem_trend')
 
 
-@mando.command
-def calculate_fdc(
-        percent_point_function=None,
-        plotting_position='weibull',
-        input_ts='-',
-        start_date=None,
-        end_date=None,
-        columns=None,
-        sort_order='ascending'):
+@mando.command(formatter_class=RSTHelpFormatter)
+def calculate_fdc(percent_point_function=None,
+                  plotting_position='weibull',
+                  input_ts='-',
+                  start_date=None,
+                  end_date=None,
+                  columns=None,
+                  sort_order='ascending',
+                 ):
     '''Returns the frequency distribution curve.  DOES NOT return
        a time-series.
 
@@ -1307,12 +1386,13 @@ def calculate_fdc(
     return tsutils.printiso(tsd, force_print_index=True)
 
 
-@mando.command(formatter_class=RawTextHelpFormatter)
-def stack(
-        input_ts='-',
-        start_date=None,
-        end_date=None,
-        columns=None):
+@mando.command(formatter_class=RSTHelpFormatter)
+def stack(input_ts='-',
+          start_date=None,
+          end_date=None,
+          columns=None,
+          dense=True,
+         ):
     '''Returns the stack of the input table.
 
     The stack command takes the standard table and
@@ -1348,6 +1428,9 @@ def stack(
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1360,7 +1443,7 @@ def stack(
     return tsutils.printiso(newtsd)
 
 
-@mando.command(formatter_class=RawTextHelpFormatter)
+@mando.command(formatter_class=RSTHelpFormatter)
 def unstack(
         column_names,
         input_ts='-',
@@ -1405,6 +1488,9 @@ def unstack(
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1530,7 +1616,7 @@ def _set_plotting_position(n, plotting_position='weibull'):
 *
 '''.format(plotting_position))
 
-@mando.command(formatter_class=RawTextHelpFormatter)
+@mando.command(formatter_class=RSTHelpFormatter)
 def plot(
         ofilename='plot.png',
         type='time',
@@ -1788,6 +1874,9 @@ def plot(
 
         Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
         lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
 
     # Need to work around some old option defaults with the implemntation of
@@ -2284,7 +2373,7 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x-y), window=10000):
     # Return DTW distance given window
     return cost[-1, -1]
 
-@mando.command
+@mando.command(formatter_class=RSTHelpFormatter)
 def dtw(window=10000,
         input_ts='-',
         start_date=None,
@@ -2296,6 +2385,9 @@ def dtw(window=10000,
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dense=True),
@@ -2314,7 +2406,7 @@ def dtw(window=10000,
     ntsd = pd.DataFrame(process.values(), process.keys())
     return tsutils.printiso(ntsd)
 
-@mando.command
+@mando.command(formatter_class=RSTHelpFormatter)
 def pca(n_components=None,
         input_ts='-',
         start_date=None,
@@ -2335,6 +2427,9 @@ def pca(n_components=None,
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     from sklearn.decomposition import PCA
 
@@ -2348,7 +2443,7 @@ def pca(n_components=None,
     print(pca.components_)
 
 
-@mando.command
+@mando.command(formatter_class=RSTHelpFormatter)
 def normalization(mode='minmax',
                   min_limit=0,
                   max_limit=1,
@@ -2395,6 +2490,9 @@ def normalization(mode='minmax',
         or column numbers.  If using numbers, column number 0 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dense:  Set `dense` to True to have missing values inserted
+        such that there is a single interval over the entire time
+        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,

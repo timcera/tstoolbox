@@ -27,7 +27,8 @@ def common_kwds(input_tsd,
                 end_date=None,
                 pick=None,
                 force_freq=None,
-                groupby=None):
+                groupby=None,
+                dense=True):
     '''Collected all common_kwds across sub-commands into this single function.
     '''
     ntsd = input_tsd
@@ -44,6 +45,8 @@ def common_kwds(input_tsd,
             return ntsd.groupby(lambda x: x.month)
         else:
             return ntsd.groupby(pd.TimeGrouper(groupby))
+    if dense is False:
+        ntsd = ntsd.dropna(axis='index', how='any')
     return ntsd
 
 

@@ -4,35 +4,28 @@ program=tstoolbox
 
 pkgs="\
      setuptools \
-     atlas \
      numpy \
      scipy \
      matplotlib \
      nose \
-     dateutil \
      pandas \
-     pip \
      coverage \
      flake8 \
      "
 
-envs=(2.6 2.7 3.3 3.4 3.5)
+# pandas no longer supports 2.6
+envs=(2.7 3.3 3.4 3.5)
 
 for env in ${envs[@]}; do
     echo "${env}"
 
-    conda env list | grep -q "^python${env} "
-    if [ $? -eq 0 ]; then
-        echo "conda update -q -n python${env} ${pkgs}"
-        conda update -q -n python${env} ${pkgs}
-    else
-        conda create -q -n python${env} python=${env} ${pkgs}
-    fi
-
-    source activate python${env}
-    conda update pip
+    pew workon python${env}
+    pip install --upgrade ${pkgs}
     pip install --no-deps --upgrade ../mando/
-    if [[ ${env} == '2.6' ]]; then pip install argparse; fi
+    if [[ ${env} == '2.6' ]]; then 
+        pip install argparse 
+        pip install ordereddict
+    fi
     pip uninstall -y ${program}
     rm -rf build
     pip install --upgrade --no-deps ../${program}/
@@ -46,8 +39,7 @@ for env in ${envs[@]}; do
         --cover-erase
 done
 
-
-source activate python3.4
+pew workon python3.4
 
 coverage erase
 coverage run `which nosetests` --with-doctest
