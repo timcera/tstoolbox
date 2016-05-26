@@ -10,7 +10,7 @@ python:
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y lapack openblas 
+  - sudo apt-get install -y liblapack-dev libopenblas-dev
 
 # Install packages
 install:
