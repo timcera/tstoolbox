@@ -804,7 +804,7 @@ def accumulate(statistic='sum',
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def rolling_window(span=2,
+def rolling_window(span=None,
                    statistic='mean',
                    wintype=None,
                    center=False,
