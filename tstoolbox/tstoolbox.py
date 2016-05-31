@@ -124,12 +124,13 @@ def filter(filter_type,
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
         such that there is a single interval over the entire time
         series. Default is True.
+    :param float_format <str>: Float number format.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -179,14 +180,15 @@ def filter(filter_type,
 *
 '''.format(filter_type))
     return tsutils.print_input(print_input, otsd, tsd, '_filter',
-                               float_format=float_format, dense=dense)
+                               float_format=float_format)
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
 def read(filenames, start_date=None, end_date=None, dense=False,
          float_format='%g', how='outer', columns=None):
-    '''Collect time series from a list of pickle or csv files then print
-       in the tstoolbox standard format.
+    '''Collect time series from a list of pickle or csv files.
+
+    Prints the read in time-series in the tstoolbox standard format.
 
     :param filenames <str>:  List of comma delimited filenames to read
         time series from.
@@ -202,12 +204,13 @@ def read(filenames, start_date=None, end_date=None, dense=False,
         DataFrames read from each file.  Default how='outer' which is
         the union, 'inner' is the intersection,
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
         such that there is a single interval over the entire time
         series. Default is True.
+    :param float_format <str>: Float number format.
     '''
     filenames = filenames.split(',')
     result = pd.concat([tsutils.common_kwds(
@@ -247,12 +250,13 @@ def date_slice(float_format='%g',
     :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
         such that there is a single interval over the entire time
         series. Default is True.
+    :param float_format <str>: Float number format.
     '''
     return tsutils.printiso(
         tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
@@ -280,7 +284,7 @@ def describe(input_ts='-',
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -332,11 +336,12 @@ def peak_detection(method='rel',
         is the distance to look ahead from a peak candidate to determine
         if it is the actual peak.
 
-        '(sample / period) / f' where '4 >= f >= 1.25'
+        '(sample / period) / f' where '4 \>= f \>= 1.25'
         might be a good value
 
         For 'zero_crossing' the window keyword is the dimension of the
         smoothing window; should be an odd integer
+    :param pad_len <int>: Used with FFT to pad edges of time-series.
     :param points <int>:  For 'parabola' and 'sine' methods. How many
         points around the peak should be used during curve fitting, must
         be odd (default: 9)
@@ -353,7 +358,7 @@ def peak_detection(method='rel',
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -457,8 +462,9 @@ def convert(factor=1.0,
             dense=True
            ):
     '''Converts values of a time series by applying a factor and offset.
-       See the 'equation' subcommand for a generalized form of this
-       command.
+
+    See the 'equation' subcommand for a generalized form of this
+    command.
 
     :param factor <float>:  Factor to multiply the time series values.
     :param offset <float>:  Offset to add to the time series values.
@@ -471,12 +477,13 @@ def convert(factor=1.0,
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
         such that there is a single interval over the entire time
         series. Default is True.
+    :param float_format <str>: Float number format.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -567,15 +574,16 @@ def equation(equation,
              columns=None,
              dense=True
             ):
-    '''Applies <equation> to the time series data.  The <equation>
-       argument is a string contained in single quotes with 'x' used as
-       the variable representing the input.  For example, '(1
-       - x)*sin(x)'.
+    '''Applies <equation> to the time series data.
+
+    The <equation> argument is a string contained in single quotes with
+    'x' used as the variable representing the input.  For example, '(1
+    - x)*sin(x)'.
 
     :param equation <str>:  String contained in single quotes that
         defines the equation.  The input variable place holder is 'x'.
         Mathematical functions in the 'np' (numpy) name space can be
-        used.  For example,
+        used.  For example::
 
             'x*4 + 2',
             'x**2 + cos(x)', and
@@ -583,7 +591,7 @@ def equation(equation,
 
         are all valid <equation> strings.  The variable 't' is special
         representing the time at which 'x' occurs.  This means you can
-        do things like
+        do things like::
 
             'x[t] + max(x[t-1], x[t+1])*0.6'
 
@@ -598,12 +606,13 @@ def equation(equation,
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
         such that there is a single interval over the entire time
         series. Default is True.
+    :param float_format <str>: Float number format.
     '''
     x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                            start_date=start_date,
@@ -648,12 +657,13 @@ def pick(columns,
          end_date=None,
          dense=True,
         ):
-    '''Will pick a column or list of columns from input.  Can use column
-       names or column numbers.  If using numbers, column number 0 is
-       the first data column.
+    '''Will pick a column or list of columns from input.
+
+    Can use column names or column numbers.  If using numbers, column
+    number 1 is the first data column.
 
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces.
     :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
@@ -693,7 +703,7 @@ def stdtozrxp(rexchange=None,
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -727,9 +737,10 @@ def tstopickle(filename,
                columns=None,
                dense=True,
               ):
-    '''Pickles the data into a Python pickled file.  Can be brought back
-       into Python with 'pickle.load' or 'numpy.load'.  See also
-       'tstoolbox read'.
+    '''Pickles the data into a Python pickled file.
+
+    Can be brought back into Python with 'pickle.load' or 'numpy.load'.
+    See also 'tstoolbox read'.
 
     :param filename <str>:  The filename to store the pickled data.
     :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
@@ -739,7 +750,7 @@ def tstopickle(filename,
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -775,7 +786,7 @@ def accumulate(statistic='sum',
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -804,7 +815,7 @@ def accumulate(statistic='sum',
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def rolling_window(span=None,
+def rolling_window(span=2,
                    statistic='mean',
                    wintype=None,
                    center=False,
@@ -819,7 +830,7 @@ def rolling_window(span=None,
                   ):
     '''Calculates a rolling window statistic.
 
-    :param span <str>:  The number of previous intervals to include in the
+    :param span <int>:  The number of previous intervals to include in the
         calculation of the statistic. If `span` is equal to 0 will give
         an expanding rolling window.  Defaults to 2.
     :param statistic <str>:  One of 'mean', 'corr', 'count', 'cov',
@@ -844,7 +855,7 @@ def rolling_window(span=None,
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param groupby:  Time offset to groupby.  Any PANDAS time offset.
@@ -852,63 +863,116 @@ def rolling_window(span=None,
         the rolling_window is performed separately within each groupby
         period.
 
-        -----   -----------
-        Alias   Description
-        -----   -----------
-        B       business day frequency
-        C       custom business day frequency (experimental)
-        D       calendar day frequency
-        W       weekly frequency
-        M       month end frequency
-        BM      business month end frequency
-        CBM     custom business month end frequency
-        MS      month start frequency
-        BMS     business month start frequency
-        CBMS    custom business month start frequency
-        Q       quarter end frequency
-        BQ      business quarter endfrequency
-        QS      quarter start frequency
-        BQS     business quarter start frequency
-        A       year end frequency
-        BA      business year end frequency
-        AS      year start frequency
-        BAS     business year start frequency
-        H       hourly frequency
-        T       minutely frequency
-        S       secondly frequency
-        L       milliseonds
-        U       microseconds
-        N       nanoseconds
+        +-------+-----------------------------+
+        | Alias | Description                 |
+        +=======+=============================+
+        | B     | business day                |
+        +-------+-----------------------------+
+        | C     | custom business day         |
+        |       | (experimental)              |
+        +-------+-----------------------------+
+        | D     | calendar day                |
+        +-------+-----------------------------+
+        | W     | weekly                      |
+        +-------+-----------------------------+
+        | M     | month end                   |
+        +-------+-----------------------------+
+        | BM    | business month end          |
+        +-------+-----------------------------+
+        | CBM   | custom business month end   |
+        +-------+-----------------------------+
+        | MS    | month start                 |
+        +-------+-----------------------------+
+        | BMS   | business month start        |
+        +-------+-----------------------------+
+        | CBMS  | custom business month start |
+        +-------+-----------------------------+
+        | Q     | quarter end                 |
+        +-------+-----------------------------+
+        | BQ    | business quarter end        |
+        +-------+-----------------------------+
+        | QS    | quarter start               |
+        +-------+-----------------------------+
+        | BQS   | business quarter start      |
+        +-------+-----------------------------+
+        | A     | year end                    |
+        +-------+-----------------------------+
+        | BA    | business year end           |
+        +-------+-----------------------------+
+        | AS    | year start                  |
+        +-------+-----------------------------+
+        | BAS   | business year start         |
+        +-------+-----------------------------+
+        | H     | hourly                      |
+        +-------+-----------------------------+
+        | T     | minutely                    |
+        +-------+-----------------------------+
+        | S     | secondly                    |
+        +-------+-----------------------------+
+        | L     | milliseconds                |
+        +-------+-----------------------------+
+        | U     | microseconds                |
+        +-------+-----------------------------+
+        | N     | nanoseconds                 |
+        +-------+-----------------------------+
 
         Weekly has the following anchored frequencies:
-        W-SUN   weekly frequency (sundays). Same as 'W'.
-        W-MON   weekly frequency (mondays)
-        W-TUE   weekly frequency (tuesdays)
-        W-WED   weekly frequency (wednesdays)
-        W-THU   weekly frequency (thursdays)
-        W-FRI   weekly frequency (fridays)
-        W-SAT   weekly frequency (saturdays)
+
+        +-------+-------------------------------+
+        | W-SUN | weekly frequency (sundays).   |
+        |       | Same as 'W'.                  |
+        +-------+-------------------------------+
+        | W-MON | weekly frequency (mondays)    |
+        +-------+-------------------------------+
+        | W-TUE | weekly frequency (tuesdays)   |
+        +-------+-------------------------------+
+        | W-WED | weekly frequency (wednesdays) |
+        +-------+-------------------------------+
+        | W-THU | weekly frequency (thursdays)  |
+        +-------+-------------------------------+
+        | W-FRI | weekly frequency (fridays)    |
+        +-------+-------------------------------+
+        | W-SAT | weekly frequency (saturdays)  |
+        +-------+-------------------------------+
 
         Quarterly frequencies (Q, BQ, QS, BQS) and
         annual frequencies (A, BA, AS, BAS) have the following anchoring
         suffixes:
-        -DEC    year ends in December (same as 'Q' and 'A')
-        -JAN    year ends in January
-        -FEB    year ends in February
-        -MAR    year ends in March
-        -APR    year ends in April
-        -MAY    year ends in May
-        -JUN    year ends in June
-        -JUL    year ends in July
-        -AUG    year ends in August
-        -SEP    year ends in September
-        -OCT    year ends in October
-        -NOV    year ends in November
+
+        +------+------------------------+
+        | -DEC | year ends in December  |
+        |      | (same as 'Q' and 'A')  |
+        +------+------------------------+
+        | -JAN | year ends in January   |
+        +------+------------------------+
+        | -FEB | year ends in February  |
+        +------+------------------------+
+        | -MAR | year ends in March     |
+        +------+------------------------+
+        | -APR | year ends in April     |
+        +------+------------------------+
+        | -MAY | year ends in May       |
+        +------+------------------------+
+        | -JUN | year ends in June      |
+        +------+------------------------+
+        | -JUL | year ends in July      |
+        +------+------------------------+
+        | -AUG | year ends in August    |
+        +------+------------------------+
+        | -SEP | year ends in September |
+        +------+------------------------+
+        | -OCT | year ends in October   |
+        +------+------------------------+
+        | -NOV | year ends in November  |
+        +------+------------------------+
 
         Defaults to None.
     :param dense:  Set `dense` to True to have missing values inserted
         such that there is a single interval over the entire time
         series. Default is True.
+    :param freq: string or DateOffset object, optional (default None) Frequency
+	to conform the data to before computing the statistic. Specified as a
+        frequency string or DateOffset object.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
@@ -922,10 +986,10 @@ def rolling_window(span=None,
                      center=False,
                      wintype=None,
                      freq=None):
-        if span is None:
-            span = len(tsd)
-        else:
+        try:
             span = int(span)
+        except ValueError:
+            span = len(tsd)
         window_list = [
             'boxcar',
             'triang',
@@ -1069,8 +1133,7 @@ def aggregate(statistic='mean',
               end_date=None,
               columns=None,
               dense=True):
-    '''Takes a time series and aggregates to specified frequency,
-       outputs to 'ISO-8601date,value' format.
+    '''Takes a time series and aggregates to specified frequency.
 
     :param statistic <str>:  'mean', 'sum', 'std', 'max', 'min',
         'median', 'first', or 'last' to calculate the aggregation,
@@ -1079,64 +1142,123 @@ def aggregate(statistic='mean',
     :param agg_interval <str>:  The interval to aggragate the time
         series.  Any of the PANDAS offset codes.
 
-        -----   -----------
-        Alias   Description
-        -----   -----------
-        B       business day frequency
-        C       custom business day frequency (experimental)
-        D       calendar day frequency
-        W       weekly frequency
-        M       month end frequency
-        BM      business month end frequency
-        CBM     custom business month end frequency
-        MS      month start frequency
-        BMS     business month start frequency
-        CBMS    custom business month start frequency
-        Q       quarter end frequency
-        BQ      business quarter endfrequency
-        QS      quarter start frequency
-        BQS     business quarter start frequency
-        A       year end frequency
-        BA      business year end frequency
-        AS      year start frequency
-        BAS     business year start frequency
-        H       hourly frequency
-        T       minutely frequency
-        S       secondly frequency
-        L       milliseonds
-        U       microseconds
-        N       nanoseconds
+        +-------+-----------------------------+
+        | Alias | Description                 |
+        +=======+=============================+
+        | B     | business day                |
+        +-------+-----------------------------+
+        | C     | custom business day         |
+        |       | (experimental)              |
+        +-------+-----------------------------+
+        | D     | calendar day                |
+        +-------+-----------------------------+
+        | W     | weekly                      |
+        +-------+-----------------------------+
+        | M     | month end                   |
+        +-------+-----------------------------+
+        | BM    | business month end          |
+        +-------+-----------------------------+
+        | CBM   | custom business month end   |
+        +-------+-----------------------------+
+        | MS    | month start                 |
+        +-------+-----------------------------+
+        | BMS   | business month start        |
+        +-------+-----------------------------+
+        | CBMS  | custom business month start |
+        +-------+-----------------------------+
+        | Q     | quarter end                 |
+        +-------+-----------------------------+
+        | BQ    | business quarter end        |
+        +-------+-----------------------------+
+        | QS    | quarter start               |
+        +-------+-----------------------------+
+        | BQS   | business quarter start      |
+        +-------+-----------------------------+
+        | A     | year end                    |
+        +-------+-----------------------------+
+        | BA    | business year end           |
+        +-------+-----------------------------+
+        | AS    | year start                  |
+        +-------+-----------------------------+
+        | BAS   | business year start         |
+        +-------+-----------------------------+
+        | H     | hourly                      |
+        +-------+-----------------------------+
+        | T     | minutely                    |
+        +-------+-----------------------------+
+        | S     | secondly                    |
+        +-------+-----------------------------+
+        | L     | milliseconds                |
+        +-------+-----------------------------+
+        | U     | microseconds                |
+        +-------+-----------------------------+
+        | N     | nanoseconds                 |
+        +-------+-----------------------------+
 
         Weekly has the following anchored frequencies:
-        W-SUN   weekly frequency (sundays). Same as 'W'.
-        W-MON   weekly frequency (mondays)
-        W-TUE   weekly frequency (tuesdays)
-        W-WED   weekly frequency (wednesdays)
-        W-THU   weekly frequency (thursdays)
-        W-FRI   weekly frequency (fridays)
-        W-SAT   weekly frequency (saturdays)
+
+        +-------+-------------------------------+
+        | W-SUN | weekly frequency (sundays).   |
+        |       | Same as 'W'.                  |
+        +-------+-------------------------------+
+        | W-MON | weekly frequency (mondays)    |
+        +-------+-------------------------------+
+        | W-TUE | weekly frequency (tuesdays)   |
+        +-------+-------------------------------+
+        | W-WED | weekly frequency (wednesdays) |
+        +-------+-------------------------------+
+        | W-THU | weekly frequency (thursdays)  |
+        +-------+-------------------------------+
+        | W-FRI | weekly frequency (fridays)    |
+        +-------+-------------------------------+
+        | W-SAT | weekly frequency (saturdays)  |
+        +-------+-------------------------------+
 
         Quarterly frequencies (Q, BQ, QS, BQS) and
         annual frequencies (A, BA, AS, BAS) have the following anchoring
         suffixes:
-        -DEC    year ends in December (same as 'Q' and 'A')
-        -JAN    year ends in January
-        -FEB    year ends in February
-        -MAR    year ends in March
-        -APR    year ends in April
-        -MAY    year ends in May
-        -JUN    year ends in June
-        -JUL    year ends in July
-        -AUG    year ends in August
-        -SEP    year ends in September
-        -OCT    year ends in October
-        -NOV    year ends in November
 
-        There are some deprecated aggregation interval names in tstoolbox:
-        hourly  H
-        daily   D
-        monthly M
-        yearly  A
+        +------+------------------------+
+        | -DEC | year ends in December  |
+        |      | (same as 'Q' and 'A')  |
+        +------+------------------------+
+        | -JAN | year ends in January   |
+        +------+------------------------+
+        | -FEB | year ends in February  |
+        +------+------------------------+
+        | -MAR | year ends in March     |
+        +------+------------------------+
+        | -APR | year ends in April     |
+        +------+------------------------+
+        | -MAY | year ends in May       |
+        +------+------------------------+
+        | -JUN | year ends in June      |
+        +------+------------------------+
+        | -JUL | year ends in July      |
+        +------+------------------------+
+        | -AUG | year ends in August    |
+        +------+------------------------+
+        | -SEP | year ends in September |
+        +------+------------------------+
+        | -OCT | year ends in October   |
+        +------+------------------------+
+        | -NOV | year ends in November  |
+        +------+------------------------+
+
+        There are some deprecated aggregation interval names in
+        tstoolbox, DON'T USE!
+
+        +---------------+-----+
+        | Instead of... | Use |
+        +---------------+-----+
+        | hourly        | H   |
+        +---------------+-----+
+        | daily         | D   |
+        +---------------+-----+
+        | monthly       | M   |
+        +---------------+-----+
+        | yearly        | A   |
+        +---------------+-----+
 
         Defaults to D (daily).
     :param ninterval <int>:  The number of agg_interval to use for the
@@ -1150,7 +1272,7 @@ def aggregate(statistic='mean',
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -1191,6 +1313,10 @@ def clip(a_min=None,
         ):
     '''Returns a time-series with values limited to [a_min, a_max]
 
+    :param a_min: All values lower than this will be set to this value.
+        Default is None.
+    :param a_max: All values higher than this will be set to this value.
+        Default is None.
     :param -p, --print_input:  If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
     :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
@@ -1200,7 +1326,7 @@ def clip(a_min=None,
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -1242,8 +1368,7 @@ def add_trend(start_offset,
              ):
     '''Adds a trend.
 
-    :param start_offset <float>:  The starting value for the applied
-        trend.
+    :param start_offset <float>:  The starting value for the applied trend.
     :param end_offset <float>:  The ending value for the applied trend.
     :param -p, --print_input:  If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
@@ -1254,7 +1379,7 @@ def add_trend(start_offset,
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -1294,7 +1419,7 @@ def remove_trend(start_date=None,
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -1325,8 +1450,9 @@ def calculate_fdc(percent_point_function=None,
                   columns=None,
                   sort_order='ascending',
                  ):
-    '''Returns the frequency distribution curve.  DOES NOT return
-       a time-series.
+    '''Returns the frequency distribution curve.
+
+    DOES NOT return a time-series.
 
     :param percent_point_function <str>:  The distribution used to shift
         the plotting position values.  Choose from 'norm', 'lognorm',
@@ -1335,15 +1461,26 @@ def calculate_fdc(percent_point_function=None,
         'gumbel', 'hazen', 'cunnane', or 'california'.  The default is
         'weibull'.
 
-        'weibull': i/(n + 1)            mean of sampling distribution
-        'benard': (i - 0.3)/(n + 0.4)   approx. median of sampling
-                                        distribution
-        'tukey': (i - 1/3)/(n + 1/3)    approx. median of sampling
-                                        distribution
-        'gumbel': (i - 1)/(n - 1)       mode of sampling distribution
-        'hazen': (i - 1/2)/n            midpoints of n equal intervals
-        'cunnane': (i - 2/5)/(n + 1/5)  subjective
-        'california': i/n
+        +------------+-----------------+-----------------------+
+        | weibull    | i/(n+1)         | mean of sampling      |
+        |            |                 | distribution          |
+        +------------+-----------------+-----------------------+
+        | benard     | (i-0.3)/(n+0.4) | approx. median of     |
+        |            |                 | sampling distribution |
+        +------------+-----------------+-----------------------+
+        | tukey      | (i-1/3)/(n+1/3) | approx. median of     |
+        |            |                 | sampling distribution |
+        +------------+-----------------+-----------------------+
+        | gumbel     | (i-1)/(n-1)     | mode of sampling      |
+        |            |                 | distribution          |
+        +------------+-----------------+-----------------------+
+        | hazen      | (i-1/2)/n       | midpoints of n equal  |
+        |            |                 | intervals             |
+        +------------+-----------------+-----------------------+
+        | cunnane    | (i-2/5)/(n+1/5) | subjective            |
+        +------------+-----------------+-----------------------+
+        | california | i/n             |                       |
+        +------------+-----------------+-----------------------+
 
         Where 'i' is the sorted rank of the y value, and 'n' is the
         total number of values to be plotted.
@@ -1354,7 +1491,7 @@ def calculate_fdc(percent_point_function=None,
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param sort_order <str>:  Either 'ascending' or 'descending'.
@@ -1398,25 +1535,25 @@ def stack(input_ts='-',
     The stack command takes the standard table and
     converts to a three column table.
 
-    From:
+    From::
 
-    Datetime,TS1,TS2,TS3
-    2000-01-01 00:00:00,1.2,1018.2,0.0032
-    2000-01-02 00:00:00,1.8,1453.1,0.0002
-    2000-01-03 00:00:00,1.9,1683.1,-0.0004
+      Datetime,TS1,TS2,TS3
+      2000-01-01 00:00:00,1.2,1018.2,0.0032
+      2000-01-02 00:00:00,1.8,1453.1,0.0002
+      2000-01-03 00:00:00,1.9,1683.1,-0.0004
 
-    To:
+    To::
 
-    Datetime,Columns,Values
-    2000-01-01,TS1,1.2
-    2000-01-02,TS1,1.8
-    2000-01-03,TS1,1.9
-    2000-01-01,TS2,1018.2
-    2000-01-02,TS2,1453.1
-    2000-01-03,TS2,1683.1
-    2000-01-01,TS3,0.0032
-    2000-01-02,TS3,0.0002
-    2000-01-03,TS3,-0.0004
+      Datetime,Columns,Values
+      2000-01-01,TS1,1.2
+      2000-01-02,TS1,1.8
+      2000-01-03,TS1,1.9
+      2000-01-01,TS2,1018.2
+      2000-01-02,TS2,1453.1
+      2000-01-03,TS2,1683.1
+      2000-01-01,TS3,0.0032
+      2000-01-02,TS3,0.0002
+      2000-01-03,TS3,-0.0004
 
     :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
@@ -1425,7 +1562,7 @@ def stack(input_ts='-',
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -1455,37 +1592,36 @@ def unstack(
     The unstack command takes the stacked table and converts to a
     standard tstoolbox table.
 
-    From:
+    From::
 
-    Datetime,Columns,Values
-    2000-01-01,TS1,1.2
-    2000-01-02,TS1,1.8
-    2000-01-03,TS1,1.9
-    2000-01-01,TS2,1018.2
-    2000-01-02,TS2,1453.1
-    2000-01-03,TS2,1683.1
-    2000-01-01,TS3,0.0032
-    2000-01-02,TS3,0.0002
-    2000-01-03,TS3,-0.0004
+      Datetime,Columns,Values
+      2000-01-01,TS1,1.2
+      2000-01-02,TS1,1.8
+      2000-01-03,TS1,1.9
+      2000-01-01,TS2,1018.2
+      2000-01-02,TS2,1453.1
+      2000-01-03,TS2,1683.1
+      2000-01-01,TS3,0.0032
+      2000-01-02,TS3,0.0002
+      2000-01-03,TS3,-0.0004
 
+    To::
 
-    To:
-
-    Datetime,TS1,TS2,TS3
-    2000-01-01,1.2,1018.2,0.0032
-    2000-01-02,1.8,1453.1,0.0002
-    2000-01-03,1.9,1683.1,-0.0004
+      Datetime,TS1,TS2,TS3
+      2000-01-01,1.2,1018.2,0.0032
+      2000-01-02,1.8,1453.1,0.0002
+      2000-01-03,1.9,1683.1,-0.0004
 
     :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param column_names:  The column in the table that holds the column
-        names of the unstacked data.
+    :param column_names:  The column in the table that holds the column names
+        of the unstacked data.
     :param -s, --start_date <str>: The start_date of the series in
         ISOdatetime format, or 'None' for beginning.
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -1665,58 +1801,58 @@ def plot(
         the type, ('.png'). Defaults to 'plot.png'.
     :param type <str>:  The plot type.  Defaults to 'time'.
 
-        Can be one of the following::
+        Can be one of the following:
 
-        'time' - standard time series plot,
-        'xy' - (x,y) plot, also know as a scatter plot,
-        'double_mass' - (x,y) plot of the cumulative sum of
-                        x and y,
-        'boxplot'
-                box extends from lower to upper quartile,
-                with line at the median.  Depending on the
-                statistics, the wiskers represent the range
-                of the data or 1.5 times the inter-quartile
-                range (Q3 - Q1),
-        'scatter_matrix'
-                plots all columns against each other,
-        'lag_plot'
-                indicates structure in the data,
-        'autocorrelation'
-                plot autocorrelation,
-        'bootstrap'
-                visually asses aspects of a data set by
-                plotting random selections of values,
-        'probability_density'
-                sometime called kernel density estimation
-                (KDE),
-        'bar'
-                sometimes called a column plot,
-        'barh'
-                a horizontal bar plot,
-        'bar_stacked'
-                sometimes called a stacked column,
-        'barh_stacked'
-                a horizontal stacked bar plot,
-        'histogram'
-                calculate and create a histogram plot,
-        'norm_xaxis'
-                sort, calculate probabilities, and plot data
-                against an x axis normal distribution,
-        'norm_yaxis'
-                sort, calculate probabilities, and plot data
-                against an y axis normal distribution,
-        'lognorm_xaxis'
-                sort, calculate probabilities, and plot data
-                against an x axis lognormal distribution,
-        'lognorm_yaxis'
-                sort, calculate probabilities, and plot data
-                against an y axis lognormal distribution,
-        'weibull_xaxis'
-                sort, calculate and plot data against an
-                x axis weibull distribution,
-        'weibull_yaxis'
-                sort, calculate and plot data against an
-                y axis weibull distribution,
+        time
+            standard time series plot
+        xy
+            (x,y) plot, also know as a scatter plot
+        double_mass
+            (x,y) plot of the cumulative sum of x and y
+        boxplot
+            box extends from lower to upper quartile, with line at the
+            median.  Depending on the statistics, the wiskers represent
+            the range of the data or 1.5 times the inter-quartile range
+            (Q3 - Q1)
+        scatter_matrix
+            plots all columns against each other
+        lag_plot
+            indicates structure in the data
+        autocorrelation
+            plot autocorrelation
+        bootstrap
+            visually asses aspects of a data set by plotting random
+            selections of values
+        probability_density
+            sometime called kernel density estimation (KDE)
+        bar
+            sometimes called a column plot
+        barh
+            a horizontal bar plot
+        bar_stacked
+            sometimes called a stacked column
+        barh_stacked
+            a horizontal stacked bar plot
+        histogram
+            calculate and create a histogram plot
+        norm_xaxis
+            sort, calculate probabilities, and plot data against an
+            x axis normal distribution
+        norm_yaxis
+            sort, calculate probabilities, and plot data against an
+            y axis normal distribution
+        lognorm_xaxis
+            sort, calculate probabilities, and plot data against an
+            x axis lognormal distribution
+        lognorm_yaxis
+            sort, calculate probabilities, and plot data against an
+            y axis lognormal distribution
+        weibull_xaxis
+            sort, calculate and plot data against an x axis weibull
+            distribution
+        weibull_yaxis
+            sort, calculate and plot data against an y axis weibull
+            distribution
     :param xtitle <str>:  Title of x-axis, default depend on ``type``.
     :param ytitle <str>:  Title of y-axis, default depend on ``type``.
     :param title <str>:  Title of chart, defaults to ''.
@@ -1737,66 +1873,124 @@ def plot(
         line style per time-series.  Just combine codes in 'ColorLineMarker'
         order, for example 'r--*' is a red dashed line with star marker.
 
-        Colors - Single Character Codes::
-           'b'  blue
-           'g'  green
-           'r'  red
-           'c'  cyan
-           'm'  magenta
-           'y'  yellow
-           'k'  black
-           'w'  white
-           ---------------------
-           Grays - Float:
-           '0.75'  0.75 gray
-           ---------------------
-           Colors - HTML Color Names
-           'red'
-           'burlywood'
-           'chartreuse'
-           ...etc.
-           Color reference:
-           http://matplotlib.org/api/colors_api.html
+        +------+---------+
+        | Code | Color   |
+        +------+---------+
+        |   b  | blue    |
+        +------+---------+
+        |   g  | green   |
+        +------+---------+
+        |   r  | red     |
+        +------+---------+
+        |   c  | cyan    |
+        +------+---------+
+        |   m  | magenta |
+        +------+---------+
+        |   y  | yellow  |
+        +------+---------+
+        |   k  | black   |
+        +------+---------+
+        |   w  | white   |
+        +------+---------+
 
-           Lines
-           '-'     solid
-           '--'    dashed
-           '-.'    dash_dot
-           ':'     dotted
-           'None'  draw nothing
-           ' '     draw nothing
-           ''      draw nothing
-           Line reference:
-           http://matplotlib.org/api/artist_api.html
+        +---------+-----------+
+        | Number  | Color     |
+        +---------+-----------+
+        | 0.75    | 0.75 gray |
+        +---------+-----------+
+        | ...etc. |           |
+        +---------+-----------+
 
-           Markers
-           '.'     point
-           'o'     circle
-           'v'     triangle down
-           '^'     triangle up
-           '<'     triangle left
-           '>'     triangle right
-           '1'     tri_down
-           '2'     tri_up
-           '3'     tri_left
-           '4'     tri_right
-           '8'     octagon
-           's'     square
-           'p'     pentagon
-           '*'     star
-           'h'     hexagon1
-           'H'     hexagon2
-           '+'     plus
-           'x'     x
-           'D'     diamond
-           'd'     thin diamond
-           '|'     vline
-           '_'     hline
-           'None'  nothing
-           ' '     nothing
-           ''      nothing
-           Marker reference:
-           http://matplotlib.org/api/markers_api.html
+        +------------------+
+        | HTML Color Names |
+        +------------------+
+        | red              |
+        +------------------+
+        | burlywood        |
+        +------------------+
+        | chartreuse       |
+        +------------------+
+        | ...etc.          |
+        +------------------+
+
+        Color reference:
+        http://matplotlib.org/api/colors_api.html
+
+        +------+--------------+
+        | Code | Lines        |
+        +------+--------------+
+        | -    | solid        |
+        +------+--------------+
+        | --   | dashed       |
+        +------+--------------+
+        | -.   | dash_dot     |
+        +------+--------------+
+        | :    | dotted       |
+        +------+--------------+
+        | None | draw nothing |
+        +------+--------------+
+        | ' '  | draw nothing |
+        +------+--------------+
+        | ''   | draw nothing |
+        +------+--------------+
+
+        Line reference:
+        http://matplotlib.org/api/artist_api.html
+
+        +------+----------------+
+        | Code | Markers        |
+        +------+----------------+
+        | .    | point          |
+        +------+----------------+
+        | o    | circle         |
+        +------+----------------+
+        | v    | triangle down  |
+        +------+----------------+
+        | ^    | triangle up    |
+        +------+----------------+
+        | <    | triangle left  |
+        +------+----------------+
+        | >    | triangle right |
+        +------+----------------+
+        | 1    | tri_down       |
+        +------+----------------+
+        | 2    | tri_up         |
+        +------+----------------+
+        | 3    | tri_left       |
+        +------+----------------+
+        | 4    | tri_right      |
+        +------+----------------+
+        | 8    | octagon        |
+        +------+----------------+
+        | s    | square         |
+        +------+----------------+
+        | p    | pentagon       |
+        +------+----------------+
+        | *    | star           |
+        +------+----------------+
+        | h    | hexagon1       |
+        +------+----------------+
+        | H    | hexagon2       |
+        +------+----------------+
+        | +    | plus           |
+        +------+----------------+
+        | x    | x              |
+        +------+----------------+
+        | D    | diamond        |
+        +------+----------------+
+        | d    | thin diamond   |
+        +------+----------------+
+        | _    | hline          |
+        +------+----------------+
+        | None | nothing        |
+        +------+----------------+
+        | ' '  | nothing        |
+        +------+----------------+
+        | ''   | nothing        |
+        +------+----------------+
+
+        Marker reference:
+        http://matplotlib.org/api/markers_api.html
 
     :param logx:  DEPRECATED: use '--xaxis="log"' instead.
     :param logy:  DEPRECATED: use '--yaxis="log"' instead.
@@ -1841,11 +2035,12 @@ def plot(
         steps variants produce step-plots. 'steps' is equivalent to 'steps-pre'
         and is maintained for backward-compatibility.
         ACCEPTS::
+
             ['default' | 'steps' | 'steps-pre' | 'steps-mid' | 'steps-post']
     :param por:  Plot from first good value to last good value.  Strip NANs
         from beginning and end.
     :param columns:  Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 0 is the first data
+        column numbers.  If using numbers, column number 1 is the first data
         column.  To pick multiple columns; separate by commas with no spaces.
         As used in 'pick' command.
     :param force_freq:  Force this frequency for the plot.  WARNING: you may
@@ -1857,17 +2052,26 @@ def plot(
     :param plotting_position <str>:  'weibull', 'benard', 'tukey', 'gumbel',
         'hazen', 'cunnane', or 'california'.  The default is 'weibull'.
 
-        ---------- ------------------- --------------------------------------
-        Name       Equation            Interpretation
-        ---------- ------------------- --------------------------------------
-        weibull    i/(n + 1)           mean of sampling distribution
-        benard     (i - 0.3)/(n + 0.4) approx. median of sampling distribution
-        tukey      (i - 1/3)/(n + 1/3) approx. median of sampling distribution
-        gumbel     (i - 1)/(n - 1)     mode of sampling distribution
-        hazen      (i - 1/2)/n         midpoints of n equal intervals
-        cunnane    (i - 2/5)/(n + 1/5) subjective
-        california i/n
-        ---------- ------------------- --------------------------------------
+        +------------+-----------------+-----------------------+
+        | weibull    | i/(n+1)         | mean of sampling      |
+        |            |                 | distribution          |
+        +------------+-----------------+-----------------------+
+        | benard     | (i-0.3)/(n+0.4) | approx. median of     |
+        |            |                 | sampling distribution |
+        +------------+-----------------+-----------------------+
+        | tukey      | (i-1/3)/(n+1/3) | approx. median of     |
+        |            |                 | sampling distribution |
+        +------------+-----------------+-----------------------+
+        | gumbel     | (i-1)/(n-1)     | mode of sampling      |
+        |            |                 | distribution          |
+        +------------+-----------------+-----------------------+
+        | hazen      | (i-1/2)/n       | midpoints of n equal  |
+        |            |                 | intervals             |
+        +------------+-----------------+-----------------------+
+        | cunnane    | (i-2/5)/(n+1/5) | subjective            |
+        +------------+-----------------+-----------------------+
+        | california | i/n             |                       |
+        +------------+-----------------+-----------------------+
 
         Where 'i' is the sorted rank of the y value, and 'n'
         is the total number of values to be plotted.
@@ -2382,7 +2586,7 @@ def dtw(window=10000,
     '''Dynamic Time Warping
 
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -2413,7 +2617,8 @@ def pca(n_components=None,
         end_date=None,
         columns=None):
     '''Returns the principal components analysis of the time series.
-       Does not return a time-series.
+
+    Does not return a time-series.
 
     :param n_components <int>:  The number of groups to separate the
         time series into.
@@ -2424,7 +2629,7 @@ def pca(n_components=None,
     :param -e, --end_date <str>: The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
@@ -2459,18 +2664,15 @@ def normalization(mode='minmax',
     :param mode <str>:  'minmax', 'zscore', or 'pct_rank'.  Default is
         'minmax'
 
-        'minmax' is
+        minmax
+            min_limit +
+            (X-Xmin)/(Xmax-Xmin)*(max_limit-min_limit)
 
-         min_limit +
-         (X-Xmin)/(Xmax-Xmin)*(max_limit-min_limit)
+        zscore
+            X-mean(X)/stddev(X)
 
-        'zscore' is
-
-         X-mean(X)/stddev(X)
-
-        'pct_rank' is
-
-         rank(X)*100/N
+        pct_rank
+            rank(X)*100/N
     :param min_limit <float>:  Defaults to 0.  Defines the minimum limit
         of the minmax normalization.
     :param max_limit <float>:  Defaults to 1.  Defines the maximum limit
@@ -2487,12 +2689,13 @@ def normalization(mode='minmax',
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
+        or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param dense:  Set `dense` to True to have missing values inserted
         such that there is a single interval over the entire time
         series. Default is True.
+    :param float_format <str>: Float number format.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,

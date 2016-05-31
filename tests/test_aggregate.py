@@ -24,12 +24,12 @@ class TestAggregate(TestCase):
         '''
         dr = pandas.date_range('2011-01-01', periods=2, freq='D')
 
-        ts = pandas.TimeSeries([2, 2], index=dr)
+        ts = pandas.Series([2, 2], index=dr)
         self.aggregate_direct_mean = pandas.DataFrame(ts,
                                                       columns=['Value_mean'])
         self.aggregate_direct_mean.index.name = 'Datetime'
 
-        ts = pandas.TimeSeries([48, 48], index=dr)
+        ts = pandas.Series([48, 48], index=dr)
         self.aggregate_direct_sum = pandas.DataFrame(ts, columns=['Value_sum'])
         self.aggregate_direct_sum.index.name = 'Datetime'
 

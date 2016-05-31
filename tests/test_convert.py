@@ -21,12 +21,12 @@ from tstoolbox import tstoolbox
 class TestConvert(TestCase):
     def setUp(self):
         dr = pandas.date_range('2000-01-01', periods=2, freq='D')
-        ts = pandas.TimeSeries([4.5, 4.6], index=dr)
+        ts = pandas.Series([4.5, 4.6], index=dr)
         self.compare_direct_01 = pandas.DataFrame(ts, columns=['Value_convert'])
         self.compare_direct_01.index.name = 'Datetime'
 
         dr = pandas.date_range('2000-01-01', periods=2, freq='D')
-        ts = pandas.TimeSeries([11.0, 11.2], index=dr)
+        ts = pandas.Series([11.0, 11.2], index=dr)
         self.compare_direct_02 = pandas.DataFrame(ts, columns=['Value_convert'])
         self.compare_direct_02.index.name = 'Datetime'
 

@@ -24,8 +24,8 @@ import tstoolbox.tsutils as tsutils
 class TestEquation(TestCase):
     def setUp(self):
         dindex = pd.date_range('2000-01-01T00:00:00', periods=2, freq='D')
-        ts1 = pd.TimeSeries([4.5, 4.6], index=dindex)
-        ts2 = pd.TimeSeries([20.0, 20.4], index=dindex)
+        ts1 = pd.Series([4.5, 4.6], index=dindex)
+        ts2 = pd.Series([20.0, 20.4], index=dindex)
         self.equation = pd.DataFrame({'Value': ts1, 'Value_equation': ts2},
                 index=dindex, dtype='float32')
         self.equation.index.name = 'Datetime'

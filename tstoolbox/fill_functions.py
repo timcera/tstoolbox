@@ -7,11 +7,12 @@ from __future__ import absolute_import
 
 import pandas as pd
 import mando
+from mando.rst_text_formatter import RSTHelpFormatter
 
 from . import tsutils
 
 
-@mando.command
+@mando.command(formatter_class=RSTHelpFormatter)
 def fill(method='ffill',
          interval='guess',
          print_input=False,
@@ -19,27 +20,49 @@ def fill(method='ffill',
          start_date=None,
          end_date=None,
          columns=None):
-    '''Fills missing values (NaN) with different methods.  Missing
-       values can occur because of NaN, or because the time series is
-       sparse.  The 'interval' option can insert NaNs to create a dense
-       time series.
+    '''Fills missing values (NaN) with different methods.
+
+    Missing values can occur because of NaN, or because the time series
+    is sparse.  The 'interval' option can insert NaNs to create a dense
+    time series.
 
     :param method: String contained in single quotes or a number that
         defines the method to use for filling.
-        'ffill': assigns NaN values to the last good value
-        'bfill': assigns NaN values to the next good value
-                 number: fills all NaN to this number
-        'linear': will linearly interpolate missing values
-        'spline': spline interpolation
-        'nearest': nearest good value
-        'zero':
-        'slinear':
-        'quadratic':
-        'cubic':
-        'mean': fill with mean
-        'median': fill with median
-        'max': fill with maximum
-        'min': fill with minimum
+
+        +-----------+---------------------------+
+        | ffill     | assigns NaN values to     |
+        |           | the last good value       |
+        +-----------+---------------------------+
+        | bfill     | assigns NaN values to     |
+        |           | the next good value       |
+        +-----------+---------------------------+
+        | 2.3       | any number: fills all NaN |
+        |           | with this number          |
+        +-----------+---------------------------+
+        | linear    | will linearly interpolate |
+        |           | missing values            |
+        +-----------+---------------------------+
+        | spline    | spline interpolation      |
+        +-----------+---------------------------+
+        | nearest   | nearest good value        |
+        +-----------+---------------------------+
+        | zero      |                           |
+        +-----------+---------------------------+
+        | slinear   |                           |
+        +-----------+---------------------------+
+        | quadratic |                           |
+        +-----------+---------------------------+
+        | cubic     |                           |
+        +-----------+---------------------------+
+        | mean      | fill with mean            |
+        +-----------+---------------------------+
+        | median    | fill with median          |
+        +-----------+---------------------------+
+        | max       | fill with maximum         |
+        +-----------+---------------------------+
+        | min       | fill with minimum         |
+        +-----------+---------------------------+
+
         If a number will fill with that number.
     :param interval: Will try to insert missing intervals.  Can give any
         of the pandas offset aliases, 'guess' (to try and figure the
@@ -108,7 +131,7 @@ def fill(method='ffill',
     return tsutils.print_input(print_input, tsd, ntsd, '_fill')
 
 
-#@mando.command
+#@mando.command(formatter_class=RSTHelpFormatter)
 def fill_by_correlation(method='move2',
                         maximum_lag=0,
                         interval='guess',
@@ -116,10 +139,11 @@ def fill_by_correlation(method='move2',
                         choose_best='dtw',
                         print_input=False,
                         input_ts='-'):
-    '''Fills missing values (NaN) with different methods.  Missing
-       values can occur because of NaN, or because the time series is
-       sparse.  The 'interval' option can insert NaNs to create a dense
-       time series.
+    '''Fills missing values (NaN) with different methods.
+
+    Missing values can occur because of NaN, or because the time series
+    is sparse.  The 'interval' option can insert NaNs to create a dense
+    time series.
 
     :param method: String contained in single quotes or a number that
         defines the method to use for filling.  'move2': maintenance of
