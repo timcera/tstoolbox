@@ -22,10 +22,6 @@ for env in ${envs[@]}; do
     pew in python${env} << EOT
     pip install --upgrade ${pkgs}
     pip install --no-deps --upgrade ../mando/
-    if [[ ${env} == '2.6' ]]; then 
-        pip install argparse 
-        pip install ordereddict
-    fi
     pip uninstall -y ${program}
     rm -rf build
     pip install --upgrade --no-deps ../${program}/
