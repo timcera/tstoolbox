@@ -2728,6 +2728,34 @@ def normalization(mode='minmax',
     return tsutils.print_input(print_input, otsd, tsd, '_{0}'.format(mode),
                                float_format=float_format)
 
+@mando.command(formatter_class=RSTHelpFormatter)
+def converttz(fromtz,
+              totz,
+              input_ts='-',
+              start_date=None,
+              end_date=None,
+              columns=None):
+    '''Converts the time zone of the index.
+
+    :param fromtz <str>: The time zone of the original time-series.
+    :param totz <str>: The time zone of the converted time-series.
+    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+        format or '-' for stdin.
+    :param -s, --start_date <str>:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param -e, --end_date <str>:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param columns:  Columns to pick out of input.  Can use column names
+        or column numbers.  If using numbers, column number 1 is the
+        first data column.  To pick multiple columns; separate by commas
+        with no spaces. As used in 'pick' command.
+    '''
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                             start_date=start_date,
+                             end_date=end_date,
+                             pick=columns)
+    tsd = tsd.tz_localize(fromtz).tz_convert(totz)
+    return tsutils.printiso(tsd, force_print_index=True)
 
 def main():
     ''' Main '''
