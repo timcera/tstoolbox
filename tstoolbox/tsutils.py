@@ -28,7 +28,7 @@ def common_kwds(input_tsd,
                 pick=None,
                 force_freq=None,
                 groupby=None,
-                dense=True):
+                dropna='no'):
     '''Collected all common_kwds across sub-commands into this single function.
     '''
     ntsd = input_tsd
@@ -45,8 +45,15 @@ def common_kwds(input_tsd,
             return ntsd.groupby(lambda x: x.month)
         else:
             return ntsd.groupby(pd.TimeGrouper(groupby))
-    if dense is False:
-        ntsd = ntsd.dropna(axis='index', how='any')
+    if dropna not in ['any', 'all', 'no']:
+        raise ValueError('''
+*
+*   The "dropna" option must be "any", "all" or "no", not "{0}".
+*
+'''.format(dropna))
+    else:
+        if dropna in ['any', 'all']:
+            ntsd = ntsd.dropna(axis='index', how=dropna)
     return ntsd
 
 
@@ -395,7 +402,7 @@ def openinput(filein):
 
 
 def read_iso_ts(indat,
-                dense=True,
+                dropna='no',
                 parse_dates=True,
                 extended_columns=False,
                 force_freq=None):
@@ -407,7 +414,7 @@ def read_iso_ts(indat,
 
     if force_freq is not None:
         # force_freq implies a dense series
-        dense = True
+        dropna = 'no'
 
     index_col = 0
     if parse_dates is False:
@@ -429,7 +436,7 @@ def read_iso_ts(indat,
     if isinstance(indat, pd.DataFrame):
         if indat.index.is_all_dates:
             indat.index.name = 'Datetime'
-            if dense:
+            if dropna == 'no':
                 return asbestfreq(indat, force_freq=force_freq)
             else:
                 return indat
@@ -515,7 +522,7 @@ def read_iso_ts(indat,
     if result.index.is_all_dates is True:
         result.index.name = 'Datetime'
 
-        if dense:
+        if dropna == 'no':
             try:
                 return asbestfreq(result, force_freq=force_freq)
             except ValueError:

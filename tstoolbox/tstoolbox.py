@@ -47,7 +47,6 @@ def createts(
              start_date=None,
              end_date=None,
              freq=None,
-             dense=True,
              ):
     '''Create empty time series.  Just produce the time-stamps.
 
@@ -61,9 +60,6 @@ def createts(
     :param freq:  To use this form --start_date and --end_date must be
         supplied also.  The pandas date offset code used to create the
         index.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
     '''
     if input_ts is not None:
         columns = None
@@ -71,7 +67,7 @@ def createts(
                                   start_date=start_date,
                                   end_date=end_date,
                                   pick=columns,
-                                  dense=dense)
+                                 )
         tsd = pd.DataFrame(index=tsd.index)
     elif start_date is None or end_date is None or freq is None:
         raise ValueError('''
@@ -99,8 +95,7 @@ def filter(filter_type,
            input_ts='-',
            start_date=None,
            end_date=None,
-           columns=None,
-           dense=True):
+           columns=None):
     '''Apply different filters to the time-series.
 
     :param filter_type <str>:  'flat', 'hanning', 'hamming', 'bartlett',
@@ -127,9 +122,6 @@ def filter(filter_type,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
     :param float_format <str>: Float number format.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
@@ -184,7 +176,7 @@ def filter(filter_type,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def read(filenames, start_date=None, end_date=None, dense=False,
+def read(filenames, start_date=None, end_date=None, dropna='all',
          float_format='%g', how='outer', columns=None):
     '''Collect time series from a list of pickle or csv files.
 
@@ -196,26 +188,23 @@ def read(filenames, start_date=None, end_date=None, dense=False,
         ISOdatetime format, or 'None' for beginning.
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series.
-    :param how <str>:  Use PANDAS concept on how to join
-        the separate
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
+    :param how <str>:  Use PANDAS concept on how to join the separate
         DataFrames read from each file.  Default how='outer' which is
         the union, 'inner' is the intersection,
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
     :param float_format <str>: Float number format.
     '''
     filenames = filenames.split(',')
     result = pd.concat([tsutils.common_kwds(
                         tsutils.read_iso_ts(i,
-                                            dense=dense,
+                                            dropna=dropna,
                                             extended_columns=True),
                         start_date=start_date,
                         end_date=end_date,
@@ -240,7 +229,7 @@ def date_slice(float_format='%g',
                end_date=None,
                input_ts='-',
                columns=None,
-               dense=True):
+               dropna='no'):
     '''Prints out data to the screen between start_date and end_date
 
     :param -s, --start_date <str>:  The start_date of the series in
@@ -253,16 +242,18 @@ def date_slice(float_format='%g',
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     :param float_format <str>: Float number format.
     '''
     return tsutils.printiso(
         tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                            start_date=start_date,
                            end_date=end_date,
-                           pick=columns), float_format=float_format)
+                           pick=columns,
+                           dropna=dropna), float_format=float_format)
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
@@ -271,7 +262,7 @@ def describe(input_ts='-',
              start_date=None,
              end_date=None,
              columns=None,
-             dense=True,
+             dropna='no',
             ):
     '''Prints out statistics for the time-series.
 
@@ -287,14 +278,16 @@ def describe(input_ts='-',
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
-                              pick=columns)
+                              pick=columns,
+                              dropna=dropna)
     if transpose is True:
         ntsd = tsd.describe().transpose()
     else:
@@ -318,7 +311,6 @@ def peak_detection(method='rel',
                    start_date=None,
                    end_date=None,
                    columns=None,
-                   dense=True,
                   ):
     '''Peak and valley detection.
 
@@ -361,9 +353,6 @@ def peak_detection(method='rel',
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
     '''
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
@@ -459,7 +448,7 @@ def convert(factor=1.0,
             start_date=None,
             end_date=None,
             columns=None,
-            dense=True
+            dropna='no'
            ):
     '''Converts values of a time series by applying a factor and offset.
 
@@ -480,15 +469,18 @@ def convert(factor=1.0,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     :param float_format <str>: Float number format.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
                              end_date=end_date,
-                             pick=columns)
+                             pick=columns,
+                             dropna=dropna,
+                             )
     tmptsd = tsd * factor + offset
     return tsutils.print_input(print_input, tsd, tmptsd, '_convert',
                                float_format=float_format)
@@ -572,7 +564,7 @@ def equation(equation,
              start_date=None,
              end_date=None,
              columns=None,
-             dense=True
+             dropna='no'
             ):
     '''Applies <equation> to the time series data.
 
@@ -609,15 +601,18 @@ def equation(equation,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     :param float_format <str>: Float number format.
     '''
     x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                            start_date=start_date,
                            end_date=end_date,
-                           pick=columns).astype('f')
+                           pick=columns,
+                           dropna=dropna,
+                           ).astype('f')
 
     tsearch, nsearch, testeval, nequation = _parse_equation(equation)
     if tsearch and nsearch:
@@ -655,7 +650,7 @@ def pick(columns,
          input_ts='-',
          start_date=None,
          end_date=None,
-         dense=True,
+         dropna='no',
         ):
     '''Will pick a column or list of columns from input.
 
@@ -672,16 +667,20 @@ def pick(columns,
         ISOdatetime format, or 'None' for beginning.
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     '''
     return tsutils.printiso(
                tsutils.common_kwds(
                    tsutils.read_iso_ts(input_ts),
                    start_date=start_date,
                    end_date=end_date,
-                   pick=columns))
+                   pick=columns,
+                   dropna=dropna,
+                   )
+               )
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
@@ -690,7 +689,6 @@ def stdtozrxp(rexchange=None,
               start_date=None,
               end_date=None,
               columns=None,
-              dense=True
              ):
     '''Prints out data to the screen in a WISKI ZRXP format.
 
@@ -706,9 +704,6 @@ def stdtozrxp(rexchange=None,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -735,7 +730,7 @@ def tstopickle(filename,
                start_date=None,
                end_date=None,
                columns=None,
-               dense=True,
+               dropna='no',
               ):
     '''Pickles the data into a Python pickled file.
 
@@ -753,14 +748,17 @@ def tstopickle(filename,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna
+                              )
     pd.core.common.save(tsd, filename)
 
 
@@ -771,7 +769,7 @@ def accumulate(statistic='sum',
                start_date=None,
                end_date=None,
                columns=None,
-               dense=True,
+               dropna='no',
               ):
     '''Calculates accumulating statistics.
 
@@ -789,9 +787,10 @@ def accumulate(statistic='sum',
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -826,7 +825,6 @@ def rolling_window(span=2,
                    columns=None,
                    freq=None,
                    groupby=None,
-                   dense=True,
                   ):
     '''Calculates a rolling window statistic.
 
@@ -967,9 +965,6 @@ def rolling_window(span=2,
         +------+------------------------+
 
         Defaults to None.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
     :param freq: string or DateOffset object, optional (default None) Frequency
 	to conform the data to before computing the statistic. Specified as a
         frequency string or DateOffset object.
@@ -1132,7 +1127,7 @@ def aggregate(statistic='mean',
               start_date=None,
               end_date=None,
               columns=None,
-              dense=True):
+             ):
     '''Takes a time series and aggregates to specified frequency.
 
     :param statistic <str>:  'mean', 'sum', 'std', 'max', 'min',
@@ -1275,9 +1270,6 @@ def aggregate(statistic='mean',
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
     '''
     aggd = {'hourly': 'H',
             'daily': 'D',
@@ -1309,7 +1301,7 @@ def clip(a_min=None,
          print_input=False,
          input_ts='-',
          columns=None,
-         dense=True,
+         dropna='no',
         ):
     '''Returns a time-series with values limited to [a_min, a_max]
 
@@ -1329,14 +1321,17 @@ def clip(a_min=None,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
+                             )
     for col in tsd.columns:
         if a_min is None:
             try:
@@ -1364,7 +1359,7 @@ def add_trend(start_offset,
               print_input=False,
               input_ts='-',
               columns=None,
-              dense=True,
+              dropna='no',
              ):
     '''Adds a trend.
 
@@ -1382,14 +1377,17 @@ def add_trend(start_offset,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
+                             )
     ntsd = tsd.copy().astype('f')
     ntsd.ix[:, :] = pd.np.nan
     ntsd.ix[0, :] = float(start_offset)
@@ -1406,7 +1404,7 @@ def remove_trend(start_date=None,
                  print_input=False,
                  input_ts='-',
                  columns=None,
-                 dense=True,
+                 dropna='no',
                 ):
     '''Removes a 'trend'.
 
@@ -1422,14 +1420,17 @@ def remove_trend(start_date=None,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
+                             )
     ntsd = tsd.copy()
     for col in tsd.columns:
         index = tsd.index.astype('l')
@@ -1498,9 +1499,10 @@ def calculate_fdc(percent_point_function=None,
         Defaults to 'ascending'.
   '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                             )
 
     cnt = tsd.count(axis='rows')
     if pd.np.any(cnt != cnt[0]):
@@ -1528,7 +1530,6 @@ def stack(input_ts='-',
           start_date=None,
           end_date=None,
           columns=None,
-          dense=True,
          ):
     '''Returns the stack of the input table.
 
@@ -1565,9 +1566,6 @@ def stack(input_ts='-',
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -1624,9 +1622,6 @@ def unstack(
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                              start_date=start_date,
@@ -2078,9 +2073,6 @@ def plot(
 
         Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
         lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
     '''
 
     # Need to work around some old option defaults with the implemntation of
@@ -2095,14 +2087,14 @@ def plot(
     import matplotlib.pyplot as plt
     from matplotlib.ticker import FixedLocator
 
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dense=False),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dropna='all'),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
 
     if por is True:
         tsd.dropna(inplace=True, how='all')
-        tsd = tsutils.common_kwds(tsutils.read_iso_ts(tsd, dense=True),
+        tsd = tsutils.common_kwds(tsutils.read_iso_ts(tsd, dropna='no'),
                                  start_date=start_date,
                                  end_date=end_date)
 
@@ -2589,12 +2581,9 @@ def dtw(window=10000,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
     '''
 
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dense=True),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dropna='no'),
                              start_date=start_date,
                              end_date=end_date,
                              pick=columns)
@@ -2632,9 +2621,6 @@ def pca(n_components=None,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
     '''
     from sklearn.decomposition import PCA
 
@@ -2692,9 +2678,10 @@ def normalization(mode='minmax',
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dense:  Set `dense` to True to have missing values inserted
-        such that there is a single interval over the entire time
-        series. Default is True.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     :param float_format <str>: Float number format.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),

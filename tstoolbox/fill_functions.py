@@ -80,7 +80,7 @@ def fill(method='ffill',
         first column.  To pick multiple columns; separate by commas with
         no spaces.  As used in 'pick' command.
     '''
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dense=False),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dropna='all'),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns)
