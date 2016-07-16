@@ -1251,6 +1251,7 @@ def aggregate(statistic='mean',
               start_date=None,
               end_date=None,
               columns=None,
+              dropna='no',
              ):
     '''Takes a time series and aggregates to specified frequency.
 

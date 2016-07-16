@@ -102,7 +102,7 @@ class TestPeakDetect(TestCase):
         '''
         out = tstoolbox.peak_detection(input_ts=self.ats,
                                        print_input=True,
-                                       type='both')
+                                       extrema='both')
         self.maxDiff = None
         assert_frame_equal(out, self.compare)
 
@@ -113,7 +113,7 @@ class TestPeakDetect(TestCase):
                                        window=3,
                                        input_ts=self.ats,
                                        print_input=True,
-                                       type='both')
+                                       extrema='both')
         self.maxDiff = None
         assert_frame_equal(out, self.compare)
 
@@ -124,7 +124,7 @@ class TestPeakDetect(TestCase):
                                        window=3,
                                        input_ts=self.ats,
                                        print_input=True,
-                                       type='both')
+                                       extrema='both')
         self.maxDiff = None
         fp = open('/tmp/tslog3.txt', 'w')
         fp.write('{0}'.format(out))
@@ -137,7 +137,7 @@ class TestPeakDetect(TestCase):
 #        out = tstoolbox.peak_detection(method='parabola',
 #                                       input_ts=self.ats,
 #                                       print_input=True,
-#                                       type='both')
+#                                       extrema='both')
 #        self.maxDiff = None
 #        assert_frame_equal(out, self.compare)
 
@@ -148,7 +148,7 @@ class TestPeakDetect(TestCase):
                                        points=9,
                                        input_ts=self.ats,
                                        print_input=True,
-                                       type='both')
+                                       extrema='both')
         self.maxDiff = None
         assert_frame_equal(out, self.compare)
 
@@ -156,7 +156,7 @@ class TestPeakDetect(TestCase):
     def test_peak_rel_cli(self):
         ''' Test peak detection CLI using the default method.
         '''
-        args = 'tstoolbox peak_detection --type="both" --print_input=True'
+        args = 'tstoolbox peak_detection --extrema="both" --print_input=True'
         args = shlex.split(args)
         out = subprocess.Popen(args,
             stdout=subprocess.PIPE,
@@ -170,7 +170,7 @@ class TestPeakDetect(TestCase):
         args = ('tstoolbox peak_detection '
                 '--window=3 '
                 '--method="minmax" '
-                '--type="both" '
+                '--extrema="both" '
                 '--print_input=True')
         args = shlex.split(args)
         out = subprocess.Popen(args,
@@ -184,7 +184,7 @@ class TestPeakDetect(TestCase):
         '''
         args = ('tstoolbox peak_detection '
                 '--method="zero_crossing" '
-                '--type="both" '
+                '--extrema="both" '
                 '--window=3 '
                 '--print_input=True')
         args = shlex.split(args)
@@ -196,7 +196,7 @@ class TestPeakDetect(TestCase):
 
     #def test_peak_parabola_cli(self):
     #    args = ('tstoolbox peak_detection '
-    #            '--method="parabola" --type="both" --print_input=True')
+    #            '--method="parabola" --extrema="both" --print_input=True')
     #    args = shlex.split(args)
     #    out = subprocess.Popen(args,
     #        stdout=subprocess.PIPE,
@@ -209,7 +209,7 @@ class TestPeakDetect(TestCase):
         '''
         args = ('tstoolbox peak_detection '
                 '--method="sine" '
-                '--type="both" '
+                '--extrema="both" '
                 '--points=9 '
                 '--print_input=True')
         args = shlex.split(args)
@@ -220,15 +220,15 @@ class TestPeakDetect(TestCase):
         self.assertEqual(out, output_peak_detection)
 
     def test_peak_type_error(self):
-        with assertRaisesRegexp(ValueError, 'The `type` argument must be one'):
+        with assertRaisesRegexp(ValueError, 'The `extrema` argument must be one'):
             out = tstoolbox.peak_detection(method='sine',
                                            points=9,
                                            input_ts=self.ats,
                                            print_input=True,
-                                           type='booth')
+                                           extrema='booth')
         with assertRaisesRegexp(ValueError, 'The `method` argument must be one'):
             out = tstoolbox.peak_detection(method='sin',
                                            points=9,
                                            input_ts=self.ats,
                                            print_input=True,
-                                           type='both')
+                                           extrema='both')
