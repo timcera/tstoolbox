@@ -33,6 +33,7 @@ for env in ${envs[@]}; do
         --cover-package=${program} \
         --cover-branches \
         --cover-erase
+    exit
 EOT
 done
 
@@ -46,4 +47,5 @@ flake8 tstoolbox/__init__.py tstoolbox/tsutils.py --exit-zero
 cd docsrc
 make clean
 make html
+exit
 EOTT
