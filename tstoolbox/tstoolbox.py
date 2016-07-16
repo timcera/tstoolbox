@@ -1,4 +1,4 @@
-#!/sjr/beodata/local/python_linux/bin/python
+#!/usr/bin/env python
 '''
 tstoolbox is a collection of command line tools for the manipulation of time
 series.
@@ -12,7 +12,6 @@ import sys
 import os.path
 import warnings
 from mando.rst_text_formatter import RSTHelpFormatter
-warnings.filterwarnings('ignore')
 
 import pandas as pd
 # The numpy import is needed like this to be able to include numpy functions in
@@ -22,6 +21,8 @@ import mando
 
 from . import tsutils
 from . import fill_functions
+
+warnings.filterwarnings('ignore')
 fill = fill_functions.fill
 
 _offset_aliases = {
@@ -42,12 +43,11 @@ _offset_aliases = {
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def createts(
-             input_ts=None,
+def createts(input_ts=None,
              start_date=None,
              end_date=None,
              freq=None,
-             ):
+            ):
     '''Create empty time series.  Just produce the time-stamps.
 
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value'
@@ -95,7 +95,9 @@ def filter(filter_type,
            input_ts='-',
            start_date=None,
            end_date=None,
-           columns=None):
+           columns=None,
+           dropna='no',
+          ):
     '''Apply different filters to the time-series.
 
     :param filter_type <str>:  'flat', 'hanning', 'hamming', 'bartlett',
@@ -125,9 +127,11 @@ def filter(filter_type,
     :param float_format <str>: Float number format.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna
+                             )
     from tstoolbox import filters
 
     if len(tsd.values) < window_len:
@@ -176,7 +180,7 @@ def filter(filter_type,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def read(filenames, start_date=None, end_date=None, dropna='all',
+def read(filenames, start_date=None, end_date=None, dropna='no',
          float_format='%g', how='outer', columns=None):
     '''Collect time series from a list of pickle or csv files.
 
@@ -202,15 +206,18 @@ def read(filenames, start_date=None, end_date=None, dropna='all',
     :param float_format <str>: Float number format.
     '''
     filenames = filenames.split(',')
-    result = pd.concat([tsutils.common_kwds(
-                        tsutils.read_iso_ts(i,
+    result = pd.concat([tsutils.common_kwds(tsutils.read_iso_ts(
+        i,
+        extended_columns=True
+        ),
+                                            start_date=start_date,
+                                            end_date=end_date,
+                                            pick=columns,
                                             dropna=dropna,
-                                            extended_columns=True),
-                        start_date=start_date,
-                        end_date=end_date,
-                        pick=columns) for i in filenames],
-                        join=how,
-                        axis=1)
+                                           ) for i in filenames],
+                       join=how,
+                       axis=1,
+                      )
 
     colnames = ['.'.join(i.split('.')[1:]) for i in result.columns]
     if len(colnames) == len(set(colnames)):
@@ -250,10 +257,11 @@ def date_slice(float_format='%g',
     '''
     return tsutils.printiso(
         tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                           start_date=start_date,
-                           end_date=end_date,
-                           pick=columns,
-                           dropna=dropna), float_format=float_format)
+                            start_date=start_date,
+                            end_date=end_date,
+                            pick=columns,
+                            dropna=dropna
+                           ), float_format=float_format)
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
@@ -287,7 +295,8 @@ def describe(input_ts='-',
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna)
+                              dropna=dropna
+                             )
     if transpose is True:
         ntsd = tsd.describe().transpose()
     else:
@@ -300,7 +309,7 @@ def describe(input_ts='-',
 
 @mando.command(formatter_class=RSTHelpFormatter)
 def peak_detection(method='rel',
-                   type='peak',
+                   extrema='peak',
                    window=24,
                    pad_len=5,
                    points=9,
@@ -311,10 +320,11 @@ def peak_detection(method='rel',
                    start_date=None,
                    end_date=None,
                    columns=None,
+                   dropna='no',
                   ):
     '''Peak and valley detection.
 
-    :param type <str>:  'peak', 'valley', or 'both' to determine what
+    :param extrema <str>:  'peak', 'valley', or 'both' to determine what
         should be returned.  Default is 'peak'.
     :param method <str>:  'rel', 'minmax', 'zero_crossing', 'parabola',
         'sine' methods are available.  The different algorithms have
@@ -357,13 +367,13 @@ def peak_detection(method='rel',
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
 
-    if type not in ['peak', 'valley', 'both']:
+    if extrema not in ['peak', 'valley', 'both']:
         raise ValueError('''
 *
-*   The `type` argument must be one of 'peak',
+*   The `extrema` argument must be one of 'peak',
 *   'valley', or 'both'.  You supplied {0}.
 *
-'''.format(type))
+'''.format(extrema))
 
     if method not in ['rel', 'minmax', 'zero_crossing', 'parabola', 'sine']:
         raise ValueError('''
@@ -374,9 +384,11 @@ def peak_detection(method='rel',
 '''.format(method))
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
+                             )
 
     window = int(window)
     kwds = {}
@@ -408,11 +420,11 @@ def peak_detection(method='rel',
         from tstoolbox.peakdetect import _peakdetect_fft as func
         kwds['pad_len'] = int(pad_len)
 
-    if type == 'peak':
+    if extrema == 'peak':
         tmptsd = tsd.rename(columns=lambda x: str(x) + '_peak', copy=True)
-    if type == 'valley':
+    if extrema == 'valley':
         tmptsd = tsd.rename(columns=lambda x: str(x) + '_valley', copy=True)
-    if type == 'both':
+    if extrema == 'both':
         tmptsd = tsd.rename(columns=lambda x: str(x) + '_peak', copy=True)
         tmptsd = tmptsd.join(
             tsd.rename(columns=lambda x: str(x) + '_valley', copy=True),
@@ -476,23 +488,23 @@ def convert(factor=1.0,
     :param float_format <str>: Float number format.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns,
-                             dropna=dropna,
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
                              )
     tmptsd = tsd * factor + offset
     return tsutils.print_input(print_input, tsd, tmptsd, '_convert',
                                float_format=float_format)
 
 
-def _parse_equation(equation):
+def _parse_equation(equation_str):
     '''
     Private function to parse the equation used in the calculations.
     '''
     import re
     # Get rid of spaces
-    nequation = equation.replace(' ', '')
+    nequation = equation_str.replace(' ', '')
 
     # Does the equation contain any x[t]?
     tsearch = re.search(r'\[.*?t.*?\]', nequation)
@@ -556,8 +568,9 @@ def _parse_equation(equation):
         pass
     return tsearch, nsearch, testeval, nequation
 
+
 @mando.command(formatter_class=RSTHelpFormatter)
-def equation(equation,
+def equation(equation_str,
              print_input='',
              float_format='%g',
              input_ts='-',
@@ -566,13 +579,13 @@ def equation(equation,
              columns=None,
              dropna='no'
             ):
-    '''Applies <equation> to the time series data.
+    '''Applies <equation_str> to the time series data.
 
-    The <equation> argument is a string contained in single quotes with
+    The <equation_str> argument is a string contained in single quotes with
     'x' used as the variable representing the input.  For example, '(1
     - x)*sin(x)'.
 
-    :param equation <str>:  String contained in single quotes that
+    :param equation_str <str>:  String contained in single quotes that
         defines the equation.  The input variable place holder is 'x'.
         Mathematical functions in the 'np' (numpy) name space can be
         used.  For example::
@@ -608,13 +621,13 @@ def equation(equation,
     :param float_format <str>: Float number format.
     '''
     x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                           start_date=start_date,
-                           end_date=end_date,
-                           pick=columns,
-                           dropna=dropna,
+                            start_date=start_date,
+                            end_date=end_date,
+                            pick=columns,
+                            dropna=dropna,
                            ).astype('f')
 
-    tsearch, nsearch, testeval, nequation = _parse_equation(equation)
+    tsearch, nsearch, testeval, nequation = _parse_equation(equation_str)
     if tsearch and nsearch:
         y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
         for t in range(len(x)):
@@ -640,7 +653,7 @@ def equation(equation,
         y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
         y.ix[:, 0] = eval(nequation)
     else:
-        y = eval(equation)
+        y = eval(equation_str)
     return tsutils.print_input(print_input, x, y, '_equation',
                                float_format=float_format)
 
@@ -673,14 +686,13 @@ def pick(columns,
         any records.  The default is 'no'.
     '''
     return tsutils.printiso(
-               tsutils.common_kwds(
-                   tsutils.read_iso_ts(input_ts),
-                   start_date=start_date,
-                   end_date=end_date,
-                   pick=columns,
-                   dropna=dropna,
-                   )
-               )
+        tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                            start_date=start_date,
+                            end_date=end_date,
+                            pick=columns,
+                            dropna=dropna,
+                           )
+        )
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
@@ -689,6 +701,7 @@ def stdtozrxp(rexchange=None,
               start_date=None,
               end_date=None,
               columns=None,
+              dropna='no',
              ):
     '''Prints out data to the screen in a WISKI ZRXP format.
 
@@ -706,9 +719,11 @@ def stdtozrxp(rexchange=None,
         with no spaces. As used in 'pick' command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
+                             )
     if len(tsd.columns) > 1:
         raise ValueError('''
 *
@@ -757,8 +772,8 @@ def tstopickle(filename,
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna
-                              )
+                              dropna=dropna,
+                             )
     pd.core.common.save(tsd, filename)
 
 
@@ -793,9 +808,11 @@ def accumulate(statistic='sum',
         any records.  The default is 'no'.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
+                             )
     if statistic == 'sum':
         ntsd = tsd.cumsum()
     elif statistic == 'max':
@@ -825,6 +842,7 @@ def rolling_window(span=2,
                    columns=None,
                    freq=None,
                    groupby=None,
+                   dropna='no',
                   ):
     '''Calculates a rolling window statistic.
 
@@ -966,14 +984,16 @@ def rolling_window(span=2,
 
         Defaults to None.
     :param freq: string or DateOffset object, optional (default None) Frequency
-	to conform the data to before computing the statistic. Specified as a
+        to conform the data to before computing the statistic. Specified as a
         frequency string or DateOffset object.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              groupby=groupby)
+                              groupby=groupby,
+                              dropna=dropna,
+                             )
 
     def _process_tsd(tsd,
                      statistic='mean',
@@ -1007,74 +1027,178 @@ def rolling_window(span=2,
                 tsd, span, wintype, center=center, mean=meantest, freq=freq)
         elif statistic == 'mean':
             if span == 0:
-                newts = pd.stats.moments.expanding_mean(tsd, center=center, freq=freq)
+                newts = pd.stats.moments.expanding_mean(tsd,
+                                                        center=center,
+                                                        freq=freq
+                                                       )
             else:
-                newts = pd.stats.moments.rolling_mean(tsd, span, center=center, freq=freq)
+                newts = pd.stats.moments.rolling_mean(tsd,
+                                                      span,
+                                                      center=center,
+                                                      freq=freq
+                                                     )
         elif statistic == 'max':
             if span == 0:
-                newts = pd.stats.moments.expanding_max(tsd, center=center, freq=freq)
+                newts = pd.stats.moments.expanding_max(tsd,
+                                                       center=center,
+                                                       freq=freq
+                                                      )
             else:
-                newts = pd.stats.moments.rolling_max(tsd, span, center=center, freq=freq)
+                newts = pd.stats.moments.rolling_max(tsd,
+                                                     span,
+                                                     center=center,
+                                                     freq=freq
+                                                    )
         elif statistic == 'min':
             if span == 0:
-                newts = pd.stats.moments.expanding_min(tsd, center=center, freq=freq)
+                newts = pd.stats.moments.expanding_min(tsd,
+                                                       center=center,
+                                                       freq=freq
+                                                      )
             else:
-                newts = pd.stats.moments.rolling_min(tsd, span, center=center, freq=freq)
+                newts = pd.stats.moments.rolling_min(tsd,
+                                                     span,
+                                                     center=center,
+                                                     freq=freq
+                                                    )
         elif statistic == 'corr':
             if span == 0:
-                newts = pd.stats.moments.expanding_corr(tsd, center=center, freq=freq)
+                newts = pd.stats.moments.expanding_corr(tsd,
+                                                        center=center,
+                                                        freq=freq
+                                                       )
             else:
-                newts = pd.stats.moments.rolling_corr(tsd, span, center=center, freq=freq)
+                newts = pd.stats.moments.rolling_corr(tsd,
+                                                      span,
+                                                      center=center,
+                                                      freq=freq
+                                                     )
         elif statistic == 'cov':
             if span == 0:
-                newts = pd.stats.moments.expanding_cov(tsd, center=center, freq=freq)
+                newts = pd.stats.moments.expanding_cov(tsd,
+                                                       center=center,
+                                                       freq=freq
+                                                      )
             else:
-                newts = pd.stats.moments.rolling_cov(tsd, span, center=center, freq=freq)
+                newts = pd.stats.moments.rolling_cov(tsd,
+                                                     span,
+                                                     center=center,
+                                                     freq=freq
+                                                    )
         elif statistic == 'count':
             if span == 0:
-                newts = pd.stats.moments.expanding_count(tsd, center=center, freq=freq)
+                newts = pd.stats.moments.expanding_count(tsd,
+                                                         center=center,
+                                                         freq=freq
+                                                        )
             else:
-                newts = pd.stats.moments.rolling_count(tsd, span, center=center, freq=freq)
+                newts = pd.stats.moments.rolling_count(tsd,
+                                                       span,
+                                                       center=center,
+                                                       freq=freq
+                                                      )
         elif statistic == 'kurtosis':
             if span == 0:
-                newts = pd.stats.moments.expanding_kurt(tsd, center=center, freq=freq)
+                newts = pd.stats.moments.expanding_kurt(tsd,
+                                                        center=center,
+                                                        freq=freq
+                                                       )
             else:
-                newts = pd.stats.moments.rolling_kurt(tsd, span, center=center, freq=freq)
+                newts = pd.stats.moments.rolling_kurt(tsd,
+                                                      span,
+                                                      center=center,
+                                                      freq=freq
+                                                     )
         elif statistic == 'median':
             if span == 0:
-                newts = pd.stats.moments.expanding_median(tsd, center=center, freq=freq)
+                newts = pd.stats.moments.expanding_median(tsd,
+                                                          center=center,
+                                                          freq=freq
+                                                         )
             else:
-                newts = pd.stats.moments.rolling_median(tsd, span, center=center, freq=freq)
+                newts = pd.stats.moments.rolling_median(tsd,
+                                                        span,
+                                                        center=center,
+                                                        freq=freq
+                                                       )
         elif statistic == 'skew':
             if span == 0:
-                newts = pd.stats.moments.expanding_skew(tsd, center=center, freq=freq)
+                newts = pd.stats.moments.expanding_skew(tsd,
+                                                        center=center,
+                                                        freq=freq
+                                                       )
             else:
-                newts = pd.stats.moments.rolling_skew(tsd, span, center=center, freq=freq)
+                newts = pd.stats.moments.rolling_skew(tsd,
+                                                      span,
+                                                      center=center,
+                                                      freq=freq
+                                                     )
         elif statistic == 'stdev':
             if span == 0:
-                newts = pd.stats.moments.expanding_std(tsd, center=center, freq=freq)
+                newts = pd.stats.moments.expanding_std(tsd,
+                                                       center=center,
+                                                       freq=freq
+                                                      )
             else:
-                newts = pd.stats.moments.rolling_std(tsd, span, center=center, freq=freq)
+                newts = pd.stats.moments.rolling_std(tsd,
+                                                     span,
+                                                     center=center,
+                                                     freq=freq
+                                                    )
         elif statistic == 'sum':
             if span == 0:
-                newts = pd.stats.moments.expanding_sum(tsd, center=center, freq=freq)
+                newts = pd.stats.moments.expanding_sum(tsd,
+                                                       center=center,
+                                                       freq=freq
+                                                      )
             else:
-                newts = pd.stats.moments.rolling_sum(tsd, span, center=center, freq=freq)
+                newts = pd.stats.moments.rolling_sum(tsd,
+                                                     span,
+                                                     center=center,
+                                                     freq=freq
+                                                    )
         elif statistic == 'variance':
             if span == 0:
-                newts = pd.stats.moments.expanding_var(tsd, center=center, freq=freq)
+                newts = pd.stats.moments.expanding_var(tsd,
+                                                       center=center,
+                                                       freq=freq
+                                                      )
             else:
-                newts = pd.stats.moments.rolling_var(tsd, span, center=center, freq=freq)
+                newts = pd.stats.moments.rolling_var(tsd,
+                                                     span,
+                                                     center=center,
+                                                     freq=freq
+                                                    )
         elif statistic == 'expw_mean':
-            newts = pd.stats.moments.ewma(tsd, span=span, center=center, freq=freq)
+            newts = pd.stats.moments.ewma(tsd,
+                                          span=span,
+                                          center=center,
+                                          freq=freq
+                                         )
         elif statistic == 'expw_stdev':
-            newts = pd.stats.moments.ewmstd(tsd, span=span, center=center, freq=freq)
+            newts = pd.stats.moments.ewmstd(tsd,
+                                            span=span,
+                                            center=center,
+                                            freq=freq
+                                           )
         elif statistic == 'expw_variance':
-            newts = pd.stats.moments.ewmvar(tsd, span=span, center=center, freq=freq)
+            newts = pd.stats.moments.ewmvar(tsd,
+                                            span=span,
+                                            center=center,
+                                            freq=freq
+                                           )
         elif statistic == 'expw_corr':
-            newts = pd.stats.moments.ewmcorr(tsd, span=span, center=center, freq=freq)
+            newts = pd.stats.moments.ewmcorr(tsd,
+                                             span=span,
+                                             center=center,
+                                             freq=freq
+                                            )
         elif statistic == 'expw_cov':
-            newts = pd.stats.moments.ewmcov(tsd, span=span, center=center, freq=freq)
+            newts = pd.stats.moments.ewmcov(tsd,
+                                            span=span,
+                                            center=center,
+                                            freq=freq
+                                           )
         else:
             raise ValueError('''
 *
@@ -1087,11 +1211,11 @@ def rolling_window(span=2,
     if isinstance(tsd, pd.DataFrame):
         for nspan in str(span).split(','):
             tmptsd.append(_process_tsd(tsd,
-                               statistic=statistic,
-                               span=nspan,
-                               center=center,
-                               wintype=wintype,
-                               freq=freq))
+                                       statistic=statistic,
+                                       span=nspan,
+                                       center=center,
+                                       wintype=wintype,
+                                       freq=freq))
     else:
         for nspan in str(span).split(','):
             jtsd = pd.DataFrame()
@@ -1279,15 +1403,19 @@ def aggregate(statistic='mean',
     agg_interval = aggd.get(agg_interval, agg_interval)
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
+                             )
     methods = statistic.split(',')
     newts = pd.DataFrame()
     for method in methods:
         tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                agg_interval),
-                                                how=method)
+                                                agg_interval
+                                               ),
+                              how=method
+                             )
         tmptsd.rename(columns=lambda x: x + '_' + method, inplace=True)
         newts = newts.join(tmptsd, how='outer')
     return tsutils.print_input(print_input, tsd, newts, '')
@@ -1530,6 +1658,7 @@ def stack(input_ts='-',
           start_date=None,
           end_date=None,
           columns=None,
+          dropna='no',
          ):
     '''Returns the stack of the input table.
 
@@ -1568,9 +1697,11 @@ def stack(input_ts='-',
         with no spaces. As used in 'pick' command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
+                             )
 
     newtsd = pd.DataFrame(tsd.stack()).reset_index(1)
     newtsd.sort(['level_1'], inplace=True)
@@ -1584,6 +1715,7 @@ def unstack(
         input_ts='-',
         start_date=None,
         end_date=None,
+        dropna='no',
         columns=None):
     '''Returns the unstack of the input table.
 
@@ -1624,15 +1756,18 @@ def unstack(
         with no spaces. As used in 'pick' command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
+                             )
 
     cols = list(tsd.columns)
     cols.remove(column_names)
     newtsd = pd.DataFrame(tsd[cols].values,
                           index=[tsd.index.values,
-                          tsd[column_names].values])
+                                 tsd[column_names].values]
+                         )
     newtsd = newtsd.unstack()
     newtsd.index.name = 'Datetime'
     levels = newtsd.columns.levels
@@ -1640,33 +1775,34 @@ def unstack(
     newtsd.columns = levels[1][labels[1]]
 
     # Remove weird characters from column names
-    newtsd.rename(columns=lambda x: ''.join([i for i in str(x) if i not in '\'" ']))
+    newtsd.rename(columns=lambda x: ''.join(
+        [i for i in str(x) if i not in '\'" ']))
     return tsutils.printiso(newtsd)
 
 
 mark_dict = {
-    ".":"point",
-    ",":"pixel",
-    "o":"circle",
-    "v":"triangle_down",
-    "^":"triangle_up",
-    "<":"triangle_left",
-    ">":"triangle_right",
-    "1":"tri_down",
-    "2":"tri_up",
-    "3":"tri_left",
-    "4":"tri_right",
-    "8":"octagon",
-    "s":"square",
-    "p":"pentagon",
-    "*":"star",
-    "h":"hexagon1",
-    "H":"hexagon2",
-    "+":"plus",
-    "D":"diamond",
-    "d":"thin_diamond",
-    "|":"vline",
-    "_":"hline"
+    ".": "point",
+    ",": "pixel",
+    "o": "circle",
+    "v": "triangle_down",
+    "^": "triangle_up",
+    "<": "triangle_left",
+    ">": "triangle_right",
+    "1": "tri_down",
+    "2": "tri_up",
+    "3": "tri_left",
+    "4": "tri_right",
+    "8": "octagon",
+    "s": "square",
+    "p": "pentagon",
+    "*": "star",
+    "h": "hexagon1",
+    "H": "hexagon2",
+    "+": "plus",
+    "D": "diamond",
+    "d": "thin_diamond",
+    "|": "vline",
+    "_": "hline"
     }
 
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k',
@@ -1683,6 +1819,7 @@ colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k',
           'cadetblue',
           'chartreuse',
           'chocolate']
+
 
 def _set_ppf(ptype):
     if ptype == 'norm':
@@ -1702,40 +1839,42 @@ def _set_ppf(ptype):
             return y
         return ppf
 
-def _uniform_plotting_position_equation(i, n, a):
+
+def _plotting_position_equation(i, n, a):
     return (i - a)/float(n + 1 - 2*a)
+
 
 def _set_plotting_position(n, plotting_position='weibull'):
     if plotting_position == 'weibull':
-        return pd.np.linspace(
-                _uniform_plotting_position_equation(1, n, 0.0),
-                _uniform_plotting_position_equation(n, n, 0.0),
-                n)
+        return pd.np.linspace(_plotting_position_equation(1, n, 0.0),
+                              _plotting_position_equation(n, n, 0.0),
+                              n,
+                             )
     elif plotting_position == 'benard':
-        return pd.np.linspace(
-                _uniform_plotting_position_equation(1, n, 0.3),
-                _uniform_plotting_position_equation(n, n, 0.3),
-                n)
+        return pd.np.linspace(_plotting_position_equation(1, n, 0.3),
+                              _plotting_position_equation(n, n, 0.3),
+                              n,
+                             )
     elif plotting_position == 'tukey':
-        return pd.np.linspace(
-                _uniform_plotting_position_equation(1, n, 1.0/3.0),
-                _uniform_plotting_position_equation(n, n, 1.0/3.0),
-                n)
+        return pd.np.linspace(_plotting_position_equation(1, n, 1.0/3.0),
+                              _plotting_position_equation(n, n, 1.0/3.0),
+                              n,
+                             )
     elif plotting_position == 'gumbel':
-        return pd.np.linspace(
-                _uniform_plotting_position_equation(1, n, 1.0),
-                _uniform_plotting_position_equation(n, n, 1.0),
-                n)
+        return pd.np.linspace(_plotting_position_equation(1, n, 1.0),
+                              _plotting_position_equation(n, n, 1.0),
+                              n,
+                             )
     elif plotting_position == 'hazen':
-        return pd.np.linspace(
-                _uniform_plotting_position_equation(1, n, 1.0/2.0),
-                _uniform_plotting_position_equation(n, n, 1.0/2.0),
-                n)
+        return pd.np.linspace(_plotting_position_equation(1, n, 1.0/2.0),
+                              _plotting_position_equation(n, n, 1.0/2.0),
+                              n,
+                             )
     elif plotting_position == 'cunnane':
-        return pd.np.linspace(
-                _uniform_plotting_position_equation(1, n, 2.0/5.0),
-                _uniform_plotting_position_equation(n, n, 2.0/5.0),
-                n)
+        return pd.np.linspace(_plotting_position_equation(1, n, 2.0/5.0),
+                              _plotting_position_equation(n, n, 2.0/5.0),
+                              n,
+                             )
     elif plotting_position == 'california':
         return pd.np.linspace(1./n, 1., n)
     else:
@@ -1746,6 +1885,7 @@ def _set_plotting_position(n, plotting_position='weibull'):
 *    plotting position options, you gave {0}.
 *
 '''.format(plotting_position))
+
 
 @mando.command(formatter_class=RSTHelpFormatter)
 def plot(
@@ -2087,16 +2227,19 @@ def plot(
     import matplotlib.pyplot as plt
     from matplotlib.ticker import FixedLocator
 
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dropna='all'),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna='all',
+                             )
 
     if por is True:
-        tsd.dropna(inplace=True, how='all')
-        tsd = tsutils.common_kwds(tsutils.read_iso_ts(tsd, dropna='no'),
-                                 start_date=start_date,
-                                 end_date=end_date)
+        tsd = tsutils.common_kwds(tsutils.read_iso_ts(tsd),
+                                  start_date=start_date,
+                                  end_date=end_date,
+                                  dropna='no',
+                                 )
 
     def _know_your_limits(xylimits, axis='arithmetic'):
         '''
@@ -2115,7 +2258,6 @@ def plot(
                     nlim.append(int(lim))
         else:  # tuples or lists...
             nlim = xylimits
-
 
         if axis in ['norm', 'lognormal', 'weibull']:
             if nlim is None:
@@ -2156,7 +2298,6 @@ def plot(
 '''.format(nlim))
 
         return nlim
-
 
     # This is to help pretty print the frequency
     try:
@@ -2203,12 +2344,23 @@ def plot(
     if style:
         style = style.split(',')
 
-    if logx is True or logy is True or norm_xaxis is True:
+    if (logx is True or
+            logy is True or
+            norm_xaxis is True or
+            norm_yaxis is True or
+            lognorm_xaxis is True or
+            lognorm_yaxis is True):
         warnings.warn('''
 *
-*   The --logx, --logy, and --norm_xaxis  options are deprecated.
-*   Use '--xaxis="log" or '--yaxis="log"',
-*   or '--type="norm_xaxis"' or '--type="norm_yaxis"'.
+*   The --logx, --logy, --norm_xaxis, --norm_yaxis, --lognorm_xaxis, and
+*   --lognorm_yaxis options are deprecated.
+*
+*   For --logx use --xaxis="log"
+*   For --logy use --yaxis="log"
+*   For --norm_xaxis use --type="norm_xaxis"
+*   For --norm_yaxis use --type="norm_yaxis"
+*   For --lognorm_xaxis use --type="lognorm_xaxis"
+*   For --lognorm_yaxis use --type="lognorm_yaxis"
 *
 ''')
 
@@ -2511,10 +2663,7 @@ def plot(
 *
 '''.format(type))
 
-    if grid is None:
-        grid = True
-    else:
-        grid = False
+    grid = bool(grid is None)
     if invert_xaxis is True:
         plt.gca().invert_xaxis()
     if invert_yaxis is True:
@@ -2569,6 +2718,7 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x-y), window=10000):
     # Return DTW distance given window
     return cost[-1, -1]
 
+
 @mando.command(formatter_class=RSTHelpFormatter)
 def dtw(window=10000,
         input_ts='-',
@@ -2583,10 +2733,12 @@ def dtw(window=10000,
         with no spaces. As used in 'pick' command.
     '''
 
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dropna='no'),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna='no',
+                             )
 
     process = {}
     for i in tsd.columns:
@@ -2599,12 +2751,14 @@ def dtw(window=10000,
     ntsd = pd.DataFrame(process.values(), process.keys())
     return tsutils.printiso(ntsd)
 
+
 @mando.command(formatter_class=RSTHelpFormatter)
 def pca(n_components=None,
         input_ts='-',
         start_date=None,
         end_date=None,
-        columns=None):
+        columns=None
+       ):
     '''Returns the principal components analysis of the time series.
 
     Does not return a time-series.
@@ -2625,9 +2779,10 @@ def pca(n_components=None,
     from sklearn.decomposition import PCA
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns
+                             )
 
     pca = PCA(n_components)
     pca.fit(tsd.dropna(how='any'))
@@ -2644,7 +2799,9 @@ def normalization(mode='minmax',
                   input_ts='-',
                   start_date=None,
                   end_date=None,
-                  columns=None):
+                  columns=None,
+                  dropna='no',
+                 ):
     '''Returns the normalization of the time series.
 
     :param mode <str>:  'minmax', 'zscore', or 'pct_rank'.  Default is
@@ -2685,9 +2842,11 @@ def normalization(mode='minmax',
     :param float_format <str>: Float number format.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
+                             )
 
     # Trying to save some memory
     if print_input:
@@ -2697,8 +2856,8 @@ def normalization(mode='minmax',
 
     if mode == 'minmax':
         tsd = (min_limit +
-               (tsd - tsd.min())/
-               (tsd.max() - tsd.min())*
+               (tsd - tsd.min()) /
+               (tsd.max() - tsd.min()) *
                (max_limit - min_limit))
     elif mode == 'zscore':
         tsd = (tsd - tsd.mean())/tsd.std()
@@ -2715,13 +2874,16 @@ def normalization(mode='minmax',
     return tsutils.print_input(print_input, otsd, tsd, '_{0}'.format(mode),
                                float_format=float_format)
 
+
 @mando.command(formatter_class=RSTHelpFormatter)
 def converttz(fromtz,
               totz,
               input_ts='-',
               start_date=None,
               end_date=None,
-              columns=None):
+              columns=None,
+              dropna='no',
+             ):
     '''Converts the time zone of the index.
 
     :param fromtz <str>: The time zone of the original time-series.
@@ -2738,14 +2900,21 @@ def converttz(fromtz,
         with no spaces. As used in 'pick' command.
     '''
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                             start_date=start_date,
-                             end_date=end_date,
-                             pick=columns)
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
+                             )
     tsd = tsd.tz_localize(fromtz).tz_convert(totz)
     return tsutils.printiso(tsd, force_print_index=True)
+
 
 def main():
     ''' Main '''
     if not os.path.exists('debug_tstoolbox'):
         sys.tracebacklimit = 0
     mando.main()
+
+
+if __name__ == '__main__':
+    main()
