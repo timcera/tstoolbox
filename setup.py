@@ -26,6 +26,7 @@ install_requires = [
     'mando >= 0.4',
     'matplotlib',
     'rst2ansi >= 0.1.5',
+    'scipy',
 ]
 
 
