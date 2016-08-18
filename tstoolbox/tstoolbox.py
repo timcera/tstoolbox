@@ -831,7 +831,7 @@ def accumulate(statistic='sum',
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def rolling_window(span=2,
+def rolling_window(span=None,
                    statistic='mean',
                    wintype=None,
                    center=False,
@@ -846,7 +846,7 @@ def rolling_window(span=2,
                   ):
     '''Calculates a rolling window statistic.
 
-    :param span <int>:  The number of previous intervals to include in the
+    :param span:  The number of previous intervals to include in the
         calculation of the statistic. If `span` is equal to 0 will give
         an expanding rolling window.  Defaults to 2.
     :param statistic <str>:  One of 'mean', 'corr', 'count', 'cov',
@@ -994,6 +994,9 @@ def rolling_window(span=2,
                               groupby=groupby,
                               dropna=dropna,
                              )
+
+    if span is None:
+        span = 2
 
     def _process_tsd(tsd,
                      statistic='mean',
