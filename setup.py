@@ -18,8 +18,6 @@ README = open(os.path.join(here, 'README.rst')).read()
 version = open("VERSION").readline().strip()
 
 install_requires = [
-    # List your project dependencies here.
-    # For more details, see:
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
     'pandas >= 0.17.1',
     'python-dateutil >= 2.1',

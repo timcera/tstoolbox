@@ -1415,11 +1415,46 @@ def aggregate(statistic='mean',
     methods = statistic.split(',')
     newts = pd.DataFrame()
     for method in methods:
-        tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                agg_interval
-                                               ),
-                              how=method
-                             )
+        if method == 'mean':
+            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
+                                                    agg_interval
+                                                   )).mean()
+        elif method == 'sum':
+            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
+                                                    agg_interval
+                                                   )).sum()
+        elif method == 'std':
+            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
+                                                    agg_interval
+                                                   )).std()
+        elif method == 'max':
+            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
+                                                    agg_interval
+                                                   )).max()
+        elif method == 'min':
+            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
+                                                    agg_interval
+                                                   )).min()
+        elif method == 'median':
+            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
+                                                    agg_interval
+                                                   )).median()
+        elif method == 'first':
+            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
+                                                    agg_interval
+                                                   )).first()
+        elif method == 'last':
+            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
+                                                    agg_interval
+                                                   )).last()
+        else:
+            raise ValueError('''
+***
+*** The statistic option must be one of 'mean', 'sum', 'std', 'max',
+*** 'min', 'median', 'first', or 'last' to calculate the aggregation.
+*** You gave {0}.
+***
+'''.format(statistic))
         tmptsd.rename(columns=lambda x: x + '_' + method, inplace=True)
         newts = newts.join(tmptsd, how='outer')
     return tsutils.print_input(print_input, tsd, newts, '')
