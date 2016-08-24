@@ -14,7 +14,7 @@ pkgs="\
      "
 
 # pandas no longer supports 2.6
-envs=(2.7 3.3 3.4 3.5)
+envs=(2.7 3.4 3.5)
 
 for env in ${envs[@]}; do
     echo "${env}"
