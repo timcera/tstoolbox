@@ -1,6 +1,4 @@
-'''
-A collection of functions used by tstoolbox, wdmtoolbox, ...etc.
-'''
+"""A collection of functions used by tstoolbox, wdmtoolbox, ...etc."""
 
 from __future__ import print_function
 from __future__ import division
@@ -29,8 +27,7 @@ def common_kwds(input_tsd,
                 force_freq=None,
                 groupby=None,
                 dropna='no'):
-    '''Collected all common_kwds across sub-commands into this single function.
-    '''
+    """Collected all common_kwds across sub-commands  single function."""
     ntsd = input_tsd
     if pick is not None:
         ntsd = _pick(ntsd, pick)
@@ -46,11 +43,11 @@ def common_kwds(input_tsd,
         else:
             return ntsd.groupby(pd.TimeGrouper(groupby))
     if dropna not in ['any', 'all', 'no']:
-        raise ValueError('''
+        raise ValueError("""
 *
 *   The "dropna" option must be "any", "all" or "no", not "{0}".
 *
-'''.format(dropna))
+""".format(dropna))
     else:
         if dropna in ['any', 'all']:
             ntsd = ntsd.dropna(axis='index', how=dropna)
@@ -76,26 +73,26 @@ def _pick(tsd, columns):
             try:
                 target_col = int(i) - 1
             except:
-                raise ValueError('''
+                raise ValueError("""
 *
 *   The name {0} isn't in the list of column names
 *   {1}.
 *
-'''.format(i, tsd.columns))
+""".format(i, tsd.columns))
             if target_col < 0:
-                raise ValueError('''
+                raise ValueError("""
 *
 *   The request column index {0} must be greater than or equal to 0.
 *   First data column is index 1, index is column 0.
 *
-'''.format(i))
+""".format(i))
             if target_col > len(tsd.columns):
-                raise ValueError('''
+                raise ValueError("""
 *
 *   The request column index {0} must be less than the
 *   number of columns {1}.
 *
-'''.format(i, len(tsd.columns)))
+""".format(i, len(tsd.columns)))
 
             # columns names or numbers or index organized into
             # numbers in ncolumns
@@ -118,18 +115,16 @@ def _pick(tsd, columns):
 
 
 def date_slice(input_tsd, start_date=None, end_date=None):
-    '''
+    """Limit input to start_date and end_date.
+
     This is here for a while until I fix my other toolboxes to
     use common_kwds instead.
-    '''
+    """
     return _date_slice(input_tsd, start_date=start_date, end_date=end_date)
 
 
 def _date_slice(input_tsd, start_date=None, end_date=None):
-    '''
-    Private function to slice time series.
-    '''
-
+    """Private function to slice time series."""
     if input_tsd.index.is_all_dates:
         accdate = []
         for testdate in [start_date, end_date]:
@@ -179,7 +174,8 @@ _weeklies = {
 
 
 def asbestfreq(data, force_freq=None):
-    '''
+    """Test to determine best frequency to represent data.
+
     This uses several techniques.
     1. If force_freq is set use .asfreq.
     2. If data.index.freq is not None, just return.
@@ -188,7 +184,7 @@ def asbestfreq(data, force_freq=None):
     5. Use .is_* functions to establish A, AS, A-*, AS-*, Q, QS, M, MS
     6. Use minimum interval to establish the fixed time periods up to weekly
     7. Gives up returning None for PANDAS offset string
-    '''
+    """
     if force_freq is not None:
         return data.asfreq(force_freq)
 
@@ -285,8 +281,7 @@ def print_input(iftrue, intds, output, suffix,
                 date_format=None, sep=',',
                 float_format='%g',
                 force_print_index=False):
-    ''' Used when wanting to print the input time series also.
-    '''
+    """Used when wanting to print the input time series also."""
     if suffix:
         output.rename(columns=lambda xloc: xloc + suffix, inplace=True)
     if iftrue:
@@ -305,8 +300,7 @@ def print_input(iftrue, intds, output, suffix,
 
 
 def _apply_across_columns(func, xtsd, **kwds):
-    ''' Apply a function to each column in turn.
-    '''
+    """Apply a function to each column in turn."""
     for col in xtsd.columns:
         xtsd[col] = func(xtsd[col], **kwds)
     return xtsd
@@ -314,8 +308,7 @@ def _apply_across_columns(func, xtsd, **kwds):
 
 def _printiso(tsd, date_format=None, sep=',',
               float_format='%g', force_print_index=False):
-    ''' Separate so can use in tests.
-    '''
+    """Separate so can use in tests."""
     sys.tracebacklimit = 1000
 
     print_index = True
@@ -346,8 +339,7 @@ def _printiso(tsd, date_format=None, sep=',',
 
 
 def test_cli():
-    ''' The structure to test the cli.
-    '''
+    """The structure to test the cli."""
     import traceback
     try:
         oldtracebacklimit = sys.tracebacklimit
@@ -365,11 +357,11 @@ def test_cli():
 
 def printiso(tsd, date_format=None,
              sep=',', float_format='%g', force_print_index=False):
-    '''
-    Default output format for tstoolbox, wdmtoolbox, swmmtoolbox,
-    and hspfbintoolbox.
-    '''
+    """
+    Default output format.
 
+    Used for tstoolbox, wdmtoolbox, swmmtoolbox, and hspfbintoolbox.
+    """
     # Not perfectly true, but likely will use force_print_index for indices
     # that are not time stamps.
     if force_print_index is True:
@@ -388,8 +380,9 @@ def printiso(tsd, date_format=None,
 
 def openinput(filein):
     """
-    Opens the given input file. It can decode various formats too, such as
-    gzip and bz2.
+    Open the given input file.
+
+    It can decode various formats too, such as gzip and bz2.
     """
     if filein == '-':
         return sys.stdin
@@ -406,9 +399,7 @@ def read_iso_ts(indat,
                 parse_dates=True,
                 extended_columns=False,
                 force_freq=None):
-    '''
-    Reads the format printed by 'print_iso' and maybe other formats.
-    '''
+    """Read the format printed by 'print_iso' and maybe other formats."""
     import csv
     from pandas.compat import StringIO
 
@@ -467,17 +458,17 @@ def read_iso_ts(indat,
                 # Maybe a CSV file?
                 fpi = openinput(indat)
         else:
-            raise ValueError('''
+            raise ValueError("""
 *
 *   File {0} doesn't exist.
 *
-'''.format(indat))
+""".format(indat))
     else:
-        raise ValueError('''
+        raise ValueError("""
 *
 *   Can't figure out what was passed to read_iso_ts.
 *
-''')
+""")
 
     if fpi:
         try:
@@ -535,8 +526,7 @@ def read_iso_ts(indat,
 
 
 def read_excel_csv(fpi, header=None):
-    ''' Read Excel formatted CSV file.
-    '''
+    """Read Excel formatted CSV file."""
     if header is not None:
         header = int(header)
     tsdata = pd.read_table(fpi, header=header, sep=',', parse_dates=[0],

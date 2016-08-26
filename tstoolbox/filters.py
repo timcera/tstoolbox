@@ -1,7 +1,4 @@
-"""
-The filter.py module contains a group of functions to filter
-time-series values.
-"""
+"""Functions to filter time-series values."""
 
 from __future__ import print_function
 
@@ -16,14 +13,15 @@ modname = "filter"
 
 
 class MisMatchedKernel(Exception):
-    '''
-    Error class for the wrong length kernel.
-    '''
+    """Error class for the wrong length kernel."""
+
     def __init__(self, rk, pw):
+        """Initialize with lengths of kernel and requested length."""
         self.rk = rk
         self.pw = pw
 
     def __str__(self):
+        """Return detailed error message."""
         return """
 *
 *   Length of kernel must be %i.
@@ -33,13 +31,10 @@ class MisMatchedKernel(Exception):
 
 
 class BadKernelValues(Exception):
-    '''
-    Error class for the negative pad width.
-    '''
-    def __init__(self):
-        pass
+    """Error class for the negative pad width."""
 
     def __str__(self):
+        """Return detailed error message."""
         return """
 *
 *   Should only have positive values.
@@ -48,7 +43,8 @@ class BadKernelValues(Exception):
 
 
 def _transform(vector, cutoff_period, window_len, lopass=None):
-    """
+    """Private function used by FFT filtering.
+
     Parameters
     ----------
     vector : array_like, evenly spaced samples in time
@@ -65,18 +61,18 @@ def _transform(vector, cutoff_period, window_len, lopass=None):
 
     """
     if cutoff_period is None:
-        raise ValueError('''
+        raise ValueError("""
 *
 *   The cutoff_period must be set.
 *
-''')
+""")
 
     if window_len is None:
-        raise ValueError('''
+        raise ValueError("""
 *
 *   The window_len must be set.
 *
-''')
+""")
 
     import numpy.fft as F
     result = F.rfft(vector, len(vector))
@@ -104,9 +100,10 @@ def _transform(vector, cutoff_period, window_len, lopass=None):
 
 
 if __name__ == '__main__':
-    ''' This section is just used for testing.  Really you should only import
-        this module.
-    '''
+    """This section is just used for testing.
+
+    Really you should only import this module.
+    """
     arr = np.arange(100)
     print(arr)
     print(np.median(arr, (3, )))

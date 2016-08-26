@@ -1,4 +1,4 @@
-''' Collection of peak detection algorithms '''
+"""Collection of peak detection algorithms."""
 
 from __future__ import print_function
 
@@ -7,8 +7,7 @@ import numpy as np
 
 def _boolrelextrema(data, comparator,
                     axis=0, order=1, mode='clip'):
-    """
-    Calculate the relative extrema of `data`.
+    """Calculate the relative extrema of `data`.
 
     Relative extrema are calculated by finding locations where
     comparator(data[n],data[n+1:n+order+1]) = True.
@@ -47,7 +46,6 @@ def _boolrelextrema(data, comparator,
     >>> _boolrelextrema(testdata, np.greater, axis=0)
     array([False, False,  True, False, False], dtype=bool)
     """
-
     if (int(order) != order) or (order < 1):
         raise ValueError('Order must be an int >= 1')
 
@@ -67,17 +65,14 @@ def _boolrelextrema(data, comparator,
 
 
 def _argrel(data, axis=0, window=1):
-    """
-    Private function to find relative min and max of data.
-    """
+    """Private function to find relative min and max of data."""
     tmpmin = _argrelmin(data, axis=axis, order=window)
     tmpmax = _argrelmax(data, axis=axis, order=window)
     return (zip(tmpmax[0], data[tmpmax[0]]), zip(tmpmin[0], data[tmpmin[0]]))
 
 
 def _argrelmin(data, axis=0, order=1, mode='clip'):
-    """
-    Calculate the relative minima of `data`.
+    """Calculate the relative minima of `data`.
 
     See also
     --------
@@ -87,8 +82,7 @@ def _argrelmin(data, axis=0, order=1, mode='clip'):
 
 
 def _argrelmax(data, axis=0, order=1, mode='clip'):
-    """
-    Calculate the relative maxima of `data`.
+    """Calculate the relative maxima of `data`.
 
     See also
     --------
@@ -99,8 +93,7 @@ def _argrelmax(data, axis=0, order=1, mode='clip'):
 
 def _argrelextrema(data, comparator,
                    axis=0, order=1, mode='clip'):
-    """
-    Calculate the relative extrema of `data`
+    """Calculate the relative extrema of `data`.
 
     Returns
     -------
@@ -122,19 +115,17 @@ def _argrelextrema(data, comparator,
 
 
 def _datacheck_peakdetect(x_axis, y_axis):
-    '''
-    Checks x and y axis, creating an x data_set if necessary.
-    '''
+    """Check x and y axis, creating an x data_set if necessary."""
     if x_axis is None:
         x_axis = range(len(y_axis))
 
     if len(y_axis) != len(x_axis):
-        raise ValueError('''
+        raise ValueError("""
 *
 *   The length of y values must equal the length of x values.  Instead the
 *   length of y values is {0} and the length of x values is {1}.
 *
-'''.format(len(y_axis), len(x_axis)))
+""".format(len(y_axis), len(x_axis)))
 
     # needs to be a numpy array
     y_axis = np.array(y_axis)
@@ -143,8 +134,7 @@ def _datacheck_peakdetect(x_axis, y_axis):
 
 
 def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
-    """
-    Performs the actual parabola fitting for the _peakdetect_parabola function.
+    """Perform parabola fitting for the _peakdetect_parabola function.
 
     keyword arguments:
     raw_peaks -- A list of either the maximium or the minimum peaks, as given
@@ -156,7 +146,6 @@ def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
 
     return -- A list giving all the peaks and the fitted waveform, format:
         [[x, y, [fitted_x, fitted_y]]]
-
     """
     from scipy.optimize import curve_fit
     func = lambda x, k, tau, m: k * ((x - tau) ** 2) + m
@@ -187,9 +176,10 @@ def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
 
 
 def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
-    """
-    Converted from/based on a MATLAB script at:
-    http://billauer.co.il/peakdet.html
+    """Private peak detection algorithm.
+
+    Converted from/based on a MATLAB script
+    at:http://billauer.co.il/peakdet.html
 
     function for detecting local maximas and minmias in a signal.
     Discovers peaks by searching for values which are surrounded by lower
@@ -291,7 +281,8 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
 
 
 def _peakdetect_fft(y_axis, x_axis, pad_len=5):
-    """
+    """Private function to calculate FFT peak detection.
+
     Performs a FFT calculation on the data and zero-pads the results to
     increase the time domain resolution after performing the inverse fft and
     send the data to the '_peakdetect' function for peak
@@ -369,7 +360,8 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
 
 
 def _peakdetect_parabola(y_axis, x_axis, points=9):
-    """
+    """Private function for parabola peak detection.
+
     Function for detecting local maximas and minmias in a signal.
     Discovers peaks by fitting the model function: y = k (x - tau) ** 2 + m
     to the peaks. The amount of points used in the fitting is set by the
@@ -420,7 +412,8 @@ def _peakdetect_parabola(y_axis, x_axis, points=9):
 
 
 def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
-    """
+    """Private function for sine wave based peak detection.
+
     Function for detecting local maximas and minmias in a signal.
     Discovers peaks by fitting the model function:
     y = A * sin(2 * pi * f * x - tau) to the peaks. The amount of points used
@@ -541,7 +534,8 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
 
 
 def _peakdetect_sine_locked(y_axis, x_axis, points=9):
-    """
+    """Private function for peak detection with locked sine wave.
+
     Convinience function for calling the '_peakdetect_sine' function with
     the lock_frequency argument as True.
 
@@ -558,29 +552,30 @@ def _peakdetect_sine_locked(y_axis, x_axis, points=9):
 
 
 def _peakdetect_zero_crossing(y_axis, x_axis=None, window=5):
-    """
+    """Private function for zero crossing peak detection.
+
     Function for detecting local maximas and minmias in a signal.
     Discovers peaks by dividing the signal into bins and retrieving the
     maximum and minimum value of each the even and odd bins respectively.
     Division into bins is performed by smoothing the curve and finding the
     zero crossings.
 
-    Suitable for repeatable signals, where some noise is tolerated. Excecutes
+    Suitable for repeatable signals, where some noise is tolerated. Executes
     faster than '_peakdetect', although this function will break if the offset
     of the signal is too large. It should also be noted that the first and
     last peak will probably not be found, as this function only can find peaks
     between the first and last zero crossing.
 
     keyword arguments:
-    y_axis -- A list containg the signal over which to find peaks
+    y_axis -- A list containing the signal over which to find peaks
     x_axis -- (optional) A x-axis whose values correspond to the y_axis list
-        and is used in the return to specify the postion of the peaks. If
+        and is used in the return to specify the position of the peaks. If
         omitted an index of the y_axis is used. (default: None)
     window -- the dimension of the smoothing window; should be an odd integer
         (default: 11)
 
     return -- two lists [max_peaks, min_peaks] containing the positive and
-        negative peaks respectively. Each cell of the lists contains a tupple
+        negative peaks respectively. Each cell of the lists contains a tuple
         of: (position, peak_value)
         to get the average peak value do: np.mean(max_peaks, 0)[1] on the
         results to unpack one of the lists into x, y coordinates do:
@@ -633,8 +628,7 @@ def _peakdetect_zero_crossing(y_axis, x_axis=None, window=5):
 
 
 def _smooth(x, window_len=11, window='hanning'):
-    """
-    smooth the data using a window of the requested size.
+    """Smooth the data using a window of the requested size.
 
     This method is based on the convolution of a scaled window on the signal.
     The signal is prepared by introducing reflected copies of the signal
@@ -690,10 +684,10 @@ def _smooth(x, window_len=11, window='hanning'):
 
 
 def zero_crossings(y_axis, window=11):
-    """
+    """Zero crossing peak detect.
+
     Algorithm to find zero crossings. Smoothens the curve and finds the
     zero-crossings by looking for a sign change.
-
 
     keyword arguments:
     y_axis -- A list containg the signal over which to find zero-crossings

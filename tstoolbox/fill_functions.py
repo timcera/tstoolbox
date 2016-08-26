@@ -1,6 +1,5 @@
 #!/sjr/beodata/local/python_linux/bin/python
-'''A collection of filling routines.
-'''
+"""A collection of filling routines."""
 
 from __future__ import print_function
 from __future__ import absolute_import
@@ -20,7 +19,7 @@ def fill(method='ffill',
          start_date=None,
          end_date=None,
          columns=None):
-    '''Fills missing values (NaN) with different methods.
+    """Fill missing values (NaN) with different methods.
 
     Missing values can occur because of NaN, or because the time series
     is sparse.  The 'interval' option can insert NaNs to create a dense
@@ -79,7 +78,7 @@ def fill(method='ffill',
         or column numbers.  If using numbers, column number 0 is the
         first column.  To pick multiple columns; separate by commas with
         no spaces.  As used in 'pick' command.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dropna='all'),
                               start_date=start_date,
                               end_date=end_date,
@@ -118,13 +117,13 @@ def fill(method='ffill',
         try:
             ntsd = ntsd.fillna(value=float(method))
         except ValueError:
-            raise ValueError('''
+            raise ValueError("""
 *
 *   The allowable values for 'method' are 'ffill', 'bfill', 'linear',
 *   'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'mean', 'median',
 *   'max', 'min' or a number.  Instead you have {0}.
 *
-'''.format(method))
+""".format(method))
     ntsd = ntsd.iloc[1:-1]
     tsd.index.name = 'Datetime'
     ntsd.index.name = 'Datetime'
@@ -139,7 +138,7 @@ def fill_by_correlation(method='move2',
                         choose_best='dtw',
                         print_input=False,
                         input_ts='-'):
-    '''Fills missing values (NaN) with different methods.
+    """Fill missing values (NaN) with different methods.
 
     Missing values can occur because of NaN, or because the time series
     is sparse.  The 'interval' option can insert NaNs to create a dense
@@ -155,7 +154,7 @@ def fill_by_correlation(method='move2',
         columns in the output table.  Default is 'False'.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    '''
+    """
     tsd = tsutils.read_iso_ts(input_ts)
     if print_input is True:
         ntsd = tsd.copy()
@@ -184,14 +183,14 @@ def fill_by_correlation(method='move2',
     single_source_ts = ['move1', 'move2', 'move3']
     if method.lower() in single_source_ts:
         if len(basets.columns) != 1:
-            raise ValueError('''
+            raise ValueError("""
 *
 *   For methods in {0}
 *   You can only have a single source column.  You can pass in onlu 2
 *   time-series or use the flag 'choose_best' along with 'maximum_lag'.
 *   Instead there are {1} source time series.
 *
-'''.format(single_source_ts, len(basets.columns)))
+""".format(single_source_ts, len(basets.columns)))
 
     if method == 'move1':
         ntsd = firstcol.join(basets)

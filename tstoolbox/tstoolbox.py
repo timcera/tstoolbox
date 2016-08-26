@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-'''
-tstoolbox is a collection of command line tools for the manipulation of time
-series.
-'''
+"""Collection of functions for the manipulation of time series."""
 
 from __future__ import print_function
 from __future__ import division
@@ -48,7 +45,7 @@ def createts(input_ts=None,
              end_date=None,
              freq=None,
             ):
-    '''Create empty time series.  Just produce the time-stamps.
+    """Create empty time series.  Just produce the time-stamps.
 
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value'
         format or '-' for stdin.  Default is stdin.  If supplied, the
@@ -60,7 +57,7 @@ def createts(input_ts=None,
     :param freq:  To use this form --start_date and --end_date must be
         supplied also.  The pandas date offset code used to create the
         index.
-    '''
+    """
     if input_ts is not None:
         columns = None
         tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
@@ -70,7 +67,7 @@ def createts(input_ts=None,
                                  )
         tsd = pd.DataFrame(index=tsd.index)
     elif start_date is None or end_date is None or freq is None:
-        raise ValueError('''
+        raise ValueError("""
 *
 *   If input_ts is None, then start_date, end_date, and freq must be supplied.
 *   Instead you have:
@@ -78,7 +75,7 @@ def createts(input_ts=None,
 *   end_date = {1},
 *   freq = {2}
 *
-'''.format(start_date, end_date, freq))
+""".format(start_date, end_date, freq))
     else:
         tsd = pd.DataFrame(index=pd.date_range(start=start_date,
                                                end=end_date,
@@ -98,7 +95,7 @@ def filter(filter_type,
            columns=None,
            dropna='no',
           ):
-    '''Apply different filters to the time-series.
+    """Apply different filters to the time-series.
 
     :param filter_type <str>:  'flat', 'hanning', 'hamming', 'bartlett',
         'blackman', 'fft_highpass' and 'fft_lowpass' for Fast Fourier
@@ -125,7 +122,7 @@ def filter(filter_type,
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param float_format <str>: Float number format.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -135,11 +132,11 @@ def filter(filter_type,
     from tstoolbox import filters
 
     if len(tsd.values) < window_len:
-        raise ValueError('''
+        raise ValueError("""
 *
 *   Input vector (length={0}) needs to be bigger than window size ({1}).
 *
-'''.format(len(tsd.values), window_len))
+""".format(len(tsd.values), window_len))
 
     # Trying to save some memory
     if print_input:
@@ -170,11 +167,11 @@ def filter(filter_type,
                 w = eval('pd.np.' + filter_type + '(window_len)')
             tsd[col].values[:] = pd.np.convolve(w / w.sum(), s, mode='valid')
         else:
-            raise ValueError('''
+            raise ValueError("""
 *
 *   Filter type {0} not implemented.
 *
-'''.format(filter_type))
+""".format(filter_type))
     return tsutils.print_input(print_input, otsd, tsd, '_filter',
                                float_format=float_format)
 
@@ -182,7 +179,7 @@ def filter(filter_type,
 @mando.command(formatter_class=RSTHelpFormatter)
 def read(filenames, start_date=None, end_date=None, dropna='no',
          float_format='%g', how='outer', columns=None):
-    '''Collect time series from a list of pickle or csv files.
+    """Collect time series from a list of pickle or csv files.
 
     Prints the read in time-series in the tstoolbox standard format.
 
@@ -204,7 +201,7 @@ def read(filenames, start_date=None, end_date=None, dropna='no',
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param float_format <str>: Float number format.
-    '''
+    """
     filenames = filenames.split(',')
     result = pd.concat([tsutils.common_kwds(tsutils.read_iso_ts(
         i,
@@ -237,7 +234,7 @@ def date_slice(float_format='%g',
                input_ts='-',
                columns=None,
                dropna='no'):
-    '''Prints out data to the screen between start_date and end_date
+    """Print out data to the screen between start_date and end_date.
 
     :param -s, --start_date <str>:  The start_date of the series in
         ISOdatetime format, or 'None' for beginning.
@@ -254,7 +251,7 @@ def date_slice(float_format='%g',
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
     :param float_format <str>: Float number format.
-    '''
+    """
     return tsutils.printiso(
         tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                             start_date=start_date,
@@ -272,7 +269,7 @@ def describe(input_ts='-',
              columns=None,
              dropna='no',
             ):
-    '''Prints out statistics for the time-series.
+    """Print out statistics for the time-series.
 
     :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
@@ -290,7 +287,7 @@ def describe(input_ts='-',
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -322,7 +319,7 @@ def peak_detection(method='rel',
                    columns=None,
                    dropna='no',
                   ):
-    '''Peak and valley detection.
+    r"""Peak and valley detection.
 
     :param extrema <str>:  'peak', 'valley', or 'both' to determine what
         should be returned.  Default is 'peak'.
@@ -363,25 +360,25 @@ def peak_detection(method='rel',
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    '''
+    """
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
 
     if extrema not in ['peak', 'valley', 'both']:
-        raise ValueError('''
+        raise ValueError("""
 *
 *   The `extrema` argument must be one of 'peak',
 *   'valley', or 'both'.  You supplied {0}.
 *
-'''.format(extrema))
+""".format(extrema))
 
     if method not in ['rel', 'minmax', 'zero_crossing', 'parabola', 'sine']:
-        raise ValueError('''
+        raise ValueError("""
 *
 *   The `method` argument must be one of 'rel', 'minmax',
 *   'zero_crossing', 'parabola', or 'sine'.  You supplied {0}.
 *
-'''.format(method))
+""".format(method))
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
@@ -462,7 +459,7 @@ def convert(factor=1.0,
             columns=None,
             dropna='no'
            ):
-    '''Converts values of a time series by applying a factor and offset.
+    """Convert values of a time series by applying a factor and offset.
 
     See the 'equation' subcommand for a generalized form of this
     command.
@@ -486,7 +483,7 @@ def convert(factor=1.0,
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
     :param float_format <str>: Float number format.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -499,9 +496,7 @@ def convert(factor=1.0,
 
 
 def _parse_equation(equation_str):
-    '''
-    Private function to parse the equation used in the calculations.
-    '''
+    """Private function to parse the equation used in the calculations."""
     import re
     # Get rid of spaces
     nequation = equation_str.replace(' ', '')
@@ -579,7 +574,7 @@ def equation(equation_str,
              columns=None,
              dropna='no'
             ):
-    '''Applies <equation_str> to the time series data.
+    """Apply <equation_str> to the time series data.
 
     The <equation_str> argument is a string contained in single quotes with
     'x' used as the variable representing the input.  For example, '(1
@@ -619,7 +614,7 @@ def equation(equation_str,
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
     :param float_format <str>: Float number format.
-    '''
+    """
     x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                             start_date=start_date,
                             end_date=end_date,
@@ -665,7 +660,7 @@ def pick(columns,
          end_date=None,
          dropna='no',
         ):
-    '''Will pick a column or list of columns from input.
+    """Will pick a column or list of columns from input.
 
     Can use column names or column numbers.  If using numbers, column
     number 1 is the first data column.
@@ -684,7 +679,7 @@ def pick(columns,
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
-    '''
+    """
     return tsutils.printiso(
         tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                             start_date=start_date,
@@ -703,7 +698,7 @@ def stdtozrxp(rexchange=None,
               columns=None,
               dropna='no',
              ):
-    '''Prints out data to the screen in a WISKI ZRXP format.
+    """Print out data to the screen in a WISKI ZRXP format.
 
     :param rexchange:  The REXCHANGE ID to be written into the zrxp
         header.
@@ -717,7 +712,7 @@ def stdtozrxp(rexchange=None,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -725,12 +720,12 @@ def stdtozrxp(rexchange=None,
                               dropna=dropna,
                              )
     if len(tsd.columns) > 1:
-        raise ValueError('''
+        raise ValueError("""
 *
 *   The "stdtozrxp" command can only accept a single
 *   'time-series, instead it is seeing {0}.
 *
-'''.format(len(tsd.columns)))
+""".format(len(tsd.columns)))
     if rexchange:
         print('#REXCHANGE{0}|*|'.format(rexchange))
     for i in range(len(tsd)):
@@ -747,7 +742,7 @@ def tstopickle(filename,
                columns=None,
                dropna='no',
               ):
-    '''Pickles the data into a Python pickled file.
+    """Pickle the data into a Python pickled file.
 
     Can be brought back into Python with 'pickle.load' or 'numpy.load'.
     See also 'tstoolbox read'.
@@ -767,7 +762,7 @@ def tstopickle(filename,
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -786,7 +781,7 @@ def accumulate(statistic='sum',
                columns=None,
                dropna='no',
               ):
-    '''Calculates accumulating statistics.
+    """Calculate accumulating statistics.
 
     :param statistic <str>:  'sum', 'max', 'min', 'prod', defaults to
         'sum'.
@@ -806,7 +801,7 @@ def accumulate(statistic='sum',
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -822,11 +817,11 @@ def accumulate(statistic='sum',
     elif statistic == 'prod':
         ntsd = tsd.cumprod()
     else:
-        raise ValueError('''
+        raise ValueError("""
 *
 *   Statistic {0} is not implemented.
 *
-'''.format(statistic))
+""".format(statistic))
     return tsutils.print_input(print_input, tsd, ntsd, '_' + statistic)
 
 
@@ -844,7 +839,7 @@ def rolling_window(span=None,
                    groupby=None,
                    dropna='no',
                   ):
-    '''Calculates a rolling window statistic.
+    """Calculate a rolling window statistic.
 
     :param span:  The number of previous intervals to include in the
         calculation of the statistic. If `span` is equal to 0 will give
@@ -986,7 +981,7 @@ def rolling_window(span=None,
     :param freq: string or DateOffset object, optional (default None) Frequency
         to conform the data to before computing the statistic. Specified as a
         frequency string or DateOffset object.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -1203,11 +1198,11 @@ def rolling_window(span=None,
                                             freq=freq
                                            )
         else:
-            raise ValueError('''
+            raise ValueError("""
 *
 *   Statistic '{0}' is not implemented.
 *
-'''.format(statistic))
+""".format(statistic))
         return newts
 
     tmptsd = []
@@ -1256,7 +1251,7 @@ def aggregate(statistic='mean',
               columns=None,
               dropna='no',
              ):
-    '''Takes a time series and aggregates to specified frequency.
+    """Take a time series and aggregate to specified frequency.
 
     :param statistic <str>:  'mean', 'sum', 'std', 'max', 'min',
         'median', 'first', or 'last' to calculate the aggregation,
@@ -1398,7 +1393,7 @@ def aggregate(statistic='mean',
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    '''
+    """
     aggd = {'hourly': 'H',
             'daily': 'D',
             'monthly': 'M',
@@ -1448,13 +1443,13 @@ def aggregate(statistic='mean',
                                                     agg_interval
                                                    )).last()
         else:
-            raise ValueError('''
+            raise ValueError("""
 ***
 *** The statistic option must be one of 'mean', 'sum', 'std', 'max',
 *** 'min', 'median', 'first', or 'last' to calculate the aggregation.
 *** You gave {0}.
 ***
-'''.format(statistic))
+""".format(statistic))
         tmptsd.rename(columns=lambda x: x + '_' + method, inplace=True)
         newts = newts.join(tmptsd, how='outer')
     return tsutils.print_input(print_input, tsd, newts, '')
@@ -1470,7 +1465,7 @@ def clip(a_min=None,
          columns=None,
          dropna='no',
         ):
-    '''Returns a time-series with values limited to [a_min, a_max]
+    """Return a time-series with values limited to [a_min, a_max].
 
     :param a_min: All values lower than this will be set to this value.
         Default is None.
@@ -1492,7 +1487,7 @@ def clip(a_min=None,
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -1528,7 +1523,7 @@ def add_trend(start_offset,
               columns=None,
               dropna='no',
              ):
-    '''Adds a trend.
+    """Add a trend.
 
     :param start_offset <float>:  The starting value for the applied trend.
     :param end_offset <float>:  The ending value for the applied trend.
@@ -1548,7 +1543,7 @@ def add_trend(start_offset,
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -1573,7 +1568,7 @@ def remove_trend(start_date=None,
                  columns=None,
                  dropna='no',
                 ):
-    '''Removes a 'trend'.
+    """Remove a 'trend'.
 
     :param -p, --print_input:  If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
@@ -1591,7 +1586,7 @@ def remove_trend(start_date=None,
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -1618,7 +1613,7 @@ def calculate_fdc(percent_point_function=None,
                   columns=None,
                   sort_order='ascending',
                  ):
-    '''Returns the frequency distribution curve.
+    """Return the frequency distribution curve.
 
     DOES NOT return a time-series.
 
@@ -1664,7 +1659,7 @@ def calculate_fdc(percent_point_function=None,
         with no spaces. As used in 'pick' command.
     :param sort_order <str>:  Either 'ascending' or 'descending'.
         Defaults to 'ascending'.
-  '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -1673,12 +1668,12 @@ def calculate_fdc(percent_point_function=None,
 
     cnt = tsd.count(axis='rows')
     if pd.np.any(cnt != cnt[0]):
-        raise ValueError('''
+        raise ValueError("""
 *
 *   All columns of data must have the same counts.  You have
 *   {0}.
 *
-'''.format(cnt))
+""".format(cnt))
 
     reverse = False
     if sort_order == 'descending':
@@ -1699,7 +1694,7 @@ def stack(input_ts='-',
           columns=None,
           dropna='no',
          ):
-    '''Returns the stack of the input table.
+    """Return the stack of the input table.
 
     The stack command takes the standard table and
     converts to a three column table.
@@ -1734,7 +1729,7 @@ def stack(input_ts='-',
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -1756,7 +1751,7 @@ def unstack(
         end_date=None,
         dropna='no',
         columns=None):
-    '''Returns the unstack of the input table.
+    """Return the unstack of the input table.
 
     The unstack command takes the stacked table and converts to a
     standard tstoolbox table.
@@ -1793,7 +1788,7 @@ def unstack(
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -1869,8 +1864,7 @@ def _set_ppf(ptype):
         return lognorm.freeze(0.5, loc=0).ppf
     elif ptype == 'weibull':
         def ppf(y):
-            '''Percentage Point Function for the weibull distibution.
-            '''
+            """Percentage Point Function for the weibull distibution."""
             return pd.np.log(-pd.np.log((1-pd.np.array(y))))
         return ppf
     elif ptype is None:
@@ -1917,13 +1911,13 @@ def _set_plotting_position(n, plotting_position='weibull'):
     elif plotting_position == 'california':
         return pd.np.linspace(1./n, 1., n)
     else:
-        raise ValueError('''
+        raise ValueError("""
 *
 *    The plotting_position option accepts 'weibull', 'benard', 'tukey',
 *    'gumbel', 'hazen', 'cunnane', and 'california'
 *    plotting position options, you gave {0}.
 *
-'''.format(plotting_position))
+""".format(plotting_position))
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
@@ -1969,7 +1963,7 @@ def plot(
         invert_xaxis=False,
         invert_yaxis=False,
         plotting_position='weibull'):
-    '''Plots.
+    """Plot data.
 
     :param ofilename <str>:  Output filename for the plot.  Extension defines
         the type, ('.png'). Defaults to 'plot.png'.
@@ -2252,8 +2246,7 @@ def plot(
 
         Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
         lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
-    '''
-
+    """
     # Need to work around some old option defaults with the implemntation of
     # mando
     if legend == '' or legend == 'True' or legend is None:
@@ -2281,11 +2274,12 @@ def plot(
                                  )
 
     def _know_your_limits(xylimits, axis='arithmetic'):
-        '''
+        """Establish axis limits.
+
         This defines the xlim and ylim as lists rather than strings.
-        Might prove useful in the future in a more generic spot.
-        It normalizes the different representiations.
-        '''
+        Might prove useful in the future in a more generic spot.  It
+        normalizes the different representations.
+        """
         if isinstance(xylimits, str):
             nlim = []
             for lim in xylimits.split(','):
@@ -2307,34 +2301,34 @@ def plot(
                 nlim[1] = 0.99
             if (nlim[0] <= 0 or nlim[0] >= 1 or
                     nlim[1] <= 0 or nlim[1] >= 1):
-                raise ValueError('''
+                raise ValueError("""
 *
 *   Both limits must be between 0 and 1 for the
 *   'normal' or weibull axis.  Instead you have {0}
 *
-'''.format(nlim))
+""".format(nlim))
 
         if nlim is None:
             return nlim
 
         if nlim[0] is not None and nlim[1] is not None:
             if nlim[0] >= nlim[1]:
-                raise ValueError('''
+                raise ValueError("""
 *
 *   The second limit must be greater than the first.
 *   You gave {0}.
 *
-'''.format(nlim))
+""".format(nlim))
 
         if axis == 'log':
             if ((nlim[0] is not None and nlim[0] <= 0) or
                     (nlim[1] is not None and nlim[1] <= 0)):
-                raise ValueError('''
+                raise ValueError("""
 *
 *   If log plot cannot have limits less than or equal to 0.
 *   You have {0}.
 *
-'''.format(nlim))
+""".format(nlim))
 
         return nlim
 
@@ -2356,18 +2350,18 @@ def plot(
     if legend_names:
         lnames = legend_names.split(',')
         if len(lnames) != len(set(lnames)):
-            raise ValueError('''
+            raise ValueError("""
 *
 *   Each name in legend_names must be unique.
 *
-''')
+""")
         if len(tsd.columns) == len(lnames):
             renamedict = dict(zip(tsd.columns, lnames))
         elif type == 'xy' and len(tsd.columns)//2 == len(lnames):
             renamedict = dict(zip(tsd.columns[2::2], lnames[1:]))
             renamedict[tsd.columns[1]] = lnames[0]
         else:
-            raise ValueError('''
+            raise ValueError("""
 *
 *   For 'legend_names' you must have the same number of comma
 *   separated names as columns in the input data.  The input
@@ -2375,7 +2369,7 @@ def plot(
 *
 *   If 'xy' type you need to have legend names as x,y1,y2,y3,...
 *
-'''.format(len(tsd.columns), len(lnames)))
+""".format(len(tsd.columns), len(lnames)))
         tsd.rename(columns=renamedict, inplace=True)
     else:
         lnames = tsd.columns
@@ -2389,7 +2383,7 @@ def plot(
             norm_yaxis is True or
             lognorm_xaxis is True or
             lognorm_yaxis is True):
-        warnings.warn('''
+        warnings.warn("""
 *
 *   The --logx, --logy, --norm_xaxis, --norm_yaxis, --lognorm_xaxis, and
 *   --lognorm_yaxis options are deprecated.
@@ -2401,7 +2395,7 @@ def plot(
 *   For --lognorm_xaxis use --type="lognorm_xaxis"
 *   For --lognorm_yaxis use --type="lognorm_yaxis"
 *
-''')
+""")
 
     if xaxis == 'log':
         logx = True
@@ -2412,23 +2406,23 @@ def plot(
         xaxis = 'normal'
         if logx is True:
             logx = False
-            warnings.warn('''
+            warnings.warn("""
 *
 *   The --type={1} cannot also have the xaxis set to {0}.
 *   The {0} setting for xaxis is ignored.
 *
-'''.format(xaxis, type))
+""".format(xaxis, type))
 
     if type in ['norm_yaxis', 'lognorm_yaxis', 'weibull_yaxis']:
         yaxis = 'normal'
         if logy is True:
             logy = False
-            warnings.warn('''
+            warnings.warn("""
 *
 *   The --type={1} cannot also have the yaxis set to {0}.
 *   The {0} setting for yaxis is ignored.
 *
-'''.format(yaxis, type))
+""".format(yaxis, type))
 
     xlim = _know_your_limits(xlim, axis=xaxis)
     ylim = _know_your_limits(ylim, axis=yaxis)
@@ -2636,12 +2630,12 @@ def plot(
         plt.ylabel(ytitle)
     elif type == 'bootstrap':
         if len(tsd.columns) > 1:
-            raise ValueError('''
+            raise ValueError("""
 *
 *   The 'bootstrap' plot can only work with 1 time-series in the DataFrame.
 *   The DataFrame that you supplied has {0} time-series.
 *
-'''.format(len(tsd.columns)))
+""".format(len(tsd.columns)))
         from pandas.tools.plotting import bootstrap_plot
         bootstrap_plot(tsd, size=bootstrap_size, samples=bootstrap_samples,
                        color='gray',
@@ -2696,11 +2690,11 @@ def plot(
         if legend is True:
             plt.legend(loc='best')
     else:
-        raise ValueError('''
+        raise ValueError("""
 *
 *   Plot 'type' {0} is not supported.
 *
-'''.format(type))
+""".format(type))
 
     grid = bool(grid is None)
     if invert_xaxis is True:
@@ -2715,8 +2709,7 @@ def plot(
 
 
 def _dtw(ts_a, ts_b, d=lambda x, y: abs(x-y), window=10000):
-    """Returns the DTW similarity distance between two 2-D
-    timeseries numpy arrays.
+    """Return the DTW similarity distance timeseries numpy arrays.
 
     Arguments
     ---------
@@ -2733,7 +2726,6 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x-y), window=10000):
     -------
     DTW distance between A and B
     """
-
     # Create cost matrix via broadcasting with large int
     ts_a, ts_b = pd.np.array(ts_a), pd.np.array(ts_b)
     M, N = len(ts_a), len(ts_b)
@@ -2764,14 +2756,13 @@ def dtw(window=10000,
         start_date=None,
         end_date=None,
         columns=None):
-    '''Dynamic Time Warping
+    """Dynamic Time Warping.
 
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    '''
-
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -2798,7 +2789,7 @@ def pca(n_components=None,
         end_date=None,
         columns=None
        ):
-    '''Returns the principal components analysis of the time series.
+    """Return the principal components analysis of the time series.
 
     Does not return a time-series.
 
@@ -2814,7 +2805,7 @@ def pca(n_components=None,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    '''
+    """
     from sklearn.decomposition import PCA
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
@@ -2841,7 +2832,7 @@ def normalization(mode='minmax',
                   columns=None,
                   dropna='no',
                  ):
-    '''Returns the normalization of the time series.
+    """Return the normalization of the time series.
 
     :param mode <str>:  'minmax', 'zscore', or 'pct_rank'.  Default is
         'minmax'
@@ -2879,7 +2870,7 @@ def normalization(mode='minmax',
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
     :param float_format <str>: Float number format.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -2903,12 +2894,12 @@ def normalization(mode='minmax',
     elif mode == 'pct_rank':
         tsd = tsd.rank(method=pct_rank_method, pct=True)
     else:
-        raise ValueError('''
+        raise ValueError("""
 *
 *   The 'mode' options are 'minmax', 'zscore', or 'pct_rank', you gave me
 *   {0}.
 *
-'''.format(mode))
+""".format(mode))
 
     return tsutils.print_input(print_input, otsd, tsd, '_{0}'.format(mode),
                                float_format=float_format)
@@ -2923,7 +2914,7 @@ def converttz(fromtz,
               columns=None,
               dropna='no',
              ):
-    '''Converts the time zone of the index.
+    """Convert the time zone of the index.
 
     :param fromtz <str>: The time zone of the original time-series.
     :param totz <str>: The time zone of the converted time-series.
@@ -2937,7 +2928,7 @@ def converttz(fromtz,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    '''
+    """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
@@ -2949,7 +2940,7 @@ def converttz(fromtz,
 
 
 def main():
-    ''' Main '''
+    """Main function."""
     if not os.path.exists('debug_tstoolbox'):
         sys.tracebacklimit = 0
     mando.main()
