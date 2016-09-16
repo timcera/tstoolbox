@@ -122,6 +122,10 @@ def filter(filter_type,
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
     :param float_format <str>: Float number format.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
@@ -177,8 +181,13 @@ def filter(filter_type,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def read(filenames, start_date=None, end_date=None, dropna='no',
-         float_format='%g', how='outer', columns=None):
+def read(filenames,
+         start_date=None,
+         end_date=None,
+         dropna='no',
+         float_format='%g',
+         how='outer',
+         columns=None):
     """Collect time series from a list of pickle or csv files.
 
     Prints the read in time-series in the tstoolbox standard format.
@@ -360,6 +369,10 @@ def peak_detection(method='rel',
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     """
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
@@ -712,6 +725,10 @@ def stdtozrxp(rexchange=None,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
@@ -981,6 +998,10 @@ def rolling_window(span=None,
     :param freq: string or DateOffset object, optional (default None) Frequency
         to conform the data to before computing the statistic. Specified as a
         frequency string or DateOffset object.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
@@ -1393,6 +1414,10 @@ def aggregate(statistic='mean',
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     """
     aggd = {'hourly': 'H',
             'daily': 'D',
@@ -1725,6 +1750,10 @@ def stack(input_ts='-',
         ISOdatetime format, or 'None' for beginning.
     :param -e, --end_date <str>:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
@@ -1788,6 +1817,10 @@ def unstack(
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
@@ -2928,6 +2961,10 @@ def converttz(fromtz,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
