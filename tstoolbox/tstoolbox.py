@@ -344,7 +344,7 @@ def peak_detection(method='rel',
         is the distance to look ahead from a peak candidate to determine
         if it is the actual peak.
 
-        '(sample / period) / f' where '4 \>= f \>= 1.25'
+        '(sample / period) / f' where '4 >= f >= 1.25'
         might be a good value
 
         For 'zero_crossing' the window keyword is the dimension of the
@@ -357,6 +357,7 @@ def peak_detection(method='rel',
         frequency argument of the model function should be locked to the
         value calculated from the raw peaks or if optimization process
         may tinker with it. (default: False)
+    :param float_format <str>: Float number format.
     :param -p, --print_input:  If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
     :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
