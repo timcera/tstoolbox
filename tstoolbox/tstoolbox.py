@@ -39,6 +39,13 @@ _offset_aliases = {
     }
 
 
+@mando.command()
+def about():
+    """Display version number and system information.
+    """
+    tsutils.about(__name__)
+
+
 @mando.command(formatter_class=RSTHelpFormatter)
 def createts(input_ts=None,
              start_date=None,

@@ -19,6 +19,27 @@ except ImportError:
 import pandas as pd
 import numpy as np
 
+def about(name):
+    import platform
+    import pkg_resources
+    namever = str(pkg_resources.get_distribution(name.split(".")[0]))
+    print("package name = {0}\npackage version = {1}".format(
+          *namever.split()))
+
+    print("platform architecture = {0}".format(platform.architecture()))
+    print("platform machine = {0}".format(platform.machine()))
+    print("platform = {0}".format(platform.platform()))
+    print("platform processor = {0}".format(platform.processor()))
+    print("platform python_build = {0}".format(platform.python_build()))
+    print("platform python_compiler = {0}".format(platform.python_compiler()))
+    print("platform python branch = {0}".format(platform.python_branch()))
+    print("platform python implementation = {0}".format(platform.python_implementation()))
+    print("platform python revision = {0}".format(platform.python_revision()))
+    print("platform python version = {0}".format(platform.python_version()))
+    print("platform release = {0}".format(platform.release()))
+    print("platform system = {0}".format(platform.system()))
+    print("platform version = {0}".format(platform.version()))
+
 
 def common_kwds(input_tsd,
                 start_date=None,
