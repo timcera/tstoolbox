@@ -26,6 +26,8 @@ class TestDescribe(TestCase):
             'tests/data_sunspot_normalized_10_to_20.csv')
         self.data_zscore = tstoolbox.read(
             'tests/data_sunspot_normalized_zscore.csv')
+        self.data_pct_rank = tstoolbox.read(
+            'tests/data_sunspot_normalized_pct_rank.csv')
 
     def test_normalize_0_to_1(self):
         ''' Test the normalization API function from 0 to 1.
@@ -47,3 +49,10 @@ class TestDescribe(TestCase):
         out = tstoolbox.normalization(mode='zscore',
                                       input_ts='tests/data_sunspot.csv')
         assert_frame_equal(out, self.data_zscore)
+
+    def test_pct_rank(self):
+        ''' Test the normalization API function using the pct_rank method.
+        '''
+        out = tstoolbox.normalization(mode='pct_rank',
+                                      input_ts='tests/data_sunspot.csv')
+        assert_frame_equal(out, self.data_pct_rank)
