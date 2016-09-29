@@ -1968,7 +1968,7 @@ def plot(
         xtitle='',
         ytitle='',
         title='',
-        figsize=(10, 6.0),
+        figsize='10,6.0',
         legend=None,
         legend_names=None,
         subplots=False,
@@ -2065,8 +2065,8 @@ def plot(
     :param xtitle <str>:  Title of x-axis, default depend on ``type``.
     :param ytitle <str>:  Title of y-axis, default depend on ``type``.
     :param title <str>:  Title of chart, defaults to ''.
-    :param figsize:  The (width, height) of plot as inches.  Defaults to
-        (10,6.5).
+    :param figsize <str>:  The 'width,height' of plot as inches.
+        Defaults to '10,6.5'.
     :param legend:  Whether to display the legend. Defaults to True.
     :param legend_names <str>:  Legend would normally use the time-series names
         associated with the input data.  The 'legend_names' option allows you
@@ -2288,7 +2288,7 @@ def plot(
         Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
         lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
     """
-    # Need to work around some old option defaults with the implemntation of
+    # Need to work around some old option defaults with the implementation of
     # mando
     if legend == '' or legend == 'True' or legend is None:
         legend = True
@@ -2468,6 +2468,7 @@ def plot(
     xlim = _know_your_limits(xlim, axis=xaxis)
     ylim = _know_your_limits(ylim, axis=yaxis)
 
+    figsize = [float(i) for i in figsize.split(',')]
     plt.figure(figsize=figsize)
     if type == 'time':
         tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
