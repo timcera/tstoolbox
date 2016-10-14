@@ -103,6 +103,11 @@ remove_trend
 .. program-output:: tstoolbox remove_trend --help
    :prompt:
 
+replace
+~~~~~~~
+.. program-output:: tstoolbox replace --help
+   :prompt:
+
 rolling_window
 ~~~~~~~~~~~~~~
 .. program-output:: tstoolbox rolling_window --help

@@ -91,7 +91,7 @@ Just run 'tstoolbox --help' to get a list of subcommands
             Apply different filters to the time-series.
   
   normalization
-              Returns the normalization of the time series.
+            Returns the normalization of the time series.
     
   pca
             Returns the principal components analysis of the time
@@ -113,7 +113,10 @@ Just run 'tstoolbox --help' to get a list of subcommands
   
   remove_trend
             Removes a 'trend'.
-  
+ 
+  replace
+            Return a time-series replacing values with others.
+
   rolling_window
             Calculates a rolling window statistic.
   
