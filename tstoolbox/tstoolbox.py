@@ -344,23 +344,24 @@ def peak_detection(method='rel',
         different strengths and weaknesses.  The 'rel' algorithm is the
         default.
     :param window <int>:  There will not usually be multiple peaks
-        within the window number of values.  The different `method`s use
+        within the window number of values.  The different methods use
         this variable in different ways.  For 'rel' the window keyword
         specifies how many points on each side to require
-        a `comparator`(n,n+x) = True.  For 'minmax' the window keyword
+        a comparator(n,n+x) = True.  For 'minmax' the window keyword
         is the distance to look ahead from a peak candidate to determine
         if it is the actual peak.
 
-        '(sample / period) / f' where '4 >= f >= 1.25'
-        might be a good value
+        '(sample / period) / f'
+
+        where f might be a good choice between 1.25 and 4.
 
         For 'zero_crossing' the window keyword is the dimension of the
-        smoothing window; should be an odd integer
+        smoothing window and should be an odd integer.
     :param pad_len <int>: Used with FFT to pad edges of time-series.
     :param points <int>:  For 'parabola' and 'sine' methods. How many
         points around the peak should be used during curve fitting, must
         be odd (default: 9)
-    :param lock_frequency:  For 'sine method only.  Specifies if the
+    :param lock_frequency:  For 'sine' method only.  Specifies if the
         frequency argument of the model function should be locked to the
         value calculated from the raw peaks or if optimization process
         may tinker with it. (default: False)
@@ -1489,6 +1490,79 @@ def aggregate(statistic='mean',
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
+def replace(from_values,
+            to_values,
+            start_date=None,
+            end_date=None,
+            print_input=False,
+            input_ts='-',
+            columns=None,
+            dropna='no',
+           ):
+    """Return a time-series replacing values with others.
+
+    :param from_values: All values in this comma separated list are
+        replaced with the corresponding value in to_values.  Use the
+        string 'None' to represent a missing value.  If using 'None' as
+        a from_value it might be easier to use the "fill" subcommand
+        instead.
+    :param to_values: All values in this comma separater list are the
+        replacement values corresponding one-to-one to the itesm in
+        from_values.  Use the string 'None' to represent a missing
+        value.
+    :param -p, --print_input:  If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
+    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+        format or '-' for stdin.
+    :param -s, --start_date <str>:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param -e, --end_date <str>:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param columns:  Columns to pick out of input.  Can use column names
+        or column numbers.  If using numbers, column number 1 is the
+        first data column.  To pick multiple columns; separate by commas
+        with no spaces. As used in 'pick' command.
+    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
+    """
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna,
+                             )
+
+    nfrom_values = []
+    for fv in from_values.split(','):
+        if fv == 'None':
+            nfrom_values.append(None)
+            continue
+        try:
+            nfrom_values.append(int(fv))
+        except ValueError:
+            nfrom_values.append(float(fv))
+
+    nto_values = []
+    for tv in to_values.split(','):
+        if tv == 'None':
+            nto_values.append(None)
+            continue
+        try:
+            nto_values.append(int(tv))
+        except ValueError:
+            nto_values.append(float(tv))
+
+    ntsd = tsd.replace(nfrom_values, nto_values)
+    if dropna in ['any', 'all']:
+        ntsd = ntsd.dropna(axis='index', how=dropna)
+
+    return tsutils.print_input(
+        print_input, tsd, ntsd, '_replace')
+
+
+@mando.command(formatter_class=RSTHelpFormatter)
 def clip(a_min=None,
          a_max=None,
          start_date=None,
@@ -2080,7 +2154,7 @@ def plot(
     :param sharey:  boolean, default False In case subplots=True, share y axis
     :param style <str>:  Comma separated matplotlib style strings matplotlib
         line style per time-series.  Just combine codes in 'ColorLineMarker'
-        order, for example 'r--*' is a red dashed line with star marker.
+        order, for example r--* is a red dashed line with star marker.
 
         +------+---------+
         | Code | Color   |
