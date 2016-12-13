@@ -47,19 +47,19 @@ def about():
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def createts(input_ts=None,
+def createts(
+             input_ts=None,
              start_date=None,
              end_date=None,
-             freq=None,
-            ):
+             freq=None):
     """Create empty time series.  Just produce the time-stamps.
 
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value'
+    :param str input_ts: Filename with data in 'ISOdate,value'
         format or '-' for stdin.  Default is stdin.  If supplied, the
         result will just be the input index.
-    :param -s, --start_date <str>:  The start_date of the series in
+    :param str start_date:  The start_date of the series in
         ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
+    :param str end_date:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param freq:  To use this form --start_date and --end_date must be
         supplied also.  The pandas date offset code used to create the
@@ -70,8 +70,7 @@ def createts(input_ts=None,
         tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                                   start_date=start_date,
                                   end_date=end_date,
-                                  pick=columns,
-                                 )
+                                  pick=columns)
         tsd = pd.DataFrame(index=tsd.index)
     elif start_date is None or end_date is None or freq is None:
         raise ValueError("""
@@ -91,28 +90,28 @@ def createts(input_ts=None,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def filter(filter_type,
+def filter(
+           filter_type,
+           input_ts='-',
+           columns=None,
+           start_date=None,
+           end_date=None,
+           dropna='no',
            print_input=False,
            cutoff_period=None,
            window_len=5,
-           float_format='%g',
-           input_ts='-',
-           start_date=None,
-           end_date=None,
-           columns=None,
-           dropna='no',
-          ):
+           float_format='%g'):
     """Apply different filters to the time-series.
 
-    :param filter_type <str>:  'flat', 'hanning', 'hamming', 'bartlett',
+    :param str filter_type:  'flat', 'hanning', 'hamming', 'bartlett',
         'blackman', 'fft_highpass' and 'fft_lowpass' for Fast Fourier
         Transform filter in the frequency domain.
-    :param window_len <int>:  For the windowed types, 'flat', 'hanning',
+    :param int window_len:  For the windowed types, 'flat', 'hanning',
         'hamming', 'bartlett', 'blackman' specifies the length of the
         window.  Defaults to 5.
-    :param -p, --print_input:  If set to 'True' will include the input
+    :param print_input:  If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value'
+    :param str input_ts: Filename with data in 'ISOdate,value'
         format or '-' for stdin.  Default is stdin.
     :param cutoff_period:  The period in input time units that will form
         the cutoff between low frequencies (longer periods) and high
@@ -120,16 +119,16 @@ def filter(filter_type,
         `window_len` running average.  For 'fft_highpass' and
         'fft_lowpass'. Default is None and must be supplied if using
         'fft_highpass' or 'fft_lowpass'.
-    :param -s, --start_date <str>:  The start_date of the series in
+    :param str start_date:  The start_date of the series in
         ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
+    :param str end_date:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param float_format <str>: Float number format.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str float_format: Float number format.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
@@ -138,8 +137,7 @@ def filter(filter_type,
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna
-                             )
+                              dropna=dropna)
     from tstoolbox import filters
 
     if len(tsd.values) < window_len:
@@ -188,49 +186,48 @@ def filter(filter_type,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def read(filenames,
+def read(
+         filenames,
+         columns=None,
          start_date=None,
          end_date=None,
          dropna='no',
          float_format='%g',
-         how='outer',
-         columns=None):
+         how='outer'):
     """Collect time series from a list of pickle or csv files.
 
     Prints the read in time-series in the tstoolbox standard format.
 
-    :param filenames <str>:  List of comma delimited filenames to read
+    :param str filenames:  List of comma delimited filenames to read
         time series from.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
-        that have NA value in any column, or 'all' to have records
-        dropped that have NA in all columns.  Set to 'no' to not drop
-        any records.  The default is 'no'.
-    :param how <str>:  Use PANDAS concept on how to join the separate
-        DataFrames read from each file.  Default how='outer' which is
-        the union, 'inner' is the intersection,
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param float_format <str>: Float number format.
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
+    :param str how:  Use PANDAS concept on how to join the separate
+        DataFrames read from each file.  Default how='outer' which is
+        the union, 'inner' is the intersection,
+    :param str float_format: Float number format.
     """
     filenames = filenames.split(',')
     result = pd.concat([tsutils.common_kwds(tsutils.read_iso_ts(
         i,
-        extended_columns=True
-        ),
+        extended_columns=True),
                                             start_date=start_date,
                                             end_date=end_date,
                                             pick=columns,
                                             dropna=dropna,
-                                           ) for i in filenames],
+                                            ) for i in filenames],
                        join=how,
-                       axis=1,
-                      )
+                       axis=1)
 
     colnames = ['.'.join(i.split('.')[1:]) for i in result.columns]
     if len(colnames) == len(set(colnames)):
@@ -244,72 +241,71 @@ def read(filenames,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def date_slice(float_format='%g',
-               start_date=None,
-               end_date=None,
+def date_slice(
                input_ts='-',
                columns=None,
-               dropna='no'):
+               start_date=None,
+               end_date=None,
+               dropna='no',
+               float_format='%g'):
     """Print out data to the screen between start_date and end_date.
 
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
-    :param float_format <str>: Float number format.
+    :param str float_format: Float number format.
     """
     return tsutils.printiso(
         tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                             start_date=start_date,
                             end_date=end_date,
                             pick=columns,
-                            dropna=dropna
-                           ), float_format=float_format)
+                            dropna=dropna), float_format=float_format)
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def describe(input_ts='-',
-             transpose=False,
+def describe(
+             input_ts='-',
+             columns=None,
              start_date=None,
              end_date=None,
-             columns=None,
              dropna='no',
-            ):
+             transpose=False):
     """Print out statistics for the time-series.
 
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param transpose:  If 'transpose' option is used, will transpose
-        describe output.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
+    :param transpose:  If 'transpose' option is used, will transpose
+        describe output.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna
-                             )
+                              dropna=dropna)
     if transpose is True:
         ntsd = tsd.describe().transpose()
     else:
@@ -321,29 +317,43 @@ def describe(input_ts='-',
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def peak_detection(method='rel',
+def peak_detection(
+                   input_ts='-',
+                   columns=None,
+                   start_date=None,
+                   end_date=None,
+                   dropna='no',
+                   method='rel',
                    extrema='peak',
                    window=24,
                    pad_len=5,
                    points=9,
                    lock_frequency=False,
                    float_format='%g',
-                   print_input='',
-                   input_ts='-',
-                   start_date=None,
-                   end_date=None,
-                   columns=None,
-                   dropna='no',
-                  ):
+                   print_input=''):
     r"""Peak and valley detection.
 
-    :param extrema <str>:  'peak', 'valley', or 'both' to determine what
+    :param str input_ts:  Filename with data in 'ISOdate,value'
+        format or '-' for stdin.  Default is stdin.
+    :param columns:  Columns to pick out of input.  Can use column names
+        or column numbers.  If using numbers, column number 1 is the
+        first data column.  To pick multiple columns; separate by commas
+        with no spaces. As used in 'pick' command.
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
+    :param str extrema:  'peak', 'valley', or 'both' to determine what
         should be returned.  Default is 'peak'.
-    :param method <str>:  'rel', 'minmax', 'zero_crossing', 'parabola',
+    :param str method:  'rel', 'minmax', 'zero_crossing', 'parabola',
         'sine' methods are available.  The different algorithms have
         different strengths and weaknesses.  The 'rel' algorithm is the
         default.
-    :param window <int>:  There will not usually be multiple peaks
+    :param int window:  There will not usually be multiple peaks
         within the window number of values.  The different methods use
         this variable in different ways.  For 'rel' the window keyword
         specifies how many points on each side to require
@@ -357,31 +367,17 @@ def peak_detection(method='rel',
 
         For 'zero_crossing' the window keyword is the dimension of the
         smoothing window and should be an odd integer.
-    :param pad_len <int>: Used with FFT to pad edges of time-series.
-    :param points <int>:  For 'parabola' and 'sine' methods. How many
+    :param int pad_len: Used with FFT to pad edges of time-series.
+    :param int points:  For 'parabola' and 'sine' methods. How many
         points around the peak should be used during curve fitting, must
         be odd (default: 9)
     :param lock_frequency:  For 'sine' method only.  Specifies if the
         frequency argument of the model function should be locked to the
         value calculated from the raw peaks or if optimization process
         may tinker with it. (default: False)
-    :param float_format <str>: Float number format.
-    :param -p, --print_input:  If set to 'True' will include the input
+    :param str float_format: Float number format.
+    :param print_input:  If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
-        format or '-' for stdin.  Default is stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
-    :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 1 is the
-        first data column.  To pick multiple columns; separate by commas
-        with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
-        that have NA value in any column, or 'all' to have records
-        dropped that have NA in all columns.  Set to 'no' to not drop
-        any records.  The default is 'no'.
     """
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
@@ -406,8 +402,7 @@ def peak_detection(method='rel',
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
 
     window = int(window)
     kwds = {}
@@ -471,47 +466,46 @@ def peak_detection(method='rel',
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def convert(factor=1.0,
-            offset=0.0,
-            print_input=False,
-            float_format='%g',
+def convert(
             input_ts='-',
+            columns=None,
             start_date=None,
             end_date=None,
-            columns=None,
-            dropna='no'
-           ):
+            dropna='no',
+            factor=1.0,
+            offset=0.0,
+            print_input=False,
+            float_format='%g'):
     """Convert values of a time series by applying a factor and offset.
 
     See the 'equation' subcommand for a generalized form of this
     command.
 
-    :param factor <float>:  Factor to multiply the time series values.
-    :param offset <float>:  Offset to add to the time series values.
-    :param -p, --print_input:  If set to 'True' will include the input
-        columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
-    :param float_format <str>: Float number format.
+    :param float factor:  Factor to multiply the time series values.
+    :param float offset:  Offset to add to the time series values.
+    :param print_input:  If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
+    :param str float_format: Float number format.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
     tmptsd = tsd * factor + offset
     return tsutils.print_input(print_input, tsd, tmptsd, '_convert',
                                float_format=float_format)
@@ -587,22 +581,22 @@ def _parse_equation(equation_str):
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def equation(equation_str,
-             print_input='',
-             float_format='%g',
+def equation(
+             equation_str,
              input_ts='-',
+             columns=None,
              start_date=None,
              end_date=None,
-             columns=None,
-             dropna='no'
-            ):
+             dropna='no',
+             print_input='',
+             float_format='%g'):
     """Apply <equation_str> to the time series data.
 
     The <equation_str> argument is a string contained in single quotes with
     'x' used as the variable representing the input.  For example, '(1
     - x)*sin(x)'.
 
-    :param equation_str <str>:  String contained in single quotes that
+    :param str equation_str:  String contained in single quotes that
         defines the equation.  The input variable place holder is 'x'.
         Mathematical functions in the 'np' (numpy) name space can be
         used.  For example::
@@ -619,30 +613,29 @@ def equation(equation_str,
 
         to add to the current value 0.6 times the maximum adjacent
         value.
-    :param -p, --print_input:  If set to 'True' will include the input
-        columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
-    :param float_format <str>: Float number format.
+    :param print_input:  If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
+    :param str float_format: Float number format.
     """
     x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                             start_date=start_date,
                             end_date=end_date,
                             pick=columns,
-                            dropna=dropna,
-                           ).astype('f')
+                            dropna=dropna).astype('f')
 
     tsearch, nsearch, testeval, nequation = _parse_equation(equation_str)
     if tsearch and nsearch:
@@ -676,12 +669,12 @@ def equation(equation_str,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def pick(columns,
+def pick(
+         columns,
          input_ts='-',
          start_date=None,
          end_date=None,
-         dropna='no',
-        ):
+         dropna='no'):
     """Will pick a column or list of columns from input.
 
     Can use column names or column numbers.  If using numbers, column
@@ -691,13 +684,13 @@ def pick(columns,
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
+    :param str start_date:  The start_date of the series in
         ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
+    :param str end_date:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
@@ -707,44 +700,41 @@ def pick(columns,
                             start_date=start_date,
                             end_date=end_date,
                             pick=columns,
-                            dropna=dropna,
-                           )
-        )
+                            dropna=dropna))
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def stdtozrxp(rexchange=None,
+def stdtozrxp(
               input_ts='-',
+              columns=None,
               start_date=None,
               end_date=None,
-              columns=None,
               dropna='no',
-             ):
+              rexchange=None):
     """Print out data to the screen in a WISKI ZRXP format.
 
-    :param rexchange:  The REXCHANGE ID to be written into the zrxp
-        header.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
+    :param rexchange:  The REXCHANGE ID to be written into the zrxp
+        header.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
     if len(tsd.columns) > 1:
         raise ValueError("""
 *
@@ -761,30 +751,30 @@ def stdtozrxp(rexchange=None,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def tstopickle(filename,
+def tstopickle(
+               filename,
                input_ts='-',
+               columns=None,
                start_date=None,
                end_date=None,
-               columns=None,
-               dropna='no',
-              ):
+               dropna='no'):
     """Pickle the data into a Python pickled file.
 
     Can be brought back into Python with 'pickle.load' or 'numpy.load'.
     See also 'tstoolbox read'.
 
-    :param filename <str>:  The filename to store the pickled data.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str filename:  The filename to store the pickled data.
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
@@ -793,47 +783,45 @@ def tstopickle(filename,
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
     pd.core.common.save(tsd, filename)
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def accumulate(statistic='sum',
-               print_input=False,
+def accumulate(
                input_ts='-',
+               columns=None,
                start_date=None,
                end_date=None,
-               columns=None,
                dropna='no',
-              ):
+               statistic='sum',
+               print_input=False):
     """Calculate accumulating statistics.
 
-    :param statistic <str>:  'sum', 'max', 'min', 'prod', defaults to
-        'sum'.
-    :param -p, --print_input:  If set to 'True' will include the input
-        columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
+    :param str statistic:  'sum', 'max', 'min', 'prod', defaults to
+        'sum'.
+    :param print_input:  If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
     if statistic == 'sum':
         ntsd = tsd.cumsum()
     elif statistic == 'max':
@@ -852,29 +840,43 @@ def accumulate(statistic='sum',
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def rolling_window(span=None,
+def rolling_window(
+                   input_ts='-',
+                   columns=None,
+                   start_date=None,
+                   end_date=None,
+                   dropna='no',
+                   span=None,
                    statistic='mean',
                    wintype=None,
                    center=False,
                    print_input=False,
-                   input_ts='-',
-                   start_date=None,
-                   end_date=None,
-                   columns=None,
                    freq=None,
-                   groupby=None,
-                   dropna='no',
-                  ):
+                   groupby=None):
     """Calculate a rolling window statistic.
 
+    :param str input_ts:  Filename with data in 'ISOdate,value'
+        format or '-' for stdin.
+    :param columns:  Columns to pick out of input.  Can use column names
+        or column numbers.  If using numbers, column number 1 is the
+        first data column.  To pick multiple columns; separate by commas
+        with no spaces. As used in 'pick' command.
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     :param span:  The number of previous intervals to include in the
         calculation of the statistic. If `span` is equal to 0 will give
         an expanding rolling window.  Defaults to 2.
-    :param statistic <str>:  One of 'mean', 'corr', 'count', 'cov',
+    :param str statistic:  One of 'mean', 'corr', 'count', 'cov',
         'kurtosis', 'median', 'skew', 'stdev', 'sum', 'variance',
         'expw_mean', 'expw_stdev', 'expw_variance' 'expw_corr',
         'expw_cov' used to calculate the statistic, defaults to 'mean'.
-    :param wintype <str>:  The 'mean' and 'sum' `statistic` calculation
+    :param str wintype:  The 'mean' and 'sum' `statistic` calculation
         can also be weighted according to the `wintype` windows.  Some
         of the following windows require additional keywords identified
         in parenthesis: 'boxcar', 'triang', 'blackman', 'hamming',
@@ -883,18 +885,8 @@ def rolling_window(span=None,
         'general_gaussian' (needs power, width) 'slepian' (needs width).
     :param center:  If set to 'True' the calculation will be made
         for the value at the center of the window.  Default is 'False'.
-    :param -p, --print_input:  If set to 'True' will include the input
+    :param print_input:  If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
-        format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
-    :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 1 is the
-        first data column.  To pick multiple columns; separate by commas
-        with no spaces. As used in 'pick' command.
     :param groupby:  Time offset to groupby.  Any PANDAS time offset.
         This option supports what is probably an unusual situation where
         the rolling_window is performed separately within each groupby
@@ -1007,18 +999,13 @@ def rolling_window(span=None,
     :param freq: string or DateOffset object, optional (default None) Frequency
         to conform the data to before computing the statistic. Specified as a
         frequency string or DateOffset object.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
-        that have NA value in any column, or 'all' to have records
-        dropped that have NA in all columns.  Set to 'no' to not drop
-        any records.  The default is 'no'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
                               groupby=groupby,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
 
     if span is None:
         span = 2
@@ -1057,176 +1044,147 @@ def rolling_window(span=None,
             if span == 0:
                 newts = pd.stats.moments.expanding_mean(tsd,
                                                         center=center,
-                                                        freq=freq
-                                                       )
+                                                        freq=freq)
             else:
                 newts = pd.stats.moments.rolling_mean(tsd,
                                                       span,
                                                       center=center,
-                                                      freq=freq
-                                                     )
+                                                      freq=freq)
         elif statistic == 'max':
             if span == 0:
                 newts = pd.stats.moments.expanding_max(tsd,
                                                        center=center,
-                                                       freq=freq
-                                                      )
+                                                       freq=freq)
             else:
                 newts = pd.stats.moments.rolling_max(tsd,
                                                      span,
                                                      center=center,
-                                                     freq=freq
-                                                    )
+                                                     freq=freq)
         elif statistic == 'min':
             if span == 0:
                 newts = pd.stats.moments.expanding_min(tsd,
                                                        center=center,
-                                                       freq=freq
-                                                      )
+                                                       freq=freq)
             else:
                 newts = pd.stats.moments.rolling_min(tsd,
                                                      span,
                                                      center=center,
-                                                     freq=freq
-                                                    )
+                                                     freq=freq)
         elif statistic == 'corr':
             if span == 0:
                 newts = pd.stats.moments.expanding_corr(tsd,
                                                         center=center,
-                                                        freq=freq
-                                                       )
+                                                        freq=freq)
             else:
                 newts = pd.stats.moments.rolling_corr(tsd,
                                                       span,
                                                       center=center,
-                                                      freq=freq
-                                                     )
+                                                      freq=freq)
         elif statistic == 'cov':
             if span == 0:
                 newts = pd.stats.moments.expanding_cov(tsd,
                                                        center=center,
-                                                       freq=freq
-                                                      )
+                                                       freq=freq)
             else:
                 newts = pd.stats.moments.rolling_cov(tsd,
                                                      span,
                                                      center=center,
-                                                     freq=freq
-                                                    )
+                                                     freq=freq)
         elif statistic == 'count':
             if span == 0:
                 newts = pd.stats.moments.expanding_count(tsd,
                                                          center=center,
-                                                         freq=freq
-                                                        )
+                                                         freq=freq)
             else:
                 newts = pd.stats.moments.rolling_count(tsd,
                                                        span,
                                                        center=center,
-                                                       freq=freq
-                                                      )
+                                                       freq=freq)
         elif statistic == 'kurtosis':
             if span == 0:
                 newts = pd.stats.moments.expanding_kurt(tsd,
                                                         center=center,
-                                                        freq=freq
-                                                       )
+                                                        freq=freq)
             else:
                 newts = pd.stats.moments.rolling_kurt(tsd,
                                                       span,
                                                       center=center,
-                                                      freq=freq
-                                                     )
+                                                      freq=freq)
         elif statistic == 'median':
             if span == 0:
                 newts = pd.stats.moments.expanding_median(tsd,
                                                           center=center,
-                                                          freq=freq
-                                                         )
+                                                          freq=freq)
             else:
                 newts = pd.stats.moments.rolling_median(tsd,
                                                         span,
                                                         center=center,
-                                                        freq=freq
-                                                       )
+                                                        freq=freq)
         elif statistic == 'skew':
             if span == 0:
                 newts = pd.stats.moments.expanding_skew(tsd,
                                                         center=center,
-                                                        freq=freq
-                                                       )
+                                                        freq=freq)
             else:
                 newts = pd.stats.moments.rolling_skew(tsd,
                                                       span,
                                                       center=center,
-                                                      freq=freq
-                                                     )
+                                                      freq=freq)
         elif statistic == 'stdev':
             if span == 0:
                 newts = pd.stats.moments.expanding_std(tsd,
                                                        center=center,
-                                                       freq=freq
-                                                      )
+                                                       freq=freq)
             else:
                 newts = pd.stats.moments.rolling_std(tsd,
                                                      span,
                                                      center=center,
-                                                     freq=freq
-                                                    )
+                                                     freq=freq)
         elif statistic == 'sum':
             if span == 0:
                 newts = pd.stats.moments.expanding_sum(tsd,
                                                        center=center,
-                                                       freq=freq
-                                                      )
+                                                       freq=freq)
             else:
                 newts = pd.stats.moments.rolling_sum(tsd,
                                                      span,
                                                      center=center,
-                                                     freq=freq
-                                                    )
+                                                     freq=freq)
         elif statistic == 'variance':
             if span == 0:
                 newts = pd.stats.moments.expanding_var(tsd,
                                                        center=center,
-                                                       freq=freq
-                                                      )
+                                                       freq=freq)
             else:
                 newts = pd.stats.moments.rolling_var(tsd,
                                                      span,
                                                      center=center,
-                                                     freq=freq
-                                                    )
+                                                     freq=freq)
         elif statistic == 'expw_mean':
             newts = pd.stats.moments.ewma(tsd,
                                           span=span,
                                           center=center,
-                                          freq=freq
-                                         )
+                                          freq=freq)
         elif statistic == 'expw_stdev':
             newts = pd.stats.moments.ewmstd(tsd,
                                             span=span,
                                             center=center,
-                                            freq=freq
-                                           )
+                                            freq=freq)
         elif statistic == 'expw_variance':
             newts = pd.stats.moments.ewmvar(tsd,
                                             span=span,
                                             center=center,
-                                            freq=freq
-                                           )
+                                            freq=freq)
         elif statistic == 'expw_corr':
             newts = pd.stats.moments.ewmcorr(tsd,
                                              span=span,
                                              center=center,
-                                             freq=freq
-                                            )
+                                             freq=freq)
         elif statistic == 'expw_cov':
             newts = pd.stats.moments.ewmcov(tsd,
                                             span=span,
                                             center=center,
-                                            freq=freq
-                                           )
+                                            freq=freq)
         else:
             raise ValueError("""
 *
@@ -1252,7 +1210,7 @@ def rolling_window(span=None,
                 # groupby yearly.
                 xspan = nspan
                 if len(gb) in [365, 366] and int(nspan) in [365, 366]:
-                    xspan = None
+                    xspan = len(gb)
                 jtsd = jtsd.append(_process_tsd(gb,
                                                 statistic=statistic,
                                                 span=xspan,
@@ -1271,23 +1229,37 @@ def rolling_window(span=None,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def aggregate(statistic='mean',
-              agg_interval='daily',
-              ninterval=1,
-              print_input=False,
+def aggregate(
               input_ts='-',
+              columns=None,
               start_date=None,
               end_date=None,
-              columns=None,
               dropna='no',
-             ):
+              statistic='mean',
+              agg_interval='daily',
+              ninterval=1,
+              print_input=False):
     """Take a time series and aggregate to specified frequency.
 
-    :param statistic <str>:  'mean', 'sum', 'std', 'max', 'min',
+    :param str input_ts:  Filename with data in 'ISOdate,value'
+        format or '-' for stdin.
+    :param columns:  Columns to pick out of input.  Can use column names
+        or column numbers.  If using numbers, column number 1 is the
+        first data column.  To pick multiple columns; separate by commas
+        with no spaces. As used in 'pick' command.
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
+    :param str statistic:  'mean', 'sum', 'std', 'max', 'min',
         'median', 'first', or 'last' to calculate the aggregation,
         defaults to 'mean'.  Can also be a comma separated list of
         statistic methods.
-    :param agg_interval <str>:  The interval to aggragate the time
+    :param str agg_interval:  The interval to aggragate the time
         series.  Any of the PANDAS offset codes.
 
         +-------+-----------------------------+
@@ -1409,73 +1381,50 @@ def aggregate(statistic='mean',
         +---------------+-----+
 
         Defaults to D (daily).
-    :param ninterval <int>:  The number of agg_interval to use for the
+    :param int ninterval:  The number of agg_interval to use for the
         aggregation.  Defaults to 1.
-    :param -p, --print_input:  If set to 'True' will include the input
+    :param print_input:  If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
-        format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
-    :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 1 is the
-        first data column.  To pick multiple columns; separate by commas
-        with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
-        that have NA value in any column, or 'all' to have records
-        dropped that have NA in all columns.  Set to 'no' to not drop
-        any records.  The default is 'no'.
     """
     aggd = {'hourly': 'H',
             'daily': 'D',
             'monthly': 'M',
             'yearly': 'A'
-           }
+            }
     agg_interval = aggd.get(agg_interval, agg_interval)
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
     methods = statistic.split(',')
     newts = pd.DataFrame()
     for method in methods:
         if method == 'mean':
             tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval
-                                                   )).mean()
+                                                    agg_interval)).mean()
         elif method == 'sum':
             tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval
-                                                   )).sum()
+                                                    agg_interval)).sum()
         elif method == 'std':
             tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval
-                                                   )).std()
+                                                    agg_interval)).std()
         elif method == 'max':
             tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval
-                                                   )).max()
+                                                    agg_interval)).max()
         elif method == 'min':
             tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval
-                                                   )).min()
+                                                    agg_interval)).min()
         elif method == 'median':
             tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval
-                                                   )).median()
+                                                    agg_interval)).median()
         elif method == 'first':
             tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval
-                                                   )).first()
+                                                    agg_interval)).first()
         elif method == 'last':
             tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval
-                                                   )).last()
+                                                    agg_interval)).last()
         else:
             raise ValueError("""
 ***
@@ -1490,15 +1439,15 @@ def aggregate(statistic='mean',
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def replace(from_values,
+def replace(
+            from_values,
             to_values,
-            start_date=None,
-            end_date=None,
-            print_input=False,
             input_ts='-',
             columns=None,
+            start_date=None,
+            end_date=None,
             dropna='no',
-           ):
+            print_input=False):
     """Return a time-series replacing values with others.
 
     :param from_values: All values in this comma separated list are
@@ -1510,29 +1459,28 @@ def replace(from_values,
         replacement values corresponding one-to-one to the itesm in
         from_values.  Use the string 'None' to represent a missing
         value.
-    :param -p, --print_input:  If set to 'True' will include the input
-        columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
+    :param print_input:  If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
 
     nfrom_values = []
     for fv in from_values.split(','):
@@ -1563,44 +1511,43 @@ def replace(from_values,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def clip(a_min=None,
-         a_max=None,
+def clip(
+         input_ts='-',
          start_date=None,
          end_date=None,
-         print_input=False,
-         input_ts='-',
          columns=None,
          dropna='no',
-        ):
+         a_min=None,
+         a_max=None,
+         print_input=False):
     """Return a time-series with values limited to [a_min, a_max].
 
-    :param a_min: All values lower than this will be set to this value.
-        Default is None.
-    :param a_max: All values higher than this will be set to this value.
-        Default is None.
-    :param -p, --print_input:  If set to 'True' will include the input
-        columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
+    :param a_min: All values lower than this will be set to this value.
+        Default is None.
+    :param a_max: All values higher than this will be set to this value.
+        Default is None.
+    :param print_input:  If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
     for col in tsd.columns:
         if a_min is None:
             try:
@@ -1621,42 +1568,41 @@ def clip(a_min=None,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def add_trend(start_offset,
+def add_trend(
+              start_offset,
               end_offset,
-              start_date=None,
-              end_date=None,
-              print_input=False,
               input_ts='-',
               columns=None,
+              start_date=None,
+              end_date=None,
               dropna='no',
-             ):
+              print_input=False):
     """Add a trend.
 
-    :param start_offset <float>:  The starting value for the applied trend.
-    :param end_offset <float>:  The ending value for the applied trend.
-    :param -p, --print_input:  If set to 'True' will include the input
-        columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param float start_offset:  The starting value for the applied trend.
+    :param float end_offset:  The ending value for the applied trend.
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
+    :param print_input:  If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
     ntsd = tsd.copy().astype('f')
     ntsd.ix[:, :] = pd.np.nan
     ntsd.ix[0, :] = float(start_offset)
@@ -1668,38 +1614,37 @@ def add_trend(start_offset,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def remove_trend(start_date=None,
-                 end_date=None,
-                 print_input=False,
+def remove_trend(
                  input_ts='-',
                  columns=None,
+                 start_date=None,
+                 end_date=None,
                  dropna='no',
-                ):
+                 print_input=False):
     """Remove a 'trend'.
 
-    :param -p, --print_input:  If set to 'True' will include the input
-        columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
+    :param print_input:  If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
     ntsd = tsd.copy()
     for col in tsd.columns:
         index = tsd.index.astype('l')
@@ -1712,22 +1657,37 @@ def remove_trend(start_date=None,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def calculate_fdc(percent_point_function=None,
-                  plotting_position='weibull',
+def calculate_fdc(
                   input_ts='-',
+                  columns=None,
                   start_date=None,
                   end_date=None,
-                  columns=None,
-                  sort_order='ascending',
-                 ):
+                  dropna='no',
+                  percent_point_function=None,
+                  plotting_position='weibull',
+                  sort_order='ascending'):
     """Return the frequency distribution curve.
 
     DOES NOT return a time-series.
 
-    :param percent_point_function <str>:  The distribution used to shift
+    :param str input_ts:  Filename with data in 'ISOdate,value'
+        format or '-' for stdin.
+    :param columns:  Columns to pick out of input.  Can use column names
+        or column numbers.  If using numbers, column number 1 is the
+        first data column.  To pick multiple columns; separate by commas
+        with no spaces. As used in 'pick' command.
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
+    :param str percent_point_function:  The distribution used to shift
         the plotting position values.  Choose from 'norm', 'lognorm',
         'weibull', and None.  Default is None.
-    :param plotting_position <str>:  'weibull', 'benard', 'tukey',
+    :param str plotting_position:  'weibull', 'benard', 'tukey',
         'gumbel', 'hazen', 'cunnane', or 'california'.  The default is
         'weibull'.
 
@@ -1754,53 +1714,35 @@ def calculate_fdc(percent_point_function=None,
 
         Where 'i' is the sorted rank of the y value, and 'n' is the
         total number of values to be plotted.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
-        format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
-    :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 1 is the
-        first data column.  To pick multiple columns; separate by commas
-        with no spaces. As used in 'pick' command.
-    :param sort_order <str>:  Either 'ascending' or 'descending'.
+    :param str sort_order:  Either 'ascending' or 'descending'.
         Defaults to 'ascending'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
-                              pick=columns,
-                             )
+                              pick=columns)
 
-    cnt = tsd.count(axis='rows')
-    if pd.np.any(cnt != cnt[0]):
-        raise ValueError("""
-*
-*   All columns of data must have the same counts.  You have
-*   {0}.
-*
-""".format(cnt))
-
-    reverse = False
-    if sort_order == 'descending':
-        reverse = True
-    cnt = cnt[0]
     ppf = _set_ppf(percent_point_function)
-    xdat = ppf(_set_plotting_position(cnt, plotting_position))*100
-    tsd = tsd.apply(sorted, axis=0, reverse=reverse)
-    tsd.index = xdat
-    tsd.index.name = 'Plotting_position'
-    return tsutils.printiso(tsd, force_print_index=True)
+    newts = pd.DataFrame()
+    for col in tsd:
+        tmptsd = tsd[col].dropna()
+        xdat = ppf(_set_plotting_position(tmptsd.count(),
+                                          plotting_position))*100
+        tmptsd.sort_values(ascending=sort_order, inplace=True)
+        tmptsd.index = xdat
+        newts = newts.join(tmptsd, how='outer')
+    newts.index.name = 'Plotting_position'
+    newts = newts.groupby(newts.index).first()
+    return tsutils.printiso(newts, force_print_index=True)
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def stack(input_ts='-',
+def stack(
+          input_ts='-',
+          columns=None,
           start_date=None,
           end_date=None,
-          columns=None,
-          dropna='no',
-         ):
+          dropna='no'):
     """Return the stack of the input table.
 
     The stack command takes the standard table and
@@ -1826,27 +1768,26 @@ def stack(input_ts='-',
       2000-01-02,TS3,0.0002
       2000-01-03,TS3,-0.0004
 
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
-        that have NA value in any column, or 'all' to have records
-        dropped that have NA in all columns.  Set to 'no' to not drop
-        any records.  The default is 'no'.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
 
     newtsd = pd.DataFrame(tsd.stack()).reset_index(1)
     newtsd.sort(['level_1'], inplace=True)
@@ -1856,12 +1797,12 @@ def stack(input_ts='-',
 
 @mando.command(formatter_class=RSTHelpFormatter)
 def unstack(
-        column_names,
-        input_ts='-',
-        start_date=None,
-        end_date=None,
-        dropna='no',
-        columns=None):
+            column_names,
+            input_ts='-',
+            columns=None,
+            start_date=None,
+            end_date=None,
+            dropna='no'):
     """Return the unstack of the input table.
 
     The unstack command takes the stacked table and converts to a
@@ -1887,19 +1828,19 @@ def unstack(
       2000-01-02,1.8,1453.1,0.0002
       2000-01-03,1.9,1683.1,-0.0004
 
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
-        format or '-' for stdin.
     :param column_names:  The column in the table that holds the column names
         of the unstacked data.
-    :param -s, --start_date <str>: The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
+    :param str input_ts:  Filename with data in 'ISOdate,value'
+        format or '-' for stdin.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str start_date: The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
@@ -1908,15 +1849,13 @@ def unstack(
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
 
     cols = list(tsd.columns)
     cols.remove(column_names)
     newtsd = pd.DataFrame(tsd[cols].values,
                           index=[tsd.index.values,
-                                 tsd[column_names].values]
-                         )
+                                 tsd[column_names].values])
     newtsd = newtsd.unstack()
     newtsd.index.name = 'Datetime'
     levels = newtsd.columns.levels
@@ -1996,33 +1935,27 @@ def _set_plotting_position(n, plotting_position='weibull'):
     if plotting_position == 'weibull':
         return pd.np.linspace(_plotting_position_equation(1, n, 0.0),
                               _plotting_position_equation(n, n, 0.0),
-                              n,
-                             )
+                              n)
     elif plotting_position == 'benard':
         return pd.np.linspace(_plotting_position_equation(1, n, 0.3),
                               _plotting_position_equation(n, n, 0.3),
-                              n,
-                             )
+                              n)
     elif plotting_position == 'tukey':
         return pd.np.linspace(_plotting_position_equation(1, n, 1.0/3.0),
                               _plotting_position_equation(n, n, 1.0/3.0),
-                              n,
-                             )
+                              n)
     elif plotting_position == 'gumbel':
         return pd.np.linspace(_plotting_position_equation(1, n, 1.0),
                               _plotting_position_equation(n, n, 1.0),
-                              n,
-                             )
+                              n)
     elif plotting_position == 'hazen':
         return pd.np.linspace(_plotting_position_equation(1, n, 1.0/2.0),
                               _plotting_position_equation(n, n, 1.0/2.0),
-                              n,
-                             )
+                              n)
     elif plotting_position == 'cunnane':
         return pd.np.linspace(_plotting_position_equation(1, n, 2.0/5.0),
                               _plotting_position_equation(n, n, 2.0/5.0),
-                              n,
-                             )
+                              n)
     elif plotting_position == 'california':
         return pd.np.linspace(1./n, 1., n)
     else:
@@ -2037,52 +1970,62 @@ def _set_plotting_position(n, plotting_position='weibull'):
 
 @mando.command(formatter_class=RSTHelpFormatter)
 def plot(
-        ofilename='plot.png',
-        type='time',
-        xtitle='',
-        ytitle='',
-        title='',
-        figsize='10,6.0',
-        legend=None,
-        legend_names=None,
-        subplots=False,
-        sharex=True,
-        sharey=False,
-        style=None,
-        logx=False,
-        logy=False,
-        xaxis='arithmetic',
-        yaxis='arithmetic',
-        xlim=None,
-        ylim=None,
-        secondary_y=False,
-        mark_right=True,
-        scatter_matrix_diagonal='probability_density',
-        bootstrap_size=50,
-        bootstrap_samples=500,
-        norm_xaxis=False,
-        norm_yaxis=False,
-        lognorm_xaxis=False,
-        lognorm_yaxis=False,
-        xy_match_line='',
-        grid=None,
-        input_ts='-',
-        start_date=None,
-        end_date=None,
-        label_rotation=None,
-        label_skip=1,
-        force_freq=None,
-        drawstyle='default',
-        por=False,
-        columns=None,
-        invert_xaxis=False,
-        invert_yaxis=False,
-        plotting_position='weibull'):
+         input_ts='-',
+         columns=None,
+         start_date=None,
+         end_date=None,
+         ofilename='plot.png',
+         type='time',
+         xtitle='',
+         ytitle='',
+         title='',
+         figsize='10,6.0',
+         legend=None,
+         legend_names=None,
+         subplots=False,
+         sharex=True,
+         sharey=False,
+         style=None,
+         logx=False,
+         logy=False,
+         xaxis='arithmetic',
+         yaxis='arithmetic',
+         xlim=None,
+         ylim=None,
+         secondary_y=False,
+         mark_right=True,
+         scatter_matrix_diagonal='probability_density',
+         bootstrap_size=50,
+         bootstrap_samples=500,
+         norm_xaxis=False,
+         norm_yaxis=False,
+         lognorm_xaxis=False,
+         lognorm_yaxis=False,
+         xy_match_line='',
+         grid=None,
+         label_rotation=None,
+         label_skip=1,
+         force_freq=None,
+         drawstyle='default',
+         por=False,
+         invert_xaxis=False,
+         invert_yaxis=False,
+         plotting_position='weibull'):
     """Plot data.
 
-    :param ofilename <str>:  Output filename for the plot.  Extension defines
+    :param str input_ts:  Filename with data in 'ISOdate,value' format
+        or '-' for stdin.
+    :param columns:  Columns to pick out of input.  Can use column names or
+        column numbers.  If using numbers, column number 1 is the first data
+        column.  To pick multiple columns; separate by commas with no spaces.
+        As used in 'pick' command.
+    :param str start_date:  The start_date of the series in ISOdatetime
+        format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in ISOdatetime
+        format, or 'None' for end.
+    :param str ofilename:  Output filename for the plot.  Extension defines
         the type, ('.png'). Defaults to 'plot.png'.
-    :param type <str>:  The plot type.  Defaults to 'time'.
+    :param str type:  The plot type.  Defaults to 'time'.
 
         Can be one of the following:
 
@@ -2136,13 +2079,13 @@ def plot(
         weibull_yaxis
             sort, calculate and plot data against an y axis weibull
             distribution
-    :param xtitle <str>:  Title of x-axis, default depend on ``type``.
-    :param ytitle <str>:  Title of y-axis, default depend on ``type``.
-    :param title <str>:  Title of chart, defaults to ''.
-    :param figsize <str>:  The 'width,height' of plot as inches.
+    :param str xtitle:  Title of x-axis, default depend on ``type``.
+    :param str ytitle:  Title of y-axis, default depend on ``type``.
+    :param str title:  Title of chart, defaults to ''.
+    :param str figsize:  The 'width,height' of plot as inches.
         Defaults to '10,6.5'.
     :param legend:  Whether to display the legend. Defaults to True.
-    :param legend_names <str>:  Legend would normally use the time-series names
+    :param str legend_names:  Legend would normally use the time-series names
         associated with the input data.  The 'legend_names' option allows you
         to override the names in the data set.  You must supply a comma
         separated list of strings for each time-series in the data set.
@@ -2152,33 +2095,33 @@ def plot(
     :param sharex:  boolean, default True In case subplots=True, share
         x axis
     :param sharey:  boolean, default False In case subplots=True, share y axis
-    :param style <str>:  Comma separated matplotlib style strings matplotlib
+    :param str style:  Comma separated matplotlib style strings matplotlib
         line style per time-series.  Just combine codes in 'ColorLineMarker'
         order, for example r--* is a red dashed line with star marker.
 
         +------+---------+
         | Code | Color   |
+        +======+=========+
+        | b    | blue    |
         +------+---------+
-        |   b  | blue    |
+        | g    | green   |
         +------+---------+
-        |   g  | green   |
+        | r    | red     |
         +------+---------+
-        |   r  | red     |
+        | c    | cyan    |
         +------+---------+
-        |   c  | cyan    |
+        | m    | magenta |
         +------+---------+
-        |   m  | magenta |
+        | y    | yellow  |
         +------+---------+
-        |   y  | yellow  |
+        | k    | black   |
         +------+---------+
-        |   k  | black   |
-        +------+---------+
-        |   w  | white   |
+        | w    | white   |
         +------+---------+
 
         +---------+-----------+
         | Number  | Color     |
-        +---------+-----------+
+        +=========+===========+
         | 0.75    | 0.75 gray |
         +---------+-----------+
         | ...etc. |           |
@@ -2186,7 +2129,7 @@ def plot(
 
         +------------------+
         | HTML Color Names |
-        +------------------+
+        +==================+
         | red              |
         +------------------+
         | burlywood        |
@@ -2201,7 +2144,7 @@ def plot(
 
         +------+--------------+
         | Code | Lines        |
-        +------+--------------+
+        +======+==============+
         | -    | solid        |
         +------+--------------+
         | --   | dashed       |
@@ -2222,7 +2165,7 @@ def plot(
 
         +------+----------------+
         | Code | Markers        |
-        +------+----------------+
+        +======+================+
         | .    | point          |
         +------+----------------+
         | o    | circle         |
@@ -2281,9 +2224,9 @@ def plot(
         for the x-axis.  Default is based on range of x values.
     :param ylim:  Comma separated lower and upper limits (--ylim 1,1000) Limits
         for the y-axis.  Default is based on range of y values.
-    :param xaxis <str>:  Defines the type of the xaxis.  One of 'arithmetic',
+    :param str xaxis:  Defines the type of the xaxis.  One of 'arithmetic',
         'log'. Default is 'arithmetic'.
-    :param yaxis <str>:  Defines the type of the yaxis.  One of 'arithmetic',
+    :param str yaxis:  Defines the type of the yaxis.  One of 'arithmetic',
         'log'. Default is 'arithmetic'.
     :param secondary_y:  Boolean or sequence, default False Whether to plot on
         the secondary y-axis If a list/tuple, which time-series to plot on
@@ -2291,7 +2234,7 @@ def plot(
     :param mark_right:  Boolean, default True : When using a secondary_y
         axis, should the legend label the axis of the various time-series
         automatically
-    :param scatter_matrix_diagonal <str>:  If plot type is 'scatter_matrix',
+    :param str scatter_matrix_diagonal:  If plot type is 'scatter_matrix',
         this specifies the plot along the diagonal.  Defaults to
         'probability_density'.
     :param bootstrap_size:  The size of the random subset for 'bootstrap' plot.
@@ -2302,19 +2245,13 @@ def plot(
     :param norm_yaxis:  DEPRECATED: use '--type="norm_yaxis"' instead.
     :param lognorm_xaxis:  DEPRECATED: use '--type="lognorm_xaxis"' instead.
     :param lognorm_yaxis:  DEPRECATED: use '--type="lognorm_yaxis"' instead.
-    :param xy_match_line <str>:  Will add a match line where x == y.  Default
+    :param str xy_match_line:  Will add a match line where x == y.  Default
         is ''.  Set to a line style code.
     :param grid:  Boolean, default True Whether to plot grid lines on the major
         ticks.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value' format
-        or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in ISOdatetime
-        format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in ISOdatetime
-        format, or 'None' for end.
-    :param label_rotation <int>:  Rotation for major labels for bar plots.
-    :param label_skip <int>:  Skip for major labels for bar plots.
-    :param drawstyle <str>:  'default' connects the points with lines. The
+    :param int label_rotation:  Rotation for major labels for bar plots.
+    :param int label_skip:  Skip for major labels for bar plots.
+    :param str drawstyle:  'default' connects the points with lines. The
         steps variants produce step-plots. 'steps' is equivalent to 'steps-pre'
         and is maintained for backward-compatibility.
         ACCEPTS::
@@ -2322,20 +2259,18 @@ def plot(
             ['default' | 'steps' | 'steps-pre' | 'steps-mid' | 'steps-post']
     :param por:  Plot from first good value to last good value.  Strip NANs
         from beginning and end.
-    :param columns:  Columns to pick out of input.  Can use column names or
-        column numbers.  If using numbers, column number 1 is the first data
-        column.  To pick multiple columns; separate by commas with no spaces.
-        As used in 'pick' command.
     :param force_freq:  Force this frequency for the plot.  WARNING: you may
         lose data if not careful with this option.  In general, letting the
         algorithm determine the frequency should always work, but this option
         will override.  Use PANDAS offset codes,
     :param invert_xaxis:  Invert the x-axis.
     :param invert_yaxis:  Invert the y-axis.
-    :param plotting_position <str>:  'weibull', 'benard', 'tukey', 'gumbel',
+    :param str plotting_position:  'weibull', 'benard', 'tukey', 'gumbel',
         'hazen', 'cunnane', or 'california'.  The default is 'weibull'.
 
         +------------+-----------------+-----------------------+
+        | Name       | Equation        | Description           |
+        +============+=================+=======================+
         | weibull    | i/(n+1)         | mean of sampling      |
         |            |                 | distribution          |
         +------------+-----------------+-----------------------+
@@ -2378,15 +2313,13 @@ def plot(
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna='all',
-                             )
+                              dropna='all')
 
     if por is True:
         tsd = tsutils.common_kwds(tsutils.read_iso_ts(tsd),
                                   start_date=start_date,
                                   end_date=end_date,
-                                  dropna='no',
-                                 )
+                                  dropna='no')
 
     def _know_your_limits(xylimits, axis='arithmetic'):
         """Establish axis limits.
@@ -2419,7 +2352,9 @@ def plot(
                 raise ValueError("""
 *
 *   Both limits must be between 0 and 1 for the
-*   'normal' or weibull axis.  Instead you have {0}
+*   'normal', 'lognormal', or 'weibull' axis.
+*
+*   Instead you have {0}.
 *
 """.format(nlim))
 
@@ -2431,6 +2366,7 @@ def plot(
                 raise ValueError("""
 *
 *   The second limit must be greater than the first.
+*
 *   You gave {0}.
 *
 """.format(nlim))
@@ -2441,6 +2377,7 @@ def plot(
                 raise ValueError("""
 *
 *   If log plot cannot have limits less than or equal to 0.
+*
 *   You have {0}.
 *
 """.format(nlim))
@@ -2627,30 +2564,26 @@ def plot(
                             linestyle=linest,
                             color=lcolor,
                             marker=marker,
-                            label=lnames[colindex]
-                           )
+                            label=lnames[colindex])
             elif logx is True and logy is False:
                 ax.semilogx(oxdata, oydata,
                             linestyle=linest,
                             color=lcolor,
                             marker=marker,
-                            label=lnames[colindex]
-                           )
+                            label=lnames[colindex])
             elif logx is True and logy is True:
                 ax.loglog(oxdata, oydata,
                           linestyle=linest,
                           color=lcolor,
                           marker=marker,
-                          label=lnames[colindex]
-                         )
+                          label=lnames[colindex])
             else:
                 ax.plot(oxdata, oydata,
                         linestyle=linest,
                         color=lcolor,
                         marker=marker,
                         label=lnames[colindex],
-                        drawstyle=drawstyle
-                       )
+                        drawstyle=drawstyle)
 
         # Make it pretty
         if type in ['norm_xaxis', 'norm_yaxis',
@@ -2663,7 +2596,7 @@ def plot(
                                        pd.np.linspace(0.1, 0.9, 9),
                                        pd.np.linspace(0.9, 0.99, 10),
                                        pd.np.linspace(0.99, 0.999, 10),
-                                      ])
+                                       ])
             xtmaj = ppf(xtmaj)
             xtmin = ppf(xtmin)
 
@@ -2759,8 +2692,7 @@ def plot(
     elif (type == 'bar' or
           type == 'bar_stacked' or
           type == 'barh' or
-          type == 'barh_stacked'
-         ):
+          type == 'barh_stacked'):
         stacked = False
         if type[-7:] == 'stacked':
             stacked = True
@@ -2867,24 +2799,31 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x-y), window=10000):
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def dtw(window=10000,
+def dtw(
         input_ts='-',
+        columns=None,
         start_date=None,
         end_date=None,
-        columns=None):
+        window=10000):
     """Dynamic Time Warping.
 
+    :param str input_ts: Filename with data in 'ISOdate,value'
+        format or '-' for stdin.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date: The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param window: Window length.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna='no',
-                             )
+                              dropna='no')
 
     process = {}
     for i in tsd.columns:
@@ -2899,36 +2838,35 @@ def dtw(window=10000,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def pca(n_components=None,
+def pca(
         input_ts='-',
+        columns=None,
         start_date=None,
         end_date=None,
-        columns=None
-       ):
+        n_components=None):
     """Return the principal components analysis of the time series.
 
     Does not return a time-series.
 
-    :param n_components <int>:  The number of groups to separate the
-        time series into.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value'
+    :param str input_ts: Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>: The end_date of the series in
-        ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date: The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param int n_components:  The number of groups to separate the
+        time series into.
     """
     from sklearn.decomposition import PCA
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
-                              pick=columns
-                             )
+                              pick=columns)
 
     pca = PCA(n_components)
     pca.fit(tsd.dropna(how='any'))
@@ -2936,21 +2874,35 @@ def pca(n_components=None,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def normalization(mode='minmax',
+def normalization(
+                  input_ts='-',
+                  columns=None,
+                  start_date=None,
+                  end_date=None,
+                  dropna='no',
+                  mode='minmax',
                   min_limit=0,
                   max_limit=1,
                   pct_rank_method='average',
                   print_input=False,
-                  float_format='%g',
-                  input_ts='-',
-                  start_date=None,
-                  end_date=None,
-                  columns=None,
-                  dropna='no',
-                 ):
+                  float_format='%g'):
     """Return the normalization of the time series.
 
-    :param mode <str>:  'minmax', 'zscore', or 'pct_rank'.  Default is
+    :param str input_ts:  Filename with data in 'ISOdate,value'
+        format or '-' for stdin.
+    :param columns:  Columns to pick out of input.  Can use column names
+        or column numbers.  If using numbers, column number 1 is the
+        first data column.  To pick multiple columns; separate by commas
+        with no spaces. As used in 'pick' command.
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
+    :param str mode:  'minmax', 'zscore', or 'pct_rank'.  Default is
         'minmax'
 
         minmax
@@ -2962,37 +2914,22 @@ def normalization(mode='minmax',
 
         pct_rank
             rank(X)*100/N
-    :param min_limit <float>:  Defaults to 0.  Defines the minimum limit
+    :param float min_limit:  Defaults to 0.  Defines the minimum limit
         of the minmax normalization.
-    :param max_limit <float>:  Defaults to 1.  Defines the maximum limit
+    :param float max_limit:  Defaults to 1.  Defines the maximum limit
         of the minmax normalization.
-    :param pct_rank_method <str>:  Defaults to 'average'.  Defines how
+    :param str pct_rank_method:  Defaults to 'average'.  Defines how
         tied ranks are broken.  Can be 'average', 'min', 'max', 'first',
         'dense'.
-    :param -p, --print_input:  If set to 'True' will include the input
+    :param print_input:  If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
-        format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
-    :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 1 is the
-        first data column.  To pick multiple columns; separate by commas
-        with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
-        that have NA value in any column, or 'all' to have records
-        dropped that have NA in all columns.  Set to 'no' to not drop
-        any records.  The default is 'no'.
-    :param float_format <str>: Float number format.
+    :param str float_format: Float number format.
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
 
     # Trying to save some memory
     if print_input:
@@ -3025,26 +2962,25 @@ def normalization(mode='minmax',
 def converttz(fromtz,
               totz,
               input_ts='-',
+              columns=None,
               start_date=None,
               end_date=None,
-              columns=None,
-              dropna='no',
-             ):
+              dropna='no'):
     """Convert the time zone of the index.
 
-    :param fromtz <str>: The time zone of the original time-series.
-    :param totz <str>: The time zone of the converted time-series.
-    :param -i, --input_ts <str>:  Filename with data in 'ISOdate,value'
+    :param str fromtz: The time zone of the original time-series.
+    :param str totz: The time zone of the converted time-series.
+    :param str input_ts:  Filename with data in 'ISOdate,value'
         format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
+    :param str start_date:  The start_date of the series in
         ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
+    :param str end_date:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas
         with no spaces. As used in 'pick' command.
-    :param dropna <str>:  Set `dropna` to 'any' to have records dropped
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
         that have NA value in any column, or 'all' to have records
         dropped that have NA in all columns.  Set to 'no' to not drop
         any records.  The default is 'no'.
@@ -3053,8 +2989,7 @@ def converttz(fromtz,
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna,
-                             )
+                              dropna=dropna)
     tsd = tsd.tz_localize(fromtz).tz_convert(totz)
     return tsutils.printiso(tsd, force_print_index=True)
 

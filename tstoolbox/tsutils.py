@@ -19,6 +19,7 @@ except ImportError:
 import pandas as pd
 import numpy as np
 
+
 def about(name):
     import platform
     import pkg_resources
@@ -33,7 +34,8 @@ def about(name):
     print("platform python_build = {0}".format(platform.python_build()))
     print("platform python_compiler = {0}".format(platform.python_compiler()))
     print("platform python branch = {0}".format(platform.python_branch()))
-    print("platform python implementation = {0}".format(platform.python_implementation()))
+    print("platform python implementation = {0}".format(
+               platform.python_implementation()))
     print("platform python revision = {0}".format(platform.python_revision()))
     print("platform python version = {0}".format(platform.python_version()))
     print("platform release = {0}".format(platform.release()))
@@ -166,6 +168,7 @@ def _date_slice(input_tsd, start_date=None, end_date=None):
         return input_tsd[slice(*accdate)]
     else:
         return input_tsd
+
 
 _annuals = {
     0: 'DEC',

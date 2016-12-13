@@ -4,6 +4,7 @@ program=tstoolbox
 
 pkgs="\
      setuptools \
+     mando \
      numpy \
      scipy \
      matplotlib \
@@ -20,8 +21,8 @@ for env in ${envs[@]}; do
     echo "${env}"
 
     pew in python${env} << EOT
+    pip install --upgrade pip
     pip install --upgrade ${pkgs}
-    pip install --no-deps --upgrade ../mando/
     pip uninstall -y ${program}
     rm -rf build
     pip install --upgrade --no-deps ../${program}/
@@ -40,12 +41,9 @@ done
 pew in python3.4 << EOTT
 coverage erase
 coverage run `which nosetests` --with-doctest
-coverage report --include="tstoolbox/*" --omit="tests/*"
-coverage html --include="tstoolbox/*" --omit="tests/*"
-flake8 tstoolbox/__init__.py tstoolbox/tsutils.py --exit-zero
+coverage report --include="${program}/*" --omit="tests/*"
+coverage html --include="${program}/*" --omit="tests/*"
+flake8 ${program}/__init__.py ${program}/${program}.py ${program}/tsutils.py --exit-zero
 
-cd docsrc
-make clean
-make html
 exit
 EOTT

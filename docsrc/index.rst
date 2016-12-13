@@ -16,11 +16,13 @@ Table of Contents
    :maxdepth: 2
 
    readme
+   command_line
+   function_summary
    contributing
    authors
    license
 
-Related Projects
-----------------
+Other Projects
+--------------
 http://timcera.bitbucket.org
 
