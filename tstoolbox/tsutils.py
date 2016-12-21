@@ -73,7 +73,9 @@ def common_kwds(input_tsd,
 """.format(dropna))
     else:
         if dropna in ['any', 'all']:
-            ntsd = ntsd.dropna(axis='index', how=dropna)
+            ntsd.dropna(axis='index',
+                        how=dropna,
+                        inplace=True)
     return ntsd
 
 
@@ -301,8 +303,12 @@ def asbestfreq(data, force_freq=None):
 
 
 # Utility
-def print_input(iftrue, intds, output, suffix,
-                date_format=None, sep=',',
+def print_input(iftrue,
+                intds,
+                output,
+                suffix,
+                date_format=None,
+                sep=',',
                 float_format='%g',
                 force_print_index=False):
     """Used when wanting to print the input time series also."""
@@ -424,7 +430,6 @@ def read_iso_ts(indat,
                 extended_columns=False,
                 force_freq=None):
     """Read the format printed by 'print_iso' and maybe other formats."""
-    import csv
     from pandas.compat import StringIO
 
     if force_freq is not None:
@@ -459,34 +464,21 @@ def read_iso_ts(indat,
             indat.index.name = 'UniqueID'
             return indat
 
-    has_header = False
-    dialect = csv.excel
     if isinstance(indat, str) or isinstance(indat, bytes):
         try:
             indat = str(indat, encoding='utf-8')
         except:
             pass
+
         if indat == '-':
             # if from stdin format must be the tstoolbox standard
             has_header = True
-            fpi = openinput(indat)
+            fpi = sys.stdin
         elif '\n' in indat or '\r' in indat:
             # a string
             fpi = StringIO(indat)
-        elif os.path.exists(indat):
-            # Is it a pickled file?
-            try:
-                result = pd.io.pickle.read_pickle(indat)
-                fpi = False
-            except:
-                # Maybe a CSV file?
-                fpi = openinput(indat)
         else:
-            raise ValueError("""
-*
-*   File {0} doesn't exist.
-*
-""".format(indat))
+            fpi = indat
     else:
         raise ValueError("""
 *
@@ -494,45 +486,29 @@ def read_iso_ts(indat,
 *
 """)
 
-    if fpi:
+    fname = ''
+    fstr = '{1}'
+    if extended_columns is True:
         try:
-            fpi.seek(0)
-            readsome = fpi.read(2048)
-            fpi.seek(0)
-            dialect = csv.Sniffer().sniff(readsome,
-                                          delimiters=', \t:|')
-            has_header = csv.Sniffer().has_header(readsome)
-        except:
-            # This is an assumption.
-            has_header = True
-
-        if extended_columns is True:
-            fname = os.path.splitext(os.path.basename(fpi.name))[0]
+            fname = os.path.splitext(os.path.basename(fpi))[0]
             fstr = '{0}.{1}'
-        else:
-            fname = ''
-            fstr = '{1}'
-        if fname == '<stdin>':
-            fname = '_'
-        if has_header:
-            result = pd.io.parsers.read_table(fpi, header=0,
-                                              dialect=dialect,
-                                              index_col=index_col,
-                                              parse_dates=True,
-                                              skipinitialspace=True)
-            result.columns = [fstr.format(fname, i.strip())
-                              for i in result.columns]
-        else:
-            result = pd.io.parsers.read_table(fpi, header=None,
-                                              dialect=dialect,
-                                              index_col=0,
-                                              parse_dates=True,
-                                              skipinitialspace=True)
-            if len(result.columns) == 1:
-                result.columns = [fname]
-            else:
-                result.columns = [fstr.format(fname, i.strip())
-                                  for i in result.columns]
+        except:
+            pass
+
+    if fname == '<stdin>':
+        fname = '_'
+
+    result = pd.io.parsers.read_table(fpi,
+                                      header='infer',
+                                      index_col=index_col,
+                                      infer_datetime_format=True,
+                                      parse_dates=True,
+                                      na_values=na_values,
+                                      sep=None,
+                                      skipinitialspace=True)
+
+    result.columns = [fstr.format(fname, str(i).strip())
+                      for i in result.columns]
 
     if result.index.is_all_dates is True:
         result.index.name = 'Datetime'

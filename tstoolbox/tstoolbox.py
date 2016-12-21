@@ -2954,7 +2954,10 @@ def normalization(
 *
 """.format(mode))
 
-    return tsutils.print_input(print_input, otsd, tsd, '_{0}'.format(mode),
+    return tsutils.print_input(print_input,
+                               otsd,
+                               tsd,
+                               '_{0}'.format(mode),
                                float_format=float_format)
 
 

@@ -56,6 +56,11 @@ class TestRead(TestCase):
                                        ['2000-01-01', '2000-01-03', '2000-01-05']))
         self.read_tsstep_2_daily.index.name = 'Datetime'
 
+        self.read_blanks = b"""Datetime,Value_mean,Unnamed: 2_mean,Unnamed: 3_mean,Unnamed: 4_mean,Unnamed: 5_mean,Unnamed: 6_mean,Unnamed: 7_mean,Unnamed: 8_mean,Unnamed: 9_mean
+2000-01-01,2.46667,,,,,,,,
+2000-01-02,3.4,,,,,,,,
+"""
+
     def test_read_direct(self):
         ''' Test read API for single column - daily.
         '''
@@ -97,3 +102,21 @@ class TestRead(TestCase):
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.read_tsstep_2_daily_cli)
+
+    def test_read_blank_header_cli(self):
+        ''' Test reading of files with blank titles in header.
+        '''
+        args = 'tstoolbox aggregate --agg_interval D --input_ts tests/data_empty_cols.csv'
+        args = shlex.split(args)
+        out = subprocess.Popen(args,
+                               stdout=subprocess.PIPE).communicate()
+        self.assertEqual(out[0], self.read_blanks)
+
+    def test_read_multiple_spaces(self):
+        ''' Test reading of files with multiple spaces in data.
+        '''
+        args = 'tstoolbox aggregate --agg_interval D --input_ts tests/data_spaces.csv'
+        args = shlex.split(args)
+        out = subprocess.Popen(args,
+                               stdout=subprocess.PIPE).communicate()
+        self.assertEqual(out[0], self.read_blanks)
