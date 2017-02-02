@@ -541,36 +541,36 @@ def _parse_equation(equation_str):
     if tsearch and nsearch:
         testeval.update(re.findall(r'x[1-9][0-9]*\[(.*?t.*?)\]',
                                    nequation))
-        # replace 'x1[t+1]' with 'x.ix[t+1,1-1]'
-        # replace 'x2[t+7]' with 'x.ix[t+7,2-1]'
+        # replace 'x1[t+1]' with 'x.iloc[t+1,1-1]'
+        # replace 'x2[t+7]' with 'x.iloc[t+7,2-1]'
         # ...etc
         nequation = re.sub(r'x([1-9][0-9]*)\[(.*?t.*?)\]',
-                           r'x.ix[\2,\1-1]',
+                           r'x.iloc[\2,\1-1]',
                            nequation)
-        # replace 'x1' with 'x.ix[t,1-1]'
-        # replace 'x4' with 'x.ix[t,4-1]'
+        # replace 'x1' with 'x.iloc[t,1-1]'
+        # replace 'x4' with 'x.iloc[t,4-1]'
         nequation = re.sub(r'x([1-9][0-9]*)',
-                           r'x.ix[t,\1-1]',
+                           r'x.iloc[t,\1-1]',
                            nequation)
     # If there is only a function of t, i.e. x[t]
     elif tsearch:
         testeval.update(re.findall(r'x\[(.*?t.*?)\]',
                                    nequation))
         nequation = re.sub(r'x\[(.*?t.*?)\]',
-                           r'xxix[\1,:]',
+                           r'xxiloc[\1,:]',
                            nequation)
         # Replace 'x' with underlying equation, but not the 'x' in a word,
         # like 'maximum'.
         nequation = re.sub(r'(?<![a-zA-Z])x(?![a-zA-Z\[])',
-                           r'xxix[t,:]',
+                           r'xxiloc[t,:]',
                            nequation)
-        nequation = re.sub(r'xxix',
-                           r'x.ix',
+        nequation = re.sub(r'xxiloc',
+                           r'x.iloc',
                            nequation)
 
     elif nsearch:
         nequation = re.sub(r'x([1-9][0-9]*)',
-                           r'x.ix[:,\1-1]',
+                           r'x.iloc[:,\1-1]',
                            nequation)
 
     try:
@@ -597,9 +597,42 @@ def equation(
     - x)*sin(x)'.
 
     :param str equation_str:  String contained in single quotes that
-        defines the equation.  The input variable place holder is 'x'.
+        defines the equation.
+
+        There are four different types of equations that can be used.
+
+        +-----------------------+-----------+---------------------------+
+        | Description           | Variables | Examples                  |
+        +=======================+===========+===========================+
+        | Equation applied to   | x         | 'x*0.3+4-x**2'            |
+        | all values in the     |           | 'sin(x)+pi*x'             |
+        | dataset.  Returns     |           |                           |
+        | same number of        |           |                           |
+        | columns as input.     |           |                           |
+        +-----------------------+-----------+---------------------------+
+        | Equation used time    | x and t   | '0.6*max(x[t-1],x[t+1]    |
+        | relative to current   |           |                           |
+        | record.  Applies      |           |                           |
+        | equation to each      |           |                           |
+        | column.  Returns same |           |                           |
+        | number of columns as  |           |                           |
+        | input.                |           |                           |
+        +-----------------------+-----------+---------------------------+
+        | Equation uses values  | x1, x2,   | 'x1+x2'                   |
+        | from different        | x3, ...   |                           |
+        | columns.  Returns a   | xN        |                           |
+        | single column.        |           |                           |
+        +-----------------------+-----------+---------------------------+
+        | Equation uses values  | x1, x2,   | 'x1[t-1]+x2+x3[t+1]'                          |
+        | from different        | x3,       |                           |
+        | columns and values    | ...xN, t  |                           |
+        | from different rows.  |           |                           |
+        | Returns a single      |           |                           |
+        | column.               |           |                           |
+        +-----------------------+-----------+---------------------------+
+
         Mathematical functions in the 'np' (numpy) name space can be
-        used.  For example::
+        used.  Additional examples::
 
             'x*4 + 2',
             'x**2 + cos(x)', and
@@ -635,36 +668,37 @@ def equation(
                             start_date=start_date,
                             end_date=end_date,
                             pick=columns,
-                            dropna=dropna).astype('f')
+                            dropna=dropna).astype('float32')
+
+    def returnval(t, x, testeval, nequation):
+        for tst in testeval:
+            tvalue = eval(tst)
+            if tvalue < 0 or tvalue >= len(x):
+                return pd.np.nan
+        return eval(nequation)
 
     tsearch, nsearch, testeval, nequation = _parse_equation(equation_str)
     if tsearch and nsearch:
-        y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
+        y = pd.DataFrame(pd.Series(index=x.index),
+                         columns=['_'],
+                         dtype='float32')
         for t in range(len(x)):
-            try:
-                for tst in testeval:
-                    if eval(tst) < 0:
-                        raise IndexError()
-                y.ix[t, 0] = eval(nequation)
-            except (AssertionError, IndexError):
-                y.ix[t, 0] = pd.np.nan
-        y = pd.DataFrame(y, columns=['_'], dtype='float32')
+            y.iloc[t, 0] = returnval(t, x, testeval, nequation)
     elif tsearch:
         y = x.copy()
         for t in range(len(x)):
-            try:
-                for tst in testeval:
-                    if eval(tst) < 0:
-                        raise IndexError()
-                y.ix[t, :] = eval(nequation)
-            except (AssertionError, IndexError):
-                y.ix[t, :] = pd.np.nan
+            y.iloc[t, :] = returnval(t, x, testeval, nequation)
     elif nsearch:
-        y = pd.DataFrame(x.ix[:, 0].copy(), index=x.index, columns=['_'])
-        y.ix[:, 0] = eval(nequation)
+        y = pd.DataFrame(pd.Series(index=x.index),
+                         columns=['_'],
+                         dtype='float32')
+        y.iloc[:, 0] = eval(nequation)
     else:
         y = eval(equation_str)
-    return tsutils.print_input(print_input, x, y, '_equation',
+    return tsutils.print_input(print_input,
+                               x,
+                               y,
+                               '_equation',
                                float_format=float_format)
 
 

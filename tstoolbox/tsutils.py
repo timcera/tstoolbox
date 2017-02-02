@@ -265,8 +265,9 @@ def asbestfreq(data, force_freq=None):
 
     # Use the minimum of the intervals to test a new interval.
     # Should work for fixed intervals.
-    ndiff = sorted(set(np.diff(data.index.values.astype(int))))
-    mininterval = int(np.min(ndiff))
+    ndiff = sorted(set(data.index.values.astype('int64')[1:] -
+                       data.index.values.astype('int64')[:-1]))
+    mininterval = np.min(ndiff)
     if mininterval <= 0:
         raise ValueError
     if len(ndiff) == 1:
@@ -505,7 +506,8 @@ def read_iso_ts(indat,
                                       parse_dates=True,
                                       na_values=na_values,
                                       sep=None,
-                                      skipinitialspace=True)
+                                      skipinitialspace=True,
+                                      engine='python')
 
     result.columns = [fstr.format(fname, str(i).strip())
                       for i in result.columns]

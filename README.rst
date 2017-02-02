@@ -36,7 +36,7 @@ Installation
 Should be as easy as running ``pip install tstoolbox`` or ``easy_install
 tstoolbox`` at any command line.  Not sure on Windows whether this will bring
 in pandas, but as mentioned above, if you start with scientific Python
-distribution then you won't have a problem.
+distribution then you shouldn't have a problem.
 
 Usage - Command Line
 --------------------
@@ -159,3 +159,4 @@ Simply import tstoolbox::
     # Once you have a PANDAS DataFrame you can use that as input to other 
     # tstoolbox functions.
     ntsd = tstoolbox.aggregate(statistic='mean', agg_interval='daily', input_ts=ntsd)
+
