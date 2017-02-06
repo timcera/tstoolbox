@@ -2865,9 +2865,10 @@ def dtw(
             if (i, j) not in process and (j, i) not in process and i != j:
                 process[(i, j)] = _dtw(tsd[i], tsd[j], window=window)
 
-    print(process.keys())
-
-    ntsd = pd.DataFrame(process.values(), process.keys())
+    ntsd = pd.DataFrame(list(process.items()))
+    ncols = ntsd.columns
+    ncols = ['Variables'] + [str(i)+'DTW_score' for i in ncols[1:]]
+    ntsd.columns = ncols
     return tsutils.printiso(ntsd)
 
 
