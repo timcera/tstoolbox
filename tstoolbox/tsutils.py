@@ -21,7 +21,6 @@ import numpy as np
 
 
 def parsedate(dstr,
-              sep='T',
               strftime=None,
               settings=None):
     """ Uses dateparser to parse a wide variety of dates for the
@@ -33,19 +32,24 @@ def parsedate(dstr,
     if dstr is None:
         return None
 
-    # The API should be able to send a datetime.datetime instance.
+    # The API should boomerang a datetime.datetime instance.
     if isinstance(dstr, datetime.datetime):
         return dstr
 
     pdate = dateparser.parse(dstr, settings=settings)
+
+    if pdate is None:
+        pdate = pd.to_datetime(dstr)
+
     if pdate is None:
         raise ValueError("""
 *
 *   Could not parse date string '{0}'.
 *
 """.format(dstr))
+
     if strftime is None:
-        return pdate.isoformat(sep)
+        return pdate
     return pdate.strftime(strftime)
 
 
