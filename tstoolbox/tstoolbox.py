@@ -119,10 +119,11 @@ def filter(
         `window_len` running average.  For 'fft_highpass' and
         'fft_lowpass'. Default is None and must be supplied if using
         'fft_highpass' or 'fft_lowpass'.
-    :param str start_date:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param str end_date:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
+    :param str start_date:  The string representing the start_date of
+        the output series or 'None' to use the beginning of the input
+        series.
+    :param str end_date:  The string representing the end_date of the
+        output series or 'None' to use the end of the input series.
     :param columns:  Columns to pick out of input.  Can use column names
         or column numbers.  If using numbers, column number 1 is the
         first data column.  To pick multiple columns; separate by commas

@@ -24,6 +24,7 @@ install_requires = [
     'matplotlib',
     'rst2ansi >= 0.1.5',
     'scipy',
+    'dateparser',
 ]
 
 

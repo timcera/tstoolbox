@@ -20,7 +20,37 @@ import pandas as pd
 import numpy as np
 
 
+def parsedate(dstr,
+              sep='T',
+              strftime=None,
+              settings=None):
+    """ Uses dateparser to parse a wide variety of dates for the
+        toolboxes.  Used for start and end dates. """
+    import dateparser
+    import datetime
+
+    # This is here just to make a generic tool.
+    if dstr is None:
+        return None
+
+    # The API should be able to send a datetime.datetime instance.
+    if isinstance(dstr, datetime.datetime):
+        return dstr
+
+    pdate = dateparser.parse(dstr, settings=settings)
+    if pdate is None:
+        raise ValueError("""
+*
+*   Could not parse date string '{0}'.
+*
+""".format(dstr))
+    if strftime is None:
+        return pdate.isoformat(sep)
+    return pdate.strftime(strftime)
+
+
 def about(name):
+    """ This generic 'about' function is used across all toolboxes. """
     import platform
     import pkg_resources
     namever = str(pkg_resources.get_distribution(name.split(".")[0]))
@@ -53,11 +83,15 @@ def common_kwds(input_tsd,
     """Collected all common_kwds across sub-commands  single function."""
     ntsd = input_tsd
     if pick is not None:
-        ntsd = _pick(ntsd, pick)
+        ntsd = _pick(ntsd,
+                     pick)
     if start_date is not None or end_date is not None:
-        ntsd = _date_slice(ntsd, start_date=start_date, end_date=end_date)
+        ntsd = _date_slice(ntsd,
+                           start_date=parsedate(start_date),
+                           end_date=parsedate(end_date))
     if force_freq is not None:
-        ntsd = asbestfreq(ntsd, force_freq=force_freq)
+        ntsd = asbestfreq(ntsd,
+                          force_freq=force_freq)
     if ntsd.index.is_all_dates:
         ntsd.index.name = 'Datetime'
     if groupby is not None:
@@ -145,10 +179,14 @@ def date_slice(input_tsd, start_date=None, end_date=None):
     This is here for a while until I fix my other toolboxes to
     use common_kwds instead.
     """
-    return _date_slice(input_tsd, start_date=start_date, end_date=end_date)
+    return _date_slice(input_tsd,
+                       start_date=start_date,
+                       end_date=end_date)
 
 
-def _date_slice(input_tsd, start_date=None, end_date=None):
+def _date_slice(input_tsd,
+                start_date=None,
+                end_date=None):
     """Private function to slice time series."""
     if input_tsd.index.is_all_dates:
         accdate = []
