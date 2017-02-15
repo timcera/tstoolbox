@@ -602,35 +602,35 @@ def equation(
 
         There are four different types of equations that can be used.
 
-        +-----------------------+-----------+---------------------------+
-        | Description           | Variables | Examples                  |
-        +=======================+===========+===========================+
-        | Equation applied to   | x         | 'x*0.3+4-x**2'            |
-        | all values in the     |           | 'sin(x)+pi*x'             |
-        | dataset.  Returns     |           |                           |
-        | same number of        |           |                           |
-        | columns as input.     |           |                           |
-        +-----------------------+-----------+---------------------------+
-        | Equation used time    | x and t   | '0.6*max(x[t-1],x[t+1]    |
-        | relative to current   |           |                           |
-        | record.  Applies      |           |                           |
-        | equation to each      |           |                           |
-        | column.  Returns same |           |                           |
-        | number of columns as  |           |                           |
-        | input.                |           |                           |
-        +-----------------------+-----------+---------------------------+
-        | Equation uses values  | x1, x2,   | 'x1+x2'                   |
-        | from different        | x3, ...   |                           |
-        | columns.  Returns a   | xN        |                           |
-        | single column.        |           |                           |
-        +-----------------------+-----------+---------------------------+
-        | Equation uses values  | x1, x2,   | 'x1[t-1]+x2+x3[t+1]'                          |
-        | from different        | x3,       |                           |
-        | columns and values    | ...xN, t  |                           |
-        | from different rows.  |           |                           |
-        | Returns a single      |           |                           |
-        | column.               |           |                           |
-        +-----------------------+-----------+---------------------------+
+        +-----------------------+-----------+-------------------------+
+        | Description           | Variables | Examples                |
+        +=======================+===========+=========================+
+        | Equation applied to   | x         | x*0.3+4-x**2            |
+        | all values in the     |           | sin(x)+pi*x             |
+        | dataset.  Returns     |           |                         |
+        | same number of        |           |                         |
+        | columns as input.     |           |                         |
+        +-----------------------+-----------+-------------------------+
+        | Equation used time    | x and t   | 0.6*max(x[t-1],x[t+1])  |
+        | relative to current   |           |                         |
+        | record.  Applies      |           |                         |
+        | equation to each      |           |                         |
+        | column.  Returns same |           |                         |
+        | number of columns as  |           |                         |
+        | input.                |           |                         |
+        +-----------------------+-----------+-------------------------+
+        | Equation uses values  | x1, x2,   | x1+x2                   |
+        | from different        | x3, ...   |                         |
+        | columns.  Returns a   | xN        |                         |
+        | single column.        |           |                         |
+        +-----------------------+-----------+-------------------------+
+        | Equation uses values  | x1, x2,   | x1[t-1]+x2+x3[t+1]      |
+        | from different        | x3,       |                         |
+        | columns and values    | ...xN, t  |                         |
+        | from different rows.  |           |                         |
+        | Returns a single      |           |                         |
+        | column.               |           |                         |
+        +-----------------------+-----------+-------------------------+
 
         Mathematical functions in the 'np' (numpy) name space can be
         used.  Additional examples::
@@ -983,6 +983,8 @@ def rolling_window(
         Weekly has the following anchored frequencies:
 
         +-------+-------------------------------+
+        | Alias | Description                   |
+        +=======+===============================+
         | W-SUN | weekly frequency (sundays).   |
         |       | Same as 'W'.                  |
         +-------+-------------------------------+
@@ -1003,32 +1005,34 @@ def rolling_window(
         annual frequencies (A, BA, AS, BAS) have the following anchoring
         suffixes:
 
-        +------+------------------------+
-        | -DEC | year ends in December  |
-        |      | (same as 'Q' and 'A')  |
-        +------+------------------------+
-        | -JAN | year ends in January   |
-        +------+------------------------+
-        | -FEB | year ends in February  |
-        +------+------------------------+
-        | -MAR | year ends in March     |
-        +------+------------------------+
-        | -APR | year ends in April     |
-        +------+------------------------+
-        | -MAY | year ends in May       |
-        +------+------------------------+
-        | -JUN | year ends in June      |
-        +------+------------------------+
-        | -JUL | year ends in July      |
-        +------+------------------------+
-        | -AUG | year ends in August    |
-        +------+------------------------+
-        | -SEP | year ends in September |
-        +------+------------------------+
-        | -OCT | year ends in October   |
-        +------+------------------------+
-        | -NOV | year ends in November  |
-        +------+------------------------+
+        +-------+-------------------------------+
+        | Alias | Description                   |
+        +=======+===============================+
+        | -DEC  | year ends in December (same   |
+        |       | as 'Q' and 'A')               |
+        +-------+-------------------------------+
+        | -JAN  | year ends in January          |
+        +-------+-------------------------------+
+        | -FEB  | year ends in February         |
+        +-------+-------------------------------+
+        | -MAR  | year ends in March            |
+        +-------+-------------------------------+
+        | -APR  | year ends in April            |
+        +-------+-------------------------------+
+        | -MAY  | year ends in May              |
+        +-------+-------------------------------+
+        | -JUN  | year ends in June             |
+        +-------+-------------------------------+
+        | -JUL  | year ends in July             |
+        +-------+-------------------------------+
+        | -AUG  | year ends in August           |
+        +-------+-------------------------------+
+        | -SEP  | year ends in September        |
+        +-------+-------------------------------+
+        | -OCT  | year ends in October          |
+        +-------+-------------------------------+
+        | -NOV  | year ends in November         |
+        +-------+-------------------------------+
 
         Defaults to None.
     :param freq: string or DateOffset object, optional (default None) Frequency
@@ -1353,6 +1357,8 @@ def aggregate(
         Weekly has the following anchored frequencies:
 
         +-------+-------------------------------+
+        | Alias | Description                   |
+        +=======+===============================+
         | W-SUN | weekly frequency (sundays).   |
         |       | Same as 'W'.                  |
         +-------+-------------------------------+
@@ -1373,39 +1379,41 @@ def aggregate(
         annual frequencies (A, BA, AS, BAS) have the following anchoring
         suffixes:
 
-        +------+------------------------+
-        | -DEC | year ends in December  |
-        |      | (same as 'Q' and 'A')  |
-        +------+------------------------+
-        | -JAN | year ends in January   |
-        +------+------------------------+
-        | -FEB | year ends in February  |
-        +------+------------------------+
-        | -MAR | year ends in March     |
-        +------+------------------------+
-        | -APR | year ends in April     |
-        +------+------------------------+
-        | -MAY | year ends in May       |
-        +------+------------------------+
-        | -JUN | year ends in June      |
-        +------+------------------------+
-        | -JUL | year ends in July      |
-        +------+------------------------+
-        | -AUG | year ends in August    |
-        +------+------------------------+
-        | -SEP | year ends in September |
-        +------+------------------------+
-        | -OCT | year ends in October   |
-        +------+------------------------+
-        | -NOV | year ends in November  |
-        +------+------------------------+
+        +-------+-------------------------------+
+        | Alias | Description                   |
+        +=======+===============================+
+        | -DEC  | year ends in December (same   |
+        |       | as 'Q' and 'A')               |
+        +-------+-------------------------------+
+        | -JAN  | year ends in January          |
+        +-------+-------------------------------+
+        | -FEB  | year ends in February         |
+        +-------+-------------------------------+
+        | -MAR  | year ends in March            |
+        +-------+-------------------------------+
+        | -APR  | year ends in April            |
+        +-------+-------------------------------+
+        | -MAY  | year ends in May              |
+        +-------+-------------------------------+
+        | -JUN  | year ends in June             |
+        +-------+-------------------------------+
+        | -JUL  | year ends in July             |
+        +-------+-------------------------------+
+        | -AUG  | year ends in August           |
+        +-------+-------------------------------+
+        | -SEP  | year ends in September        |
+        +-------+-------------------------------+
+        | -OCT  | year ends in October          |
+        +-------+-------------------------------+
+        | -NOV  | year ends in November         |
+        +-------+-------------------------------+
 
         There are some deprecated aggregation interval names in
         tstoolbox, DON'T USE!
 
         +---------------+-----+
         | Instead of... | Use |
-        +---------------+-----+
+        +===============+=====+
         | hourly        | H   |
         +---------------+-----+
         | daily         | D   |
@@ -1727,6 +1735,8 @@ def calculate_fdc(
         'weibull'.
 
         +------------+-----------------+-----------------------+
+        | Name       | Equation        | Description           |
+        +============+=================+=======================+
         | weibull    | i/(n+1)         | mean of sampling      |
         |            |                 | distribution          |
         +------------+-----------------+-----------------------+
