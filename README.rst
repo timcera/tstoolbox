@@ -10,10 +10,6 @@
     :alt: Latest release
     :target: https://pypi.python.org/pypi/tstoolbox
 
-.. image:: https://img.shields.io/pypi/dm/tstoolbox.svg
-    :alt: PyPI downloads count
-    :target: https://pypi.python.org/pypi/tstoolbox
-
 .. image:: http://img.shields.io/badge/license-BSD-lightgrey.svg
     :alt: tstoolbox license
     :target: https://pypi.python.org/pypi/tstoolbox/
