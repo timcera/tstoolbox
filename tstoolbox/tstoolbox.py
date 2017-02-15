@@ -1734,28 +1734,31 @@ def calculate_fdc(
         'gumbel', 'hazen', 'cunnane', or 'california'.  The default is
         'weibull'.
 
-        +------------+-----------------+-----------------------+
-        | Name       | Equation        | Description           |
-        +============+=================+=======================+
-        | weibull    | i/(n+1)         | mean of sampling      |
-        |            |                 | distribution          |
-        +------------+-----------------+-----------------------+
-        | benard     | (i-0.3)/(n+0.4) | approx. median of     |
-        |            |                 | sampling distribution |
-        +------------+-----------------+-----------------------+
-        | tukey      | (i-1/3)/(n+1/3) | approx. median of     |
-        |            |                 | sampling distribution |
-        +------------+-----------------+-----------------------+
-        | gumbel     | (i-1)/(n-1)     | mode of sampling      |
-        |            |                 | distribution          |
-        +------------+-----------------+-----------------------+
-        | hazen      | (i-1/2)/n       | midpoints of n equal  |
-        |            |                 | intervals             |
-        +------------+-----------------+-----------------------+
-        | cunnane    | (i-2/5)/(n+1/5) | subjective            |
-        +------------+-----------------+-----------------------+
-        | california | i/n             |                       |
-        +------------+-----------------+-----------------------+
+        +------------+-----+-----------------+-----------------------+
+        | Name       | a   | Equation        | Description           |
+        |            |     | (1-a)/(n+1-2*a) |                       |
+        +============+=====+=================+=======================+
+        | weibull    | 0   | i/(n+1)         | mean of sampling      |
+        |            |     |                 | distribution          |
+        |            |     |                 | (default)             |
+        +------------+-----+-----------------+-----------------------+
+        | benard and | 0.3 | (i-0.3)/(n+0.4) | approx. median of     |
+        | bos-       |     |                 | sampling distribution |
+        | levenbach  |     |                 |                       |
+        +------------+-----+-----------------+-----------------------+
+        | tukey      | 1/3 | (i-1/3)/(n+1/3) | approx. median of     |
+        |            |     |                 | sampling distribution |
+        +------------+-----+-----------------+-----------------------+
+        | gumbel     | 1   | (i-1)/(n-1)     | mode of sampling      |
+        |            |     |                 | distribution          |
+        +------------+-----+-----------------+-----------------------+
+        | hazen      | 1/2 | (i-1/2)/n       | midpoints of n equal  |
+        |            |     |                 | intervals             |
+        +------------+-----+-----------------+-----------------------+
+        | cunnane    | 2/5 | (i-2/5)/(n+1/5) | subjective            |
+        +------------+-----+-----------------+-----------------------+
+        | california | NA  | i/n             |                       |
+        +------------+-----+-----------------+-----------------------+
 
         Where 'i' is the sorted rank of the y value, and 'n' is the
         total number of values to be plotted.
@@ -2313,28 +2316,32 @@ def plot(
     :param str plotting_position:  'weibull', 'benard', 'tukey', 'gumbel',
         'hazen', 'cunnane', or 'california'.  The default is 'weibull'.
 
-        +------------+-----------------+-----------------------+
-        | Name       | Equation        | Description           |
-        +============+=================+=======================+
-        | weibull    | i/(n+1)         | mean of sampling      |
-        |            |                 | distribution          |
-        +------------+-----------------+-----------------------+
-        | benard     | (i-0.3)/(n+0.4) | approx. median of     |
-        |            |                 | sampling distribution |
-        +------------+-----------------+-----------------------+
-        | tukey      | (i-1/3)/(n+1/3) | approx. median of     |
-        |            |                 | sampling distribution |
-        +------------+-----------------+-----------------------+
-        | gumbel     | (i-1)/(n-1)     | mode of sampling      |
-        |            |                 | distribution          |
-        +------------+-----------------+-----------------------+
-        | hazen      | (i-1/2)/n       | midpoints of n equal  |
-        |            |                 | intervals             |
-        +------------+-----------------+-----------------------+
-        | cunnane    | (i-2/5)/(n+1/5) | subjective            |
-        +------------+-----------------+-----------------------+
-        | california | i/n             |                       |
-        +------------+-----------------+-----------------------+
+
+        +------------+-----+-----------------+-----------------------+
+        | Name       | a   | Equation        | Description           |
+        |            |     | (1-a)/(n+1-2*a) |                       |
+        +============+=====+=================+=======================+
+        | weibull    | 0   | i/(n+1)         | mean of sampling      |
+        |            |     |                 | distribution          |
+        |            |     |                 | (default)             |
+        +------------+-----+-----------------+-----------------------+
+        | benard and | 0.3 | (i-0.3)/(n+0.4) | approx. median of     |
+        | bos-       |     |                 | sampling distribution |
+        | levenbach  |     |                 |                       |
+        +------------+-----+-----------------+-----------------------+
+        | tukey      | 1/3 | (i-1/3)/(n+1/3) | approx. median of     |
+        |            |     |                 | sampling distribution |
+        +------------+-----+-----------------+-----------------------+
+        | gumbel     | 1   | (i-1)/(n-1)     | mode of sampling      |
+        |            |     |                 | distribution          |
+        +------------+-----+-----------------+-----------------------+
+        | hazen      | 1/2 | (i-1/2)/n       | midpoints of n equal  |
+        |            |     |                 | intervals             |
+        +------------+-----+-----------------+-----------------------+
+        | cunnane    | 2/5 | (i-2/5)/(n+1/5) | subjective            |
+        +------------+-----+-----------------+-----------------------+
+        | california | NA  | i/n             |                       |
+        +------------+-----+-----------------+-----------------------+
 
         Where 'i' is the sorted rank of the y value, and 'n'
         is the total number of values to be plotted.
