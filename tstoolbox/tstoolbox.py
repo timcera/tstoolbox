@@ -3062,6 +3062,170 @@ def converttz(fromtz,
     return tsutils.printiso(tsd, force_print_index=True)
 
 
+@mando.command(formatter_class=RSTHelpFormatter)
+def pct_change(
+               input_ts='-',
+               columns=None,
+               start_date=None,
+               end_date=None,
+               dropna='no',
+               periods=1,
+               fill_method='pad',
+               limit=None,
+               freq=None,
+               print_input=False,
+               float_format='%g'):
+    """Return the percent change between times.
+
+    :param str input_ts:  Filename with data in 'ISOdate,value'
+        format or '-' for stdin.
+    :param columns:  Columns to pick out of input.  Can use column names
+        or column numbers.  If using numbers, column number 1 is the
+        first data column.  To pick multiple columns; separate by commas
+        with no spaces. As used in 'pick' command.
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
+    :param int periods: The number of intervals to calculate percent
+        change across.
+    :param str fill_method:  Fill method for NA.  Defaults to 'pad'.
+    :param limit:  Defaults to None.  Is the minimum number of
+        consecutive NA values where no more filling will be made.
+    :param str freq: A pandas time offset string to represent the
+        interval.
+    :param print_input:  If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
+    :param str float_format: Float number format.
+    """
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna)
+
+    # Trying to save some memory
+    if print_input:
+        otsd = tsd.copy()
+    else:
+        otsd = pd.DataFrame()
+
+    return tsutils.print_input(print_input,
+                               tsd,
+                               tsd.pct_change(periods=periods,
+                                              fill_method=fill_method,
+                                              limit=limit,
+                                              freq=freq),
+                               '_pct_change',
+                               float_format=float_format)
+
+
+@mando.command(formatter_class=RSTHelpFormatter)
+def rank(
+         input_ts='-',
+         columns=None,
+         start_date=None,
+         end_date=None,
+         dropna='no',
+         axis=0,
+         method='average',
+         numeric_only=None,
+         na_option='keep',
+         ascending=True,
+         pct=False,
+         print_input=False,
+         float_format='%g'):
+    """Compute numerical data ranks (1 through n) along axis.
+
+    Equal values are assigned a rank that is the average of the ranks of those
+    values
+
+    :param str input_ts:  Filename with data in 'ISOdate,value'
+        format or '-' for stdin.
+    :param columns:  Columns to pick out of input.  Can use column names
+        or column numbers.  If using numbers, column number 1 is the
+        first data column.  To pick multiple columns; separate by commas
+        with no spaces. As used in 'pick' command.
+    :param str start_date:  The start_date of the series in
+        ISOdatetime format, or 'None' for beginning.
+    :param str end_date:  The end_date of the series in
+        ISOdatetime format, or 'None' for end.
+    :param str dropna:  Set `dropna` to 'any' to have records dropped
+        that have NA value in any column, or 'all' to have records
+        dropped that have NA in all columns.  Set to 'no' to not drop
+        any records.  The default is 'no'.
+    :param axis: {0 or 'index' or 1 or 'columns'}, default 0.
+        Index to direct ranking
+    :param str method: {'average', 'min', 'max', 'first', 'dense'}, default
+        'average'.
+
+        +-----------------+--------------------------------+
+        | method argument | Description                    |
+        +=================+================================+
+        | average         | average rank of group          |
+        +-----------------+--------------------------------+
+        | min             | lowest rank in group           |
+        +-----------------+--------------------------------+
+        | max             | highest rank in group          |
+        +-----------------+--------------------------------+
+        | first           | ranks assigned in order they   |
+        |                 | appear in the array            |
+        +-----------------+--------------------------------+
+        | dense           | like 'min', but rank always    |
+        |                 | increases by 1 between groups  |
+        +-----------------+--------------------------------+
+
+    :param numeric_only: boolean, default None
+        Include only float, int, boolean data. Valid only for DataFrame or
+        Panel objects
+    :param str na_option: {'keep', 'top', 'bottom'}, default is 'keep'.
+
+        +--------------------+--------------------------------+
+        | na_option argument | Description                    |
+        +====================+================================+
+        | keep               | leave NA values where they are |
+        +--------------------+--------------------------------+
+        | top                | smallest rank if ascending     |
+        +--------------------+--------------------------------+
+        | bottom             | smallest rank if descending    |
+        +--------------------+--------------------------------+
+
+    :param ascending: boolean, default True.
+        False for ranks by high (1) to low (N)
+    :param pct: boolean, default False.
+        Computes percentage rank of data
+    :param print_input:  If set to 'True' will include the input
+        columns in the output table.  Default is 'False'.
+    :param str float_format: Float number format.
+    """
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna)
+
+    # Trying to save some memory
+    if print_input:
+        otsd = tsd.copy()
+    else:
+        otsd = pd.DataFrame()
+
+    return tsutils.print_input(print_input,
+                               tsd,
+                               tsd.rank(axis=axis,
+                                        method=method,
+                                        numeric_only=numeric_only,
+                                        na_option=na_option,
+                                        ascending=ascending,
+                                        pct=pct),
+                               '_rank',
+                               float_format=float_format)
+
+
 def main():
     """Main function."""
     if not os.path.exists('debug_tstoolbox'):
