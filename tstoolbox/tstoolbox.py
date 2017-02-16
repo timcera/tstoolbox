@@ -1904,7 +1904,19 @@ def unstack(
     newtsd = pd.DataFrame(tsd[cols].values,
                           index=[tsd.index.values,
                                  tsd[column_names].values])
-    newtsd = newtsd.unstack()
+
+    try:
+        newtsd = newtsd.unstack()
+    except ValueError:
+        raise ValueError("""
+*
+*   Duplicate index (time stamp and '{0}') where found.
+*   Found these duplicate indices:
+{1}
+*
+""".format(column_names,
+           newtsd.index.get_duplicates()))
+
     newtsd.index.name = 'Datetime'
     levels = newtsd.columns.levels
     labels = newtsd.columns.labels
