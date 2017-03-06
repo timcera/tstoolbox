@@ -669,7 +669,7 @@ def equation(
                             start_date=start_date,
                             end_date=end_date,
                             pick=columns,
-                            dropna=dropna).astype('float32')
+                            dropna=dropna)
 
     def returnval(t, x, testeval, nequation):
         for tst in testeval:
@@ -1840,7 +1840,7 @@ def stack(
     newtsd = pd.DataFrame(tsd.stack()).reset_index(1)
     newtsd.columns = ['Columns', 'Values']
     newtsd = newtsd.groupby('Columns').apply(
-        lambda d: d.sort()).reset_index('Columns',drop=True)
+        lambda d: d.sort()).reset_index('Columns', drop=True)
     return tsutils.printiso(newtsd)
 
 
@@ -3116,7 +3116,7 @@ def pct_change(
         otsd = pd.DataFrame()
 
     return tsutils.print_input(print_input,
-                               tsd,
+                               otsd,
                                tsd.pct_change(periods=periods,
                                               fill_method=fill_method,
                                               limit=limit,
@@ -3216,7 +3216,7 @@ def rank(
         otsd = pd.DataFrame()
 
     return tsutils.print_input(print_input,
-                               tsd,
+                               otsd,
                                tsd.rank(axis=axis,
                                         method=method,
                                         numeric_only=numeric_only,

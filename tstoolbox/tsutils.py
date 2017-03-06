@@ -77,6 +77,33 @@ def about(name):
     print("platform version = {0}".format(platform.version()))
 
 
+def required_cols(input_tsd,
+                  required_cols=None):
+    """Collected all required columns."""
+    collected_cols = []
+    if required_cols is not None:
+        for rc in required_cols:
+            try:
+                rc = int(rc) - 1
+            except ValueError:
+                pass
+
+            try:
+                collected_cols.append(input_tsd.ix[:, rc])
+            except:
+                raise ValueError('''
+*
+*   You need to specify the required column(s) using column name or
+*   column number (data columns start numbering at 1).
+*   Column names are {0}.
+*   Column numbers are {1}.
+*   You specified {2}.
+*
+'''.format(input_tsd.columns, list(range(1, len(input_tsd.columns) + 1)), rc))
+
+    return required_cols
+
+
 def common_kwds(input_tsd,
                 start_date=None,
                 end_date=None,
@@ -84,8 +111,9 @@ def common_kwds(input_tsd,
                 force_freq=None,
                 groupby=None,
                 dropna='no'):
-    """Collected all common_kwds across sub-commands  single function."""
+    """Collected all common_kwds across sub-commands single function."""
     ntsd = input_tsd
+
     if pick is not None:
         ntsd = _pick(ntsd,
                      pick)
@@ -96,7 +124,7 @@ def common_kwds(input_tsd,
     if force_freq is not None:
         ntsd = asbestfreq(ntsd,
                           force_freq=force_freq)
-    if ntsd.index.is_all_dates:
+    if ntsd.index.is_all_dates is True:
         ntsd.index.name = 'Datetime'
     if groupby is not None:
         if groupby == 'months_across_years':
@@ -356,7 +384,7 @@ def print_input(iftrue,
                 force_print_index=False):
     """Used when wanting to print the input time series also."""
     if suffix:
-        output.rename(columns=lambda xloc: xloc + suffix, inplace=True)
+        output.rename(columns=lambda xloc: str(xloc) + suffix, inplace=True)
     if iftrue:
         return printiso(intds.join(output,
                                    lsuffix='_1',
@@ -385,7 +413,7 @@ def _printiso(tsd, date_format=None, sep=',',
     sys.tracebacklimit = 1000
 
     print_index = True
-    if tsd.index.is_all_dates:
+    if tsd.index.is_all_dates is True:
         if tsd.index.name is None:
             tsd.index.name = 'Datetime'
         # Someone made the decision about the name
@@ -428,20 +456,27 @@ def test_cli():
     return cli
 
 
-def printiso(tsd, date_format=None,
-             sep=',', float_format='%g', force_print_index=False):
+def printiso(tsd,
+             date_format=None,
+             sep=',',
+             float_format='%g',
+             force_print_index=False):
     """
     Default output format.
 
     Used for tstoolbox, wdmtoolbox, swmmtoolbox, and hspfbintoolbox.
     """
+    if len(tsd.columns) == 0:
+        tsd = pd.DataFrame(index=tsd.index)
+
     # Not perfectly true, but likely will use force_print_index for indices
     # that are not time stamps.
     if force_print_index is True:
         if not tsd.index.name:
             tsd.index.name = 'UniqueID'
     else:
-        tsd.index.name = 'Datetime'
+        if not tsd.index.name:
+            tsd.index.name = 'Datetime'
 
     if test_cli():
         _printiso(tsd, float_format=float_format,
@@ -474,14 +509,10 @@ def read_iso_ts(indat,
                 force_freq=None):
     """Read the format printed by 'print_iso' and maybe other formats."""
     from pandas.compat import StringIO
+    from pandas.core.common import PandasError
 
-    if force_freq is not None:
-        # force_freq implies a dense series
-        dropna = 'no'
-
-    index_col = 0
-    if parse_dates is False:
-        index_col = False
+    header = 'infer'
+    sep = None
 
     # Would want this to be more generic...
     na_values = []
@@ -492,22 +523,19 @@ def read_iso_ts(indat,
 
     fpi = None
 
-    # Handle Series by converting to DataFrame
-    if isinstance(indat, pd.Series):
-        indat = pd.DataFrame(indat)
-
     if isinstance(indat, pd.DataFrame):
-        if indat.index.is_all_dates:
-            indat.index.name = 'Datetime'
-            if dropna == 'no':
-                return asbestfreq(indat, force_freq=force_freq)
-            else:
-                return indat
-        else:
-            indat.index.name = 'UniqueID'
-            return indat
+        result = indat
 
-    if isinstance(indat, str) or isinstance(indat, bytes):
+    elif isinstance(indat, pd.Series):
+        result = pd.DataFrame(indat)
+
+    elif isinstance(indat, (dict, tuple, list)):
+        try:
+            result = pd.DataFrame(indat)
+        except PandasError:
+            result = pd.DataFrame([indat])
+
+    elif isinstance(indat, (str, bytes)):
         try:
             indat = str(indat, encoding='utf-8')
         except:
@@ -515,56 +543,71 @@ def read_iso_ts(indat,
 
         if indat == '-':
             # if from stdin format must be the tstoolbox standard
-            has_header = True
+            header = 0
+            sep = ','
             fpi = sys.stdin
         elif '\n' in indat or '\r' in indat:
             # a string
             fpi = StringIO(indat)
         else:
             fpi = indat
+
+        fname = ''
+        fstr = '{1}'
+        if extended_columns is True:
+            try:
+                fname = os.path.splitext(os.path.basename(fpi))[0]
+                fstr = '{0}.{1}'
+            except:
+                pass
+
+        if fname == '<stdin>':
+            fname = '_'
+
+        index_col = 0
+        if parse_dates is False:
+            index_col = False
+
+        result = pd.io.parsers.read_table(fpi,
+                                          header=header,
+                                          index_col=index_col,
+                                          infer_datetime_format=True,
+                                          parse_dates=True,
+                                          na_values=na_values,
+                                          keep_default_na=True,
+                                          sep=sep,
+                                          skipinitialspace=True,
+                                          engine='python')
+        result.columns = [fstr.format(fname, str(i).strip())
+                          for i in result.columns]
     else:
         raise ValueError("""
 *
 *   Can't figure out what was passed to read_iso_ts.
+*   You gave me a {0}.
 *
-""")
+""".format(type(indat)))
 
-    fname = ''
-    fstr = '{1}'
-    if extended_columns is True:
-        try:
-            fname = os.path.splitext(os.path.basename(fpi))[0]
-            fstr = '{0}.{1}'
-        except:
-            pass
+    # Convert all datetime columns to datetime objects
+    result = result.apply(lambda col: pd.to_datetime(col,
+                                                     errors='ignore')
+                          if col.dtypes == object else col, axis=0)
 
-    if fname == '<stdin>':
-        fname = '_'
-
-    result = pd.io.parsers.read_table(fpi,
-                                      header='infer',
-                                      index_col=index_col,
-                                      infer_datetime_format=True,
-                                      parse_dates=True,
-                                      na_values=na_values,
-                                      sep=None,
-                                      skipinitialspace=True,
-                                      engine='python')
-
-    result.columns = [fstr.format(fname, str(i).strip())
-                      for i in result.columns]
+    if result.index.is_all_dates is False:
+        if result[0].dtype == np.dtype('M8[ns]'):
+            result.set_index(0, inplace=True)
 
     if result.index.is_all_dates is True:
         result.index.name = 'Datetime'
 
-        if dropna == 'no':
+        if force_freq is not None:
             try:
                 return asbestfreq(result, force_freq=force_freq)
             except ValueError:
                 return result
     else:
         if result.index.name != 'UniqueID':
-            result.reset_index(level=0, inplace=True)
+            result.reset_index(level=0, inplace=True, drop=True)
         result.index.name = 'UniqueID'
     return result
 
