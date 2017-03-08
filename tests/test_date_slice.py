@@ -18,13 +18,15 @@ from . import capture
 import pandas as pd
 
 from tstoolbox import tstoolbox
-import tstoolbox.tsutils as tsutils
+from tstoolbox import tsutils
 
 
 class TestDate_slice(TestCase):
     def setUp(self):
         dr = pd.date_range('2011-01-01T12:00:00', periods=3, freq='H')
         self.date_slice = pd.DataFrame([2, 2, 2], index=dr, columns=['Value'])
+        self.date_slice = tsutils.memory_optimize(self.date_slice)
+
         self.date_slice_cli = capture.capture(tsutils._printiso, self.date_slice)
 
     def test_date_slice(self):
