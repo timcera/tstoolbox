@@ -502,6 +502,22 @@ def openinput(filein):
     return open(filein, 'rb')
 
 
+def memory_optimize(tsd):
+    # Convert all datetime columns to datetime objects
+    tsd = tsd.apply(lambda col: pd.to_datetime(col,
+                                               errors='ignore')
+                    if col.dtypes == object else col, axis=0)
+    tsd = tsd.apply(lambda col: pd.to_numeric(col,
+                                              errors='ignore',
+                                              downcast='float')
+                    if col.dtypes == float else col, axis=0)
+    tsd = tsd.apply(lambda col: pd.to_numeric(col,
+                                              errors='ignore',
+                                              downcast='integer')
+                    if col.dtypes == int else col, axis=0)
+    return tsd
+
+
 def read_iso_ts(indat,
                 dropna='no',
                 parse_dates=True,
@@ -588,14 +604,13 @@ def read_iso_ts(indat,
 *
 """.format(type(indat)))
 
-    # Convert all datetime columns to datetime objects
-    result = result.apply(lambda col: pd.to_datetime(col,
-                                                     errors='ignore')
-                          if col.dtypes == object else col, axis=0)
+    result = memory_optimize(result)
 
     if result.index.is_all_dates is False:
-        if result[0].dtype == np.dtype('M8[ns]'):
+        try:
             result.set_index(0, inplace=True)
+        except KeyError:
+            pass
 
     if result.index.is_all_dates is True:
         result.index.name = 'Datetime'

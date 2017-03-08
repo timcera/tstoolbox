@@ -16,6 +16,7 @@ import shlex
 import pandas
 
 from tstoolbox import tstoolbox
+from tstoolbox import tsutils
 
 
 class TestConvert(TestCase):
@@ -24,11 +25,13 @@ class TestConvert(TestCase):
         ts = pandas.Series([4.5, 4.6], index=dr)
         self.compare_direct_01 = pandas.DataFrame(ts, columns=['Value_convert'])
         self.compare_direct_01.index.name = 'Datetime'
+        self.compare_direct_01 = tsutils.memory_optimize(self.compare_direct_01)
 
         dr = pandas.date_range('2000-01-01', periods=2, freq='D')
         ts = pandas.Series([11.0, 11.2], index=dr)
         self.compare_direct_02 = pandas.DataFrame(ts, columns=['Value_convert'])
         self.compare_direct_02.index.name = 'Datetime'
+        self.compare_direct_02 = tsutils.memory_optimize(self.compare_direct_02)
 
         self.compare_cli_01 = b"""Datetime,Value_convert
 2000-01-01,4.5

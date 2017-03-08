@@ -15,7 +15,7 @@ from pandas.util.testing import assert_frame_equal
 import pandas as pd
 
 from tstoolbox import tstoolbox
-import tstoolbox.tsutils as tsutils
+from tstoolbox import tsutils
 
 
 class TestDescribe(TestCase):
@@ -26,8 +26,10 @@ class TestDescribe(TestCase):
             'tests/data_sunspot_normalized_10_to_20.csv')
         self.data_zscore = tstoolbox.read(
             'tests/data_sunspot_normalized_zscore.csv')
+        self.data_zscore = tsutils.memory_optimize(self.data_zscore)
         self.data_pct_rank = tstoolbox.read(
             'tests/data_sunspot_normalized_pct_rank.csv')
+        self.data_pct_rank = tsutils.memory_optimize(self.data_pct_rank)
 
     def test_normalize_0_to_1(self):
         ''' Test the normalization API function from 0 to 1.

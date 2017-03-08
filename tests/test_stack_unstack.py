@@ -16,6 +16,7 @@ import subprocess
 import pandas as pd
 
 from tstoolbox import tstoolbox
+from tstoolbox import tsutils
 
 
 class TestRead(TestCase):
@@ -23,13 +24,18 @@ class TestRead(TestCase):
         ''' Prepare in-memory versions of the files data_stacked.csv and
             data_unstacked.csv.
         '''
-        self.stacked = pd.DataFrame.from_csv('tests/data_stacked.csv',
-                                             index_col=0)
+        self.stacked = pd.read_csv('tests/data_stacked.csv',
+                                             index_col=0,
+                                             parse_dates=True)
         self.stacked.index.name = 'Datetime'
-        self.unstacked = pd.DataFrame.from_csv('tests/data_unstacked.csv',
-                                               index_col=0)
+        self.stacked = tsutils.memory_optimize(self.stacked)
+
+        self.unstacked = pd.read_csv('tests/data_unstacked.csv',
+                                               index_col=0,
+                                               parse_dates=True)
         self.unstacked.rename(columns=lambda x: x.strip('\'\" '))
         self.unstacked.index.name = 'Datetime'
+        self.unstacked = tsutils.memory_optimize(self.unstacked)
 
     def test_stack(self):
         ''' Stack the data_unstacked.csv file and compare against the

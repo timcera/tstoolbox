@@ -25,16 +25,18 @@ class TestRead(TestCase):
     def setUp(self):
         ''' Prepare in-memory versions of the files ./data_flat.csv
         '''
-        self.data = pd.DataFrame.from_csv('tests/data_flat.csv')
+        self.data = pd.read_csv('tests/data_flat.csv',
+                                sep=',',
+                                parse_dates=True,
+                                index_col=0)
         self.data.index.name = 'Datetime'
+        print(self.data)
 
     def test_createts_from_input(self):
         ''' Create a ts of data_flat.csv
         '''
         out = tstoolbox.createts(input_ts=self.data).index
         out1 = tstoolbox.read('tests/data_flat.csv').index
-        print(out)
-        print(out1)
         assert_index_equal(out, out1)
 
     def test_createts_from_dates(self):

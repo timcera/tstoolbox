@@ -18,6 +18,7 @@ import subprocess
 import pandas
 
 from tstoolbox import tstoolbox
+from tstoolbox import tsutils
 
 
 class TestRead(TestCase):
@@ -28,11 +29,13 @@ class TestRead(TestCase):
 
         self.read_direct = pandas.DataFrame(ts, columns=['Value'])
         self.read_direct.index.name = 'Datetime'
+        self.read_direct = tsutils.memory_optimize(self.read_direct)
 
         self.read_multiple_direct = pandas.DataFrame(ts, columns=['data_simple.Value0'])
         self.read_multiple_direct = self.read_multiple_direct.join(
             pandas.Series(ts, name='data_simple.Value1'))
         self.read_multiple_direct.index.name = 'Datetime'
+        self.read_multiple_direct = tsutils.memory_optimize(self.read_multiple_direct)
 
         self.read_cli = b"""Datetime,Value
 2000-01-01,4.5
@@ -54,6 +57,8 @@ class TestRead(TestCase):
                                    columns=['Value', 'Value1'],
                                    index=pandas.DatetimeIndex(
                                        ['2000-01-01', '2000-01-03', '2000-01-05']))
+        self.read_tsstep_2_daily = tsutils.memory_optimize(self.read_tsstep_2_daily)
+
         self.read_tsstep_2_daily.index.name = 'Datetime'
 
         self.read_blanks = b"""Datetime,Value_mean,Unnamed: 2_mean,Unnamed: 3_mean,Unnamed: 4_mean,Unnamed: 5_mean,Unnamed: 6_mean,Unnamed: 7_mean,Unnamed: 8_mean,Unnamed: 9_mean

@@ -15,7 +15,7 @@ import subprocess
 import pandas
 
 from tstoolbox import tstoolbox
-import tstoolbox.tsutils as tsutils
+from tstoolbox import tsutils
 
 from . import capture
 
@@ -31,6 +31,7 @@ class TestPick(TestCase):
                 columns=['Value1'])
         self.pick_multiple_direct = self.pick_multiple_direct.join(
             pandas.DataFrame(ts1, columns=['Value']))
+        self.pick_multiple_direct = tsutils.memory_optimize(self.pick_multiple_direct)
 
         self.pick_cli = capture.capture(tsutils._printiso, self.pick_multiple_direct)
 

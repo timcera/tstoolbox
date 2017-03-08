@@ -17,6 +17,7 @@ import subprocess
 import pandas as pd
 
 from tstoolbox import tstoolbox
+from tstoolbox import tsutils
 
 
 class TestConvertTZ(TestCase):
@@ -24,6 +25,7 @@ class TestConvertTZ(TestCase):
         self.read_direct = pd.read_csv('tests/data_sunspot_EST.csv',
                                        index_col=0,
                                        parse_dates=[0]).tz_localize('UTC').tz_convert('EST')
+        self.read_direct = tsutils.memory_optimize(self.read_direct)
 
     def test_converttz_from_UTC(self):
         ''' Test

@@ -14,6 +14,7 @@ import shlex
 import subprocess
 
 from tstoolbox import tstoolbox
+from tstoolbox import tsutils
 
 
 class TestAddTrend(TestCase):
@@ -71,10 +72,11 @@ class TestAddTrend(TestCase):
         self.add_trend_direct = tstoolbox.date_slice(
             input_ts=self.add_trend_cli)
         self.add_trend_direct.index.name = 'Datetime'
+        self.add_trend_direct = tsutils.memory_optimize(self.add_trend_direct)
 
     def test_add_trend_direct(self):
         ''' Add trend using API '''
-        out = tstoolbox.add_trend(-1, 1, input_ts='tests/data_flat.csv')
+        out = tstoolbox.add_trend(-1.0, 1.0, input_ts='tests/data_flat.csv')
         assert_frame_equal(out, self.add_trend_direct)
 
     def test_add_trend_cli(self):

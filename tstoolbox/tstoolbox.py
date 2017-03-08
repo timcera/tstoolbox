@@ -66,11 +66,9 @@ def createts(
         index.
     """
     if input_ts is not None:
-        columns = None
         tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                                   start_date=start_date,
-                                  end_date=end_date,
-                                  pick=columns)
+                                  end_date=end_date)
         tsd = pd.DataFrame(index=tsd.index)
     elif start_date is None or end_date is None or freq is None:
         raise ValueError("""
@@ -682,7 +680,7 @@ def equation(
     if tsearch and nsearch:
         y = pd.DataFrame(pd.Series(index=x.index),
                          columns=['_'],
-                         dtype='float32')
+                         dtype='float64')
         for t in range(len(x)):
             y.iloc[t, 0] = returnval(t, x, testeval, nequation)
     elif tsearch:
@@ -692,10 +690,13 @@ def equation(
     elif nsearch:
         y = pd.DataFrame(pd.Series(index=x.index),
                          columns=['_'],
-                         dtype='float32')
+                         dtype='float64')
         y.iloc[:, 0] = eval(nequation)
     else:
         y = eval(equation_str)
+
+    y = tsutils.memory_optimize(y)
+
     return tsutils.print_input(print_input,
                                x,
                                y,
@@ -1646,14 +1647,21 @@ def add_trend(
                               end_date=end_date,
                               pick=columns,
                               dropna=dropna)
-    ntsd = tsd.copy().astype('f')
+    # Need it to be float since will be using pd.np.nan
+    ntsd = tsd.copy().astype('float64')
+
     ntsd.ix[:, :] = pd.np.nan
     ntsd.ix[0, :] = float(start_offset)
     ntsd.ix[-1, :] = float(end_offset)
     ntsd = ntsd.interpolate(method='values')
+
     ntsd = ntsd + tsd
-    return tsutils.print_input(
-        print_input, tsd, ntsd, '_trend')
+
+    ntsd = tsutils.memory_optimize(ntsd)
+    return tsutils.print_input(print_input,
+                               tsd,
+                               ntsd,
+                               '_trend')
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
@@ -3020,6 +3028,7 @@ def normalization(
 *
 """.format(mode))
 
+    tsd = tsutils.memory_optimize(tsd)
     return tsutils.print_input(print_input,
                                otsd,
                                tsd,

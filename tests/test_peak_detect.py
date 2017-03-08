@@ -15,6 +15,7 @@ import subprocess
 import pandas as pd
 
 from tstoolbox import tstoolbox
+from tstoolbox import tsutils
 
 
 output_peak_detection = b'''Datetime,0,0_peak,0_valley
@@ -77,6 +78,7 @@ class TestPeakDetect(TestCase):
         self.ats = pd.np.arange(0, 360, 15)
         self.ats = pd.np.sin(2*pd.np.pi*self.ats/360)
         self.ats = pd.DataFrame(self.ats, index=dindex)
+        self.ats = tsutils.memory_optimize(self.ats)
 
         self.compare = self.ats.copy()
         self.compare = self.compare.join(
@@ -96,6 +98,7 @@ class TestPeakDetect(TestCase):
         self.compare.loc[self.compare[0] == 1, '0_peak'] = 1
         self.compare['0_valley'] = pd.np.nan
         self.compare.loc[self.compare[0] == -1, '0_valley'] = -1
+        self.compare = tsutils.memory_optimize(self.compare)
 
     def test_peak_rel_direct(self):
         ''' Test peak detection API using the default method.

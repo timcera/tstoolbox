@@ -18,7 +18,7 @@ from . import capture
 import pandas as pd
 
 from tstoolbox import tstoolbox
-import tstoolbox.tsutils as tsutils
+from tstoolbox import tsutils
 
 
 class TestEquation(TestCase):
@@ -27,8 +27,9 @@ class TestEquation(TestCase):
         ts1 = pd.Series([4.5, 4.6], index=dindex)
         ts2 = pd.Series([20.0, 20.4], index=dindex)
         self.equation = pd.DataFrame({'Value': ts1, 'Value_equation': ts2},
-                index=dindex, dtype='float32')
+                index=dindex, dtype='float64')
         self.equation.index.name = 'Datetime'
+        self.equation = tsutils.memory_optimize(self.equation)
 
         self.equation_cli = capture.capture(tsutils._printiso, self.equation)
 
@@ -42,19 +43,24 @@ class TestEquation(TestCase):
                -2.6934178416,
                -4.60800663972]
         self.equation_multiple_cols_01 = pd.DataFrame({'Value':ts1,
-            'Value1':ts2, '__equation':ts3}, index=dindex, dtype='float32')
+            'Value1':ts2, '__equation':ts3}, index=dindex,
+                                                      dtype='float64')
         self.equation_multiple_cols_01.index.name = 'Datetime'
+        self.equation_multiple_cols_01 = tsutils.memory_optimize(self.equation_multiple_cols_01)
 
         self.equation_result = pd.DataFrame({'__equation':pd.np.array(ts2)*10},
-            index=dindex, dtype='float32')
+            index=dindex, dtype='float64')
+        self.equation_result = tsutils.memory_optimize(self.equation_result)
 
         self.equation_multiple_cols_01_cli = capture.capture(tsutils._printiso,
             self.equation_multiple_cols_01)
 
         ts3 = [50.1, 95.1, 38.9, 27.7, 11.7, 8.7]
         self.equation_multiple_cols_02 = pd.DataFrame({'Value':ts1,
-            'Value1':ts2, '__equation':ts3}, index=dindex, dtype='float32')
+            'Value1':ts2, '__equation':ts3}, index=dindex,
+                                                      dtype='float64')
         self.equation_multiple_cols_02.index.name = 'Datetime'
+        self.equation_multiple_cols_02 = tsutils.memory_optimize(self.equation_multiple_cols_02)
 
         self.equation_multiple_cols_02_cli = capture.capture(tsutils._printiso,
             self.equation_multiple_cols_02)
@@ -63,20 +69,23 @@ class TestEquation(TestCase):
         ts3[0] = pd.np.nan
         ts3[-1] = pd.np.nan
         self.equation_multiple_cols_03 = pd.DataFrame({'Value':ts1,
-            'Value1':ts2, '__equation':ts3}, index=dindex, dtype='float32')
+            'Value1':ts2, '__equation':ts3}, index=dindex,
+                                                      dtype='float64')
         self.equation_multiple_cols_03.index.name = 'Datetime'
+        self.equation_multiple_cols_03 = tsutils.memory_optimize(self.equation_multiple_cols_03)
 
         self.equation_multiple_cols_03_cli = capture.capture(tsutils._printiso,
                 self.equation_multiple_cols_03, float_format='%.2f')
 
         dindex = pd.date_range('2011-01-01T00:00:00', periods=48, freq='H')
-        ts1 = [2.0]*48
+        ts1 = [2]*48
         ts2 = [5.2]*48
         ts2[0] = pd.np.nan
         ts2[-1] = pd.np.nan
         self.equation_multiple_cols_04 = pd.DataFrame({'Value': ts1,
-            'Value_equation': ts2}, index=dindex, dtype='float32')
+            'Value_equation': ts2}, index=dindex)
         self.equation_multiple_cols_04.index.name = 'Datetime'
+        self.equation_multiple_cols_04 = tsutils.memory_optimize(self.equation_multiple_cols_04)
 
         self.equation_multiple_cols_04_cli = capture.capture(tsutils._printiso,
             self.equation_multiple_cols_04)
