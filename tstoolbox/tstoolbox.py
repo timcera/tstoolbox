@@ -858,15 +858,9 @@ def accumulate(
                               end_date=end_date,
                               pick=columns,
                               dropna=dropna)
-    if statistic == 'sum':
-        ntsd = tsd.cumsum()
-    elif statistic == 'max':
-        ntsd = tsd.cummax()
-    elif statistic == 'min':
-        ntsd = tsd.cummin()
-    elif statistic == 'prod':
-        ntsd = tsd.cumprod()
-    else:
+    try:
+        exec('ntsd = tsd.cum{0}()'.format(statistic))
+    except AttributeError:
         raise ValueError("""
 *
 *   Statistic {0} is not implemented.
@@ -909,9 +903,9 @@ def rolling_window(
         calculation of the statistic. If `span` is equal to 0 will give
         an expanding rolling window.  Defaults to 2.
     :param str statistic:  One of 'mean', 'corr', 'count', 'cov',
-        'kurtosis', 'median', 'skew', 'stdev', 'sum', 'variance',
-        'expw_mean', 'expw_stdev', 'expw_variance' 'expw_corr',
-        'expw_cov' used to calculate the statistic, defaults to 'mean'.
+        'kurt', 'median', 'skew', 'std', 'sum', 'var',
+        'ewma', 'ewmstd', 'ewmvar' 'ewmcorr',
+        'ewmcov' used to calculate the statistic, defaults to 'mean'.
     :param str wintype:  The 'mean' and 'sum' `statistic` calculation
         can also be weighted according to the `wintype` windows.  Some
         of the following windows require additional keywords identified
@@ -1076,156 +1070,25 @@ def rolling_window(
             'general_gaussian',
             'slepian',
             ]
-        if wintype in window_list and statistic in ['mean', 'sum']:
-            meantest = statistic == 'mean'
-            newts = pd.stats.moments.rolling_window(
-                tsd, span, wintype, center=center, mean=meantest, freq=freq)
-        elif statistic == 'mean':
-            if span == 0:
-                newts = pd.stats.moments.expanding_mean(tsd,
-                                                        center=center,
-                                                        freq=freq)
+        try:
+            if wintype in window_list and statistic in ['mean', 'sum']:
+                meantest = statistic == 'mean'
+                newts = pd.stats.moments.rolling_window(
+                    tsd, span, wintype, center=center, mean=meantest, freq=freq)
+            elif statistic[:3] == "ewm":
+                exec('newts = '
+                     'pd.stats.moments.{0}'.format(statistic)
+                     '(tsd, span=span, center=center, freq=freq)')
             else:
-                newts = pd.stats.moments.rolling_mean(tsd,
-                                                      span,
-                                                      center=center,
-                                                      freq=freq)
-        elif statistic == 'max':
-            if span == 0:
-                newts = pd.stats.moments.expanding_max(tsd,
-                                                       center=center,
-                                                       freq=freq)
-            else:
-                newts = pd.stats.moments.rolling_max(tsd,
-                                                     span,
-                                                     center=center,
-                                                     freq=freq)
-        elif statistic == 'min':
-            if span == 0:
-                newts = pd.stats.moments.expanding_min(tsd,
-                                                       center=center,
-                                                       freq=freq)
-            else:
-                newts = pd.stats.moments.rolling_min(tsd,
-                                                     span,
-                                                     center=center,
-                                                     freq=freq)
-        elif statistic == 'corr':
-            if span == 0:
-                newts = pd.stats.moments.expanding_corr(tsd,
-                                                        center=center,
-                                                        freq=freq)
-            else:
-                newts = pd.stats.moments.rolling_corr(tsd,
-                                                      span,
-                                                      center=center,
-                                                      freq=freq)
-        elif statistic == 'cov':
-            if span == 0:
-                newts = pd.stats.moments.expanding_cov(tsd,
-                                                       center=center,
-                                                       freq=freq)
-            else:
-                newts = pd.stats.moments.rolling_cov(tsd,
-                                                     span,
-                                                     center=center,
-                                                     freq=freq)
-        elif statistic == 'count':
-            if span == 0:
-                newts = pd.stats.moments.expanding_count(tsd,
-                                                         center=center,
-                                                         freq=freq)
-            else:
-                newts = pd.stats.moments.rolling_count(tsd,
-                                                       span,
-                                                       center=center,
-                                                       freq=freq)
-        elif statistic == 'kurtosis':
-            if span == 0:
-                newts = pd.stats.moments.expanding_kurt(tsd,
-                                                        center=center,
-                                                        freq=freq)
-            else:
-                newts = pd.stats.moments.rolling_kurt(tsd,
-                                                      span,
-                                                      center=center,
-                                                      freq=freq)
-        elif statistic == 'median':
-            if span == 0:
-                newts = pd.stats.moments.expanding_median(tsd,
-                                                          center=center,
-                                                          freq=freq)
-            else:
-                newts = pd.stats.moments.rolling_median(tsd,
-                                                        span,
-                                                        center=center,
-                                                        freq=freq)
-        elif statistic == 'skew':
-            if span == 0:
-                newts = pd.stats.moments.expanding_skew(tsd,
-                                                        center=center,
-                                                        freq=freq)
-            else:
-                newts = pd.stats.moments.rolling_skew(tsd,
-                                                      span,
-                                                      center=center,
-                                                      freq=freq)
-        elif statistic == 'stdev':
-            if span == 0:
-                newts = pd.stats.moments.expanding_std(tsd,
-                                                       center=center,
-                                                       freq=freq)
-            else:
-                newts = pd.stats.moments.rolling_std(tsd,
-                                                     span,
-                                                     center=center,
-                                                     freq=freq)
-        elif statistic == 'sum':
-            if span == 0:
-                newts = pd.stats.moments.expanding_sum(tsd,
-                                                       center=center,
-                                                       freq=freq)
-            else:
-                newts = pd.stats.moments.rolling_sum(tsd,
-                                                     span,
-                                                     center=center,
-                                                     freq=freq)
-        elif statistic == 'variance':
-            if span == 0:
-                newts = pd.stats.moments.expanding_var(tsd,
-                                                       center=center,
-                                                       freq=freq)
-            else:
-                newts = pd.stats.moments.rolling_var(tsd,
-                                                     span,
-                                                     center=center,
-                                                     freq=freq)
-        elif statistic == 'expw_mean':
-            newts = pd.stats.moments.ewma(tsd,
-                                          span=span,
-                                          center=center,
-                                          freq=freq)
-        elif statistic == 'expw_stdev':
-            newts = pd.stats.moments.ewmstd(tsd,
-                                            span=span,
-                                            center=center,
-                                            freq=freq)
-        elif statistic == 'expw_variance':
-            newts = pd.stats.moments.ewmvar(tsd,
-                                            span=span,
-                                            center=center,
-                                            freq=freq)
-        elif statistic == 'expw_corr':
-            newts = pd.stats.moments.ewmcorr(tsd,
-                                             span=span,
-                                             center=center,
-                                             freq=freq)
-        elif statistic == 'expw_cov':
-            newts = pd.stats.moments.ewmcov(tsd,
-                                            span=span,
-                                            center=center,
-                                            freq=freq)
-        else:
+                if span == 0:
+                    exec('newts = '
+                         'pd.stats.moments.expanding_{0}'.format(statistic)
+                         '(tsd, center=center, freq=freq)')
+                else:
+                    exec('newts = '
+                         'pd.stats.moments.rolling_{0}'.format(statistic)
+                         '(tsd, span, center=center, freq=freq)')
+        except AttributeError:
             raise ValueError("""
 *
 *   Statistic '{0}' is not implemented.
