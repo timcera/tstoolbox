@@ -1077,17 +1077,20 @@ def rolling_window(
                     tsd, span, wintype, center=center, mean=meantest, freq=freq)
             elif statistic[:3] == "ewm":
                 exec('newts = '
-                     'pd.stats.moments.{0}'.format(statistic)
-                     '(tsd, span=span, center=center, freq=freq)')
+                     'pd.stats.moments.{0}'
+                     '(tsd, span=span, center=center, freq=freq)'
+                     ''.format(statistic))
             else:
                 if span == 0:
                     exec('newts = '
-                         'pd.stats.moments.expanding_{0}'.format(statistic)
-                         '(tsd, center=center, freq=freq)')
+                         'pd.stats.moments.expanding_{0}'
+                         '(tsd, center=center, freq=freq)'
+                         ''.format(statistic))
                 else:
                     exec('newts = '
-                         'pd.stats.moments.rolling_{0}'.format(statistic)
-                         '(tsd, span, center=center, freq=freq)')
+                         'pd.stats.moments.rolling_{0}'
+                         '(tsd, span, center=center, freq=freq)'
+                         ''.format(statistic))
         except AttributeError:
             raise ValueError("""
 *
