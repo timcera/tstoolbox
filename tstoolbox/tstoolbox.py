@@ -859,7 +859,7 @@ def accumulate(
                               pick=columns,
                               dropna=dropna)
     try:
-        exec('ntsd = tsd.cum{0}()'.format(statistic))
+        ntsd = eval('tsd.cum{0}()'.format(statistic))
     except AttributeError:
         raise ValueError("""
 *
@@ -1076,21 +1076,18 @@ def rolling_window(
                 newts = pd.stats.moments.rolling_window(
                     tsd, span, wintype, center=center, mean=meantest, freq=freq)
             elif statistic[:3] == "ewm":
-                exec('newts = '
-                     'pd.stats.moments.{0}'
-                     '(tsd, span=span, center=center, freq=freq)'
-                     ''.format(statistic))
+                newts = eval('pd.stats.moments.{0}'
+                             '(tsd, span=span, center=center, freq=freq)'
+                             ''.format(statistic))
             else:
                 if span == 0:
-                    exec('newts = '
-                         'pd.stats.moments.expanding_{0}'
-                         '(tsd, center=center, freq=freq)'
-                         ''.format(statistic))
+                    newts = eval('pd.stats.moments.expanding_{0}'
+                                 '(tsd, center=center, freq=freq)'
+                                 ''.format(statistic))
                 else:
-                    exec('newts = '
-                         'pd.stats.moments.rolling_{0}'
-                         '(tsd, span, center=center, freq=freq)'
-                         ''.format(statistic))
+                    newts = eval('pd.stats.moments.rolling_{0}'
+                                 '(tsd, span, center=center, freq=freq)'
+                                 ''.format(statistic))
         except AttributeError:
             raise ValueError("""
 *
