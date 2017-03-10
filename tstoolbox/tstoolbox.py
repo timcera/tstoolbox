@@ -902,10 +902,11 @@ def rolling_window(
     :param span:  The number of previous intervals to include in the
         calculation of the statistic. If `span` is equal to 0 will give
         an expanding rolling window.  Defaults to 2.
-    :param str statistic:  One of 'mean', 'corr', 'count', 'cov',
-        'kurt', 'median', 'skew', 'std', 'sum', 'var',
-        'ewma', 'ewmstd', 'ewmvar' 'ewmcorr',
-        'ewmcov' used to calculate the statistic, defaults to 'mean'.
+    :param str statistic:  For rolling window (span>0) and expanding
+        window (span==0), one of 'count', 'sum', 'mean', 'median',
+        'min', 'max', 'std', 'var', 'skew', 'kurt', 'quantile'.  For
+        exponentially weighted windows have 'ewma' for mean average,
+        'ewvar' for variance, and 'ewmstd' for standard deviation
     :param str wintype:  The 'mean' and 'sum' `statistic` calculation
         can also be weighted according to the `wintype` windows.  Some
         of the following windows require additional keywords identified
@@ -1463,6 +1464,7 @@ def clip(
                 n_min = pd.np.iinfo(tsd[col].dtype).min
         else:
             n_min = float(a_min)
+
         if a_max is None:
             try:
                 n_max = pd.np.finfo(tsd[col].dtype).max
@@ -1470,6 +1472,7 @@ def clip(
                 n_max = pd.np.iinfo(tsd[col].dtype).max
         else:
             n_max = float(a_max)
+
     return tsutils.print_input(
         print_input, tsd, tsd.clip(n_min, n_max), '_clip')
 
