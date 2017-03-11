@@ -9,6 +9,10 @@ import sys
 import os.path
 import warnings
 
+# The numpy import is needed like this to be able to include numpy
+# functions in the 'equation' subcommand.
+from numpy import *
+
 import pandas as pd
 
 import mando
@@ -652,10 +656,6 @@ def equation(equation_str,
         columns in the output table.  Default is 'False'.
     :param str float_format: Float number format.
     """
-    # The numpy import is needed like this to be able to include numpy
-    # functions in the 'equation' subcommand.
-    from numpy import *
-
     x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                             start_date=start_date,
                             end_date=end_date,
