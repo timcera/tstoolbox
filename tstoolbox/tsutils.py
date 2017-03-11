@@ -522,6 +522,7 @@ def memory_optimize(tsd):
 def read_iso_ts(indat,
                 parse_dates=True,
                 extended_columns=False,
+                dropna=None,
                 force_freq=None):
     """Read the format printed by 'print_iso' and maybe other formats."""
     from pandas.compat import StringIO
@@ -624,6 +625,10 @@ def read_iso_ts(indat,
         if result.index.name != 'UniqueID':
             result.reset_index(level=0, inplace=True, drop=True)
         result.index.name = 'UniqueID'
+
+    if dropna in ['any', 'all']:
+        result.dropna(how=dropna, inplace=True)
+
     return result
 
 
