@@ -8,13 +8,11 @@ from __future__ import absolute_import
 import sys
 import os.path
 import warnings
-from mando.rst_text_formatter import RSTHelpFormatter
 
 import pandas as pd
-# The numpy import is needed like this to be able to include numpy functions in
-# the 'equation' subcommand.
-from numpy import *
+
 import mando
+from mando.rst_text_formatter import RSTHelpFormatter
 
 from . import tsutils
 from . import fill_functions
@@ -47,8 +45,7 @@ def about():
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def createts(
-             input_ts=None,
+def createts(input_ts=None,
              start_date=None,
              end_date=None,
              freq=None):
@@ -88,8 +85,7 @@ def createts(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def filter(
-           filter_type,
+def filter(filter_type,
            input_ts='-',
            columns=None,
            start_date=None,
@@ -155,11 +151,14 @@ def filter(
     for col in tsd.columns:
         # fft_lowpass, fft_highpass
         if filter_type == 'fft_lowpass':
-            tsd[col].values[:] = filters._transform(
-                tsd[col].values, cutoff_period, window_len, lopass=True)
+            tsd[col].values[:] = filters._transform(tsd[col].values,
+                                                    cutoff_period,
+                                                    window_len,
+                                                    lopass=True)
         elif filter_type == 'fft_highpass':
-            tsd[col].values[:] = filters._transform(
-                tsd[col].values, cutoff_period, window_len)
+            tsd[col].values[:] = filters._transform(tsd[col].values,
+                                                    cutoff_period,
+                                                    window_len)
         elif filter_type in ['flat',
                              'hanning',
                              'hamming',
@@ -185,8 +184,7 @@ def filter(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def read(
-         filenames,
+def read(filenames,
          columns=None,
          start_date=None,
          end_date=None,
@@ -217,16 +215,12 @@ def read(
     :param str float_format: Float number format.
     """
     filenames = filenames.split(',')
-    result = pd.concat([tsutils.common_kwds(tsutils.read_iso_ts(
-        i,
-        extended_columns=True),
-                                            start_date=start_date,
-                                            end_date=end_date,
-                                            pick=columns,
-                                            dropna=dropna,
-                                            ) for i in filenames],
-                       join=how,
-                       axis=1)
+    result = pd.concat([tsutils.common_kwds(
+        tsutils.read_iso_ts(i, extended_columns=True),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        dropna=dropna) for i in filenames], join=how, axis=1)
 
     colnames = ['.'.join(i.split('.')[1:]) for i in result.columns]
     if len(colnames) == len(set(colnames)):
@@ -240,8 +234,7 @@ def read(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def date_slice(
-               input_ts='-',
+def date_slice(input_ts='-',
                columns=None,
                start_date=None,
                end_date=None,
@@ -274,8 +267,7 @@ def date_slice(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def describe(
-             input_ts='-',
+def describe(input_ts='-',
              columns=None,
              start_date=None,
              end_date=None,
@@ -316,8 +308,7 @@ def describe(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def peak_detection(
-                   input_ts='-',
+def peak_detection(input_ts='-',
                    columns=None,
                    start_date=None,
                    end_date=None,
@@ -443,20 +434,20 @@ def peak_detection(
             tsd.rename(columns=lambda x: str(x) + '_valley', copy=True),
             how='outer')
 
-    for c in tmptsd.columns:
+    for cols in tmptsd.columns:
         if method in ['fft', 'parabola', 'sine']:
             maxpeak, minpeak = func(
-                tmptsd[c].values, range(len(tmptsd[c])), **kwds)
+                tmptsd[cols].values, range(len(tmptsd[cols])), **kwds)
         else:
-            maxpeak, minpeak = func(tmptsd[c].values, **kwds)
-        if c[-5:] == '_peak':
+            maxpeak, minpeak = func(tmptsd[cols].values, **kwds)
+        if cols[-5:] == '_peak':
             datavals = maxpeak
-        if c[-7:] == '_valley':
+        if cols[-7:] == '_valley':
             datavals = minpeak
         maxx, _ = list(zip(*datavals))
-        hold = tmptsd[c][pd.np.array(maxx).astype('i')]
-        tmptsd[c][:] = pd.np.nan
-        tmptsd[c][pd.np.array(maxx).astype('i')] = hold
+        hold = tmptsd[cols][pd.np.array(maxx).astype('i')]
+        tmptsd[cols][:] = pd.np.nan
+        tmptsd[cols][pd.np.array(maxx).astype('i')] = hold
 
     tmptsd.index.name = 'Datetime'
     tsd.index.name = 'Datetime'
@@ -465,8 +456,7 @@ def peak_detection(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def convert(
-            input_ts='-',
+def convert(input_ts='-',
             columns=None,
             start_date=None,
             end_date=None,
@@ -580,8 +570,7 @@ def _parse_equation(equation_str):
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def equation(
-             equation_str,
+def equation(equation_str,
              input_ts='-',
              columns=None,
              start_date=None,
@@ -663,6 +652,10 @@ def equation(
         columns in the output table.  Default is 'False'.
     :param str float_format: Float number format.
     """
+    # The numpy import is needed like this to be able to include numpy
+    # functions in the 'equation' subcommand.
+    from numpy import *
+
     x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                             start_date=start_date,
                             end_date=end_date,
@@ -705,8 +698,7 @@ def equation(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def pick(
-         columns,
+def pick(columns,
          input_ts='-',
          start_date=None,
          end_date=None,
@@ -740,8 +732,7 @@ def pick(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def stdtozrxp(
-              input_ts='-',
+def stdtozrxp(input_ts='-',
               columns=None,
               start_date=None,
               end_date=None,
@@ -787,8 +778,7 @@ def stdtozrxp(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def tstopickle(
-               filename,
+def tstopickle(filename,
                input_ts='-',
                columns=None,
                start_date=None,
@@ -820,12 +810,11 @@ def tstopickle(
                               end_date=end_date,
                               pick=columns,
                               dropna=dropna)
-    pd.core.common.save(tsd, filename)
+    tsd.to_pickle(filename)
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def accumulate(
-               input_ts='-',
+def accumulate(input_ts='-',
                columns=None,
                start_date=None,
                end_date=None,
@@ -870,8 +859,7 @@ def accumulate(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def rolling_window(
-                   input_ts='-',
+def rolling_window(input_ts='-',
                    columns=None,
                    start_date=None,
                    end_date=None,
@@ -1074,8 +1062,12 @@ def rolling_window(
         try:
             if wintype in window_list and statistic in ['mean', 'sum']:
                 meantest = statistic == 'mean'
-                newts = pd.stats.moments.rolling_window(
-                    tsd, span, wintype, center=center, mean=meantest, freq=freq)
+                newts = pd.stats.moments.rolling_window(tsd,
+                                                        span,
+                                                        wintype,
+                                                        center=center,
+                                                        mean=meantest,
+                                                        freq=freq)
             elif statistic[:3] == "ewm":
                 newts = eval('pd.stats.moments.{0}'
                              '(tsd, span=span, center=center, freq=freq)'
@@ -1133,8 +1125,7 @@ def rolling_window(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def aggregate(
-              input_ts='-',
+def aggregate(input_ts='-',
               columns=None,
               start_date=None,
               end_date=None,
@@ -1297,8 +1288,7 @@ def aggregate(
     aggd = {'hourly': 'H',
             'daily': 'D',
             'monthly': 'M',
-            'yearly': 'A'
-            }
+            'yearly': 'A'}
     agg_interval = aggd.get(agg_interval, agg_interval)
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
@@ -1347,8 +1337,7 @@ def aggregate(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def replace(
-            from_values,
+def replace(from_values,
             to_values,
             input_ts='-',
             columns=None,
@@ -1419,8 +1408,7 @@ def replace(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def clip(
-         input_ts='-',
+def clip(input_ts='-',
          start_date=None,
          end_date=None,
          columns=None,
@@ -1478,8 +1466,7 @@ def clip(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def add_trend(
-              start_offset,
+def add_trend(start_offset,
               end_offset,
               input_ts='-',
               columns=None,
@@ -1531,8 +1518,7 @@ def add_trend(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def remove_trend(
-                 input_ts='-',
+def remove_trend(input_ts='-',
                  columns=None,
                  start_date=None,
                  end_date=None,
@@ -1574,12 +1560,10 @@ def remove_trend(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def calculate_fdc(
-                  input_ts='-',
+def calculate_fdc(input_ts='-',
                   columns=None,
                   start_date=None,
                   end_date=None,
-                  dropna='no',
                   percent_point_function=None,
                   plotting_position='weibull',
                   sort_order='ascending'):
@@ -1597,10 +1581,6 @@ def calculate_fdc(
         ISOdatetime format, or 'None' for beginning.
     :param str end_date:  The end_date of the series in
         ISOdatetime format, or 'None' for end.
-    :param str dropna:  Set `dropna` to 'any' to have records dropped
-        that have NA value in any column, or 'all' to have records
-        dropped that have NA in all columns.  Set to 'no' to not drop
-        any records.  The default is 'no'.
     :param str percent_point_function:  The distribution used to shift
         the plotting position values.  Choose from 'norm', 'lognorm',
         'weibull', and None.  Default is None.
@@ -1659,8 +1639,7 @@ def calculate_fdc(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def stack(
-          input_ts='-',
+def stack(input_ts='-',
           columns=None,
           start_date=None,
           end_date=None,
@@ -1719,8 +1698,7 @@ def stack(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def unstack(
-            column_names,
+def unstack(column_names,
             input_ts='-',
             columns=None,
             start_date=None,
@@ -1904,8 +1882,7 @@ def _set_plotting_position(n, plotting_position='weibull'):
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def plot(
-         input_ts='-',
+def plot(input_ts='-',
          columns=None,
          start_date=None,
          end_date=None,
@@ -2238,10 +2215,7 @@ def plot(
     """
     # Need to work around some old option defaults with the implementation of
     # mando
-    if legend == '' or legend == 'True' or legend is None:
-        legend = True
-    else:
-        legend = False
+    legend = bool(legend == '' or legend == 'True' or legend is None)
 
     import matplotlib
     matplotlib.use('Agg')
@@ -2442,13 +2416,14 @@ def plot(
         # Fell back to using raw matplotlib.
         # Boy I do not like matplotlib.
         _, ax = plt.subplots(figsize=figsize)
+
+        # Make a default set of 'style' strings if 'style' is None.
         if style is None:
+            typed = '.-'
             if type in ['xy']:
-                style = zip(colors*(len(tsd.columns)//len(colors) + 1),
-                            ['*'] * len(tsd.columns))
-            else:
-                style = zip(colors*(len(tsd.columns)//len(colors) + 1),
-                            ['.-'] * len(tsd.columns))
+                typed = '*'
+            style = zip(colors*(len(tsd.columns)//len(colors) + 1),
+                        [typed] * len(tsd.columns))
             style = [i + j for i, j in style]
 
         if type == 'double_mass':
@@ -2738,8 +2713,7 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x-y), window=10000):
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def dtw(
-        input_ts='-',
+def dtw(input_ts='-',
         columns=None,
         start_date=None,
         end_date=None,
@@ -2778,8 +2752,7 @@ def dtw(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def pca(
-        input_ts='-',
+def pca(input_ts='-',
         columns=None,
         start_date=None,
         end_date=None,
@@ -2814,8 +2787,7 @@ def pca(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def normalization(
-                  input_ts='-',
+def normalization(input_ts='-',
                   columns=None,
                   start_date=None,
                   end_date=None,
@@ -2939,8 +2911,7 @@ def converttz(fromtz,
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def pct_change(
-               input_ts='-',
+def pct_change(input_ts='-',
                columns=None,
                start_date=None,
                end_date=None,
@@ -3001,8 +2972,7 @@ def pct_change(
 
 
 @mando.command(formatter_class=RSTHelpFormatter)
-def rank(
-         input_ts='-',
+def rank(input_ts='-',
          columns=None,
          start_date=None,
          end_date=None,

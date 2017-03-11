@@ -59,7 +59,7 @@ def about(name):
     import pkg_resources
     namever = str(pkg_resources.get_distribution(name.split(".")[0]))
     print("package name = {0}\npackage version = {1}".format(
-          *namever.split()))
+        *namever.split()))
 
     print("platform architecture = {0}".format(platform.architecture()))
     print("platform machine = {0}".format(platform.machine()))
@@ -69,7 +69,7 @@ def about(name):
     print("platform python_compiler = {0}".format(platform.python_compiler()))
     print("platform python branch = {0}".format(platform.python_branch()))
     print("platform python implementation = {0}".format(
-               platform.python_implementation()))
+        platform.python_implementation()))
     print("platform python revision = {0}".format(platform.python_revision()))
     print("platform python version = {0}".format(platform.python_version()))
     print("platform release = {0}".format(platform.release()))
@@ -78,11 +78,11 @@ def about(name):
 
 
 def required_cols(input_tsd,
-                  required_cols=None):
+                  req_cols=None):
     """Collected all required columns."""
     collected_cols = []
-    if required_cols is not None:
-        for rc in required_cols:
+    if req_cols is not None:
+        for rc in req_cols:
             try:
                 rc = int(rc) - 1
             except ValueError:
@@ -101,7 +101,7 @@ def required_cols(input_tsd,
 *
 '''.format(input_tsd.columns, list(range(1, len(input_tsd.columns) + 1)), rc))
 
-    return required_cols
+    return req_cols
 
 
 def common_kwds(input_tsd,
@@ -201,7 +201,8 @@ def _pick(tsd, columns):
             jtsd = pd.DataFrame(tsd[tsd.columns[col]])
 
         newtsd = newtsd.join(jtsd,
-                             lsuffix='_{0}'.format(index), how='outer')
+                             lsuffix='_{0}'.format(index),
+                             how='outer')
     return newtsd
 
 
@@ -519,7 +520,6 @@ def memory_optimize(tsd):
 
 
 def read_iso_ts(indat,
-                dropna='no',
                 parse_dates=True,
                 extended_columns=False,
                 force_freq=None):
