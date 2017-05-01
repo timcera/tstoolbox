@@ -148,7 +148,10 @@ def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
         [[x, y, [fitted_x, fitted_y]]]
     """
     from scipy.optimize import curve_fit
-    func = lambda x, k, tau, m: k * ((x - tau) ** 2) + m
+
+    def func(x, k, tau, m):
+        return k * ((x - tau) ** 2) + m
+
     fitted_peaks = []
     for peak in raw_peaks:
         index = peak[0]
@@ -227,7 +230,7 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
     # mx and mn respectively
     mn, mx = np.Inf, -np.Inf
 
-    #Only detect peak if there is 'window' amount of points after it
+    # Only detect peak if there is 'window' amount of points after it
     for index, (x, y) in enumerate(zip(x_axis[:-window],
                                        y_axis[:-window])):
         if y > mx:
@@ -237,7 +240,7 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
             mn = y
             mnpos = x
 
-        ####look for max####
+        # ####look for max####
         if y < mx-delta and mx != np.Inf:
             # Maxima peak candidate found
             # look ahead in signal to ensure that this is a peak and not jitter
@@ -248,11 +251,11 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
                 mx = np.Inf
                 mn = np.Inf
                 if index+window >= length:
-                    #end is within window no more peaks can be found
+                    # end is within window no more peaks can be found
                     break
                 continue
 
-        ####look for min####
+        # ####look for min####
         if y > mn+delta and mn != -np.Inf:
             # Minima peak candidate found
             # look ahead in signal to ensure that this is a peak and not jitter
@@ -263,7 +266,7 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
                 mn = -np.Inf
                 mx = -np.Inf
                 if index+window >= length:
-                    #end is within window no more peaks can be found
+                    # end is within window no more peaks can be found
                     break
 
     # Remove the false hit on the first value of the y_axis
@@ -336,8 +339,13 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
         fft_data = fft(y_axis)
     else:
         fft_data = fft(y_axis[zero_indices[0]:zero_indices[last_indice]])
-    padd = lambda x, c: x[:len(x) // 2] + [0] * c + x[len(x) // 2:]
-    n = lambda x: (np.log(x) / np.log(2)).astype('i') + 1
+
+    def padd(x, c):
+        return x[:len(x) // 2] + [0] * c + x[len(x) // 2:]
+
+    def n(x):
+        return (np.log(x) / np.log(2)).astype('i') + 1
+
     # padds to 2**n amount of samples
     fft_padded = padd(list(fft_data), 2 **
                       n(len(fft_data) * pad_len) - len(fft_data))
@@ -478,11 +486,15 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
     # if cosine is used then tau could equal the x position of the peak
     # if sine were to be used then tau would be the first zero crossing
     if lock_frequency:
-        func = lambda x, A, tau: A * np.sin(
-            2 * np.pi * Hz * (x - tau) + np.pi / 2)
+        # This is strange - only difference in the two "func"
+        # definitions is the "Hz" argument
+
+        def func(x, A, tau):
+            return A * np.sin(2 * np.pi * Hz * (x - tau) + np.pi / 2)
     else:
-        func = lambda x, A, Hz, tau: A * np.sin(
-            2 * np.pi * Hz * (x - tau) + np.pi / 2)
+
+        def func(x, A, Hz, tau):
+            return A * np.sin(2 * np.pi * Hz * (x - tau) + np.pi / 2)
     # func = lambda x, A, Hz, tau: A * np.cos(2 * np.pi * Hz * (x - tau))
 
     # get peaks

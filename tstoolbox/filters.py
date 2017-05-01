@@ -2,10 +2,10 @@
 
 from __future__ import print_function
 
-#===imports======================
+# ===imports======================
 import numpy as np
 
-#===globals======================
+# ===globals======================
 modname = "filter"
 
 ########
