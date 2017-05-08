@@ -9,8 +9,9 @@ Tests for `tstoolbox` module.
 """
 import shlex
 import subprocess
-from pandas.util.testing import TestCase
-from pandas.util.testing import assert_frame_equal, assertRaisesRegexp
+from unittest import TestCase
+from pandas.util.testing import assert_frame_equal
+from nose.tools import assert_raises_regexp
 
 import pandas as pd
 
@@ -254,7 +255,7 @@ class TestFill(TestCase):
     def test_fill_value(self):
         ''' Test fill with value API.
         '''
-        with assertRaisesRegexp(ValueError,
+        with assert_raises_regexp(ValueError,
                 r"The allowable values for 'method' are"):
             out = tstoolbox.fill(method='a',
                 input_ts='tests/data_missing.csv')

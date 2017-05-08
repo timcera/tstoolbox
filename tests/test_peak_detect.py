@@ -8,7 +8,9 @@ test_peak_detect
 Tests for `tstoolbox` module.
 """
 
-from pandas.util.testing import TestCase, assert_frame_equal, assertRaisesRegexp
+from unittest import TestCase
+from pandas.util.testing import assert_frame_equal
+from nose.tools import assert_raises_regexp
 import shlex
 import subprocess
 
@@ -223,13 +225,13 @@ class TestPeakDetect(TestCase):
         self.assertEqual(out, output_peak_detection)
 
     def test_peak_type_error(self):
-        with assertRaisesRegexp(ValueError, 'The `extrema` argument must be one'):
+        with assert_raises_regexp(ValueError, 'The `extrema` argument must be one'):
             out = tstoolbox.peak_detection(method='sine',
                                            points=9,
                                            input_ts=self.ats,
                                            print_input=True,
                                            extrema='booth')
-        with assertRaisesRegexp(ValueError, 'The `method` argument must be one'):
+        with assert_raises_regexp(ValueError, 'The `method` argument must be one'):
             out = tstoolbox.peak_detection(method='sin',
                                            points=9,
                                            input_ts=self.ats,

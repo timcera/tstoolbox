@@ -10,7 +10,7 @@ Tests for `tstoolbox` module.
 
 import shlex
 import subprocess
-from pandas.util.testing import TestCase
+from unittest import TestCase
 from pandas.util.testing import assert_frame_equal
 
 from . import capture

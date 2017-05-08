@@ -8,7 +8,7 @@ test_aggregate
 Tests for `tstoolbox` module.
 """
 
-from pandas.util.testing import TestCase
+from unittest import TestCase
 from pandas.util.testing import assert_frame_equal
 import shlex
 import subprocess

@@ -10,7 +10,7 @@ Tests for `tstoolbox.read`
 read is used by many other tests.
 """
 
-from pandas.util.testing import TestCase
+from unittest import TestCase
 from pandas.util.testing import assert_frame_equal
 import shlex
 import subprocess
@@ -31,7 +31,8 @@ class TestRead(TestCase):
         self.read_direct.index.name = 'Datetime'
         self.read_direct = tsutils.memory_optimize(self.read_direct)
 
-        self.read_multiple_direct = pandas.DataFrame(ts, columns=['data_simple.Value0'])
+        self.read_multiple_direct = pandas.DataFrame(ts,
+                                                     columns=['data_simple.Value0'])
         self.read_multiple_direct = self.read_multiple_direct.join(
             pandas.Series(ts, name='data_simple.Value1'))
         self.read_multiple_direct.index.name = 'Datetime'

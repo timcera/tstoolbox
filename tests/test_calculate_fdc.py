@@ -12,8 +12,9 @@ from __future__ import print_function
 import shlex
 import subprocess
 
-from pandas.util.testing import TestCase
-from pandas.util.testing import assert_frame_equal, assert_index_equal, assertRaisesRegexp
+from unittest import TestCase
+from pandas.util.testing import assert_frame_equal, assert_index_equal
+from nose.tools import assert_raises_regexp
 import pandas as pd
 
 from tstoolbox import tstoolbox

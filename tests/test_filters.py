@@ -10,9 +10,9 @@ Tests for `tstoolbox` module.
 
 from __future__ import print_function
 
-from pandas.util.testing import TestCase
+from unittest import TestCase
 from pandas.util.testing import assert_frame_equal
-from pandas.util.testing import assertRaisesRegexp
+from nose.tools import assert_raises_regexp
 import os
 
 import shlex
@@ -99,14 +99,14 @@ class TestFilter(TestCase):
         assert_frame_equal(out, out1)
 
     def test_large_window_len(self):
-        with assertRaisesRegexp(ValueError,
+        with assert_raises_regexp(ValueError,
                 "Input vector \(length="):
             out = tstoolbox.filter('flat',
                                    input_ts='tests/data_sine.csv',
                                    window_len=1000)
 
     def test_filter_type(self):
-        with assertRaisesRegexp(ValueError,
+        with assert_raises_regexp(ValueError,
                 r"Filter type "):
             out = tstoolbox.filter('flatter',
                                    input_ts='tests/data_sine.csv')
