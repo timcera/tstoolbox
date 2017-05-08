@@ -20,6 +20,50 @@ import pandas as pd
 import numpy as np
 
 
+docstrings = {
+    'input_ts': '''input_ts : str
+        Filename with data in 'ISOdate,value' format or '-' for stdin.
+        Default is stdin.  If supplied, the result will just be the
+        input index.''',
+    'columns': '''columns
+        Columns to pick out of input.  Can use column names or column
+        numbers.  If using numbers, column number 1 is the first data
+        column.  To pick multiple columns; separate by commas with no
+        spaces. As used in 'pick' command.''',
+    'start_date': '''start_date : str
+        The start_date of the series in ISOdatetime format, or 'None'
+        for beginning.''',
+    'end_date': '''end_date : str
+        The end_date of the series in ISOdatetime format, or 'None' for
+        end.''',
+    'dropna': '''dropna : str
+        Set `dropna` to 'any' to have records dropped that have NA value
+        in any column, or 'all' to have records dropped that have NA in
+        all columns.  Set to 'no' to not drop any records.  The default
+        is 'no'.''',
+    'print_input': '''print_input
+        If set to 'True' will include the input columns in the output
+        table.  Default is 'False'.''',
+    'round_index': '''round_index
+        Round the index to the nearest time point.  Can significantly
+        improve the performance since can cut down on memory and
+        processing requirements, however be cautious about rounding to
+        a very course interval from a small one.  This could lead to
+        duplicate values in the index.''',
+    'float_format': '''float_format
+        Format for float numbers.'''}
+
+
+def doc(fdict, **kwargs):
+    """Return a decorator that formats a docstring."""
+    def f(fn):
+        fn.__doc__ = fn.__doc__.format(**fdict)
+        for attr in kwargs:
+            setattr(fn, attr, kwargs[attr])
+        return fn
+    return f
+
+
 def parsedate(dstr,
               strftime=None,
               settings=None):
@@ -104,13 +148,20 @@ def required_cols(input_tsd,
     return req_cols
 
 
+def _round_index(ntsd,
+                 round_index=None):
+    ntsd.index = ntsd.index.round(round_index)
+    return ntsd
+
+
 def common_kwds(input_tsd,
                 start_date=None,
                 end_date=None,
                 pick=None,
                 force_freq=None,
                 groupby=None,
-                dropna='no'):
+                dropna='no',
+                round_index=None):
     """Collected all common_kwds across sub-commands single function."""
     ntsd = input_tsd
 
@@ -131,6 +182,9 @@ def common_kwds(input_tsd,
             return ntsd.groupby(lambda x: x.month)
         else:
             return ntsd.groupby(pd.TimeGrouper(groupby))
+    if round_index is not None:
+        return _round_index(ntsd,
+                            round_index=round_index)
     if dropna not in ['any', 'all', 'no']:
         raise ValueError("""
 *
@@ -526,7 +580,6 @@ def read_iso_ts(indat,
                 force_freq=None):
     """Read the format printed by 'print_iso' and maybe other formats."""
     from pandas.compat import StringIO
-    from pandas.core.common import PandasError
 
     header = 'infer'
     sep = None
@@ -549,7 +602,7 @@ def read_iso_ts(indat,
     elif isinstance(indat, (dict, tuple, list)):
         try:
             result = pd.DataFrame(indat)
-        except PandasError:
+        except:
             result = pd.DataFrame([indat])
 
     elif isinstance(indat, (str, bytes)):

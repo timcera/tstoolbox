@@ -11,7 +11,8 @@ from mando.rst_text_formatter import RSTHelpFormatter
 from . import tsutils
 
 
-@mando.command(formatter_class=RSTHelpFormatter)
+@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@tsutils.doc(tsutils.docstrings)
 def fill(method='ffill',
          interval='guess',
          print_input=False,
@@ -25,7 +26,10 @@ def fill(method='ffill',
     is sparse.  The 'interval' option can insert NaNs to create a dense
     time series.
 
-    :param method: String contained in single quotes or a number that
+    Parameters
+    ----------
+    method : str
+        String contained in single quotes or a number that
         defines the method to use for filling.
 
         +-----------+---------------------------+
@@ -63,21 +67,16 @@ def fill(method='ffill',
         +-----------+---------------------------+
 
         If a number will fill with that number.
-    :param interval: Will try to insert missing intervals.  Can give any
+    interval : str
+        Will try to insert missing intervals.  Can give any
         of the pandas offset aliases, 'guess' (to try and figure the
         interval), or None to not insert missing intervals.
-    :param -p, --print_input: If set to 'True' will include the input
-        columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value'
-        format or '-' for stdin.
-    :param -s, --start_date <str>:  The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    :param -e, --end_date <str>:  The end_date of the series in
-        ISOdatetime format, or 'None' for end.
-    :param columns:  Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 0 is the
-        first column.  To pick multiple columns; separate by commas with
-        no spaces.  As used in 'pick' command.
+    {print_input}
+    {input_ts}
+    {start_date}
+    {end_date}
+    {columns}
+
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts, dropna='all'),
                               start_date=start_date,
