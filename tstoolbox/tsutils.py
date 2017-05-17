@@ -18,18 +18,43 @@ except ImportError:
 
 import pandas as pd
 import numpy as np
+from tabulate import tabulate as tb
+from tabulate import simple_separated_format
 
 
 docstrings = {
     'input_ts': '''input_ts : str
-        Filename with data in 'ISOdate,value' format or '-' for stdin.
-        Default is stdin.  If supplied, the result will just be the
-        input index.''',
+        Command line:
+
+            --input_ts= file name or '-' for standard input (stdin).
+            Default is stdin.
+
+            If stdin:
+
+                The data must be formatted as "," separated data, with
+                a first line header for column names.
+
+            If file name:
+
+                Will try to figure out separator, but still requires
+                a first line header of column names.
+
+        As Python Library:
+
+            `input_ts=` {pandas Dataframe, pandas Series, dict, tuple,
+            list, StringIO, file name}
+
+            If result is a time series, returns a pandas DataFrame.
+
+        Most common date formats can be used, but the closer to ISO 8601
+        date/time standard the better.
+        ''',
     'columns': '''columns
-        Columns to pick out of input.  Can use column names or column
-        numbers.  If using numbers, column number 1 is the first data
-        column.  To pick multiple columns; separate by commas with no
-        spaces. As used in 'pick' command.''',
+        Columns to select out of input.  Can use column names from the
+        first line header or column numbers.  If using numbers, column
+        number 1 is the first data column.  To pick multiple columns;
+        separate by commas with no spaces. As used in `tstoolbox pick`
+        command.''',
     'start_date': '''start_date : str
         The start_date of the series in ISOdatetime format, or 'None'
         for beginning.''',
@@ -434,9 +459,9 @@ def print_input(iftrue,
                 output,
                 suffix,
                 date_format=None,
-                sep=',',
                 float_format='%g',
-                force_print_index=False):
+                tablefmt="csv",
+                showindex="never"):
     """Used when wanting to print the input time series also."""
     if suffix:
         output.rename(columns=lambda xloc: str(xloc) + suffix, inplace=True)
@@ -446,13 +471,15 @@ def print_input(iftrue,
                                    rsuffix='_2',
                                    how='outer'),
                         date_format=date_format,
-                        sep=sep,
                         float_format=float_format,
-                        force_print_index=force_print_index)
+                        tablefmt=tablefmt,
+                        showindex=showindex)
     else:
-        return printiso(output, date_format=date_format, sep=sep,
+        return printiso(output,
+                        date_format=date_format,
                         float_format=float_format,
-                        force_print_index=force_print_index)
+                        tablefmt=tablefmt,
+                        showindex=showindex)
 
 
 def _apply_across_columns(func, xtsd, **kwds):
@@ -462,36 +489,73 @@ def _apply_across_columns(func, xtsd, **kwds):
     return xtsd
 
 
-def _printiso(tsd, date_format=None, sep=',',
-              float_format='%g', force_print_index=False):
+def _printiso(tsd,
+              date_format=None,
+              sep=',',
+              float_format='%g',
+              showindex="never",
+              headers="keys",
+              tablefmt="csv"):
     """Separate so can use in tests."""
     sys.tracebacklimit = 1000
 
-    print_index = True
-    if tsd.index.is_all_dates is True:
-        if tsd.index.name is None:
-            tsd.index.name = 'Datetime'
-        # Someone made the decision about the name
-        # This is how I include time zone info by tacking on to the
-        # index.name.
-        elif 'datetime' not in tsd.index.name.lower():
-            tsd.index.name = 'Datetime'
-    else:
-        # This might be overkill, but tstoolbox is for time-series.
-        # Revisit if necessary.
-        print_index = False
+    if isinstance(tsd, (pd.DataFrame, pd.Series)):
+        if isinstance(tsd, pd.Series):
+            tsd = pd.DataFrame(tsd)
 
-    if tsd.index.name == 'UniqueID':
-        print_index = False
+        if len(tsd.columns) == 0:
+            tsd = pd.DataFrame(index=tsd.index)
 
-    if force_print_index is True:
+        # Not perfectly true, but likely will use showindex for indices
+        # that are not time stamps.
+        if showindex is True:
+            if not tsd.index.name:
+                tsd.index.name = 'UniqueID'
+        else:
+            if not tsd.index.name:
+                tsd.index.name = 'Datetime'
+
         print_index = True
+        if tsd.index.is_all_dates is True:
+            if tsd.index.name is None:
+                tsd.index.name = 'Datetime'
+            # Someone made the decision about the name
+            # This is how I include time zone info by tacking on to the
+            # index.name.
+            elif 'datetime' not in tsd.index.name.lower():
+                tsd.index.name = 'Datetime'
+        else:
+            # This might be overkill, but tstoolbox is for time-series.
+            # Revisit if necessary.
+            print_index = False
 
-    try:
-        tsd.to_csv(sys.stdout, float_format=float_format,
-                   date_format=date_format, sep=sep, index=print_index)
-    except IOError:
-        return
+        if tsd.index.name == 'UniqueID':
+            print_index = False
+
+        if showindex in ['always', 'default']:
+            print_index = True
+
+    if tablefmt in ["csv", "tsv"]:
+        sep = {"csv": ",",
+               "tsv": "\\t"}[tablefmt]
+        if isinstance(tsd, pd.DataFrame):
+            try:
+                tsd.to_csv(sys.stdout,
+                           float_format=float_format,
+                           date_format=date_format,
+                           sep=sep,
+                           index=print_index)
+                return
+            except IOError:
+                return
+        else:
+            fmt = simple_separated_format(sep)
+    else:
+        fmt = tablefmt
+    print(tb(tsd,
+             tablefmt=fmt,
+             showindex=showindex,
+             headers=headers))
 
 
 def test_cli():
@@ -513,30 +577,24 @@ def test_cli():
 
 def printiso(tsd,
              date_format=None,
-             sep=',',
              float_format='%g',
-             force_print_index=False):
+             tablefmt="csv",
+             headers="keys",
+             showindex="never"):
     """
     Default output format.
 
     Used for tstoolbox, wdmtoolbox, swmmtoolbox, and hspfbintoolbox.
-    """
-    if len(tsd.columns) == 0:
-        tsd = pd.DataFrame(index=tsd.index)
 
-    # Not perfectly true, but likely will use force_print_index for indices
-    # that are not time stamps.
-    if force_print_index is True:
-        if not tsd.index.name:
-            tsd.index.name = 'UniqueID'
-    else:
-        if not tsd.index.name:
-            tsd.index.name = 'Datetime'
+    """
 
     if test_cli():
-        _printiso(tsd, float_format=float_format,
-                  date_format=date_format, sep=sep,
-                  force_print_index=force_print_index)
+        _printiso(tsd,
+                  float_format=float_format,
+                  date_format=date_format,
+                  tablefmt=tablefmt,
+                  headers=headers,
+                  showindex=showindex)
     else:
         return tsd
 
@@ -578,7 +636,7 @@ def read_iso_ts(indat,
                 extended_columns=False,
                 dropna=None,
                 force_freq=None):
-    """Read the format printed by 'print_iso' and maybe other formats."""
+    """Read the format printed by 'printiso' and maybe other formats."""
     from pandas.compat import StringIO
 
     header = 'infer'

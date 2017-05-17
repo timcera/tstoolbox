@@ -31,7 +31,7 @@ class TestDescribe(TestCase):
         self.date_slice.index.name = 'Statistic'
         self.date_slice_cli = capture.capture(tsutils._printiso,
                                               self.date_slice,
-                                              force_print_index=True)
+                                              showindex='always')
         self.date_slice.index.name = 'UniqueID'
 
     def test_describe(self):

@@ -25,6 +25,7 @@ install_requires = [
     'rst2ansi >= 0.1.5',
     'scipy',
     'dateparser',
+    'tabulate'
 ]
 
 

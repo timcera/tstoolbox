@@ -85,7 +85,7 @@ def createts(freq=None,
         tsd = pd.DataFrame(index=pd.date_range(start=start_date,
                                                end=end_date,
                                                freq=freq))
-    return tsutils.printiso(tsd, force_print_index=True)
+    return tsutils.printiso(tsd, showindex="always")
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -299,7 +299,7 @@ def describe(input_ts='-',
 
     ntsd.index.name = 'Statistic'
     return tsutils.printiso(ntsd,
-                            force_print_index=True)
+                            showindex="always")
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -1625,7 +1625,7 @@ def calculate_fdc(input_ts='-',
         newts = newts.join(tmptsd, how='outer')
     newts.index.name = 'Plotting_position'
     newts = newts.groupby(newts.index).first()
-    return tsutils.printiso(newts, force_print_index=True)
+    return tsutils.printiso(newts, showindex="always")
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -2940,7 +2940,7 @@ def converttz(fromtz,
                               round_index=round_index,
                               dropna=dropna)
     tsd = tsd.tz_localize(fromtz).tz_convert(totz)
-    return tsutils.printiso(tsd, force_print_index=True)
+    return tsutils.printiso(tsd, showindex="always")
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
