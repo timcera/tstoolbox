@@ -76,7 +76,15 @@ docstrings = {
         a very course interval from a small one.  This could lead to
         duplicate values in the index.''',
     'float_format': '''float_format
-        Format for float numbers.'''}
+        Format for float numbers.''',
+    'tablefmt': '''tablefmt
+        The table format.  Can be one of 'cvs', 'tvs', 'plain',
+        'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki', 'latex',
+        'latex_raw' and 'latex_booktabs'.  Default is 'simple'.''',
+    'header': '''header
+        This is if you want a different header than is the default for
+        this table.  Pass a list of strings for each column in the
+        table.  The default is the string 'default'.'''}
 
 
 def doc(fdict, **kwargs):
@@ -535,9 +543,11 @@ def _printiso(tsd,
         if showindex in ['always', 'default']:
             print_index = True
 
-    if tablefmt in ["csv", "tsv"]:
+    if tablefmt in ["csv", "tsv", "csv_nos", "tsv_nos"]:
         sep = {"csv": ",",
-               "tsv": "\\t"}[tablefmt]
+               "tsv": "\\t",
+               "csv_nos": ",",
+               "tsv_nos": "\\t"}[tablefmt]
         if isinstance(tsd, pd.DataFrame):
             try:
                 tsd.to_csv(sys.stdout,
@@ -552,10 +562,16 @@ def _printiso(tsd,
             fmt = simple_separated_format(sep)
     else:
         fmt = tablefmt
-    print(tb(tsd,
-             tablefmt=fmt,
-             showindex=showindex,
-             headers=headers))
+    if tablefmt in ['csv_nos', 'tsv_nos']:
+        print(tb(tsd,
+                 tablefmt=fmt,
+                 showindex=showindex,
+                 headers=headers).replace(' ', ''))
+    else:
+        print(tb(tsd,
+                 tablefmt=fmt,
+                 showindex=showindex,
+                 headers=headers))
 
 
 def test_cli():
