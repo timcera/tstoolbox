@@ -1,6 +1,7 @@
 """Functions to filter time-series values."""
 
 from __future__ import print_function
+from __future__ import division
 
 # ===imports======================
 import numpy as np
@@ -77,7 +78,7 @@ def _transform(vector, cutoff_period, window_len, lopass=None):
     import numpy.fft as F
     result = F.rfft(vector, len(vector))
 
-    freq = F.fftfreq(len(vector))[:len(vector)/2 + 1]
+    freq = F.fftfreq(len(vector))[:len(vector)//2 + 1]
     factor = np.ones_like(freq)
 
     if lopass is True:
