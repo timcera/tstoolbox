@@ -201,34 +201,46 @@ def common_kwds(input_tsd,
     if pick is not None:
         ntsd = _pick(ntsd,
                      pick)
+
     if start_date is not None or end_date is not None:
         ntsd = _date_slice(ntsd,
                            start_date=parsedate(start_date),
                            end_date=parsedate(end_date))
+
     if force_freq is not None:
         ntsd = asbestfreq(ntsd,
                           force_freq=force_freq)
+
     if ntsd.index.is_all_dates is True:
         ntsd.index.name = 'Datetime'
+
     if groupby is not None:
         if groupby == 'months_across_years':
             return ntsd.groupby(lambda x: x.month)
         else:
             return ntsd.groupby(pd.TimeGrouper(groupby))
+
     if round_index is not None:
         return _round_index(ntsd,
                             round_index=round_index)
+
     if dropna not in ['any', 'all', 'no']:
         raise ValueError("""
 *
 *   The "dropna" option must be "any", "all" or "no", not "{0}".
 *
 """.format(dropna))
+
+    if dropna in ['any', 'all']:
+        ntsd.dropna(axis='index',
+                    how=dropna,
+                    inplace=True)
     else:
-        if dropna in ['any', 'all']:
-            ntsd.dropna(axis='index',
-                        how=dropna,
-                        inplace=True)
+        try:
+            ntsd = asbestfreq(ntsd)
+        except ValueError:
+            pass
+
     return ntsd
 
 
