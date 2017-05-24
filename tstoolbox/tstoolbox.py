@@ -2423,6 +2423,10 @@ def plot(input_ts='-',
 
     figsize = [float(i) for i in figsize.split(',')]
     plt.figure(figsize=figsize)
+
+    if not isinstance(tsd, pd.DatetimeIndex):
+        tsd.insert(0, tsd.index.name, tsd.index)
+
     if type == 'time':
         tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
@@ -2432,10 +2436,7 @@ def plot(input_ts='-',
         plt.ylabel(ytitle)
         if legend is True:
             plt.legend(loc='best')
-    else:
-        tsd.insert(0, tsd.index.name, tsd.index)
-
-    if type in ['xy',
+    elif type in ['xy',
                 'double_mass',
                 'norm_xaxis',
                 'norm_yaxis',

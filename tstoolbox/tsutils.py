@@ -764,10 +764,6 @@ def read_iso_ts(indat,
                 return asbestfreq(result, force_freq=force_freq)
             except ValueError:
                 return result
-    else:
-        if result.index.name != 'UniqueID':
-            result.reset_index(level=0, inplace=True, drop=True)
-        result.index.name = 'UniqueID'
 
     if dropna in ['any', 'all']:
         result.dropna(how=dropna, inplace=True)
