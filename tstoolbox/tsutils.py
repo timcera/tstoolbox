@@ -373,6 +373,7 @@ def asbestfreq(data, force_freq=None):
     """Test to determine best frequency to represent data.
 
     This uses several techniques.
+    0.5.  If index is not DateTimeIndex, return
     1. If force_freq is set use .asfreq.
     2. If data.index.freq is not None, just return.
     3. If data.index.inferred_freq is set use .asfreq.
@@ -381,6 +382,9 @@ def asbestfreq(data, force_freq=None):
     6. Use minimum interval to establish the fixed time periods up to weekly
     7. Gives up returning None for PANDAS offset string
     """
+    if not isinstance(data.index, pd.DatetimeIndex):
+        return data
+
     if force_freq is not None:
         return data.asfreq(force_freq)
 
