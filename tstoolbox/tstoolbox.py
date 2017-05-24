@@ -85,7 +85,8 @@ def createts(freq=None,
         tsd = pd.DataFrame(index=pd.date_range(start=start_date,
                                                end=end_date,
                                                freq=freq))
-    return tsutils.printiso(tsd, showindex="always")
+    return tsutils.printiso(tsd,
+                            showindex="always")
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -232,7 +233,8 @@ def read(filenames,
                           else i + str(index)
                           for index, i in enumerate(result.columns)]
 
-    return tsutils.printiso(result, float_format=float_format)
+    return tsutils.printiso(result,
+                            float_format=float_format)
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -1625,7 +1627,8 @@ def calculate_fdc(input_ts='-',
         newts = newts.join(tmptsd, how='outer')
     newts.index.name = 'Plotting_position'
     newts = newts.groupby(newts.index).first()
-    return tsutils.printiso(newts, showindex="always")
+    return tsutils.printiso(newts,
+                            showindex="always")
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -2429,14 +2432,17 @@ def plot(input_ts='-',
         plt.ylabel(ytitle)
         if legend is True:
             plt.legend(loc='best')
-    elif type in ['xy',
-                  'double_mass',
-                  'norm_xaxis',
-                  'norm_yaxis',
-                  'lognorm_xaxis',
-                  'lognorm_yaxis',
-                  'weibull_xaxis',
-                  'weibull_yaxis']:
+    else:
+        tsd.insert(0, tsd.index.name, tsd.index)
+
+    if type in ['xy',
+                'double_mass',
+                'norm_xaxis',
+                'norm_yaxis',
+                'lognorm_xaxis',
+                'lognorm_yaxis',
+                'weibull_xaxis',
+                'weibull_yaxis']:
         # PANDAS was not doing the right thing with xy plots
         # if you wanted lines between markers.
         # Fell back to using raw matplotlib.
@@ -2940,7 +2946,8 @@ def converttz(fromtz,
                               round_index=round_index,
                               dropna=dropna)
     tsd = tsd.tz_localize(fromtz).tz_convert(totz)
-    return tsutils.printiso(tsd, showindex="always")
+    return tsutils.printiso(tsd,
+                            showindex="always")
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
