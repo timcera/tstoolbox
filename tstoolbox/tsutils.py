@@ -154,21 +154,27 @@ def about(name):
     print("platform version = {0}".format(platform.version()))
 
 
+def broadcast_equation(equation_str,
+                       input_ts,
+                       broadcast):
+    # "broadcast" should be a dictionary that has keys for each variable
+    # in the "equation_str".
+    pass
+
 def required_cols(input_tsd,
-                  req_cols=None):
+                  req_cols):
     """Collected all required columns."""
     collected_cols = []
-    if req_cols is not None:
-        for rc in req_cols:
-            try:
-                rc = int(rc) - 1
-            except ValueError:
-                pass
+    for rc in req_cols:
+        try:
+            rc = int(rc) - 1
+        except ValueError:
+            pass
 
-            try:
-                collected_cols.append(input_tsd.ix[:, rc])
-            except:
-                raise ValueError('''
+        try:
+            collected_cols.append(input_tsd.ix[:, rc])
+        except:
+            raise ValueError('''
 *
 *   You need to specify the required column(s) using column name or
 *   column number (data columns start numbering at 1).
@@ -178,7 +184,7 @@ def required_cols(input_tsd,
 *
 '''.format(input_tsd.columns, list(range(1, len(input_tsd.columns) + 1)), rc))
 
-    return req_cols
+    return collected_cols
 
 
 def _round_index(ntsd,
