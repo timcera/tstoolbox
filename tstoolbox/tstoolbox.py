@@ -2424,7 +2424,7 @@ def plot(input_ts='-',
     figsize = [float(i) for i in figsize.split(',')]
     plt.figure(figsize=figsize)
 
-    if not isinstance(tsd, pd.DatetimeIndex):
+    if not isinstance(tsd.index, pd.DatetimeIndex):
         tsd.insert(0, tsd.index.name, tsd.index)
 
     if type == 'time':
