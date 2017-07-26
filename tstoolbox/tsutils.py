@@ -680,7 +680,7 @@ def open_local(filein):
         return gzip.open(filein, 'rb')
     if ext in ['.bz', '.bz2']:
         return bz2.BZ2File(filein, 'rb')
-    return open(filein, 'rb')
+    return open(filein, 'r')
 
 
 def memory_optimize(tsd):
