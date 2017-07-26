@@ -7,6 +7,7 @@ import os
 import sys
 import gzip
 import bz2
+from io import StringIO
 try:
     from fractions import gcd
 except ImportError:
@@ -15,6 +16,11 @@ try:
     from functools import reduce
 except ImportError:
     pass
+
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
 
 import pandas as pd
 import numpy as np
@@ -87,6 +93,15 @@ docstrings = {
         table.  The default is the string 'default'.'''}
 
 
+def b(s):
+    """Make sure all strings are correctly represented in Python 2 and
+    3.."""
+    try:
+        return s.encode("utf-8")
+    except AttributeError:
+        return s
+
+
 def doc(fdict, **kwargs):
     """Return a decorator that formats a docstring."""
     def f(fn):
@@ -154,55 +169,72 @@ def about(name):
     print("platform version = {0}".format(platform.version()))
 
 
-def broadcast_equation(equation_str,
-                       input_ts,
-                       broadcast):
-    # "broadcast" should be a dictionary that has keys for each variable
-    # in the "equation_str".
-    pass
-
-def required_cols(input_tsd,
-                  req_cols):
-    """Collected all required columns."""
-    collected_cols = []
-    for rc in req_cols:
-        try:
-            rc = int(rc) - 1
-        except ValueError:
-            pass
-
-        try:
-            collected_cols.append(input_tsd.ix[:, rc])
-        except:
-            raise ValueError('''
-*
-*   You need to specify the required column(s) using column name or
-*   column number (data columns start numbering at 1).
-*   Column names are {0}.
-*   Column numbers are {1}.
-*   You specified {2}.
-*
-'''.format(input_tsd.columns, list(range(1, len(input_tsd.columns) + 1)), rc))
-
-    return collected_cols
-
-
 def _round_index(ntsd,
                  round_index=None):
+    """ Rounds the index, typically time, to the nearest interval. """
     ntsd.index = ntsd.index.round(round_index)
     return ntsd
 
 
-def common_kwds(input_tsd,
+def common_kwds(input_tsd=None,
                 start_date=None,
                 end_date=None,
                 pick=None,
                 force_freq=None,
                 groupby=None,
                 dropna='no',
-                round_index=None):
-    """Collected all common_kwds across sub-commands single function."""
+                round_index=None,
+                required=None):
+    """Collected all common_kwds across sub-commands into single function.
+
+    Parameters
+    ----------
+    input_tsd: Dataframe
+        Input data which should be a Dataframe.
+
+    required: str, bytes, tuple of str or bytes, list
+        If str or bytes then split on "," and represents column names in
+        input_tsd.
+
+    Returns
+    -------
+    df: Dataframe
+        Dataframe altered according to options.
+    """
+
     ntsd = input_tsd
+
+    if input_tsd is None:
+        # Not a time-series
+        # therefore:
+        start_date = None
+        end_date = None
+        pick = None
+        force_freq = None
+        groupby = None
+        dropna = 'no'
+        round_index = None
+
+        ntsd = []
+        for i in input_tsd:
+            if isinstance(i, str):
+                ivarset = []
+                for j in i.split(','):
+                    if '.' in j:
+                        ivarset.append(float(j))
+                    else:
+                        ivarset.append(int(j))
+                ntsd.append(ivarset)
+
+            elif isinstance(i, (list, tuple, pd.np.ndarray)):
+                subvarset = []
+                for j in i:
+                    subvarset.append(j)
+                ntsd.append(subvarset)
+
+            else:
+                ntsd.append(i)
+        ntsd = pd.np.broadcast_arrays(*[pd.np.array(i) for i in ntsd])
 
     if pick is not None:
         ntsd = _pick(ntsd,
@@ -637,14 +669,12 @@ def printiso(tsd,
         return tsd
 
 
-def openinput(filein):
+def open_local(filein):
     """
     Open the given input file.
 
     It can decode various formats too, such as gzip and bz2.
     """
-    if filein == '-':
-        return sys.stdin
     ext = os.path.splitext(filein)[1]
     if ext in ['.gz', '.GZ']:
         return gzip.open(filein, 'rb')
@@ -669,70 +699,99 @@ def memory_optimize(tsd):
     return tsd
 
 
+def is_valid_url(url, qualifying=None):
+    min_attributes = ('scheme', 'netloc')
+    qualifying = min_attributes if qualifying is None else qualifying
+    token = urlparse(url)
+    return all([getattr(token, qualifying_attr)
+                for qualifying_attr in qualifying])
+
+
+def _convert_to_numbers(numstr):
+    ret = []
+    for each in numstr:
+        try:
+            ret.append(int(each))
+        except ValueError:
+            ret.append(float(each))
+    return ret
+
+
 def read_iso_ts(indat,
                 parse_dates=True,
                 extended_columns=False,
                 dropna=None,
                 force_freq=None):
-    """Read the format printed by 'printiso' and maybe other formats."""
-    from pandas.compat import StringIO
+    """ Read the format printed by 'printiso' and maybe other formats.
 
-    header = 'infer'
-    sep = None
+    Parameters
+    ----------
+    indat: str, bytes, StringIO, file pointer, file name, Dataframe,
+           Series, tuple, list, dict
 
-    # Would want this to be more generic...
-    na_values = []
-    for spc in range(20)[1:]:
-        spcs = ' '*spc
-        na_values.append(spcs)
-        na_values.append(spcs + 'nan')
+        The input data.
 
-    fpi = None
+    Returns
+    -------
+    df: Dataframe
 
-    if isinstance(indat, pd.DataFrame):
-        result = indat
+        Returns a DataFrame.
+    """
 
-    elif isinstance(indat, pd.Series):
-        result = pd.DataFrame(indat)
-
-    elif isinstance(indat, (dict, tuple, list)):
-        try:
-            result = pd.DataFrame(indat)
-        except:
-            result = pd.DataFrame([indat])
-
-    elif isinstance(indat, (str, bytes)):
-        try:
-            indat = str(indat, encoding='utf-8')
-        except:
-            pass
-
+    if isinstance(indat, (str, bytes, StringIO)):
+        lindat = indat.split(",")
         if indat == '-':
             # if from stdin format must be the tstoolbox standard
+            # pandas read_table supports file like objects
             header = 0
             sep = ','
             fpi = sys.stdin
-        elif '\n' in indat or '\r' in indat:
-            # a string
-            fpi = StringIO(indat)
-        else:
+            fname = '_'
+        elif isinstance(indat, StringIO):
+            header = 'infer'
+            sep = None
             fpi = indat
+            fname = ''
+        elif '\n' in indat or '\r' in indat:
+            # a string?
+            header = 'infer'
+            sep = None
+            fpi = StringIO(b(indat).decode())
+            fname = ''
+        elif len(lindat) > 1:
+            result = pd.DataFrame({'values': _convert_to_numbers(lindat)},
+                                  index=range(len(lindat)))
+            return result
+        elif os.path.exists(indat):
+            # a local file
+            header = 'infer'
+            sep = None
+            fpi = open_local(indat)
+            fname = os.path.splitext(os.path.basename(indat))[0]
+        elif is_valid_url(indat):
+            # a url?
+            header = 'infer'
+            sep = None
+            fpi = indat
+            fname = ''
 
-        fname = ''
         fstr = '{1}'
         if extended_columns is True:
             try:
-                fname = os.path.splitext(os.path.basename(fpi))[0]
                 fstr = '{0}.{1}'
             except:
                 pass
 
-        if fname == '<stdin>':
-            fname = '_'
-
         index_col = 0
         if parse_dates is False:
             index_col = False
+
+        # Would want this to be more generic...
+        na_values = []
+        for spc in range(20)[1:]:
+            spcs = ' '*spc
+            na_values.append(spcs)
+            na_values.append(spcs + 'nan')
 
         result = pd.io.parsers.read_table(fpi,
                                           header=header,
@@ -746,13 +805,27 @@ def read_iso_ts(indat,
                                           engine='python')
         result.columns = [fstr.format(fname, str(i).strip())
                           for i in result.columns]
+
+    elif isinstance(indat, pd.DataFrame):
+        result = indat
+
+    elif isinstance(indat, (pd.Series, dict)):
+        result = pd.DataFrame(indat)
+
+    elif isinstance(indat, (tuple, list)):
+        result = pd.DataFrame({'values': indat})
+
+    elif isinstance(indat, (int, float)):
+        result = pd.DataFrame({'value': indat}, index=[0])
+
     else:
         raise ValueError("""
 *
 *   Can't figure out what was passed to read_iso_ts.
-*   You gave me a {0}.
+*   You gave me {0}, of
+*   {1}.
 *
-""".format(type(indat)))
+""".format(indat, type(indat)))
 
     result = memory_optimize(result)
 

@@ -1831,10 +1831,12 @@ def _set_ppf(ptype):
 
 
 def _plotting_position_equation(i, n, a):
+    """ Parameterized, generic plotting position equation."""
     return (i - a)/float(n + 1 - 2*a)
 
 
 def _set_plotting_position(n, plotting_position='weibull'):
+    """ Create plotting position 1D array using linspace. """
     if plotting_position == 'weibull':
         return pd.np.linspace(_plotting_position_equation(1, n, 0.0),
                               _plotting_position_equation(n, n, 0.0),
@@ -2437,13 +2439,13 @@ def plot(input_ts='-',
         if legend is True:
             plt.legend(loc='best')
     elif type in ['xy',
-                'double_mass',
-                'norm_xaxis',
-                'norm_yaxis',
-                'lognorm_xaxis',
-                'lognorm_yaxis',
-                'weibull_xaxis',
-                'weibull_yaxis']:
+                  'double_mass',
+                  'norm_xaxis',
+                  'norm_yaxis',
+                  'lognorm_xaxis',
+                  'lognorm_yaxis',
+                  'weibull_xaxis',
+                  'weibull_yaxis']:
         # PANDAS was not doing the right thing with xy plots
         # if you wanted lines between markers.
         # Fell back to using raw matplotlib.
@@ -3115,6 +3117,150 @@ def rank(input_ts='-',
                                         pct=pct),
                                '_rank',
                                float_format=float_format)
+
+
+@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@tsutils.doc(tsutils.docstrings)
+def date_offset(offset_code,
+                num_offsets,
+                columns=None,
+                dropna="no",
+                input_ts="-",
+                start_date=None,
+                end_date=None,
+                round_index=None):
+    """Apply an offset to a time-series.
+
+    Parameters
+    ----------
+    offset_code: str
+        The pandas offset code to use to offset the time series.  Any of
+        the PANDAS offset codes.
+
+        +-------+-----------------------------+
+        | Alias | Description                 |
+        +=======+=============================+
+        | B     | business day                |
+        +-------+-----------------------------+
+        | C     | custom business day         |
+        |       | (experimental)              |
+        +-------+-----------------------------+
+        | D     | calendar day                |
+        +-------+-----------------------------+
+        | W     | weekly                      |
+        +-------+-----------------------------+
+        | M     | month end                   |
+        +-------+-----------------------------+
+        | BM    | business month end          |
+        +-------+-----------------------------+
+        | CBM   | custom business month end   |
+        +-------+-----------------------------+
+        | MS    | month start                 |
+        +-------+-----------------------------+
+        | BMS   | business month start        |
+        +-------+-----------------------------+
+        | CBMS  | custom business month start |
+        +-------+-----------------------------+
+        | Q     | quarter end                 |
+        +-------+-----------------------------+
+        | BQ    | business quarter end        |
+        +-------+-----------------------------+
+        | QS    | quarter start               |
+        +-------+-----------------------------+
+        | BQS   | business quarter start      |
+        +-------+-----------------------------+
+        | A     | year end                    |
+        +-------+-----------------------------+
+        | BA    | business year end           |
+        +-------+-----------------------------+
+        | AS    | year start                  |
+        +-------+-----------------------------+
+        | BAS   | business year start         |
+        +-------+-----------------------------+
+        | H     | hourly                      |
+        +-------+-----------------------------+
+        | T     | minutely                    |
+        +-------+-----------------------------+
+        | S     | secondly                    |
+        +-------+-----------------------------+
+        | L     | milliseconds                |
+        +-------+-----------------------------+
+        | U     | microseconds                |
+        +-------+-----------------------------+
+        | N     | nanoseconds                 |
+        +-------+-----------------------------+
+
+        Weekly has the following anchored frequencies:
+
+        +-------+-------------------------------+
+        | Alias | Description                   |
+        +=======+===============================+
+        | W-SUN | weekly frequency (sundays).   |
+        |       | Same as 'W'.                  |
+        +-------+-------------------------------+
+        | W-MON | weekly frequency (mondays)    |
+        +-------+-------------------------------+
+        | W-TUE | weekly frequency (tuesdays)   |
+        +-------+-------------------------------+
+        | W-WED | weekly frequency (wednesdays) |
+        +-------+-------------------------------+
+        | W-THU | weekly frequency (thursdays)  |
+        +-------+-------------------------------+
+        | W-FRI | weekly frequency (fridays)    |
+        +-------+-------------------------------+
+        | W-SAT | weekly frequency (saturdays)  |
+        +-------+-------------------------------+
+
+        Quarterly frequencies (Q, BQ, QS, BQS) and annual frequencies
+        (A, BA, AS, BAS) have the following anchoring suffixes:
+
+        +-------+-------------------------------+
+        | Alias | Description                   |
+        +=======+===============================+
+        | -DEC  | year ends in December (same   |
+        |       | as 'Q' and 'A')               |
+        +-------+-------------------------------+
+        | -JAN  | year ends in January          |
+        +-------+-------------------------------+
+        | -FEB  | year ends in February         |
+        +-------+-------------------------------+
+        | -MAR  | year ends in March            |
+        +-------+-------------------------------+
+        | -APR  | year ends in April            |
+        +-------+-------------------------------+
+        | -MAY  | year ends in May              |
+        +-------+-------------------------------+
+        | -JUN  | year ends in June             |
+        +-------+-------------------------------+
+        | -JUL  | year ends in July             |
+        +-------+-------------------------------+
+        | -AUG  | year ends in August           |
+        +-------+-------------------------------+
+        | -SEP  | year ends in September        |
+        +-------+-------------------------------+
+        | -OCT  | year ends in October          |
+        +-------+-------------------------------+
+        | -NOV  | year ends in November         |
+        +-------+-------------------------------+
+    num_offsets: int
+        Specify the number of offset intervals to apply.  Can be
+        negative.
+    {input_ts}
+    {start_date}
+    {end_date}
+    {columns}
+    {round_index}
+    {dropna}
+
+    """
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              round_index=round_index,
+                              dropna='no')
+    return tsutils.printiso(tsd.tshift(int(num_offsets), freq=offset_code),
+                            showindex="always")
 
 
 def main():
