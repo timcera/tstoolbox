@@ -11,10 +11,9 @@ if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
 
-here = os.path.abspath(os.path.dirname(__file__))
-README = open(os.path.join(here, 'README.rst')).read()
+README = open("./README.rst").read()
 
-version = open("VERSION").readline().strip()
+version = open("./VERSION").readline().strip()
 
 install_requires = [
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
@@ -53,7 +52,7 @@ setup(name='tstoolbox',
       keywords='time_series',
       author='Tim Cera, P.E.',
       author_email='tim@cerazone.net',
-      url='http://timcera.bitbucket.org/tstoolbox/docsrc/index.html',
+      url='http://timcera.bitbucket.io/tstoolbox/docsrc/index.html',
       packages=['tstoolbox'],
       include_package_data=True,
       zip_safe=False,

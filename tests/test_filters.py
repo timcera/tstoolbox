@@ -77,7 +77,6 @@ class TestFilter(TestCase):
         out = tstoolbox.filter('hanning',
                                input_ts='tests/data_sine.csv',
                                print_input=True)
-        print(out)
         self.maxDiff = None
         assert_frame_equal(out, self.hanning)
 

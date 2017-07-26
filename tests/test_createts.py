@@ -31,7 +31,6 @@ class TestRead(TestCase):
                                 parse_dates=True,
                                 index_col=0)
         self.data.index.name = 'Datetime'
-        print(self.data)
 
     def test_createts_from_input(self):
         ''' Create a ts of data_flat.csv

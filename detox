@@ -15,17 +15,18 @@ pkgs="\
      "
 
 # pandas no longer supports 2.6
-envs=(~/python_ves/python-2.7.13 \
-      ~/python_ves/python-3.4.5 \
-      ~/python_ves/python-3.5.2 \
-      ~/python_ves/python-3.6.0)
+envs=(~/python_ves/python-2.7.13) # \
+#      ~/python_ves/python-3.4.5 \
+#      ~/python_ves/python-3.5.2 \
+#      ~/python_ves/python-3.6.0)
 
 for env in ${envs[@]}; do
     echo "${env}"
 
     source "${env}"/bin/activate
     pip install --upgrade pip
-    pip install --upgrade ${pkgs}
+    pip install wheel
+    pip install --upgrade --only-binary pandas,scipy ${pkgs}
     pip uninstall -y ${program}
     rm -rf build
     python setup.py develop
@@ -35,7 +36,8 @@ for env in ${envs[@]}; do
         --cover-tests \
         --cover-package=${program} \
         --cover-branches \
-        --cover-erase
+        --cover-erase \
+        -s
     deactivate
 done
 
