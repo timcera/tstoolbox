@@ -2483,13 +2483,17 @@ def plot(input_ts='-',
             lcolor = 'b'
             marker = ''
             linest = '-'
-            if lstyle[0] in colors:
-                lcolor = lstyle[0]
-                lstyle = lstyle[1:]
-                linest = lstyle
-            if lstyle[0] in mark_dict:
-                marker = lstyle[0]
-                linest = lstyle[1:]
+            for mdict in mark_dict:
+                if mdict == lstyle[-1]:
+                    marker = mdict
+                    lstyle = lstyle.rstrip(mdict)
+                    break
+            for l in ["-", "-.", ":", " "]:
+                if l in lstyle:
+                    linest = l
+                    lstyle = lstyle.rstrip(l)
+                    break
+            lcolor = lstyle
 
             if type in ['norm_xaxis', 'norm_yaxis',
                         'lognorm_xaxis', 'lognorm_yaxis',
