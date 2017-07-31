@@ -183,8 +183,7 @@ def common_kwds(input_tsd=None,
                 force_freq=None,
                 groupby=None,
                 dropna='no',
-                round_index=None,
-                required=None):
+                round_index=None):
     """Collected all common_kwds across sub-commands into single function.
 
     Parameters
@@ -203,38 +202,6 @@ def common_kwds(input_tsd=None,
     """
 
     ntsd = input_tsd
-
-    if input_tsd is None:
-        # Not a time-series
-        # therefore:
-        start_date = None
-        end_date = None
-        pick = None
-        force_freq = None
-        groupby = None
-        dropna = 'no'
-        round_index = None
-
-        ntsd = []
-        for i in input_tsd:
-            if isinstance(i, str):
-                ivarset = []
-                for j in i.split(','):
-                    if '.' in j:
-                        ivarset.append(float(j))
-                    else:
-                        ivarset.append(int(j))
-                ntsd.append(ivarset)
-
-            elif isinstance(i, (list, tuple, pd.np.ndarray)):
-                subvarset = []
-                for j in i:
-                    subvarset.append(j)
-                ntsd.append(subvarset)
-
-            else:
-                ntsd.append(i)
-        ntsd = pd.np.broadcast_arrays(*[pd.np.array(i) for i in ntsd])
 
     if pick is not None:
         ntsd = _pick(ntsd,
@@ -713,7 +680,10 @@ def _convert_to_numbers(numstr):
         try:
             ret.append(int(each))
         except ValueError:
-            ret.append(float(each))
+            try:
+                ret.append(float(each))
+            except ValueError:
+                ret.append(each)
     return ret
 
 
