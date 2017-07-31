@@ -709,7 +709,7 @@ def read_iso_ts(indat,
     """
 
     if isinstance(indat, (str, bytes, StringIO)):
-        lindat = indat.split(",")
+        lindat = b(indat).split(b(","))
         if indat == '-':
             # if from stdin format must be the tstoolbox standard
             # pandas read_table supports file like objects
@@ -722,7 +722,7 @@ def read_iso_ts(indat,
             sep = None
             fpi = indat
             fname = ''
-        elif '\n' in indat or '\r' in indat:
+        elif '\n' in b(indat).decode() or '\r' in b(indat).decode():
             # a string?
             header = 'infer'
             sep = None
@@ -814,7 +814,7 @@ def read_iso_ts(indat,
             except ValueError:
                 return result
 
-    if dropna in ['any', 'all']:
+    if dropna in [b('any'), b('all')]:
         result.dropna(how=dropna, inplace=True)
 
     return result
