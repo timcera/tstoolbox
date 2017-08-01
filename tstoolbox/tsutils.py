@@ -564,6 +564,9 @@ def _printiso(tsd,
         if showindex in ['always', 'default']:
             print_index = True
 
+    elif isinstance(tsd, (int, float, list, tuple, pd.np.ndarray)):
+        tablefmt = None
+
     if tablefmt in ["csv", "tsv", "csv_nos", "tsv_nos"]:
         sep = {"csv": ",",
                "tsv": "\\t",
@@ -583,7 +586,10 @@ def _printiso(tsd,
             fmt = simple_separated_format(sep)
     else:
         fmt = tablefmt
-    if tablefmt in ['csv_nos', 'tsv_nos']:
+
+    if fmt is None:
+        print(str(list(tsd))[1:-1])
+    elif tablefmt in ['csv_nos', 'tsv_nos']:
         print(tb(tsd,
                  tablefmt=fmt,
                  showindex=showindex,

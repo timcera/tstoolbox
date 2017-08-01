@@ -2488,7 +2488,7 @@ def plot(input_ts='-',
                     marker = mdict
                     lstyle = lstyle.rstrip(mdict)
                     break
-            for l in ["-", "-.", ":", " "]:
+            for l in ["--", "-", "-.", ":", " "]:
                 if l in lstyle:
                     linest = l
                     lstyle = lstyle.rstrip(l)
