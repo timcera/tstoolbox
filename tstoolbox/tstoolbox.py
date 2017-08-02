@@ -51,16 +51,20 @@ def about():
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def createts(freq=None,
+             fillvalue=None,
              input_ts=None,
              start_date=None,
              end_date=None):
-    """Create empty time series.  Just produce the time-stamps.
+    """Create empty time series, optionally fill with a value.
 
     Parameters
     ----------
     freq
         To use this form --start_date and --end_date must be supplied
         also.  The pandas date offset code used to create the index.
+    fillvalue
+        The fill value for the time-series.  The default is None, which
+        implies generate the date/time stamps only.
     {input_ts}
     {start_date}
     {end_date}
@@ -70,7 +74,8 @@ def createts(freq=None,
         tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                                   start_date=start_date,
                                   end_date=end_date)
-        tsd = pd.DataFrame(index=tsd.index)
+        tsd = pd.DataFrame([fillvalue]*len(tsd.index),
+                           index=tsd.index)
     elif start_date is None or end_date is None or freq is None:
         raise ValueError("""
 *
@@ -82,9 +87,11 @@ def createts(freq=None,
 *
 """.format(start_date, end_date, freq))
     else:
-        tsd = pd.DataFrame(index=pd.date_range(start=start_date,
-                                               end=end_date,
-                                               freq=freq))
+        tindex = pd.date_range(start=start_date,
+                               end=end_date,
+                               freq=freq)
+        tsd = pd.DataFrame([fillvalue]*len(tindex),
+                           index=tindex)
     return tsutils.printiso(tsd,
                             showindex="always")
 
