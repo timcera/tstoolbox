@@ -38,7 +38,7 @@ _offset_aliases = {
     1000000000: 'T',
     1000000: 'L',
     1000: 'U',
-    }
+}
 
 
 @mando.command()
@@ -74,7 +74,7 @@ def createts(freq=None,
         tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                                   start_date=start_date,
                                   end_date=end_date)
-        tsd = pd.DataFrame([fillvalue]*len(tsd.index),
+        tsd = pd.DataFrame([fillvalue] * len(tsd.index),
                            index=tsd.index)
     elif start_date is None or end_date is None or freq is None:
         raise ValueError("""
@@ -90,7 +90,7 @@ def createts(freq=None,
         tindex = pd.date_range(start=start_date,
                                end=end_date,
                                freq=freq)
-        tsd = pd.DataFrame([fillvalue]*len(tindex),
+        tsd = pd.DataFrame([fillvalue] * len(tindex),
                            index=tindex)
     return tsutils.printiso(tsd,
                             showindex="always")
@@ -176,7 +176,7 @@ def filter(filter_type,
                              'blackman']:
             if window_len < 3:
                 continue
-            s = pd.np.pad(tsd[col].values, window_len//2, 'reflect')
+            s = pd.np.pad(tsd[col].values, window_len // 2, 'reflect')
 
             if filter_type == 'flat':  # moving average
                 w = pd.np.ones(window_len, 'd')
@@ -1046,7 +1046,7 @@ def rolling_window(input_ts='-',
             'gaussian',
             'general_gaussian',
             'slepian',
-            ]
+        ]
         try:
             if wintype in window_list and statistic in ['mean', 'sum']:
                 meantest = statistic == 'mean'
@@ -1553,7 +1553,7 @@ def remove_trend(input_ts='-',
         index = tsd.index.astype('l')
         index = index - index[0]
         lin = pd.np.polyfit(index, tsd[col], 1)
-        ntsd[col] = lin[0]*index + lin[1]
+        ntsd[col] = lin[0] * index + lin[1]
         ntsd[col] = tsd[col] - ntsd[col]
     return tsutils.print_input(
         print_input, tsd, ntsd, '_rem_trend')
@@ -1628,7 +1628,7 @@ def calculate_fdc(input_ts='-',
     for col in tsd:
         tmptsd = tsd[col].dropna()
         xdat = ppf(_set_plotting_position(tmptsd.count(),
-                                          plotting_position))*100
+                                          plotting_position)) * 100
         tmptsd.sort_values(ascending=ascending, inplace=True)
         tmptsd.index = xdat
         newts = newts.join(tmptsd, how='outer')
@@ -1801,7 +1801,7 @@ mark_dict = {
     "d": "thin_diamond",
     "|": "vline",
     "_": "hline"
-    }
+}
 
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k',
           'aliceblue',
@@ -1829,7 +1829,7 @@ def _set_ppf(ptype):
     elif ptype == 'weibull':
         def ppf(y):
             """Percentage Point Function for the weibull distibution."""
-            return pd.np.log(-pd.np.log((1-pd.np.array(y))))
+            return pd.np.log(-pd.np.log((1 - pd.np.array(y))))
         return ppf
     elif ptype is None:
         def ppf(y):
@@ -1839,7 +1839,7 @@ def _set_ppf(ptype):
 
 def _plotting_position_equation(i, n, a):
     """ Parameterized, generic plotting position equation."""
-    return (i - a)/float(n + 1 - 2*a)
+    return (i - a) / float(n + 1 - 2 * a)
 
 
 def _set_plotting_position(n, plotting_position='weibull'):
@@ -1853,23 +1853,23 @@ def _set_plotting_position(n, plotting_position='weibull'):
                               _plotting_position_equation(n, n, 0.3),
                               n)
     elif plotting_position == 'tukey':
-        return pd.np.linspace(_plotting_position_equation(1, n, 1.0/3.0),
-                              _plotting_position_equation(n, n, 1.0/3.0),
+        return pd.np.linspace(_plotting_position_equation(1, n, 1.0 / 3.0),
+                              _plotting_position_equation(n, n, 1.0 / 3.0),
                               n)
     elif plotting_position == 'gumbel':
         return pd.np.linspace(_plotting_position_equation(1, n, 1.0),
                               _plotting_position_equation(n, n, 1.0),
                               n)
     elif plotting_position == 'hazen':
-        return pd.np.linspace(_plotting_position_equation(1, n, 1.0/2.0),
-                              _plotting_position_equation(n, n, 1.0/2.0),
+        return pd.np.linspace(_plotting_position_equation(1, n, 1.0 / 2.0),
+                              _plotting_position_equation(n, n, 1.0 / 2.0),
                               n)
     elif plotting_position == 'cunnane':
-        return pd.np.linspace(_plotting_position_equation(1, n, 2.0/5.0),
-                              _plotting_position_equation(n, n, 2.0/5.0),
+        return pd.np.linspace(_plotting_position_equation(1, n, 2.0 / 5.0),
+                              _plotting_position_equation(n, n, 2.0 / 5.0),
                               n)
     elif plotting_position == 'california':
-        return pd.np.linspace(1./n, 1., n)
+        return pd.np.linspace(1. / n, 1., n)
     else:
         raise ValueError("""
 *
@@ -2360,7 +2360,7 @@ def plot(input_ts='-',
 """)
         if len(tsd.columns) == len(lnames):
             renamedict = dict(zip(tsd.columns, lnames))
-        elif type == 'xy' and len(tsd.columns)//2 == len(lnames):
+        elif type == 'xy' and len(tsd.columns) // 2 == len(lnames):
             renamedict = dict(zip(tsd.columns[2::2], lnames[1:]))
             renamedict[tsd.columns[1]] = lnames[0]
         else:
@@ -2464,7 +2464,7 @@ def plot(input_ts='-',
             typed = '.-'
             if type in ['xy']:
                 typed = '*'
-            style = zip(colors*(len(tsd.columns)//len(colors) + 1),
+            style = zip(colors * (len(tsd.columns) // len(colors) + 1),
                         [typed] * len(tsd.columns))
             style = [i + j for i, j in style]
 
@@ -2483,7 +2483,7 @@ def plot(input_ts='-',
         else:
             xs = pd.np.array(tsd.iloc[:, 0::2])
             ys = pd.np.array(tsd.iloc[:, 1::2])
-            colcnt = tsd.shape[1]//2
+            colcnt = tsd.shape[1] // 2
 
         for colindex in range(colcnt):
             lstyle = style[colindex]
@@ -2716,7 +2716,7 @@ def plot(input_ts='-',
     plt.savefig(ofilename)
 
 
-def _dtw(ts_a, ts_b, d=lambda x, y: abs(x-y), window=10000):
+def _dtw(ts_a, ts_b, d=lambda x, y: abs(x - y), window=10000):
     """Return the DTW similarity distance timeseries numpy arrays.
 
     Arguments
@@ -2742,16 +2742,16 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x-y), window=10000):
     # Initialize the first row and column
     cost[0, 0] = d(ts_a[0], ts_b[0])
     for i in range(1, M):
-        cost[i, 0] = cost[i-1, 0] + d(ts_a[i], ts_b[0])
+        cost[i, 0] = cost[i - 1, 0] + d(ts_a[i], ts_b[0])
 
     for j in range(1, N):
-        cost[0, j] = cost[0, j-1] + d(ts_a[0], ts_b[j])
+        cost[0, j] = cost[0, j - 1] + d(ts_a[0], ts_b[j])
 
     # Populate rest of cost matrix within window
     for i in range(1, M):
         for j in range(max(1, i - window),
                        min(N, i + window)):
-            choices = cost[i - 1, j - 1], cost[i, j-1], cost[i-1, j]
+            choices = cost[i - 1, j - 1], cost[i, j - 1], cost[i - 1, j]
             cost[i, j] = min(choices) + d(ts_a[i], ts_b[j])
 
     # Return DTW distance given window
@@ -2796,7 +2796,7 @@ def dtw(input_ts='-',
 
     ntsd = pd.DataFrame(list(process.items()))
     ncols = ntsd.columns
-    ncols = ['Variables'] + [str(i)+'DTW_score' for i in ncols[1:]]
+    ncols = ['Variables'] + [str(i) + 'DTW_score' for i in ncols[1:]]
     ntsd.columns = ncols
     return tsutils.printiso(ntsd)
 
@@ -2908,7 +2908,7 @@ def normalization(input_ts='-',
                (tsd.max() - tsd.min()) *
                (max_limit - min_limit))
     elif mode == 'zscore':
-        tsd = (tsd - tsd.mean())/tsd.std()
+        tsd = (tsd - tsd.mean()) / tsd.std()
     elif mode == 'pct_rank':
         tsd = tsd.rank(method=pct_rank_method, pct=True)
     else:
