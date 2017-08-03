@@ -361,7 +361,7 @@ _annuals = {
     10: 'OCT',
     11: 'NOV',
     12: 'DEC',
-    }
+}
 
 _weeklies = {
     0: 'MON',
@@ -371,7 +371,7 @@ _weeklies = {
     4: 'FRI',
     5: 'SAT',
     6: 'SUN',
-    }
+}
 
 
 def asbestfreq(data, force_freq=None):
@@ -456,19 +456,19 @@ def asbestfreq(data, force_freq=None):
     if ngcd < 1000:
         infer_freq = '{0}N'.format(ngcd)
     elif ngcd < 1000000:
-        infer_freq = '{0}U'.format(ngcd//1000)
+        infer_freq = '{0}U'.format(ngcd // 1000)
     elif ngcd < 1000000000:
-        infer_freq = '{0}L'.format(ngcd//1000000)
+        infer_freq = '{0}L'.format(ngcd // 1000000)
     elif ngcd < 60000000000:
-        infer_freq = '{0}S'.format(ngcd//1000000000)
+        infer_freq = '{0}S'.format(ngcd // 1000000000)
     elif ngcd < 3600000000000:
-        infer_freq = '{0}T'.format(ngcd//60000000000)
+        infer_freq = '{0}T'.format(ngcd // 60000000000)
     elif ngcd < 86400000000000:
-        infer_freq = '{0}H'.format(ngcd//3600000000000)
+        infer_freq = '{0}H'.format(ngcd // 3600000000000)
     elif ngcd < 604800000000000:
-        infer_freq = '{0}D'.format(ngcd//86400000000000)
+        infer_freq = '{0}D'.format(ngcd // 86400000000000)
     elif ngcd < 2419200000000000:
-        infer_freq = '{0}W'.format(ngcd//604800000000000)
+        infer_freq = '{0}W'.format(ngcd // 604800000000000)
         if np.all(data.index.dayofweek == data.index[0].dayofweek):
             infer_freq = infer_freq + '-{0}'.format(
                 _weeklies[data.index[0].dayofweek])
@@ -765,7 +765,7 @@ def read_iso_ts(indat,
         # Would want this to be more generic...
         na_values = []
         for spc in range(20)[1:]:
-            spcs = ' '*spc
+            spcs = ' ' * spc
             na_values.append(spcs)
             na_values.append(spcs + 'nan')
 
