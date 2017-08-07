@@ -3132,8 +3132,14 @@ def rank(input_ts='-',
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def date_offset(offset_code,
-                num_offsets,
+def date_offset(years=0,
+                months=0,
+                weeks=0,
+                days=0,
+                hours=0,
+                minutes=0,
+                seconds=0,
+                microseconds=0,
                 columns=None,
                 dropna="no",
                 input_ts="-",
@@ -3144,118 +3150,55 @@ def date_offset(offset_code,
 
     Parameters
     ----------
-    offset_code: str
-        The pandas offset code to use to offset the time series.  Any of
-        the PANDAS offset codes.
+    years: number
+        Relative number of years to offset the datetime index,
+        may be negative; adding or subtracting a relativedelta with
+        relative information performs the corresponding arithmetic
+        operation on the original datetime value with the information in
 
-        +-------+-----------------------------+
-        | Alias | Description                 |
-        +=======+=============================+
-        | B     | business day                |
-        +-------+-----------------------------+
-        | C     | custom business day         |
-        |       | (experimental)              |
-        +-------+-----------------------------+
-        | D     | calendar day                |
-        +-------+-----------------------------+
-        | W     | weekly                      |
-        +-------+-----------------------------+
-        | M     | month end                   |
-        +-------+-----------------------------+
-        | BM    | business month end          |
-        +-------+-----------------------------+
-        | CBM   | custom business month end   |
-        +-------+-----------------------------+
-        | MS    | month start                 |
-        +-------+-----------------------------+
-        | BMS   | business month start        |
-        +-------+-----------------------------+
-        | CBMS  | custom business month start |
-        +-------+-----------------------------+
-        | Q     | quarter end                 |
-        +-------+-----------------------------+
-        | BQ    | business quarter end        |
-        +-------+-----------------------------+
-        | QS    | quarter start               |
-        +-------+-----------------------------+
-        | BQS   | business quarter start      |
-        +-------+-----------------------------+
-        | A     | year end                    |
-        +-------+-----------------------------+
-        | BA    | business year end           |
-        +-------+-----------------------------+
-        | AS    | year start                  |
-        +-------+-----------------------------+
-        | BAS   | business year start         |
-        +-------+-----------------------------+
-        | H     | hourly                      |
-        +-------+-----------------------------+
-        | T     | minutely                    |
-        +-------+-----------------------------+
-        | S     | secondly                    |
-        +-------+-----------------------------+
-        | L     | milliseconds                |
-        +-------+-----------------------------+
-        | U     | microseconds                |
-        +-------+-----------------------------+
-        | N     | nanoseconds                 |
-        +-------+-----------------------------+
+    months: number
+        Relative number of months to offset the datetime index,
+        may be negative; adding or subtracting a relativedelta with
+        relative information performs the corresponding arithmetic
+        operation on the original datetime value with the information in
 
-        Weekly has the following anchored frequencies:
+    weeks: number
+        Relative number of weeks to offset the datetime index,
+        may be negative; adding or subtracting a relativedelta with
+        relative information performs the corresponding arithmetic
+        operation on the original datetime value with the information in
 
-        +-------+-------------------------------+
-        | Alias | Description                   |
-        +=======+===============================+
-        | W-SUN | weekly frequency (sundays).   |
-        |       | Same as 'W'.                  |
-        +-------+-------------------------------+
-        | W-MON | weekly frequency (mondays)    |
-        +-------+-------------------------------+
-        | W-TUE | weekly frequency (tuesdays)   |
-        +-------+-------------------------------+
-        | W-WED | weekly frequency (wednesdays) |
-        +-------+-------------------------------+
-        | W-THU | weekly frequency (thursdays)  |
-        +-------+-------------------------------+
-        | W-FRI | weekly frequency (fridays)    |
-        +-------+-------------------------------+
-        | W-SAT | weekly frequency (saturdays)  |
-        +-------+-------------------------------+
+    days: number
+        Relative number of days to offset the datetime index,
+        may be negative; adding or subtracting a relativedelta with
+        relative information performs the corresponding arithmetic
+        operation on the original datetime value with the information in
 
-        Quarterly frequencies (Q, BQ, QS, BQS) and annual frequencies
-        (A, BA, AS, BAS) have the following anchoring suffixes:
+    hours: number
+        Relative number of hours to offset the datetime index,
+        may be negative; adding or subtracting a relativedelta with
+        relative information performs the corresponding arithmetic
+        operation on the original datetime value with the information in
 
-        +-------+-------------------------------+
-        | Alias | Description                   |
-        +=======+===============================+
-        | -DEC  | year ends in December (same   |
-        |       | as 'Q' and 'A')               |
-        +-------+-------------------------------+
-        | -JAN  | year ends in January          |
-        +-------+-------------------------------+
-        | -FEB  | year ends in February         |
-        +-------+-------------------------------+
-        | -MAR  | year ends in March            |
-        +-------+-------------------------------+
-        | -APR  | year ends in April            |
-        +-------+-------------------------------+
-        | -MAY  | year ends in May              |
-        +-------+-------------------------------+
-        | -JUN  | year ends in June             |
-        +-------+-------------------------------+
-        | -JUL  | year ends in July             |
-        +-------+-------------------------------+
-        | -AUG  | year ends in August           |
-        +-------+-------------------------------+
-        | -SEP  | year ends in September        |
-        +-------+-------------------------------+
-        | -OCT  | year ends in October          |
-        +-------+-------------------------------+
-        | -NOV  | year ends in November         |
-        +-------+-------------------------------+
-    num_offsets: int
-        Specify the number of offset intervals to apply.  Can be
-        negative.
+    minutes: number
+        Relative number of minutes to offset the datetime index,
+        may be negative; adding or subtracting a relativedelta with
+        relative information performs the corresponding arithmetic
+        operation on the original datetime value with the information in
+
+    seconds: number
+        Relative number of seconds to offset the datetime index,
+        may be negative; adding or subtracting a relativedelta with
+        relative information performs the corresponding arithmetic
+        operation on the original datetime value with the information in
+
+    microseconds: number
+        Relative number of microseconds to offset the datetime index,
+        may be negative; adding or subtracting a relativedelta with
+        relative information performs the corresponding arithmetic
+        operation on the original datetime value with the information in
+        the relativedelta.
+
     {input_ts}
     {start_date}
     {end_date}
@@ -3270,8 +3213,20 @@ def date_offset(offset_code,
                               pick=columns,
                               round_index=round_index,
                               dropna='no')
-    return tsutils.printiso(tsd.tshift(int(num_offsets), freq=offset_code),
-                            showindex="always")
+
+    ntsd = pd.DataFrame(tsd.values,
+                        index=[i +
+                               pd.tseries.offsets.relativedelta(years=years,
+                                                                months=months,
+                                                                days=days,
+                                                                hours=hours,
+                                                                minutes=minutes,
+                                                                seconds=seconds,
+                                                                microseconds=microseconds)
+                               for i in tsd.index])
+    ntsd.columns = tsd.columns
+
+    return tsutils.printiso(ntsd, showindex="always")
 
 
 def main():
