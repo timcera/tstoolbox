@@ -60,11 +60,12 @@ def createts(freq=None,
     Parameters
     ----------
     freq
-        To use this form --start_date and --end_date must be supplied
-        also.  The pandas date offset code used to create the index.
+        To use this form `--start_date` and `--end_date` must be supplied
+        also.  The `freq` option is the pandas date offset code used to create
+        the index.
     fillvalue
         The fill value for the time-series.  The default is None, which
-        implies generate the date/time stamps only.
+        generates the date/time stamps only.
     {input_ts}
     {start_date}
     {end_date}
@@ -119,14 +120,15 @@ def filter(filter_type,
         filter in the frequency domain.
     window_len : int
         For the windowed types, 'flat', 'hanning', 'hamming',
-        'bartlett', 'blackman' specifies the length of the window.
+        'bartlett', and 'blackman' specifies the length of the window.
         Defaults to 5.
     cutoff_period
+        For 'fft_highpass' and 'fft_lowpass'. Default is None, but
+        must be supplied if using 'fft_highpass' or 'fft_lowpass'.
         The period in input time units that will form the cutoff between
         low frequencies (longer periods) and high frequencies (shorter
         periods).  Filter will be smoothed by `window_len` running
-        average.  For 'fft_highpass' and 'fft_lowpass'. Default is None
-        and must be supplied if using 'fft_highpass' or 'fft_lowpass'.
+        average.
     {input_ts}
     {start_date}
     {end_date}
@@ -213,8 +215,8 @@ def read(filenames,
         List of comma delimited filenames to read time series from.
     how : str
         Use PANDAS concept on how to join the separate DataFrames read
-        from each file.  Default how='outer' which is the union, 'inner'
-        is the intersection,
+        from each file.  Default is how='outer' which is the union, 'inner'
+        is the intersection.
     {columns}
     {start_date}
     {end_date}
@@ -1465,37 +1467,16 @@ def add_trend(start_offset,
     Parameters
     ----------
     start_offset : float
-         The starting value for the applied trend.
+        The starting value for the applied trend.
     end_offset : float
-         The ending value for the applied trend.
-    input_ts : str
-         Filename with data in 'ISOdate,value'
-        format or '-' for stdin.
-    columns
-          Columns to pick out of input.  Can use column names
-        or column numbers.  If using numbers, column number 1 is the
-        first data column.  To pick multiple columns; separate by commas
-        with no spaces. As used in 'pick' command.
-    start_date : str
-         The start_date of the series in
-        ISOdatetime format, or 'None' for beginning.
-    end_date : str
-         The end_date of the series in
-        ISOdatetime format, or 'None' for end.
-    dropna : str
-         Set `dropna` to 'any' to have records dropped
-        that have NA value in any column, or 'all' to have records
-        dropped that have NA in all columns.  Set to 'no' to not drop
-        any records.  The default is 'no'.
-    print_input
-          If set to 'True' will include the input
-        columns in the output table.  Default is 'False'.
-    round_index : str
-        Round the index to the nearest time point.
-        Can significantly improve the performance since can cut down on
-        memory and processing requirements, however be cautious about
-        rounding to a very course interval from a small one.  This could
-        lead to duplicate values in the index.
+        The ending value for the applied trend.
+    {input_ts}
+    {columns}
+    {start_date}
+    {end_date}
+    {dropna}
+    {print_input}
+    {round_index}
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
@@ -2711,6 +2692,7 @@ def plot(input_ts='-',
         plt.gca().invert_yaxis()
     plt.grid(grid)
     plt.title(title)
+    plt.tight_layout()
     if ofilename is None:
         return plt
     plt.savefig(ofilename)
@@ -3155,50 +3137,42 @@ def date_offset(years=0,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
-
     months: number
         Relative number of months to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
-
     weeks: number
         Relative number of weeks to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
-
     days: number
         Relative number of days to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
-
     hours: number
         Relative number of hours to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
-
     minutes: number
         Relative number of minutes to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
-
     seconds: number
         Relative number of seconds to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
-
     microseconds: number
         Relative number of microseconds to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
         the relativedelta.
-
     {input_ts}
     {start_date}
     {end_date}

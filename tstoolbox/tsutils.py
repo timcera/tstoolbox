@@ -30,30 +30,43 @@ from tabulate import simple_separated_format
 
 docstrings = {
     'input_ts': '''input_ts : str
+        Whether from a file or standard input, data requires a first line
+        header of column names.  Most separators will be automatically
+        detected. Most common date formats can be used, but the closer to ISO
+        8601 date/time standard the better.
+
         Command line:
 
-            --input_ts= file name or '-' for standard input (stdin).
-            Default is stdin.
+            `--input_ts=filename.csv` or '--input_ts=-' for standard input
+            (stdin).  Default is '-'.
 
-            If stdin:
+            In many cases it is better to use redirection rather that use
+            `--input_ts=filename.csv`.  The following are identical:
 
-                The data must be formatted as "," separated data, with
-                a first line header for column names.
+            From a file:
 
-            If file name:
+                command subcmd --input_ts=filename.csv
 
-                Will try to figure out separator, but still requires
-                a first line header of column names.
+            From standard input:
+
+                command subcmd --input_ts=- < filename.csv
+
+            The BEST way since you don't have to include `--input_ts=-` because
+            that is the default:
+
+                command subcmd < filename.csv
+
+            Can also combine commands by piping:
+
+                command subcmd < filename.csv | command subcmd1 > fileout.csv
 
         As Python Library:
 
-            `input_ts=` {pandas Dataframe, pandas Series, dict, tuple,
-            list, StringIO, file name}
+            You MUST use the `input_ts=...` option where `input_ts` can be one
+            of a [pandas Dataframe, pandas Series, dict, tuple,
+            list, StringIO, or file name].
 
             If result is a time series, returns a pandas DataFrame.
-
-        Most common date formats can be used, but the closer to ISO 8601
-        date/time standard the better.
         ''',
     'columns': '''columns
         Columns to select out of input.  Can use column names from the
@@ -94,8 +107,7 @@ docstrings = {
 
 
 def b(s):
-    """Make sure all strings are correctly represented in Python 2 and
-    3.."""
+    """Make sure strings are correctly represented in Python 2 and 3."""
     try:
         return s.encode("utf-8")
     except AttributeError:
@@ -267,7 +279,7 @@ def _pick(tsd, columns):
             # if using column numbers
             try:
                 target_col = int(i) - 1
-            except:
+            except ValueError:
                 raise ValueError("""
 *
 *   The name {0} isn't in the list of column names
@@ -277,7 +289,7 @@ def _pick(tsd, columns):
             if target_col < 0:
                 raise ValueError("""
 *
-*   The request column index {0} must be greater than or equal to 0.
+*   The requested column index {0} must be greater than or equal to 0.
 *   First data column is index 1, index is column 0.
 *
 """.format(i))
@@ -753,10 +765,7 @@ def read_iso_ts(indat,
 
         fstr = '{1}'
         if extended_columns is True:
-            try:
-                fstr = '{0}.{1}'
-            except:
-                pass
+            fstr = '{0}.{1}'
 
         index_col = 0
         if parse_dates is False:
