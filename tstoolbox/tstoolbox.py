@@ -2948,14 +2948,14 @@ def converttz(fromtz,
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def convert_to_julian(epoch='julian',
-                      input_ts='-',
-                      columns=None,
-                      start_date=None,
-                      end_date=None,
-                      round_index=None,
-                      dropna='no'):
-    """Convert the date/time index to Julian style numbering
+def convert_index_to_julian(epoch='julian',
+                            input_ts='-',
+                            columns=None,
+                            start_date=None,
+                            end_date=None,
+                            round_index=None,
+                            dropna='no'):
+    """Convert date/time index to Julian dates from different epochs.
 
     Parameters
     ----------
@@ -2974,8 +2974,8 @@ def convert_to_julian(epoch='julian',
         +===========+===================+================+===============+
         | julian    | 4713-01-01:12 BCE | JD             |               |
         +-----------+-------------------+----------------+---------------+
-        | reduced   | 1858-11-16:12     | JD -           | [1]_          |
-        |           |                   | 2400000        | [2]_          |
+        | reduced   | 1858-11-16:12     | JD -           | [ [1]_ ]      |
+        |           |                   | 2400000        | [ [2]_ ]      |
         +-----------+-------------------+----------------+---------------+
         | modified  | 1858-11-17:00     | JD -           | SAO 1957      |
         |           |                   | 2400000.5      |               |
@@ -2987,13 +2987,13 @@ def convert_to_julian(epoch='julian',
         |           |                   | 2415020        |               |
         +-----------+-------------------+----------------+---------------+
         | cnes      | 1950-01-01:00     | JD -           | CNES          |
-        |           |                   | 2433282.5      | [3]_          |
+        |           |                   | 2433282.5      | [ [3]_ ]      |
         +-----------+-------------------+----------------+---------------+
         | ccsds     | 1958-01-01:00     | JD -           | CCSDS         |
-        |           |                   | 2436204.5      | [3]_          |
+        |           |                   | 2436204.5      | [ [3]_ ]      |
         +-----------+-------------------+----------------+---------------+
         | lop       | 1992-01-01:00     | JD -           | LOP           |
-        |           |                   | 2448622.5      | [3]_          |
+        |           |                   | 2448622.5      | [ [3]_ ]      |
         +-----------+-------------------+----------------+---------------+
         | lilian    | 1582-10-15[13]    | floor (JD -    | Count of days |
         |           |                   | 2299159.5)     | of the        |
@@ -3009,14 +3009,14 @@ def convert_to_julian(epoch='julian',
         |           |                   | /1.02749       | Martian days  |
         +-----------+-------------------+----------------+---------------+
 
-        .. [1] Hopkins, Jeffrey L. (2013). Using Commercial Amateur
+        .. [1] . Hopkins, Jeffrey L. (2013). Using Commercial Amateur
            Astronomical Spectrographs, p. 257, Springer Science & Business
            Media, ISBN 9783319014425
 
-        .. [2] Palle, Pere L., Esteban, Cesar. (2014). Asteroseismology, p.
+        .. [2] . Palle, Pere L., Esteban, Cesar. (2014). Asteroseismology, p.
            185, Cambridge University Press, ISBN 9781107470620
 
-        .. [3] Theveny, Pierre-Michel. (10 September 2001). "Date Format"
+        .. [3] . Theveny, Pierre-Michel. (10 September 2001). "Date Format"
            The TPtime Handbook. Media Lab.
 
     {input_ts}
