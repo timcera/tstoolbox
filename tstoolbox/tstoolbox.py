@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import print_function
@@ -2971,7 +2970,7 @@ def convert_to_julian(julian_reference='julian',
         | julian    | 4713-01-01:12 BCE | JD             |               |
         +-----------+-------------------+----------------+---------------+
         | reduced   | 1858-11-16:12     | JD -           | [Hopkins]_    |
-        |           |                   | 2400000        | [Pallé]_      |
+        |           |                   | 2400000        | [Palle]_      |
         +-----------+-------------------+----------------+---------------+
         | modified  | 1858-11-17:00     | JD -           | SAO 1957      |
         |           |                   | 2400000.5      |               |
@@ -3009,7 +3008,7 @@ def convert_to_julian(julian_reference='julian',
            Astronomical Spectrographs, p. 257, Springer Science & Business
            Media, ISBN 9783319014425
 
-        .. [Pallé] Pallé, Pere L., Esteban, Cesar. (2014). Asteroseismology, p.
+        .. [Palle] Palle, Pere L., Esteban, Cesar. (2014). Asteroseismology, p.
            185, Cambridge University Press, ISBN 9781107470620
 
         .. [Theveny] Theveny, Pierre-Michel. (10 September 2001). "Date Format"
