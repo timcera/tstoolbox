@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import print_function
