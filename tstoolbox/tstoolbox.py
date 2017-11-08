@@ -3029,16 +3029,16 @@ def convert_to_julian(julian_reference='julian',
                               round_index=round_index,
                               dropna=dropna)
     allowed = {'julian': lambda x: x,
-               'reduced': lambda x: x-2400000,
-               'modified': lambda x: x-2400000.5,
-               'truncated': lambda x: pd.np.floor(x-2440000.5),
-               'dublin': lambda x: x-2415020,
-               'cnes': lambda x: x-2433282.5,
-               'ccsds': lambda x: x-2436204.5,
-               'lop': lambda x: x-2448622.5,
-               'lilian': lambda x: pd.np.floor(x-2299159.5),
-               'rata_die': lambda x: pd.np.floor(x-1721424.5),
-               'mars_sol': lambda x: (x-2405522)/1.02749}
+               'reduced': lambda x: x - 2400000,
+               'modified': lambda x: x - 2400000.5,
+               'truncated': lambda x: pd.np.floor(x - 2440000.5),
+               'dublin': lambda x: x - 2415020,
+               'cnes': lambda x: x - 2433282.5,
+               'ccsds': lambda x: x - 2436204.5,
+               'lop': lambda x: x - 2448622.5,
+               'lilian': lambda x: pd.np.floor(x - 2299159.5),
+               'rata_die': lambda x: pd.np.floor(x - 1721424.5),
+               'mars_sol': lambda x: (x - 2405522) / 1.02749}
     try:
         tsd.index = allowed[julian_reference](tsd.index.to_julian_date())
     except KeyError:
