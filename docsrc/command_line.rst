@@ -7,14 +7,14 @@ Help::
 
      tstoolbox –help
 
-accumulate
-~~~~~~~~~~
-.. program-output:: tstoolbox accumulate --help
-   :prompt:
-
 about
 ~~~~~
 .. program-output:: tstoolbox add_trend --help
+   :prompt:
+
+accumulate
+~~~~~~~~~~
+.. program-output:: tstoolbox accumulate --help
    :prompt:
 
 add_trend
@@ -42,6 +42,11 @@ convert
 .. program-output:: tstoolbox convert --help
    :prompt:
 
+convert_index_to_julian
+~~~~~~~~~~~~~~~~~~~~~~~
+.. program-output:: tstoolbox convert_index_to_julian --help
+   :prompt:
+
 converttz
 ~~~~~~~~~
 .. program-output:: tstoolbox converttz --help
@@ -52,6 +57,11 @@ createts
 .. program-output:: tstoolbox createts --help
    :prompt:
 
+date_offset
+~~~~~~~~~~~
+.. program-output:: tstoolbox date_offset --help
+   :prompt:
+
 date_slice
 ~~~~~~~~~~
 .. program-output:: tstoolbox date_slice --help
@@ -60,6 +70,11 @@ date_slice
 describe
 ~~~~~~~~
 .. program-output:: tstoolbox describe --help
+   :prompt:
+
+dtw
+~~~
+.. program-output:: tstoolbox dtw --help
    :prompt:
 
 equation
@@ -82,6 +97,16 @@ normalization
 .. program-output:: tstoolbox normalization --help
    :prompt:
 
+pca
+~~~
+.. program-output:: tstoolbox pca --help
+   :prompt:
+
+pct_change
+~~~~~~~~~~
+.. program-output:: tstoolbox pct_change --help
+   :prompt:
+
 peak_detection
 ~~~~~~~~~~~~~~
 .. program-output:: tstoolbox peak_detection --help
@@ -95,6 +120,11 @@ pick
 plot
 ~~~~
 .. program-output:: tstoolbox plot --help
+   :prompt:
+
+rank
+~~~~
+.. program-output:: tstoolbox rank --help
    :prompt:
 
 read

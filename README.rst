@@ -38,102 +38,106 @@ Usage - Command Line
 --------------------
 Just run 'tstoolbox --help' to get a list of subcommands
 
-  accumulate
-            Calculates accumulating statistics.
-  
-  add_trend
-            Adds a trend.
-  
-  aggregate
-            Takes a time series and aggregates to specified
-            frequency, outputs to 'ISO-8601date,value' format.
-  
-  calculate_fdc
-            Returns the frequency distribution curve. DOES NOT
-            return a time-series.
-  
-  clip
-            Returns a time-series with values limited to [a_min,
-            a_max]
-  
-  convert
-            Converts values of a time series by applying a factor
-            and offset. See the 'equation' subcommand for a
-            generalized form of this command.
-  
-  date_slice
-            Prints out data to the screen between start_date and
-            end_date
-  
-  describe
-            Prints out statistics for the time-series.
-  
-  dtw
-            Dynamic Time Warping (beta)
-  
-  equation
-            Applies <equation> to the time series data. The
-            <equation> argument is a string contained in single
-            quotes with 'x' used as the variable representing the
-            input. For example, '(1 - x)*sin(x)'.
-  
-  fill
-            Fills missing values (NaN) with different methods.
-            Missing values can occur because of NaN, or because
-            the time series is sparse. The 'interval' option can
-            insert NaNs to create a dense time series.
-  
-  filter
-            Apply different filters to the time-series.
-  
-  normalization
-            Returns the normalization of the time series.
-    
-  pca
-            Returns the principal components analysis of the time
-            series. Does not return a time-series. (beta)
-  
-  peak_detection
-            Peak and valley detection.
-  
-  pick
-            Will pick a column or list of columns from input.
-            Start with 1.
-  
-  plot
-            Plots.
-  
-  read
-            Collect time series from a list of pickle or csv files
-            then print in the tstoolbox standard format.
-  
-  remove_trend
-            Removes a 'trend'.
- 
-  replace
-            Return a time-series replacing values with others.
+    about               
+        Display version number and system information.
 
-  rolling_window
-            Calculates a rolling window statistic.
-  
-  stack
-            Returns the stack of the input table.
-  
-  stdtozrxp
-            Prints out data to the screen in a WISKI ZRXP format.
-  
-  tstopickle
-            Pickles the data into a Python pickled file. Can be
-            brought back into Python with 'pickle.load' or
-            'numpy.load'. See also 'tstoolbox read'.
-  
-  unstack
-            Returns the unstack of the input table.
-  
+    accumulate          
+        Calculate accumulating statistics.
+
+    add_trend           
+        Add a trend.
+
+    aggregate           
+        Take a time series and aggregate to specified frequency.
+
+    calculate_fdc       
+        Return the frequency distribution curve.
+
+    clip                
+        Return a time-series with values limited to [a_min, a_max].
+
+    convert             
+        Convert values of a time series by applying a factor and offset.
+
+    convert_index_to_julian 
+        Convert date/time index to Julian dates from different epochs.
+
+    converttz           
+        Convert the time zone of the index.
+
+    createts            
+        Create empty time series, optionally fill with a value.
+
+    date_offset         
+        Apply an offset to a time-series.
+
+    date_slice          
+        Print out data to the screen between start_date and end_date.
+
+    describe            
+        Print out statistics for the time-series.
+
+    dtw                 
+        Dynamic Time Warping.
+
+    equation            
+        Apply <equation_str> to the time series data.
+
+    fill                
+        Fill missing values (NaN) with different methods.
+
+    filter              
+        Apply different filters to the time-series.
+
+    normalization       
+        Return the normalization of the time series.
+
+    pca                 
+        Return the principal components analysis of the time series.
+
+    pct_change          
+        Return the percent change between times.
+
+    peak_detection      
+        Peak and valley detection.
+
+    pick                
+        Will pick a column or list of columns from input.
+
+    plot                
+        Plot data.
+
+    rank                
+        Compute numerical data ranks (1 through n) along axis.
+
+    read                
+        Collect time series from a list of pickle or csv files.
+
+    remove_trend        
+        Remove a 'trend'.
+
+    replace             
+        Return a time-series replacing values with others.
+
+    rolling_window      
+        Calculate a rolling window statistic.
+
+    stack               
+        Return the stack of the input table.
+
+    stdtozrxp           
+        Print out data to the screen in a WISKI ZRXP format.
+
+    tstopickle          
+        Pickle the data into a Python pickled file.
+
+    unstack             
+        Return the unstack of the input table.
+
 The default for all of the subcommands is to accept data from stdin (typically
 a pipe).  If a subcommand accepts an input file for an argument, you can use
 "--input_ts=input_file_name.csv", or to explicitly specify from stdin (the
-default) "--input_ts='-'" .  
+default) "--input_ts='-'".
 
 For the subcommands that output data it is printed to the screen and you can
 then redirect to a file.
