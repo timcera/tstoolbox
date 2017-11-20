@@ -38,6 +38,10 @@ Usage - Command Line
 --------------------
 Just run 'tstoolbox --help' to get a list of subcommands
 
+usage: tstoolbox [-h]
+                 {fill,about,createts,filter,read,date_slice,describe,peak_detection,convert,equation,pick,stdtozrxp,tstopickle,accumulate,rolling_window,aggregate,replace,clip,add_trend,remove_trend,calculate_fdc,stack,unstack,plot,dtw,pca,normalization,converttz,convert_index_to_julian,pct_change,rank,date_offset}
+                 ...
+
     about               
         Display version number and system information.
 
