@@ -32,3 +32,4 @@ __pycache__/*
 .tox
 .tox/*
 stats.dat
+.ropeproject
