@@ -132,12 +132,8 @@ def parsedate(dstr,
     import dateparser
     import datetime
 
-    # This is here just to make a generic tool.
-    if dstr is None:
-        return None
-
-    # The API should boomerang a datetime.datetime instance.
-    if isinstance(dstr, datetime.datetime):
+    # The API should boomerang a datetime.datetime instance and None.
+    if isinstance(dstr, datetime.datetime) or dstr is None:
         return dstr
 
     pdate = dateparser.parse(dstr, settings=settings)
@@ -321,16 +317,6 @@ def _pick(tsd, columns):
                              how='outer')
     return newtsd
 
-
-def date_slice(input_tsd, start_date=None, end_date=None):
-    """Limit input to start_date and end_date.
-
-    This is here for a while until I fix my other toolboxes to
-    use common_kwds instead.
-    """
-    return _date_slice(input_tsd,
-                       start_date=start_date,
-                       end_date=end_date)
 
 
 def _date_slice(input_tsd,
