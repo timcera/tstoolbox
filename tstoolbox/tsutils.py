@@ -133,7 +133,13 @@ def parsedate(dstr,
     import datetime
 
     # The API should boomerang a datetime.datetime instance and None.
-    if isinstance(dstr, datetime.datetime) or dstr is None:
+    if isinstance(dstr, datetime.datetime):
+        if strftime is None:
+            return dstr
+        else:
+            return dstr.strftime(strftime)
+
+    if dstr is None:
         return dstr
 
     pdate = dateparser.parse(dstr, settings=settings)
