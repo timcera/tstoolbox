@@ -394,6 +394,24 @@ def asbestfreq(data, force_freq=None):
     if not isinstance(data.index, pd.DatetimeIndex):
         return data
 
+    ndiff = (data.index.values.astype('int64')[1:] -
+             data.index.values.astype('int64')[:-1])
+    if np.any(ndiff == 0):
+        raise ValueError("""
+*
+*   Duplicate index entry record {1} (start count at 0):
+*   "{0}".
+*
+""".format(data.index[ndiff == 0][0], pd.np.where(ndiff == 0)[0][0] + 1))
+    if np.any(ndiff < 0):
+        raise ValueError("""
+*
+*   Time warp.  The datetime index is not sorted at
+*   record {1} (start count at 0):
+*   "{0}".
+*
+""".format(data.index[ndiff < 0][0], pd.np.where(ndiff < 0)[0][0] + 1))
+
     if force_freq is not None:
         return data.asfreq(force_freq)
 
@@ -448,8 +466,7 @@ def asbestfreq(data, force_freq=None):
 
     # Use the minimum of the intervals to test a new interval.
     # Should work for fixed intervals.
-    ndiff = sorted(set(data.index.values.astype('int64')[1:] -
-                       data.index.values.astype('int64')[:-1]))
+    ndiff = sorted(set(ndiff))
     mininterval = np.min(ndiff)
     if mininterval <= 0:
         raise ValueError
