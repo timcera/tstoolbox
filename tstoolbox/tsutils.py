@@ -771,6 +771,14 @@ def read_iso_ts(indat,
             sep = None
             fpi = indat
             fname = ''
+        else:
+            raise ValueError("""
+*
+*   Can't figure out what "{0}" is.  I tested if it was a string or StringIO
+*   object, DataFrame, local file, or an URL.  If you want to pull from stdin
+*   use "-".
+*
+""".format(indat))
 
         fstr = '{1}'
         if extended_columns is True:

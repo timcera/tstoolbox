@@ -227,20 +227,12 @@ def read(filenames,
     """
     filenames = filenames.split(',')
     result = pd.concat([tsutils.common_kwds(
-        tsutils.read_iso_ts(i, extended_columns=True),
+        tsutils.read_iso_ts(i),
         start_date=start_date,
         end_date=end_date,
         pick=columns,
         round_index=round_index,
-        dropna=dropna) for i in filenames], join=how, axis=1)
-
-    colnames = ['.'.join(i.split('.')[1:]) for i in result.columns]
-    if len(colnames) == len(set(colnames)):
-        result.columns = colnames
-    else:
-        result.columns = [i if result.columns.tolist().count(i) == 1
-                          else i + str(index)
-                          for index, i in enumerate(result.columns)]
+        dropna=dropna) for i in filenames], join=how)
 
     return tsutils.printiso(result,
                             float_format=float_format)
