@@ -232,7 +232,10 @@ def read(filenames,
         end_date=end_date,
         pick=columns,
         round_index=round_index,
-        dropna=dropna) for i in filenames], join=how)
+        dropna='all') for i in filenames], join=how)
+
+    result = result[~result.index.duplicated(keep='last')]
+    result.sort_index(inplace=True)
 
     return tsutils.printiso(result,
                             float_format=float_format)
