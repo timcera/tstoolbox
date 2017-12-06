@@ -198,6 +198,7 @@ def filter(filter_type,
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def read(filenames,
+         append_cols=False,
          columns=None,
          start_date=None,
          end_date=None,
@@ -217,6 +218,9 @@ def read(filenames,
         Use PANDAS concept on how to join the separate DataFrames read
         from each file.  Default is how='outer' which is the union, 'inner'
         is the intersection.
+    append_cols :
+        Whether to make a unique column name so that columns are appended no
+        matter what.
     {columns}
     {start_date}
     {end_date}
@@ -227,16 +231,23 @@ def read(filenames,
     """
     filenames = filenames.split(',')
     result = pd.DataFrame()
-    for i in filenames:
-        result = result.combine_first(tsutils.common_kwds(
-                 tsutils.read_iso_ts(i),
-                 start_date=start_date,
-                 end_date=end_date,
-                 pick=columns,
-                 round_index=round_index,
-                 dropna='all'))
+    result_list = []
+    for index, i in enumerate(filenames):
+        tsd = tsutils.common_kwds(
+                                  tsutils.read_iso_ts(i),
+                                  start_date=start_date,
+                                  end_date=end_date,
+                                  pick=columns,
+                                  round_index=round_index,
+                                  dropna='all')
+        if append_cols is True:
+            result_list.append(tsd)
+        else:
+            result = result.combine_first(tsd)
 
-    #result = result[~result.index.duplicated(keep='first')]
+    if append_cols is True:
+        result = pd.concat(result_list, axis='columns')
+
     result.sort_index(inplace=True)
 
     return tsutils.printiso(result,
@@ -680,7 +691,16 @@ def equation(equation_str,
         y = pd.DataFrame(pd.Series(index=x.index),
                          columns=['_'],
                          dtype='float64')
-        y.iloc[:, 0] = eval(nequation)
+        try:
+            y.iloc[:, 0] = eval(nequation)
+        except IndexError:
+            raise IndexError("""
+*
+*   There are {0} columns, but the equation you are trying to apply is trying
+*   to access a column greater than that.
+*
+""".format(y.shape[1]))
+
     else:
         y = eval(equation_str)
 
