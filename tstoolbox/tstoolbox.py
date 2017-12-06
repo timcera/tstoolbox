@@ -198,6 +198,7 @@ def filter(filter_type,
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def read(filenames,
+         force_freq=None,
          append_cols=False,
          columns=None,
          start_date=None,
@@ -221,6 +222,119 @@ def read(filenames,
     append_cols :
         Whether to make a unique column name so that columns are appended no
         matter what.
+    force_freq
+        Force this frequency for the files.  Typically you will only want to
+        enforce a smaller interval where tstoolbox will insert missing values
+        as needed.  WARNING: you may lose data if not careful with this option.
+        In general, letting the algorithm determine the frequency should always
+        work, but this option will override.  Use PANDAS offset codes.
+
+        +-------+-----------------------------+
+        | Alias | Description                 |
+        +=======+=============================+
+        | B     | business day                |
+        +-------+-----------------------------+
+        | C     | custom business day         |
+        |       | (experimental)              |
+        +-------+-----------------------------+
+        | D     | calendar day                |
+        +-------+-----------------------------+
+        | W     | weekly                      |
+        +-------+-----------------------------+
+        | M     | month end                   |
+        +-------+-----------------------------+
+        | BM    | business month end          |
+        +-------+-----------------------------+
+        | CBM   | custom business month end   |
+        +-------+-----------------------------+
+        | MS    | month start                 |
+        +-------+-----------------------------+
+        | BMS   | business month start        |
+        +-------+-----------------------------+
+        | CBMS  | custom business month start |
+        +-------+-----------------------------+
+        | Q     | quarter end                 |
+        +-------+-----------------------------+
+        | BQ    | business quarter end        |
+        +-------+-----------------------------+
+        | QS    | quarter start               |
+        +-------+-----------------------------+
+        | BQS   | business quarter start      |
+        +-------+-----------------------------+
+        | A     | year end                    |
+        +-------+-----------------------------+
+        | BA    | business year end           |
+        +-------+-----------------------------+
+        | AS    | year start                  |
+        +-------+-----------------------------+
+        | BAS   | business year start         |
+        +-------+-----------------------------+
+        | H     | hourly                      |
+        +-------+-----------------------------+
+        | T     | minutely                    |
+        +-------+-----------------------------+
+        | S     | secondly                    |
+        +-------+-----------------------------+
+        | L     | milliseconds                |
+        +-------+-----------------------------+
+        | U     | microseconds                |
+        +-------+-----------------------------+
+        | N     | nanoseconds                 |
+        +-------+-----------------------------+
+
+        Weekly has the following anchored frequencies:
+
+        +-------+-------------------------------+
+        | Alias | Description                   |
+        +=======+===============================+
+        | W-SUN | weekly frequency (sundays).   |
+        |       | Same as 'W'.                  |
+        +-------+-------------------------------+
+        | W-MON | weekly frequency (mondays)    |
+        +-------+-------------------------------+
+        | W-TUE | weekly frequency (tuesdays)   |
+        +-------+-------------------------------+
+        | W-WED | weekly frequency (wednesdays) |
+        +-------+-------------------------------+
+        | W-THU | weekly frequency (thursdays)  |
+        +-------+-------------------------------+
+        | W-FRI | weekly frequency (fridays)    |
+        +-------+-------------------------------+
+        | W-SAT | weekly frequency (saturdays)  |
+        +-------+-------------------------------+
+
+        Quarterly frequencies (Q, BQ, QS, BQS) and annual frequencies
+        (A, BA, AS, BAS) have the following anchoring suffixes:
+
+        +-------+-------------------------------+
+        | Alias | Description                   |
+        +=======+===============================+
+        | -DEC  | year ends in December (same   |
+        |       | as 'Q' and 'A')               |
+        +-------+-------------------------------+
+        | -JAN  | year ends in January          |
+        +-------+-------------------------------+
+        | -FEB  | year ends in February         |
+        +-------+-------------------------------+
+        | -MAR  | year ends in March            |
+        +-------+-------------------------------+
+        | -APR  | year ends in April            |
+        +-------+-------------------------------+
+        | -MAY  | year ends in May              |
+        +-------+-------------------------------+
+        | -JUN  | year ends in June             |
+        +-------+-------------------------------+
+        | -JUL  | year ends in July             |
+        +-------+-------------------------------+
+        | -AUG  | year ends in August           |
+        +-------+-------------------------------+
+        | -SEP  | year ends in September        |
+        +-------+-------------------------------+
+        | -OCT  | year ends in October          |
+        +-------+-------------------------------+
+        | -NOV  | year ends in November         |
+        +-------+-------------------------------+
+
     {columns}
     {start_date}
     {end_date}
@@ -229,6 +343,10 @@ def read(filenames,
     {round_index}
 
     """
+
+    if force_freq is not None:
+        dropna = 'no'
+
     filenames = filenames.split(',')
     result = pd.DataFrame()
     result_list = []
@@ -239,7 +357,8 @@ def read(filenames,
                                   end_date=end_date,
                                   pick=columns,
                                   round_index=round_index,
-                                  dropna='all')
+                                  dropna=dropna,
+                                  force_freq=force_freq)
         if append_cols is True:
             result_list.append(tsd)
         else:
