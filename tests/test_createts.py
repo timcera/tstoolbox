@@ -51,7 +51,7 @@ class TestRead(TestCase):
         assert_index_equal(out, self.data.index)
 
     def test_exception(self):
-        with assert_raises_regexp(ValueError,
+        with assert_raises_regexp(AssertionError,
                 r"If input_ts is None, then start_date, end_date"):
             out = tstoolbox.createts()
 

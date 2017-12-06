@@ -149,7 +149,7 @@ class TestEquation(TestCase):
                                   'tests/data_multiple_cols.csv,'
                                   'tests/data_multiple_cols.csv,'
                                   'tests/data_multiple_cols.csv,'
-                                  'tests/data_multiple_cols.csv', append_cols=True)
+                                  'tests/data_multiple_cols.csv', append='columns')
         out = tstoolbox.equation('x10*10', input_ts=input_ts)
         self.maxDiff = None
         assert_frame_equal(out, self.equation_result)

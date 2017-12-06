@@ -76,7 +76,7 @@ class TestRead(TestCase):
     def test_read_mulitple_direct(self):
         ''' Test read API for multiple columns - daily.
         '''
-        out = tstoolbox.read('tests/data_simple.csv,tests/data_simple.csv', append_cols=True)
+        out = tstoolbox.read('tests/data_simple.csv,tests/data_simple.csv', append="columns")
         assert_frame_equal(out, self.read_multiple_direct)
 
     def test_read_bi_monthly(self):
@@ -96,7 +96,7 @@ class TestRead(TestCase):
     def test_read_multiple_cli(self):
         ''' Test read CLI for multiple columns - daily.
         '''
-        args = 'tstoolbox read --append_cols tests/data_simple.csv,tests/data_simple.csv'
+        args = 'tstoolbox read --append columns tests/data_simple.csv,tests/data_simple.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.read_multiple_cli)

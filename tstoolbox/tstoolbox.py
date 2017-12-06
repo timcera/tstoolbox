@@ -71,14 +71,10 @@ def createts(freq=None,
     {end_date}
 
     """
-    if input_ts is not None:
-        tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                                  start_date=start_date,
-                                  end_date=end_date)
-        tsd = pd.DataFrame([fillvalue] * len(tsd.index),
-                           index=tsd.index)
-    elif start_date is None or end_date is None or freq is None:
-        raise ValueError("""
+    if input_ts is None:
+        assert ((start_date is not None) and
+                (end_date is not None) and
+                (freq is not None)), """
 *
 *   If input_ts is None, then start_date, end_date, and freq must be supplied.
 *   Instead you have:
@@ -86,7 +82,14 @@ def createts(freq=None,
 *   end_date = {1},
 *   freq = {2}
 *
-""".format(start_date, end_date, freq))
+""".format(start_date, end_date, freq)
+
+    if input_ts is not None:
+        tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                                  start_date=start_date,
+                                  end_date=end_date)
+        tsd = pd.DataFrame([fillvalue] * len(tsd.index),
+                           index=tsd.index)
     else:
         tindex = pd.date_range(start=start_date,
                                end=end_date,
@@ -199,7 +202,7 @@ def filter(filter_type,
 @tsutils.doc(tsutils.docstrings)
 def read(filenames,
          force_freq=None,
-         append_cols=False,
+         append='combine',
          columns=None,
          start_date=None,
          end_date=None,
@@ -219,9 +222,12 @@ def read(filenames,
         Use PANDAS concept on how to join the separate DataFrames read
         from each file.  Default is how='outer' which is the union, 'inner'
         is the intersection.
-    append_cols :
-        Whether to make a unique column name so that columns are appended no
-        matter what.
+    append :
+        The type of appending to do.  "combine" is the default and covers
+        almost all cases by just doing what most would expect.  Matching column
+        indices will append rows, matching row indices will append columns, and
+        matching column/row indices use the value from the first dataset.
+        You can use "row" or "columns" to force an append along either axis.
     force_freq
         Force this frequency for the files.  Typically you will only want to
         enforce a smaller interval where tstoolbox will insert missing values
@@ -347,6 +353,14 @@ def read(filenames,
     if force_freq is not None:
         dropna = 'no'
 
+    if append not in ['combine', 'rows', 'columns']:
+        raise ValueError("""
+*
+*   The "append" keyword must be "combine", "rows", or "columns".
+*   You game me {0}.
+*
+""".format(append))
+
     filenames = filenames.split(',')
     result = pd.DataFrame()
     result_list = []
@@ -359,13 +373,13 @@ def read(filenames,
                                   round_index=round_index,
                                   dropna=dropna,
                                   force_freq=force_freq)
-        if append_cols is True:
+        if append != 'combine':
             result_list.append(tsd)
         else:
             result = result.combine_first(tsd)
 
-    if append_cols is True:
-        result = pd.concat(result_list, axis='columns')
+    if append != 'combine':
+        result = pd.concat(result_list, axis=append)
 
     result.sort_index(inplace=True)
 
