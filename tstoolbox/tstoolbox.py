@@ -148,14 +148,26 @@ def filter(filter_type,
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna)
-    from tstoolbox import filters
 
-    if len(tsd.values) < window_len:
-        raise ValueError("""
+    assert len(tsd.values) > window_len, """
 *
 *   Input vector (length={0}) needs to be bigger than window size ({1}).
 *
-""".format(len(tsd.values), window_len))
+""".format(len(tsd.values), window_len)
+
+    assert filter_type in ['flat',
+                           'hanning',
+                           'hamming',
+                           'bartlett',
+                           'blackman',
+                           'fft_highpass',
+                           'fft_lowpass'], """
+*
+*   Filter type {0} not implemented.
+*
+""".format(filter_type)
+
+    from tstoolbox import filters
 
     # Trying to save some memory
     if print_input:
@@ -188,12 +200,7 @@ def filter(filter_type,
             else:
                 w = eval('pd.np.' + filter_type + '(window_len)')
             tsd[col].values[:] = pd.np.convolve(w / w.sum(), s, mode='valid')
-        else:
-            raise ValueError("""
-*
-*   Filter type {0} not implemented.
-*
-""".format(filter_type))
+
     return tsutils.print_input(print_input, otsd, tsd, '_filter',
                                float_format=float_format)
 
@@ -349,17 +356,15 @@ def read(filenames,
     {round_index}
 
     """
-
-    if force_freq is not None:
-        dropna = 'no'
-
-    if append not in ['combine', 'rows', 'columns']:
-        raise ValueError("""
+    assert append in ['combine', 'rows', 'columns'], """
 *
 *   The "append" keyword must be "combine", "rows", or "columns".
 *   You game me {0}.
 *
-""".format(append))
+""".format(append)
+
+    if force_freq is not None:
+        dropna = 'no'
 
     filenames = filenames.split(',')
     result = pd.DataFrame()
@@ -519,21 +524,19 @@ def peak_detection(input_ts='-',
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
 
-    if extrema not in ['peak', 'valley', 'both']:
-        raise ValueError("""
+    assert extrema in ['peak', 'valley', 'both'], """
 *
 *   The `extrema` argument must be one of 'peak',
 *   'valley', or 'both'.  You supplied {0}.
 *
-""".format(extrema))
+""".format(extrema)
 
-    if method not in ['rel', 'minmax', 'zero_crossing', 'parabola', 'sine']:
-        raise ValueError("""
+    assert method in ['rel', 'minmax', 'zero_crossing', 'parabola', 'sine'], """
 *
 *   The `method` argument must be one of 'rel', 'minmax',
 *   'zero_crossing', 'parabola', or 'sine'.  You supplied {0}.
 *
-""".format(method))
+""".format(method)
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
@@ -907,13 +910,13 @@ def stdtozrxp(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna)
-    if len(tsd.columns) > 1:
-        raise ValueError("""
+    assert len(tsd.columns) == 1, """
 *
 *   The "stdtozrxp" command can only accept a single
 *   'time-series, instead it is seeing {0}.
 *
-""".format(len(tsd.columns)))
+""".format(len(tsd.columns))
+
     if rexchange:
         print('#REXCHANGE{0}|*|'.format(rexchange))
     for i in range(len(tsd)):
@@ -1422,6 +1425,23 @@ def aggregate(input_ts='-',
     {print_input}
 
     """
+    statslist = ['mean',
+                 'sum',
+                 'std',
+                 'max',
+                 'min',
+                 'median',
+                 'first',
+                 'last']
+    assert statistic in statslist, """
+***
+*** The statistic option must be one of:
+*** {1}
+*** to calculate the aggregation.
+*** You gave {0}.
+***
+""".format(statistic, statslist)
+
     aggd = {'hourly': 'H',
             'daily': 'D',
             'monthly': 'M',
@@ -1461,14 +1481,6 @@ def aggregate(input_ts='-',
         elif method == 'last':
             tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
                                                     agg_interval)).last()
-        else:
-            raise ValueError("""
-***
-*** The statistic option must be one of 'mean', 'sum', 'std', 'max',
-*** 'min', 'median', 'first', or 'last' to calculate the aggregation.
-*** You gave {0}.
-***
-""".format(statistic))
         tmptsd.rename(columns=lambda x: x + '_' + method, inplace=True)
         newts = newts.join(tmptsd, how='outer')
     return tsutils.print_input(print_input, tsd, newts, '')
@@ -1880,28 +1892,25 @@ def unstack(column_names,
                               round_index=round_index,
                               dropna=dropna)
 
-    cols = list(tsd.columns)
-    cols.remove(column_names)
-    newtsd = pd.DataFrame(tsd[cols].values,
-                          index=[tsd.index.values,
-                                 tsd[column_names].values])
-
     try:
-        newtsd = newtsd.unstack()
+        newtsd = tsd.pivot_table(index=tsd.index,
+                                 values=tsd.columns.drop(column_names),
+                                 columns=column_names,
+                                 aggfunc='first')
     except ValueError:
         raise ValueError("""
 *
 *   Duplicate index (time stamp and '{0}') where found.
 *   Found these duplicate indices:
-{1}
+*   {1}
 *
 """.format(column_names,
-           newtsd.index.get_duplicates()))
+           tsd.index.get_duplicates()))
 
     newtsd.index.name = 'Datetime'
-    levels = newtsd.columns.levels
-    labels = newtsd.columns.labels
-    newtsd.columns = levels[1][labels[1]]
+
+    newtsd.columns = ['_'.join(tuple(map(str, col))).rstrip('_')
+                      for col in newtsd.columns.values]
 
     # Remove weird characters from column names
     newtsd.rename(columns=lambda x: ''.join(
@@ -1975,6 +1984,22 @@ def _plotting_position_equation(i, n, a):
 
 def _set_plotting_position(n, plotting_position='weibull'):
     """ Create plotting position 1D array using linspace. """
+
+    plotplist = ['weibull',
+                 'benard',
+                 'tukey',
+                 'gumbel',
+                 'hazen',
+                 'cunnane',
+                 'california']
+    assert plotting_position in plotplist, """
+*
+*    The plotting_position option accepts:
+*    {1}
+*    plotting position options, you gave {0}.
+*
+""".format(plotting_position, plotplist)
+
     if plotting_position == 'weibull':
         return pd.np.linspace(_plotting_position_equation(1, n, 0.0),
                               _plotting_position_equation(n, n, 0.0),
@@ -2001,14 +2026,6 @@ def _set_plotting_position(n, plotting_position='weibull'):
                               n)
     elif plotting_position == 'california':
         return pd.np.linspace(1. / n, 1., n)
-    else:
-        raise ValueError("""
-*
-*    The plotting_position option accepts 'weibull', 'benard', 'tukey',
-*    'gumbel', 'hazen', 'cunnane', and 'california'
-*    plotting position options, you gave {0}.
-*
-""".format(plotting_position))
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -2429,40 +2446,37 @@ def plot(input_ts='-',
                 nlim[0] = 0.01
             if nlim[1] is None:
                 nlim[1] = 0.99
-            if (nlim[0] <= 0 or nlim[0] >= 1 or
-                    nlim[1] <= 0 or nlim[1] >= 1):
-                raise ValueError("""
+            assert (nlim[0] > 0 and nlim[0] < 1 and
+                    nlim[1] > 0 and nlim[1] < 1), """
 *
 *   Both limits must be between 0 and 1 for the
 *   'normal', 'lognormal', or 'weibull' axis.
 *
 *   Instead you have {0}.
 *
-""".format(nlim))
+""".format(nlim)
 
         if nlim is None:
             return nlim
 
         if nlim[0] is not None and nlim[1] is not None:
-            if nlim[0] >= nlim[1]:
-                raise ValueError("""
+            assert nlim[0] < nlim[1], """
 *
 *   The second limit must be greater than the first.
 *
 *   You gave {0}.
 *
-""".format(nlim))
+""".format(nlim)
 
         if axis == 'log':
-            if ((nlim[0] is not None and nlim[0] <= 0) or
-                    (nlim[1] is not None and nlim[1] <= 0)):
-                raise ValueError("""
+            assert ((nlim[0] is None or nlim[0] > 0) and
+                    (nlim[1] is None or nlim[1] > 0)), """
 *
 *   If log plot cannot have limits less than or equal to 0.
 *
 *   You have {0}.
 *
-""".format(nlim))
+""".format(nlim)
 
         return nlim
 
@@ -2483,12 +2497,11 @@ def plot(input_ts='-',
 
     if legend_names:
         lnames = legend_names.split(',')
-        if len(lnames) != len(set(lnames)):
-            raise ValueError("""
+        assert len(lnames) == len(set(lnames)), """
 *
 *   Each name in legend_names must be unique.
 *
-""")
+"""
         if len(tsd.columns) == len(lnames):
             renamedict = dict(zip(tsd.columns, lnames))
         elif type == 'xy' and len(tsd.columns) // 2 == len(lnames):
@@ -2769,13 +2782,12 @@ def plot(input_ts='-',
         plt.xlabel(xtitle or 'Time Lag {0}'.format(short_freq))
         plt.ylabel(ytitle)
     elif type == 'bootstrap':
-        if len(tsd.columns) > 1:
-            raise ValueError("""
+        assert len(tsd.columns) == 1, """
 *
 *   The 'bootstrap' plot can only work with 1 time-series in the DataFrame.
 *   The DataFrame that you supplied has {0} time-series.
 *
-""".format(len(tsd.columns)))
+""".format(len(tsd.columns))
         from pandas.tools.plotting import bootstrap_plot
         bootstrap_plot(tsd, size=bootstrap_size, samples=bootstrap_samples,
                        color='gray',

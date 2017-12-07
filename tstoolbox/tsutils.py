@@ -402,7 +402,7 @@ def asbestfreq(data, force_freq=None):
 *   Duplicate index entry record {1} (start count at 0):
 *   "{0}".
 *
-""".format(data.index[ndiff == 0][0], pd.np.where(ndiff == 0)[0][0] + 1))
+""".format(data.index[:-1][ndiff == 0][0], pd.np.where(ndiff == 0)[0][0] + 1))
     if np.any(ndiff < 0):
         raise ValueError("""
 *
