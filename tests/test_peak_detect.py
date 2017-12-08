@@ -225,13 +225,13 @@ class TestPeakDetect(TestCase):
         self.assertEqual(out, output_peak_detection)
 
     def test_peak_type_error(self):
-        with assert_raises_regexp(ValueError, 'The `extrema` argument must be one'):
+        with assert_raises_regexp(AssertionError, 'The `extrema` argument must be one'):
             out = tstoolbox.peak_detection(method='sine',
                                            points=9,
                                            input_ts=self.ats,
                                            print_input=True,
                                            extrema='booth')
-        with assert_raises_regexp(ValueError, 'The `method` argument must be one'):
+        with assert_raises_regexp(AssertionError, 'The `method` argument must be one'):
             out = tstoolbox.peak_detection(method='sin',
                                            points=9,
                                            input_ts=self.ats,

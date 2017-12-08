@@ -30,6 +30,12 @@ class TestRead(TestCase):
         self.stacked.index.name = 'Datetime'
         self.stacked = tsutils.memory_optimize(self.stacked)
 
+        self.stacked_1 = pd.read_csv('tests/data_stacked_1.csv',
+                                             index_col=0,
+                                             parse_dates=True)
+        self.stacked_1.index.name = 'Datetime'
+        self.stacked_1 = tsutils.memory_optimize(self.stacked_1)
+
         self.unstacked = pd.read_csv('tests/data_unstacked.csv',
                                                index_col=0,
                                                parse_dates=True)
@@ -42,7 +48,7 @@ class TestRead(TestCase):
             in-memory version of the data_stacked.csv file.
         '''
         out = tstoolbox.stack(input_ts='tests/data_unstacked.csv')
-        assert_frame_equal(out, self.stacked)
+        assert_frame_equal(out, self.stacked_1)
 
     def test_unstack(self):
         ''' Unstack the data_stacked.csv file and compare against the

@@ -98,14 +98,14 @@ class TestFilter(TestCase):
         assert_frame_equal(out, out1)
 
     def test_large_window_len(self):
-        with assert_raises_regexp(ValueError,
+        with assert_raises_regexp(AssertionError,
                 "Input vector \(length="):
             out = tstoolbox.filter('flat',
                                    input_ts='tests/data_sine.csv',
                                    window_len=1000)
 
     def test_filter_type(self):
-        with assert_raises_regexp(ValueError,
+        with assert_raises_regexp(AssertionError,
                 r"Filter type "):
             out = tstoolbox.filter('flatter',
                                    input_ts='tests/data_sine.csv')
