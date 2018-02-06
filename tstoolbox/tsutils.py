@@ -588,6 +588,9 @@ def _printiso(tsd,
     elif isinstance(tsd, (int, float, list, tuple, pd.np.ndarray)):
         tablefmt = None
 
+    tsd.rename(lambda x: x.replace(',', '_').replace(' ', '_').replace('__', '_'),
+               axis='columns',
+               inplace=True)
     if tablefmt in ["csv", "tsv", "csv_nos", "tsv_nos"]:
         sep = {"csv": ",",
                "tsv": "\\t",
