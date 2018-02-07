@@ -209,7 +209,7 @@ def filter(filter_type,
 @tsutils.doc(tsutils.docstrings)
 def read(filenames,
          force_freq=None,
-         append='combine',
+         append='columns',
          columns=None,
          start_date=None,
          end_date=None,
@@ -230,11 +230,11 @@ def read(filenames,
         from each file.  Default is how='outer' which is the union, 'inner'
         is the intersection.
     append :
-        The type of appending to do.  "combine" is the default and covers
-        almost all cases by just doing what most would expect.  Matching column
-        indices will append rows, matching row indices will append columns, and
-        matching column/row indices use the value from the first dataset.
-        You can use "row" or "columns" to force an append along either axis.
+        The type of appending to do.  "columns" is the default. For "combine"
+        option matching column indices will append rows, matching row indices
+        will append columns, and matching column/row indices use the value from
+        the first dataset.  You can use "row" to force an append along either
+        axis.
     force_freq
         Force this frequency for the files.  Typically you will only want to
         enforce a smaller interval where tstoolbox will insert missing values
