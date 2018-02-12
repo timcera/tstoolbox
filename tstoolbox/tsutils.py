@@ -324,7 +324,6 @@ def _pick(tsd, columns):
     return newtsd
 
 
-
 def _date_slice(input_tsd,
                 start_date=None,
                 end_date=None):
@@ -588,8 +587,8 @@ def _printiso(tsd,
     elif isinstance(tsd, (int, float, list, tuple, pd.np.ndarray)):
         tablefmt = None
 
-    tsd.rename(lambda x: x.replace(',', '_').replace(' ', '_').replace('__', '_'),
-               axis='columns',
+    tsd.rename(columns=lambda x:
+               x.replace(',', '_').replace(' ', '_').replace('__', '_'),
                inplace=True)
     if tablefmt in ["csv", "tsv", "csv_nos", "tsv_nos"]:
         sep = {"csv": ",",
