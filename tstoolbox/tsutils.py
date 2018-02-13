@@ -63,7 +63,7 @@ docstrings = {
         As Python Library:
 
             You MUST use the `input_ts=...` option where `input_ts` can be one
-            of a [pandas Dataframe, pandas Series, dict, tuple,
+            of a [pandas DataFrame, pandas Series, dict, tuple,
             list, StringIO, or file name].
 
             If result is a time series, returns a pandas DataFrame.
@@ -202,8 +202,8 @@ def common_kwds(input_tsd=None,
 
     Parameters
     ----------
-    input_tsd: Dataframe
-        Input data which should be a Dataframe.
+    input_tsd: DataFrame
+        Input data which should be a DataFrame.
 
     required: str, bytes, tuple of str or bytes, list
         If str or bytes then split on "," and represents column names in
@@ -211,8 +211,8 @@ def common_kwds(input_tsd=None,
 
     Returns
     -------
-    df: Dataframe
-        Dataframe altered according to options.
+    df: DataFrame
+        DataFrame altered according to options.
     """
 
     ntsd = input_tsd
@@ -587,9 +587,6 @@ def _printiso(tsd,
     elif isinstance(tsd, (int, float, list, tuple, pd.np.ndarray)):
         tablefmt = None
 
-    tsd.rename(columns=lambda x:
-               x.replace(',', '_').replace(' ', '_').replace('__', '_'),
-               inplace=True)
     if tablefmt in ["csv", "tsv", "csv_nos", "tsv_nos"]:
         sep = {"csv": ",",
                "tsv": "\\t",
@@ -654,6 +651,7 @@ def printiso(tsd,
 
     """
 
+
     if test_cli():
         _printiso(tsd,
                   float_format=float_format,
@@ -662,6 +660,14 @@ def printiso(tsd,
                   headers=headers,
                   showindex=showindex)
     else:
+        if isinstance(tsd, pd.DataFrame):
+            def rename_map(x):
+                try:
+                    return x.replace(',', '_').replace(' ', '_')
+                except:
+                    return x
+            tsd.rename(columns=rename_map,
+                       inplace=True)
         return tsd
 
 
@@ -725,14 +731,14 @@ def read_iso_ts(indat,
 
     Parameters
     ----------
-    indat: str, bytes, StringIO, file pointer, file name, Dataframe,
+    indat: str, bytes, StringIO, file pointer, file name, DataFrame,
            Series, tuple, list, dict
 
         The input data.
 
     Returns
     -------
-    df: Dataframe
+    df: DataFrame
 
         Returns a DataFrame.
     """
