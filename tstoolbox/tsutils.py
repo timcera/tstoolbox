@@ -584,7 +584,7 @@ def _printiso(tsd,
         if showindex in ['always', 'default']:
             print_index = True
 
-    elif isinstance(tsd, (int, float, list, tuple, pd.np.ndarray)):
+    elif isinstance(tsd, (int, float, tuple, pd.np.ndarray)):
         tablefmt = None
 
     if tablefmt in ["csv", "tsv", "csv_nos", "tsv_nos"]:
