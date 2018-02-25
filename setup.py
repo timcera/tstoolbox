@@ -17,15 +17,16 @@ version = open("./VERSION").readline().strip()
 
 install_requires = [
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
-    'pandas >= 0.17.1',
-    'python-dateutil >= 2.1',
-    'mando >= 0.4',
-    'matplotlib',
-    'rst2ansi >= 0.1.5',
-    'scipy',
+    'future',
     'dateparser',
     'tabulate',
     'docutils',
+    'mando >= 0.4',
+    'rst2ansi >= 0.1.5',
+    'pandas >= 0.17.1',
+    'python-dateutil >= 2.1',
+    'matplotlib',
+    'scipy',
 ]
 
 

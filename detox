@@ -3,6 +3,7 @@
 program=tstoolbox
 
 pkgs="\
+     future \
      setuptools \
      mando \
      numpy \

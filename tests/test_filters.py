@@ -71,14 +71,14 @@ class TestFilter(TestCase):
                                input_ts='tests/data_sine.csv',
                                print_input=True)
         self.maxDiff = None
-        assert_frame_equal(out, self.flat_3)
+        assert_frame_equal(out, self.flat_3, check_column_type=False)
 
     def test_filter_hanning(self):
         out = tstoolbox.filter('hanning',
                                input_ts='tests/data_sine.csv',
                                print_input=True)
         self.maxDiff = None
-        assert_frame_equal(out, self.hanning)
+        assert_frame_equal(out, self.hanning, check_column_type=False)
 
     def test_filter_fft_lowpass(self):
         out = tstoolbox.filter('fft_lowpass',
@@ -86,7 +86,7 @@ class TestFilter(TestCase):
                                print_input=True,
                                cutoff_period=50)
         self.maxDiff = None
-        assert_frame_equal(out, self.fft_lowpass)
+        assert_frame_equal(out, self.fft_lowpass, check_column_type=False)
 
     def test_small_window_len(self):
         out = tstoolbox.filter('flat',

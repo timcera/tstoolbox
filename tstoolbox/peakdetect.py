@@ -1,7 +1,11 @@
 """Collection of peak detection algorithms."""
 
 from __future__ import print_function
+from __future__ import division
 
+from builtins import zip
+from builtins import range
+from past.utils import old_div
 import numpy as np
 
 
@@ -68,7 +72,7 @@ def _argrel(data, axis=0, window=1):
     """Private function to find relative min and max of data."""
     tmpmin = _argrelmin(data, axis=axis, order=window)
     tmpmax = _argrelmax(data, axis=axis, order=window)
-    return (zip(tmpmax[0], data[tmpmax[0]]), zip(tmpmin[0], data[tmpmin[0]]))
+    return (list(zip(tmpmax[0], data[tmpmax[0]])), list(zip(tmpmin[0], data[tmpmin[0]])))
 
 
 def _argrelmin(data, axis=0, order=1, mode='clip'):
@@ -117,7 +121,7 @@ def _argrelextrema(data, comparator,
 def _datacheck_peakdetect(x_axis, y_axis):
     """Check x and y axis, creating an x data_set if necessary."""
     if x_axis is None:
-        x_axis = range(len(y_axis))
+        x_axis = list(range(len(y_axis)))
 
     if len(y_axis) != len(x_axis):
         raise ValueError("""
@@ -344,14 +348,14 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
         return x[:len(x) // 2] + [0] * c + x[len(x) // 2:]
 
     def n(x):
-        return (np.log(x) / np.log(2)).astype('i') + 1
+        return (old_div(np.log(x), np.log(2))).astype('i') + 1
 
     # padds to 2**n amount of samples
     fft_padded = padd(list(fft_data), 2 **
                       n(len(fft_data) * pad_len) - len(fft_data))
 
     # There is amplitude decrease directly proportional to the sample increase
-    sf = len(fft_padded) / float(len(fft_data))
+    sf = old_div(len(fft_padded), float(len(fft_data)))
     # There might be a leakage giving the result an imaginary component
     # Return only the real component
     y_axis_ifft = ifft(fft_padded).real * sf  # (pad_len + 1)
@@ -411,9 +415,9 @@ def _peakdetect_parabola(y_axis, x_axis, points=9):
     max_ = _peakdetect_parabola_fitter(max_raw, x_axis, y_axis, points)
     min_ = _peakdetect_parabola_fitter(min_raw, x_axis, y_axis, points)
 
-    max_peaks = map(lambda x: [x[0], x[1]], max_)
+    max_peaks = [[x[0], x[1]] for x in max_]
     # max_fitted = map(lambda x: x[-1], max_)
-    min_peaks = map(lambda x: [x[0], x[1]], min_)
+    min_peaks = [[x[0], x[1]] for x in min_]
     # min_fitted = map(lambda x: x[-1], min_)
 
     return [max_peaks, min_peaks]
@@ -480,7 +484,7 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         if len(raw) > 1:
             peak_pos = [x_axis[index] for index in zip(*raw)[0]]
             Hz.append(np.mean(np.diff(peak_pos)))
-    Hz = 1 / np.mean(Hz)
+    Hz = old_div(1, np.mean(Hz))
 
     # model function
     # if cosine is used then tau could equal the x position of the peak
@@ -490,11 +494,11 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         # definitions is the "Hz" argument
 
         def func(x, A, tau):
-            return A * np.sin(2 * np.pi * Hz * (x - tau) + np.pi / 2)
+            return A * np.sin(2 * np.pi * Hz * (x - tau) + old_div(np.pi, 2))
     else:
 
         def func(x, A, Hz, tau):
-            return A * np.sin(2 * np.pi * Hz * (x - tau) + np.pi / 2)
+            return A * np.sin(2 * np.pi * Hz * (x - tau) + old_div(np.pi, 2))
     # func = lambda x, A, Hz, tau: A * np.cos(2 * np.pi * Hz * (x - tau))
 
     # get peaks
@@ -537,9 +541,9 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         fitted_peaks.append(peak_data)
 
     # structure date for output
-    max_peaks = map(lambda x: [x[0], x[1]], fitted_peaks[0])
+    max_peaks = [[x[0], x[1]] for x in fitted_peaks[0]]
     # max_fitted = map(lambda x: x[-1], fitted_peaks[0])
-    min_peaks = map(lambda x: [x[0], x[1]], fitted_peaks[1])
+    min_peaks = [[x[0], x[1]] for x in fitted_peaks[1]]
     # min_fitted = map(lambda x: x[-1], fitted_peaks[1])
 
     return [max_peaks, min_peaks]
@@ -691,7 +695,7 @@ def _smooth(x, window_len=11, window='hanning'):
     else:
         w = eval('np.' + window + '(window_len)')
 
-    y = np.convolve(w / w.sum(), s, mode='valid')
+    y = np.convolve(old_div(w, w.sum()), s, mode='valid')
     return y
 
 
@@ -710,7 +714,7 @@ def zero_crossings(y_axis, window=11):
     """
     # smooth the curve
     length = len(y_axis)
-    x_axis = np.asarray(range(length), int)
+    x_axis = np.asarray(list(range(length)), int)
 
     ymean = y_axis.mean()
     y_axis = y_axis - ymean

@@ -3,6 +3,10 @@
 from __future__ import print_function
 from __future__ import division
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
 import os
 import sys
 import gzip
@@ -20,7 +24,7 @@ except ImportError:
 try:
     from urllib.parse import urlparse
 except ImportError:
-    from urlparse import urlparse
+    from urllib.parse import urlparse
 
 import pandas as pd
 import numpy as np
@@ -350,7 +354,7 @@ def _date_slice(input_tsd,
         return input_tsd
 
 
-_annuals = {
+_ANNUALS = {
     0: 'DEC',
     1: 'JAN',
     2: 'FEB',
@@ -366,7 +370,7 @@ _annuals = {
     12: 'DEC',
 }
 
-_weeklies = {
+_WEEKLIES = {
     0: 'MON',
     1: 'TUE',
     2: 'WED',
@@ -450,13 +454,13 @@ def asbestfreq(data, force_freq=None):
     elif np.alltrue(data.index.is_month_end):
         if np.all(data.index.month == data.index[0].month):
             # Actually yearly with different ends
-            infer_freq = 'A-{0}'.format(_annuals[data.index[0].month])
+            infer_freq = 'A-{0}'.format(_ANNUALS[data.index[0].month])
         else:
             infer_freq = 'M'
     elif np.alltrue(data.index.is_month_start):
         if np.all(data.index.month == data.index[0].month):
             # Actually yearly with different start
-            infer_freq = 'A-{0}'.format(_annuals[data.index[0].month] - 1)
+            infer_freq = 'A-{0}'.format(_ANNUALS[data.index[0].month] - 1)
         else:
             infer_freq = 'MS'
 
@@ -491,7 +495,7 @@ def asbestfreq(data, force_freq=None):
         infer_freq = '{0}W'.format(ngcd // 604800000000000)
         if np.all(data.index.dayofweek == data.index[0].dayofweek):
             infer_freq = infer_freq + '-{0}'.format(
-                _weeklies[data.index[0].dayofweek])
+                _WEEKLIES[data.index[0].dayofweek])
         else:
             infer_freq = 'D'
 
@@ -523,12 +527,11 @@ def print_input(iftrue,
                         float_format=float_format,
                         tablefmt=tablefmt,
                         showindex=showindex)
-    else:
-        return printiso(output,
-                        date_format=date_format,
-                        float_format=float_format,
-                        tablefmt=tablefmt,
-                        showindex=showindex)
+    return printiso(output,
+                    date_format=date_format,
+                    float_format=float_format,
+                    tablefmt=tablefmt,
+                    showindex=showindex)
 
 
 def _apply_across_columns(func, xtsd, **kwds):
@@ -765,7 +768,7 @@ def read_iso_ts(indat,
             fname = ''
         elif len(lindat) > 1:
             result = pd.DataFrame({'values': _convert_to_numbers(lindat)},
-                                  index=range(len(lindat)))
+                                  index=list(range(len(lindat))))
             return result
         elif os.path.exists(indat):
             # a local file

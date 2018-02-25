@@ -5,6 +5,10 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+from builtins import map
+from builtins import zip
+from builtins import str
+from builtins import range
 import sys
 import os.path
 import warnings
@@ -588,7 +592,7 @@ def peak_detection(input_ts='-',
     for cols in tmptsd.columns:
         if method in ['fft', 'parabola', 'sine']:
             maxpeak, minpeak = func(
-                tmptsd[cols].values, range(len(tmptsd[cols])), **kwds)
+                tmptsd[cols].values, list(range(len(tmptsd[cols]))), **kwds)
         else:
             maxpeak, minpeak = func(tmptsd[cols].values, **kwds)
         if cols[-5:] == '_peak':
@@ -2503,9 +2507,9 @@ def plot(input_ts='-',
 *
 """
         if len(tsd.columns) == len(lnames):
-            renamedict = dict(zip(tsd.columns, lnames))
+            renamedict = dict(list(zip(tsd.columns, lnames)))
         elif type == 'xy' and len(tsd.columns) // 2 == len(lnames):
-            renamedict = dict(zip(tsd.columns[2::2], lnames[1:]))
+            renamedict = dict(list(zip(tsd.columns[2::2], lnames[1:])))
             renamedict[tsd.columns[1]] = lnames[0]
         else:
             raise ValueError("""
@@ -2608,8 +2612,8 @@ def plot(input_ts='-',
             typed = '.-'
             if type in ['xy']:
                 typed = '*'
-            style = zip(colors * (len(tsd.columns) // len(colors) + 1),
-                        [typed] * len(tsd.columns))
+            style = list(zip(colors * (len(tsd.columns) // len(colors) + 1),
+                        [typed] * len(tsd.columns)))
             style = [i + j for i, j in style]
 
         if type == 'double_mass':

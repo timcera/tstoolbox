@@ -4,6 +4,8 @@
 from __future__ import print_function
 from __future__ import absolute_import
 
+from builtins import zip
+from builtins import range
 import pandas as pd
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
@@ -88,9 +90,9 @@ def fill(method='ffill',
         ntsd = tsd
     ntsd = tsutils.asbestfreq(ntsd)
     offset = ntsd.index[1] - ntsd.index[0]
-    predf = pd.DataFrame(dict(zip(tsd.columns, tsd.mean().values)),
+    predf = pd.DataFrame(dict(list(zip(tsd.columns, tsd.mean().values))),
                          index=[tsd.index[0] - offset])
-    postf = pd.DataFrame(dict(zip(tsd.columns, tsd.mean().values)),
+    postf = pd.DataFrame(dict(list(zip(tsd.columns, tsd.mean().values))),
                          index=[tsd.index[-1] + offset])
     ntsd = pd.concat([predf, ntsd, postf])
     if method in ['ffill', 'bfill']:
