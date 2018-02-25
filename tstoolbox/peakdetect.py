@@ -47,8 +47,8 @@ def _boolrelextrema(data, comparator,
     Examples
     --------
     >>> testdata = np.array([1,2,3,2,1])
-    >>> _boolrelextrema(testdata, np.greater, axis=0)
-    array([False, False,  True, False, False])
+    >>> _boolrelextrema(testdata, np.greater, axis=0).tolist()
+    [False, False,  True, False, False]
     """
     if (int(order) != order) or (order < 1):
         raise ValueError('Order must be an int >= 1')
