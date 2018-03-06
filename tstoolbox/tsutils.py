@@ -31,18 +31,23 @@ import numpy as np
 from tabulate import tabulate as tb
 from tabulate import simple_separated_format
 
-
 docstrings = {
     'input_ts': '''input_ts : str
+        [optional, required if using Python API, default is '-' (stdin)]
+
         Whether from a file or standard input, data requires a first line
         header of column names.  Most separators will be automatically
         detected. Most common date formats can be used, but the closer to ISO
         8601 date/time standard the better.
 
-        Command line:
+        Command line::
 
-            `--input_ts=filename.csv` or '--input_ts=-' for standard input
-            (stdin).  Default is '-'.
+            +-------------------------+------------------------+
+            | --input_ts=filename.csv | to read 'filename.csv' |
+            +-------------------------+------------------------+
+            | --input_ts='-'          | to read from standard  |
+            |                         | input (stdin).         |
+            +-------------------------+------------------------+
 
             In many cases it is better to use redirection rather that use
             `--input_ts=filename.csv`.  The following are identical:
@@ -64,7 +69,7 @@ docstrings = {
 
                 command subcmd < filename.csv | command subcmd1 > fileout.csv
 
-        As Python Library:
+        As Python Library::
 
             You MUST use the `input_ts=...` option where `input_ts` can be one
             of a [pandas DataFrame, pandas Series, dict, tuple,
@@ -73,41 +78,193 @@ docstrings = {
             If result is a time series, returns a pandas DataFrame.
         ''',
     'columns': '''columns
+        [optional]
+
         Columns to select out of input.  Can use column names from the
         first line header or column numbers.  If using numbers, column
         number 1 is the first data column.  To pick multiple columns;
         separate by commas with no spaces. As used in `tstoolbox pick`
         command.''',
     'start_date': '''start_date : str
+        [optional]
+
         The start_date of the series in ISOdatetime format, or 'None'
         for beginning.''',
     'end_date': '''end_date : str
+        [optional]
+
         The end_date of the series in ISOdatetime format, or 'None' for
         end.''',
     'dropna': '''dropna : str
+        [optional, defauls it 'no']
+
         Set `dropna` to 'any' to have records dropped that have NA value
         in any column, or 'all' to have records dropped that have NA in
         all columns.  Set to 'no' to not drop any records.  The default
         is 'no'.''',
     'print_input': '''print_input
+        [optional, default is False]
+
         If set to 'True' will include the input columns in the output
-        table.  Default is 'False'.''',
+        table.''',
     'round_index': '''round_index
+        [optional]
+
         Round the index to the nearest time point.  Can significantly
         improve the performance since can cut down on memory and
         processing requirements, however be cautious about rounding to
         a very course interval from a small one.  This could lead to
         duplicate values in the index.''',
     'float_format': '''float_format
+        [optional]
+
         Format for float numbers.''',
-    'tablefmt': '''tablefmt
+    'tablefmt': '''tablefmt : str
+        [optional, default is 'simple']
+
         The table format.  Can be one of 'cvs', 'tvs', 'plain',
         'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki', 'latex',
-        'latex_raw' and 'latex_booktabs'.  Default is 'simple'.''',
-    'header': '''header
+        'latex_raw' and 'latex_booktabs'.''',
+    'header': '''header : str
+        [optional, default is 'default']
+
         This is if you want a different header than is the default for
         this table.  Pass a list of strings for each column in the
-        table.  The default is the string 'default'.'''}
+        table.''',
+    'pandas_offset_codes': '''+-------+-----------------------------+
+        | Alias | Description                 |
+        +=======+=============================+
+        | B     | business day                |
+        +-------+-----------------------------+
+        | C     | custom business day         |
+        |       | (experimental)              |
+        +-------+-----------------------------+
+        | D     | calendar day                |
+        +-------+-----------------------------+
+        | W     | weekly                      |
+        +-------+-----------------------------+
+        | M     | month end                   |
+        +-------+-----------------------------+
+        | BM    | business month end          |
+        +-------+-----------------------------+
+        | CBM   | custom business month end   |
+        +-------+-----------------------------+
+        | MS    | month start                 |
+        +-------+-----------------------------+
+        | BMS   | business month start        |
+        +-------+-----------------------------+
+        | CBMS  | custom business month start |
+        +-------+-----------------------------+
+        | Q     | quarter end                 |
+        +-------+-----------------------------+
+        | BQ    | business quarter end        |
+        +-------+-----------------------------+
+        | QS    | quarter start               |
+        +-------+-----------------------------+
+        | BQS   | business quarter start      |
+        +-------+-----------------------------+
+        | A     | year end                    |
+        +-------+-----------------------------+
+        | BA    | business year end           |
+        +-------+-----------------------------+
+        | AS    | year start                  |
+        +-------+-----------------------------+
+        | BAS   | business year start         |
+        +-------+-----------------------------+
+        | H     | hourly                      |
+        +-------+-----------------------------+
+        | T     | minutely                    |
+        +-------+-----------------------------+
+        | S     | secondly                    |
+        +-------+-----------------------------+
+        | L     | milliseconds                |
+        +-------+-----------------------------+
+        | U     | microseconds                |
+        +-------+-----------------------------+
+        | N     | nanoseconds                 |
+        +-------+-----------------------------+
+
+        Weekly has the following anchored frequencies:
+
+        +-------+-------------------------------+
+        | Alias | Description                   |
+        +=======+===============================+
+        | W-SUN | weekly frequency (sundays).   |
+        |       | Same as 'W'.                  |
+        +-------+-------------------------------+
+        | W-MON | weekly frequency (mondays)    |
+        +-------+-------------------------------+
+        | W-TUE | weekly frequency (tuesdays)   |
+        +-------+-------------------------------+
+        | W-WED | weekly frequency (wednesdays) |
+        +-------+-------------------------------+
+        | W-THU | weekly frequency (thursdays)  |
+        +-------+-------------------------------+
+        | W-FRI | weekly frequency (fridays)    |
+        +-------+-------------------------------+
+        | W-SAT | weekly frequency (saturdays)  |
+        +-------+-------------------------------+
+
+        Quarterly frequencies (Q, BQ, QS, BQS) and annual frequencies
+        (A, BA, AS, BAS) have the following anchoring suffixes:
+
+        +-------+-------------------------------+
+        | Alias | Description                   |
+        +=======+===============================+
+        | -DEC  | year ends in December (same   |
+        |       | as 'Q' and 'A')               |
+        +-------+-------------------------------+
+        | -JAN  | year ends in January          |
+        +-------+-------------------------------+
+        | -FEB  | year ends in February         |
+        +-------+-------------------------------+
+        | -MAR  | year ends in March            |
+        +-------+-------------------------------+
+        | -APR  | year ends in April            |
+        +-------+-------------------------------+
+        | -MAY  | year ends in May              |
+        +-------+-------------------------------+
+        | -JUN  | year ends in June             |
+        +-------+-------------------------------+
+        | -JUL  | year ends in July             |
+        +-------+-------------------------------+
+        | -AUG  | year ends in August           |
+        +-------+-------------------------------+
+        | -SEP  | year ends in September        |
+        +-------+-------------------------------+
+        | -OCT  | year ends in October          |
+        +-------+-------------------------------+
+        | -NOV  | year ends in November         |
+        +-------+-------------------------------+''',
+    'plotting_position_table': '''+------------+-----+-----------------+-----------------------+
+        | Name       | a   | Equation        | Description           |
+        |            |     | (1-a)/(n+1-2*a) |                       |
+        +============+=====+=================+=======================+
+        | weibull    | 0   | i/(n+1)         | mean of sampling      |
+        |            |     |                 | distribution          |
+        |            |     |                 | (default)             |
+        +------------+-----+-----------------+-----------------------+
+        | benard and | 0.3 | (i-0.3)/(n+0.4) | approx. median of     |
+        | bos-       |     |                 | sampling distribution |
+        | levenbach  |     |                 |                       |
+        +------------+-----+-----------------+-----------------------+
+        | tukey      | 1/3 | (i-1/3)/(n+1/3) | approx. median of     |
+        |            |     |                 | sampling distribution |
+        +------------+-----+-----------------+-----------------------+
+        | gumbel     | 1   | (i-1)/(n-1)     | mode of sampling      |
+        |            |     |                 | distribution          |
+        +------------+-----+-----------------+-----------------------+
+        | hazen      | 1/2 | (i-1/2)/n       | midpoints of n equal  |
+        |            |     |                 | intervals             |
+        +------------+-----+-----------------+-----------------------+
+        | cunnane    | 2/5 | (i-2/5)/(n+1/5) | subjective            |
+        +------------+-----+-----------------+-----------------------+
+        | california | NA  | i/n             |                       |
+        +------------+-----+-----------------+-----------------------+
+
+        Where 'i' is the sorted rank of the y value, and 'n' is the
+        total number of values to be plotted.'''
+        }
 
 
 def b(s):
@@ -653,7 +810,6 @@ def printiso(tsd,
     Used for tstoolbox, wdmtoolbox, swmmtoolbox, and hspfbintoolbox.
 
     """
-
 
     if test_cli():
         _printiso(tsd,

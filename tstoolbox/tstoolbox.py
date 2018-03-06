@@ -63,11 +63,15 @@ def createts(freq=None,
 
     Parameters
     ----------
-    freq
+    freq : str
+        [optional, default is None]
+
         To use this form `--start_date` and `--end_date` must be supplied
         also.  The `freq` option is the pandas date offset code used to create
         the index.
     fillvalue
+        [optional, default is None]
+
         The fill value for the time-series.  The default is None, which
         generates the date/time stamps only.
     {input_ts}
@@ -126,16 +130,18 @@ def filter(filter_type,
         'fft_highpass' and 'fft_lowpass' for Fast Fourier Transform
         filter in the frequency domain.
     window_len : int
+        [optional, default is 5]
+
         For the windowed types, 'flat', 'hanning', 'hamming',
         'bartlett', and 'blackman' specifies the length of the window.
-        Defaults to 5.
     cutoff_period
-        For 'fft_highpass' and 'fft_lowpass'. Default is None, but
-        must be supplied if using 'fft_highpass' or 'fft_lowpass'.
-        The period in input time units that will form the cutoff between
-        low frequencies (longer periods) and high frequencies (shorter
-        periods).  Filter will be smoothed by `window_len` running
-        average.
+        [optional, default is None]
+
+        For 'fft_highpass' and 'fft_lowpass'.  Must be supplied if using
+        'fft_highpass' or 'fft_lowpass'.  The period in input time units that
+        will form the cutoff between low frequencies (longer periods) and high
+        frequencies (shorter periods).  Filter will be smoothed by `window_len`
+        running average.
     {input_ts}
     {start_date}
     {end_date}
@@ -228,129 +234,31 @@ def read(filenames,
     Parameters
     ----------
     filenames : str
-        List of comma delimited filenames to read time series from.
+        List of comma delimited filenames to read time series
+        from.
     how : str
+        [optional, default is 'outer']
+
         Use PANDAS concept on how to join the separate DataFrames read
-        from each file.  Default is how='outer' which is the union, 'inner'
-        is the intersection.
-    append :
-        The type of appending to do.  "columns" is the default. For "combine"
-        option matching column indices will append rows, matching row indices
-        will append columns, and matching column/row indices use the value from
-        the first dataset.  You can use "row" to force an append along either
-        axis.
+        from each file.  If how='outer' represents the union of the
+        time-series, 'inner' is the intersection.
+    append : str
+        [optional, default is 'columns']
+
+        The type of appending to do.  For "combine" option matching column
+        indices will append rows, matching row indices will append columns, and
+        matching column/row indices use the value from the first dataset.  You
+        can use "row" to force an append along either axis.
     force_freq
+        [optional]
+
         Force this frequency for the files.  Typically you will only want to
         enforce a smaller interval where tstoolbox will insert missing values
         as needed.  WARNING: you may lose data if not careful with this option.
         In general, letting the algorithm determine the frequency should always
         work, but this option will override.  Use PANDAS offset codes.
 
-        +-------+-----------------------------+
-        | Alias | Description                 |
-        +=======+=============================+
-        | B     | business day                |
-        +-------+-----------------------------+
-        | C     | custom business day         |
-        |       | (experimental)              |
-        +-------+-----------------------------+
-        | D     | calendar day                |
-        +-------+-----------------------------+
-        | W     | weekly                      |
-        +-------+-----------------------------+
-        | M     | month end                   |
-        +-------+-----------------------------+
-        | BM    | business month end          |
-        +-------+-----------------------------+
-        | CBM   | custom business month end   |
-        +-------+-----------------------------+
-        | MS    | month start                 |
-        +-------+-----------------------------+
-        | BMS   | business month start        |
-        +-------+-----------------------------+
-        | CBMS  | custom business month start |
-        +-------+-----------------------------+
-        | Q     | quarter end                 |
-        +-------+-----------------------------+
-        | BQ    | business quarter end        |
-        +-------+-----------------------------+
-        | QS    | quarter start               |
-        +-------+-----------------------------+
-        | BQS   | business quarter start      |
-        +-------+-----------------------------+
-        | A     | year end                    |
-        +-------+-----------------------------+
-        | BA    | business year end           |
-        +-------+-----------------------------+
-        | AS    | year start                  |
-        +-------+-----------------------------+
-        | BAS   | business year start         |
-        +-------+-----------------------------+
-        | H     | hourly                      |
-        +-------+-----------------------------+
-        | T     | minutely                    |
-        +-------+-----------------------------+
-        | S     | secondly                    |
-        +-------+-----------------------------+
-        | L     | milliseconds                |
-        +-------+-----------------------------+
-        | U     | microseconds                |
-        +-------+-----------------------------+
-        | N     | nanoseconds                 |
-        +-------+-----------------------------+
-
-        Weekly has the following anchored frequencies:
-
-        +-------+-------------------------------+
-        | Alias | Description                   |
-        +=======+===============================+
-        | W-SUN | weekly frequency (sundays).   |
-        |       | Same as 'W'.                  |
-        +-------+-------------------------------+
-        | W-MON | weekly frequency (mondays)    |
-        +-------+-------------------------------+
-        | W-TUE | weekly frequency (tuesdays)   |
-        +-------+-------------------------------+
-        | W-WED | weekly frequency (wednesdays) |
-        +-------+-------------------------------+
-        | W-THU | weekly frequency (thursdays)  |
-        +-------+-------------------------------+
-        | W-FRI | weekly frequency (fridays)    |
-        +-------+-------------------------------+
-        | W-SAT | weekly frequency (saturdays)  |
-        +-------+-------------------------------+
-
-        Quarterly frequencies (Q, BQ, QS, BQS) and annual frequencies
-        (A, BA, AS, BAS) have the following anchoring suffixes:
-
-        +-------+-------------------------------+
-        | Alias | Description                   |
-        +=======+===============================+
-        | -DEC  | year ends in December (same   |
-        |       | as 'Q' and 'A')               |
-        +-------+-------------------------------+
-        | -JAN  | year ends in January          |
-        +-------+-------------------------------+
-        | -FEB  | year ends in February         |
-        +-------+-------------------------------+
-        | -MAR  | year ends in March            |
-        +-------+-------------------------------+
-        | -APR  | year ends in April            |
-        +-------+-------------------------------+
-        | -MAY  | year ends in May              |
-        +-------+-------------------------------+
-        | -JUN  | year ends in June             |
-        +-------+-------------------------------+
-        | -JUL  | year ends in July             |
-        +-------+-------------------------------+
-        | -AUG  | year ends in August           |
-        +-------+-------------------------------+
-        | -SEP  | year ends in September        |
-        +-------+-------------------------------+
-        | -OCT  | year ends in October          |
-        +-------+-------------------------------+
-        | -NOV  | year ends in November         |
-        +-------+-------------------------------+
+        {pandas_offset_codes}
 
     {columns}
     {start_date}
@@ -440,6 +348,8 @@ def describe(input_ts='-',
     Parameters
     ----------
     transpose
+        [optional, default is False]
+
         If 'transpose' option is used, will transpose describe output.
     {input_ts}
     {columns}
@@ -484,13 +394,18 @@ def peak_detection(input_ts='-',
     Parameters
     ----------
     extrema : str
+        [optional, default is 'peak']
+
         'peak', 'valley', or 'both' to determine what should be
-        returned.  Default is 'peak'.
+        returned.
     method : str
+        [optional, default is 'rel']
         'rel', 'minmax', 'zero_crossing', 'parabola', 'sine' methods are
         available.  The different algorithms have different strengths
-        and weaknesses.  The 'rel' algorithm is the default.
+        and weaknesses.
     window : int
+        [optional, default is 24]
+
         There will not usually be multiple peaks within the window
         number of values.  The different methods use this variable in
         different ways.  For 'rel' the window keyword specifies how many
@@ -505,16 +420,20 @@ def peak_detection(input_ts='-',
         For 'zero_crossing' the window keyword is the dimension of the
         smoothing window and should be an odd integer.
     pad_len : int
+        [optional, default is 5]
+
         Used with FFT to pad edges of time-series.
     points : int
+        [optional, default is 9]
+
         For 'parabola' and 'sine' methods. How many points around the
         peak should be used during curve fitting, must be odd.  The
-        Default is 9.
     lock_frequency
+        [optional, default is False]
+
         For 'sine' method only.  Specifies if the frequency argument of
         the model function should be locked to the value calculated from
         the raw peaks or if optimization process may tinker with it.
-        (default: False)
     {input_ts}
     {columns}
     {start_date}
@@ -535,7 +454,11 @@ def peak_detection(input_ts='-',
 *
 """.format(extrema)
 
-    assert method in ['rel', 'minmax', 'zero_crossing', 'parabola', 'sine'], """
+    assert method in ['rel',
+                      'minmax',
+                      'zero_crossing',
+                      'parabola',
+                      'sine'], """
 *
 *   The `method` argument must be one of 'rel', 'minmax',
 *   'zero_crossing', 'parabola', or 'sine'.  You supplied {0}.
@@ -630,8 +553,12 @@ def convert(input_ts='-',
     Parameters
     ----------
     factor : float
+        [optional, default is 1.0]
+
         Factor to multiply the time series values.
     offset : float
+        [optional, default is 0.0]
+
         Offset to add to the time series values.
     {input_ts}
     {columns}
@@ -899,6 +826,8 @@ def stdtozrxp(input_ts='-',
     Parameters
     ----------
     rexchange
+        [optional, default is None]
+
         The REXCHANGE ID to be written into the zrxp header.
     {input_ts}
     {columns}
@@ -979,7 +908,8 @@ def accumulate(input_ts='-',
     Parameters
     ----------
     statistic : str
-        'sum', 'max', 'min', 'prod', defaults to 'sum'.
+        [optional, default is 'sum']
+        'sum', 'max', 'min', 'prod'
     {input_ts}
     {columns}
     {start_date}
@@ -1025,16 +955,22 @@ def rolling_window(input_ts='-',
     Parameters
     ----------
     span
+        [optional, default is None
+
         The number of previous intervals to include in the calculation
         of the statistic. If `span` is equal to 0 will give an expanding
-        rolling window.  Defaults to 2.
+        rolling window.
     statistic : str
+        [optional, default is 'mean']
+
         For rolling window (span>0) and expanding window (span==0), one
         of 'count', 'sum', 'mean', 'median', 'min', 'max', 'std', 'var',
         'skew', 'kurt', 'quantile'.  For exponentially weighted windows
         have 'ewma' for mean average, 'ewvar' for variance, and 'ewmstd'
         for standard deviation
     wintype : str
+        [optional, default is None]
+
         The 'mean' and 'sum' `statistic` calculation can also be
         weighted according to the `wintype` windows.  Some of the
         following windows require additional keywords identified in
@@ -1043,125 +979,25 @@ def rolling_window(input_ts='-',
         'barthann', 'kaiser' (needs beta), 'gaussian' (needs std),
         'general_gaussian' (needs power, width) 'slepian' (needs width).
     center
+        [optional, default is False]
+
         If set to 'True' the calculation will be made for the value at
-        the center of the window.  Default is 'False'.
+        the center of the window.
     groupby
+        [optional, defaults to None]
+
         Time offset to groupby.  Any PANDAS time offset.  This option
         supports what is probably an unusual situation where the
         rolling_window is performed separately within each groupby
         period.
 
-        +-------+-----------------------------+
-        | Alias | Description                 |
-        +=======+=============================+
-        | B     | business day                |
-        +-------+-----------------------------+
-        | C     | custom business day         |
-        |       | (experimental)              |
-        +-------+-----------------------------+
-        | D     | calendar day                |
-        +-------+-----------------------------+
-        | W     | weekly                      |
-        +-------+-----------------------------+
-        | M     | month end                   |
-        +-------+-----------------------------+
-        | BM    | business month end          |
-        +-------+-----------------------------+
-        | CBM   | custom business month end   |
-        +-------+-----------------------------+
-        | MS    | month start                 |
-        +-------+-----------------------------+
-        | BMS   | business month start        |
-        +-------+-----------------------------+
-        | CBMS  | custom business month start |
-        +-------+-----------------------------+
-        | Q     | quarter end                 |
-        +-------+-----------------------------+
-        | BQ    | business quarter end        |
-        +-------+-----------------------------+
-        | QS    | quarter start               |
-        +-------+-----------------------------+
-        | BQS   | business quarter start      |
-        +-------+-----------------------------+
-        | A     | year end                    |
-        +-------+-----------------------------+
-        | BA    | business year end           |
-        +-------+-----------------------------+
-        | AS    | year start                  |
-        +-------+-----------------------------+
-        | BAS   | business year start         |
-        +-------+-----------------------------+
-        | H     | hourly                      |
-        +-------+-----------------------------+
-        | T     | minutely                    |
-        +-------+-----------------------------+
-        | S     | secondly                    |
-        +-------+-----------------------------+
-        | L     | milliseconds                |
-        +-------+-----------------------------+
-        | U     | microseconds                |
-        +-------+-----------------------------+
-        | N     | nanoseconds                 |
-        +-------+-----------------------------+
-
-        Weekly has the following anchored frequencies:
-
-        +-------+-------------------------------+
-        | Alias | Description                   |
-        +=======+===============================+
-        | W-SUN | weekly frequency (sundays).   |
-        |       | Same as 'W'.                  |
-        +-------+-------------------------------+
-        | W-MON | weekly frequency (mondays)    |
-        +-------+-------------------------------+
-        | W-TUE | weekly frequency (tuesdays)   |
-        +-------+-------------------------------+
-        | W-WED | weekly frequency (wednesdays) |
-        +-------+-------------------------------+
-        | W-THU | weekly frequency (thursdays)  |
-        +-------+-------------------------------+
-        | W-FRI | weekly frequency (fridays)    |
-        +-------+-------------------------------+
-        | W-SAT | weekly frequency (saturdays)  |
-        +-------+-------------------------------+
-
-        Quarterly frequencies (Q, BQ, QS, BQS) and annual frequencies
-        (A, BA, AS, BAS) have the following anchoring suffixes:
-
-        +-------+-------------------------------+
-        | Alias | Description                   |
-        +=======+===============================+
-        | -DEC  | year ends in December (same   |
-        |       | as 'Q' and 'A')               |
-        +-------+-------------------------------+
-        | -JAN  | year ends in January          |
-        +-------+-------------------------------+
-        | -FEB  | year ends in February         |
-        +-------+-------------------------------+
-        | -MAR  | year ends in March            |
-        +-------+-------------------------------+
-        | -APR  | year ends in April            |
-        +-------+-------------------------------+
-        | -MAY  | year ends in May              |
-        +-------+-------------------------------+
-        | -JUN  | year ends in June             |
-        +-------+-------------------------------+
-        | -JUL  | year ends in July             |
-        +-------+-------------------------------+
-        | -AUG  | year ends in August           |
-        +-------+-------------------------------+
-        | -SEP  | year ends in September        |
-        +-------+-------------------------------+
-        | -OCT  | year ends in October          |
-        +-------+-------------------------------+
-        | -NOV  | year ends in November         |
-        +-------+-------------------------------+
-
-        Defaults to None.
+        {pandas_offset_codes}
     freq
-        string or DateOffset object, optional (default None) Frequency
-        to conform the data to before computing the statistic. Specified
-        as a frequency string or DateOffset object.
+        [optional, defaults to None]
+
+        string or DateOffset object. Frequency to conform the data to before
+        computing the statistic. Specified as a frequency string or DateOffset
+        object.
     {input_ts}
     {columns}
     {start_date}
@@ -1279,7 +1115,7 @@ def aggregate(input_ts='-',
               end_date=None,
               dropna='no',
               statistic='mean',
-              agg_interval='daily',
+              agg_interval='D',
               ninterval=1,
               round_index=None,
               print_input=False):
@@ -1288,118 +1124,17 @@ def aggregate(input_ts='-',
     Parameters
     ----------
     statistic : str
+        [optional, defaults to 'mean']
+
         'mean', 'sum', 'std', 'max', 'min', 'median', 'first', or 'last'
-        to calculate the aggregation, defaults to 'mean'.  Can also be
-        a comma separated list of statistic methods.
+        to calculate the aggregation.  Can also be a comma separated list of
+        statistic methods.
     agg_interval : str
+        [optional, defaults to 'D']
         The interval to aggregate the time series.  Any of the PANDAS
         offset codes.
 
-        +-------+-----------------------------+
-        | Alias | Description                 |
-        +=======+=============================+
-        | B     | business day                |
-        +-------+-----------------------------+
-        | C     | custom business day         |
-        |       | (experimental)              |
-        +-------+-----------------------------+
-        | D     | calendar day                |
-        +-------+-----------------------------+
-        | W     | weekly                      |
-        +-------+-----------------------------+
-        | M     | month end                   |
-        +-------+-----------------------------+
-        | BM    | business month end          |
-        +-------+-----------------------------+
-        | CBM   | custom business month end   |
-        +-------+-----------------------------+
-        | MS    | month start                 |
-        +-------+-----------------------------+
-        | BMS   | business month start        |
-        +-------+-----------------------------+
-        | CBMS  | custom business month start |
-        +-------+-----------------------------+
-        | Q     | quarter end                 |
-        +-------+-----------------------------+
-        | BQ    | business quarter end        |
-        +-------+-----------------------------+
-        | QS    | quarter start               |
-        +-------+-----------------------------+
-        | BQS   | business quarter start      |
-        +-------+-----------------------------+
-        | A     | year end                    |
-        +-------+-----------------------------+
-        | BA    | business year end           |
-        +-------+-----------------------------+
-        | AS    | year start                  |
-        +-------+-----------------------------+
-        | BAS   | business year start         |
-        +-------+-----------------------------+
-        | H     | hourly                      |
-        +-------+-----------------------------+
-        | T     | minutely                    |
-        +-------+-----------------------------+
-        | S     | secondly                    |
-        +-------+-----------------------------+
-        | L     | milliseconds                |
-        +-------+-----------------------------+
-        | U     | microseconds                |
-        +-------+-----------------------------+
-        | N     | nanoseconds                 |
-        +-------+-----------------------------+
-
-        Weekly has the following anchored frequencies:
-
-        +-------+-------------------------------+
-        | Alias | Description                   |
-        +=======+===============================+
-        | W-SUN | weekly frequency (sundays).   |
-        |       | Same as 'W'.                  |
-        +-------+-------------------------------+
-        | W-MON | weekly frequency (mondays)    |
-        +-------+-------------------------------+
-        | W-TUE | weekly frequency (tuesdays)   |
-        +-------+-------------------------------+
-        | W-WED | weekly frequency (wednesdays) |
-        +-------+-------------------------------+
-        | W-THU | weekly frequency (thursdays)  |
-        +-------+-------------------------------+
-        | W-FRI | weekly frequency (fridays)    |
-        +-------+-------------------------------+
-        | W-SAT | weekly frequency (saturdays)  |
-        +-------+-------------------------------+
-
-        Quarterly frequencies (Q, BQ, QS, BQS) and annual frequencies
-        (A, BA, AS, BAS) have the following anchoring suffixes:
-
-        +-------+-------------------------------+
-        | Alias | Description                   |
-        +=======+===============================+
-        | -DEC  | year ends in December (same   |
-        |       | as 'Q' and 'A')               |
-        +-------+-------------------------------+
-        | -JAN  | year ends in January          |
-        +-------+-------------------------------+
-        | -FEB  | year ends in February         |
-        +-------+-------------------------------+
-        | -MAR  | year ends in March            |
-        +-------+-------------------------------+
-        | -APR  | year ends in April            |
-        +-------+-------------------------------+
-        | -MAY  | year ends in May              |
-        +-------+-------------------------------+
-        | -JUN  | year ends in June             |
-        +-------+-------------------------------+
-        | -JUL  | year ends in July             |
-        +-------+-------------------------------+
-        | -AUG  | year ends in August           |
-        +-------+-------------------------------+
-        | -SEP  | year ends in September        |
-        +-------+-------------------------------+
-        | -OCT  | year ends in October          |
-        +-------+-------------------------------+
-        | -NOV  | year ends in November         |
-        +-------+-------------------------------+
+        {pandas_offset_codes}
 
         There are some deprecated aggregation interval names in
         tstoolbox, DON'T USE!
@@ -1416,10 +1151,10 @@ def aggregate(input_ts='-',
         | yearly        | A   |
         +---------------+-----+
 
-        Defaults to D (daily).
     ninterval : int
-        The number of agg_interval to use for the aggregation.  Defaults
-        to 1.
+        [optional, defaults to 1]
+
+        The number of agg_interval to use for the aggregation.
     {input_ts}
     {columns}
     {start_date}
@@ -1576,10 +1311,14 @@ def clip(input_ts='-',
     Parameters
     ---------
     a_min
-         All values lower than this will be set to this value.
+        [optional, defaults to None]
+
+        All values lower than this will be set to this value.
         Default is None.
     a_max
-         All values higher than this will be set to this value.
+        [optional, defaults to None]
+
+        All values higher than this will be set to this value.
         Default is None.
     {input_ts}
     {columns}
@@ -1722,41 +1461,15 @@ def calculate_fdc(input_ts='-',
     Parameters
     ----------
     percent_point_function : str
+        [optional, default is None]
+
         The distribution used to shift the plotting position values.
-        Choose from 'norm', 'lognorm', 'weibull', and None.  Default is
-        None.
+        Choose from 'norm', 'lognorm', 'weibull', and None.
     plotting_position : str
-        'weibull', 'benard', 'tukey', 'gumbel', 'hazen', 'cunnane', or
-        'california'.  The default is 'weibull'.
+        [optional, default is 'weibull']
 
-        +------------+-----+-----------------+-----------------------+
-        | Name       | a   | Equation        | Description           |
-        |            |     | (1-a)/(n+1-2*a) |                       |
-        +============+=====+=================+=======================+
-        | weibull    | 0   | i/(n+1)         | mean of sampling      |
-        |            |     |                 | distribution          |
-        |            |     |                 | (default)             |
-        +------------+-----+-----------------+-----------------------+
-        | benard and | 0.3 | (i-0.3)/(n+0.4) | approx. median of     |
-        | bos-       |     |                 | sampling distribution |
-        | levenbach  |     |                 |                       |
-        +------------+-----+-----------------+-----------------------+
-        | tukey      | 1/3 | (i-1/3)/(n+1/3) | approx. median of     |
-        |            |     |                 | sampling distribution |
-        +------------+-----+-----------------+-----------------------+
-        | gumbel     | 1   | (i-1)/(n-1)     | mode of sampling      |
-        |            |     |                 | distribution          |
-        +------------+-----+-----------------+-----------------------+
-        | hazen      | 1/2 | (i-1/2)/n       | midpoints of n equal  |
-        |            |     |                 | intervals             |
-        +------------+-----+-----------------+-----------------------+
-        | cunnane    | 2/5 | (i-2/5)/(n+1/5) | subjective            |
-        +------------+-----+-----------------+-----------------------+
-        | california | NA  | i/n             |                       |
-        +------------+-----+-----------------+-----------------------+
+        {plotting_position_table}
 
-        Where 'i' is the sorted rank of the y value, and 'n' is the
-        total number of values to be plotted.
     ascending : bool
         Sort order defaults to True.
     {input_ts}
@@ -2081,10 +1794,14 @@ def plot(input_ts='-',
     Parameters
     ----------
     ofilename : str
+        [optional, defaults to 'plot.png']
+
         Output filename for the plot.  Extension defines
-        the type, ('.png'). Defaults to 'plot.png'.
+        the type, ('.png').
     type : str
-        The plot type.  Defaults to 'time'.
+        [optional, defaults to 'time']
+
+        The plot type.
 
         Can be one of the following:
 
@@ -2139,31 +1856,47 @@ def plot(input_ts='-',
             sort, calculate and plot data against an y axis weibull
             distribution
     xtitle : str
-        Title of x-axis, default depend on ``type``.
+        [optional, default depends on ``type``]
+
+        Title of x-axis.
     ytitle : str
-        Title of y-axis, default depend on ``type``.
+        [optional, default depends on ``type``]
+
+        Title of y-axis.
     title : str
-        Title of chart, defaults to ''.
+        [optional, defaults to '']
+
+        Title of chart.
     figsize : str
+        [optional, defaults to '10,6.5']
+
         The 'width,height' of plot as inches.
-        Defaults to '10,6.5'.
     legend
-        Whether to display the legend. Defaults to True.
+        [optional, defaults to True]
+
+        Whether to display the legend
     legend_names : str
+        [optional, defaults to None]
+
         Legend would normally use the time-series names
         associated with the input data.  The 'legend_names' option allows you
         to override the names in the data set.  You must supply a comma
         separated list of strings for each time-series in the data set.
-        Defaults to None.
     subplots
-        boolean, default False.  Make separate subplots for
-        each time series
+        [optional, defaults to False]
+
+        Make separate subplots for each time series.
     sharex
-        boolean, default True In case subplots=True, share
-        x axis
+        [optional, default to True]
+
+        In case subplots=True, share x axis
     sharey
-        boolean, default False In case subplots=True, share y axis
+        [optional, default to False]
+
+        In case subplots=True, share y axis
     style : str
+        [optional]
+
         Comma separated matplotlib style strings matplotlib
         line style per time-series.  Just combine codes in 'ColorLineMarker'
         order, for example r--* is a red dashed line with star marker.
@@ -2292,35 +2025,46 @@ def plot(input_ts='-',
     logy
         DEPRECATED: use '--yaxis="log"' instead.
     xlim
+        [optional, default is based on range of x values]
+
         Comma separated lower and upper limits (--xlim 1,1000) Limits
-        for the x-axis.  Default is based on range of x values.
+        for the x-axis.
     ylim
+        [optional, default is based on range of y values]
+
         Comma separated lower and upper limits (--ylim 1,1000) Limits
-        for the y-axis.  Default is based on range of y values.
+        for the y-axis.
     xaxis : str
-        Defines the type of the xaxis.  One of 'arithmetic',
-        'log'. Default is 'arithmetic'.
+        [optional, default is 'arithmetic']
+
+        Defines the type of the xaxis.  One of 'arithmetic', 'log'.
     yaxis : str
-        Defines the type of the yaxis.  One of 'arithmetic',
-        'log'. Default is 'arithmetic'.
+        [optional, default is 'arithmetic']
+
+        Defines the type of the yaxis.  One of 'arithmetic', 'log'.
     secondary_y
-        Boolean or sequence, default False Whether to plot on
-        the secondary y-axis If a list/tuple, which time-series to plot on
-        secondary y-axis
+        [optional, default is False]
+
+        Whether to plot on the secondary y-axis. If a list/tuple, which
+        time-series to plot on secondary y-axis.
     mark_right
-        Boolean, default True : When using a secondary_y
-        axis, should the legend label the axis of the various time-series
-        automatically
+        [optional, default is True]
+
+        When using a secondary_y axis, should the legend label the axis of the
+        various time-series automatically.
     scatter_matrix_diagonal : str
-        If plot type is 'scatter_matrix',
-        this specifies the plot along the diagonal.  Defaults to
-        'probability_density'.
-    bootstrap_size
+        [optional, defaults to 'probability_density']
+
+        If plot type is 'scatter_matrix', this specifies the plot along the
+        diagonal.
+    bootstrap_size : int
+        [optional, defaults to 50]
+
         The size of the random subset for 'bootstrap' plot.
-        Defaults to 50.
     bootstrap_samples
-        The number of random subsets of
-        'bootstrap_size'.  Defaults to 500.
+        [optional, defaults to 500]
+
+        The number of random subsets of 'bootstrap_size'.
     norm_xaxis
         DEPRECATED: use '--type="norm_xaxis"' instead.
     norm_yaxis
@@ -2330,16 +2074,24 @@ def plot(input_ts='-',
     lognorm_yaxis
         DEPRECATED: use '--type="lognorm_yaxis"' instead.
     xy_match_line : str
-        Will add a match line where x == y.  Default
-        is ''.  Set to a line style code.
+        [optional, defaults is '']
+
+        Will add a match line where x == y. Set to a line style code.
     grid
-        Boolean, default True Whether to plot grid lines on the major
-        ticks.
+        [optional, default is None]
+
+        Whether to plot grid lines on the major ticks.
     label_rotation : int
+        [optional]
+
         Rotation for major labels for bar plots.
     label_skip : int
+        [optional]
+
         Skip for major labels for bar plots.
     drawstyle : str
+        [optional, default is 'default']
+
         'default' connects the points with lines. The
         steps variants produce step-plots. 'steps' is equivalent to 'steps-pre'
         and is maintained for backward-compatibility.
@@ -2349,49 +2101,29 @@ def plot(input_ts='-',
          ['default' | 'steps' | 'steps-pre' | 'steps-mid' | 'steps-post']
 
     por
-        Plot from first good value to last good value.  Strip NANs
+        [optional]
+
+        Plot from first good value to last good value.  Strips NANs
         from beginning and end.
     force_freq
+        [optional]
+
         Force this frequency for the plot.  WARNING: you may
         lose data if not careful with this option.  In general, letting the
         algorithm determine the frequency should always work, but this option
         will override.  Use PANDAS offset codes,
     invert_xaxis
+        [optional, default is False]
+
         Invert the x-axis.
     invert_yaxis
+        [optional, default is False]
+
         Invert the y-axis.
     plotting_position : str
-        'weibull', 'benard', 'tukey', 'gumbel',
-        'hazen', 'cunnane', or 'california'.  The default is 'weibull'.
+        [optional, default is 'weibull']
 
-        +------------+-----+-----------------+-----------------------+
-        | Name       | a   | Equation        | Description           |
-        |            |     | (1-a)/(n+1-2*a) |                       |
-        +============+=====+=================+=======================+
-        | weibull    | 0   | i/(n+1)         | mean of sampling      |
-        |            |     |                 | distribution          |
-        |            |     |                 | (default)             |
-        +------------+-----+-----------------+-----------------------+
-        | benard and | 0.3 | (i-0.3)/(n+0.4) | approx. median of     |
-        | bos-       |     |                 | sampling distribution |
-        | levenbach  |     |                 |                       |
-        +------------+-----+-----------------+-----------------------+
-        | tukey      | 1/3 | (i-1/3)/(n+1/3) | approx. median of     |
-        |            |     |                 | sampling distribution |
-        +------------+-----+-----------------+-----------------------+
-        | gumbel     | 1   | (i-1)/(n-1)     | mode of sampling      |
-        |            |     |                 | distribution          |
-        +------------+-----+-----------------+-----------------------+
-        | hazen      | 1/2 | (i-1/2)/n       | midpoints of n equal  |
-        |            |     |                 | intervals             |
-        +------------+-----+-----------------+-----------------------+
-        | cunnane    | 2/5 | (i-2/5)/(n+1/5) | subjective            |
-        +------------+-----+-----------------+-----------------------+
-        | california | NA  | i/n             |                       |
-        +------------+-----+-----------------+-----------------------+
-
-        Where 'i' is the sorted rank of the y value, and 'n'
-        is the total number of values to be plotted.
+        {plotting_position_table}
 
         Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
         lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
@@ -2613,7 +2345,7 @@ def plot(input_ts='-',
             if type in ['xy']:
                 typed = '*'
             style = list(zip(colors * (len(tsd.columns) // len(colors) + 1),
-                        [typed] * len(tsd.columns)))
+                             [typed] * len(tsd.columns)))
             style = [i + j for i, j in style]
 
         if type == 'double_mass':
@@ -2919,7 +2651,9 @@ def dtw(input_ts='-',
 
     Parameters
     ----------
-    window
+    window : int
+         [optional, default is 10000]
+
          Window length.
     {input_ts}
     {columns}
@@ -2964,8 +2698,9 @@ def pca(input_ts='-',
     Parameters
     ----------
     n_components : int
-        The number of groups to separate the
-        time series into.
+        [optional, default is None]
+
+        The number of groups to separate the time series into.
     {input_ts}
     {columns}
     {start_date}
@@ -3005,8 +2740,7 @@ def normalization(input_ts='-',
     Parameters
     ----------
     mode : str
-        'minmax', 'zscore', or 'pct_rank'.  Default is
-        'minmax'
+        [optional, default is 'minmax']
 
         minmax
             min_limit +
@@ -3018,15 +2752,18 @@ def normalization(input_ts='-',
         pct_rank
             rank(X)*100/N
     min_limit : float
-        Defaults to 0.  Defines the minimum limit
-        of the minmax normalization.
+        [optional, defaults to 0]
+
+        Defines the minimum limit of the minmax normalization.
     max_limit : float
-        Defaults to 1.  Defines the maximum limit
-        of the minmax normalization.
+        [optional, defaults to 1]
+
+        Defines the maximum limit of the minmax normalization.
     pct_rank_method : str
-        Defaults to 'average'.  Defines how
-        tied ranks are broken.  Can be 'average', 'min', 'max', 'first',
-        'dense'.
+        [optional, defaults to 'average']
+
+        Defines how tied ranks are broken.  Can be 'average', 'min', 'max',
+        'first', 'dense'.
     {input_ts}
     {columns}
     {start_date}
@@ -3126,7 +2863,9 @@ def convert_index_to_julian(epoch='julian',
     Parameters
     ----------
     epoch : str
-        Can be one of, 'julian' (the default), 'reduced', 'modified',
+        [optional, defaults to 'julian']
+
+        Can be one of, 'julian', 'reduced', 'modified',
         'truncated', 'dublin', 'cnes', 'ccsds', 'lop', 'lilian', 'rata_die',
         'mars_sol_date', or a date and time.
 
@@ -3242,16 +2981,22 @@ def pct_change(input_ts='-',
     Parameters
     ----------
     periods : int
-        The number of intervals to calculate percent
-        change across.
+        [optional, default is 1]
+
+        The number of intervals to calculate percent change across.
     fill_method : str
+        [optional, defaults to 'pad']
+
         Fill method for NA.  Defaults to 'pad'.
     limit
-        Defaults to None.  Is the minimum number of
-        consecutive NA values where no more filling will be made.
+        [optional, defaults to None]
+
+        Is the minimum number of consecutive NA values where no more filling
+        will be made.
     freq : str
-        A pandas time offset string to represent the
-        interval.
+        [optional, defaults to None]
+
+        A pandas time offset string to represent the interval.
     {input_ts}
     {columns}
     {start_date}
@@ -3309,11 +3054,12 @@ def rank(input_ts='-',
     Parameters
     ----------
     axis
-        [0 or 'index' or 1 or 'columns'], default 0.
-        Index to direct ranking
+        [optional, default is 0]
+
+        0 or 'index' for rows. 1 or 'columns' for columns.  Index to direct
+        ranking.
     method : str
-        ['average', 'min', 'max', 'first', 'dense'], default
-        'average'.
+        [optional, default is 'average']
 
         +-----------------+--------------------------------+
         | method argument | Description                    |
@@ -3332,11 +3078,12 @@ def rank(input_ts='-',
         +-----------------+--------------------------------+
 
     numeric_only
-        boolean, default None
+        [optional, default is None]
+
         Include only float, int, boolean data. Valid only for DataFrame or
-        Panel objects
+        Panel objects.
     na_option : str
-        ['keep', 'top', 'bottom'], default is 'keep'.
+        [optional, default is 'keep']
 
         +--------------------+--------------------------------+
         | na_option argument | Description                    |
@@ -3349,11 +3096,13 @@ def rank(input_ts='-',
         +--------------------+--------------------------------+
 
     ascending
-        boolean, default True.
-        False for ranks by high (1) to low (N)
+        [optional, default is True]
+
+        False ranks by high (1) to low (N)
     pct
-        boolean, default False.
-        Computes percentage rank of data
+        [optional, default is False]
+
+        Computes percentage rank of data.
     {input_ts}
     {columns}
     {start_date}
@@ -3410,41 +3159,57 @@ def date_offset(years=0,
     Parameters
     ----------
     years: number
+        [optional, default is 0]
+
         Relative number of years to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
     months: number
+        [optional, default is 0]
+
         Relative number of months to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
     weeks: number
+        [optional, default is 0]
+
         Relative number of weeks to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
     days: number
+        [optional, default is 0]
+
         Relative number of days to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
     hours: number
+        [optional, default is 0]
+
         Relative number of hours to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
     minutes: number
+        [optional, default is 0]
+
         Relative number of minutes to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
     seconds: number
+        [optional, default is 0]
+
         Relative number of seconds to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
         operation on the original datetime value with the information in
     microseconds: number
+        [optional, default is 0]
+
         Relative number of microseconds to offset the datetime index,
         may be negative; adding or subtracting a relativedelta with
         relative information performs the corresponding arithmetic
@@ -3465,15 +3230,16 @@ def date_offset(years=0,
                               round_index=round_index,
                               dropna='no')
 
+    relativedelta = pd.tseries.offsets.relativedelta
     ntsd = pd.DataFrame(tsd.values,
                         index=[i +
-                               pd.tseries.offsets.relativedelta(years=years,
-                                                                months=months,
-                                                                days=days,
-                                                                hours=hours,
-                                                                minutes=minutes,
-                                                                seconds=seconds,
-                                                                microseconds=microseconds)
+                               relativedelta(years=years,
+                                             months=months,
+                                             days=days,
+                                             hours=hours,
+                                             minutes=minutes,
+                                             seconds=seconds,
+                                             microseconds=microseconds)
                                for i in tsd.index])
     ntsd.columns = tsd.columns
 
