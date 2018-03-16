@@ -32,7 +32,7 @@ from tabulate import tabulate as tb
 from tabulate import simple_separated_format
 
 docstrings = {
-    'input_ts': '''input_ts : str
+    'input_ts': r'''input_ts : str
         [optional, required if using Python API, default is '-' (stdin)]
 
         Whether from a file or standard input, data requires a first line
@@ -77,7 +77,7 @@ docstrings = {
 
             If result is a time series, returns a pandas DataFrame.
         ''',
-    'columns': '''columns
+    'columns': r'''columns
         [optional]
 
         Columns to select out of input.  Can use column names from the
@@ -85,29 +85,29 @@ docstrings = {
         number 1 is the first data column.  To pick multiple columns;
         separate by commas with no spaces. As used in `tstoolbox pick`
         command.''',
-    'start_date': '''start_date : str
+    'start_date': r'''start_date : str
         [optional]
 
         The start_date of the series in ISOdatetime format, or 'None'
         for beginning.''',
-    'end_date': '''end_date : str
+    'end_date': r'''end_date : str
         [optional]
 
         The end_date of the series in ISOdatetime format, or 'None' for
         end.''',
-    'dropna': '''dropna : str
+    'dropna': r'''dropna : str
         [optional, defauls it 'no']
 
         Set `dropna` to 'any' to have records dropped that have NA value
         in any column, or 'all' to have records dropped that have NA in
         all columns.  Set to 'no' to not drop any records.  The default
         is 'no'.''',
-    'print_input': '''print_input
+    'print_input': r'''print_input
         [optional, default is False]
 
         If set to 'True' will include the input columns in the output
         table.''',
-    'round_index': '''round_index
+    'round_index': r'''round_index
         [optional]
 
         Round the index to the nearest time point.  Can significantly
@@ -115,23 +115,23 @@ docstrings = {
         processing requirements, however be cautious about rounding to
         a very course interval from a small one.  This could lead to
         duplicate values in the index.''',
-    'float_format': '''float_format
+    'float_format': r'''float_format
         [optional]
 
         Format for float numbers.''',
-    'tablefmt': '''tablefmt : str
+    'tablefmt': r'''tablefmt : str
         [optional, default is 'simple']
 
         The table format.  Can be one of 'cvs', 'tvs', 'plain',
         'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki', 'latex',
         'latex_raw' and 'latex_booktabs'.''',
-    'header': '''header : str
+    'header': r'''header : str
         [optional, default is 'default']
 
         This is if you want a different header than is the default for
         this table.  Pass a list of strings for each column in the
         table.''',
-    'pandas_offset_codes': '''+-------+-----------------------------+
+    'pandas_offset_codes': r'''+-------+-----------------------------+
         | Alias | Description                 |
         +=======+=============================+
         | B     | business day                |
@@ -236,7 +236,7 @@ docstrings = {
         +-------+-------------------------------+
         | -NOV  | year ends in November         |
         +-------+-------------------------------+''',
-    'plotting_position_table': '''+------------+-----+-----------------+-----------------------+
+    'plotting_position_table': r'''+------------+-----+-----------------+-----------------------+
         | Name       | a   | Equation        | Description           |
         |            |     | (1-a)/(n+1-2*a) |                       |
         +============+=====+=================+=======================+
