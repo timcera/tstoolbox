@@ -49,6 +49,7 @@ def _boolrelextrema(data, comparator,
     >>> testdata = np.array([1,2,3,2,1])
     >>> _boolrelextrema(testdata, np.greater, axis=0).tolist()
     [False, False, True, False, False]
+
     """
     if (int(order) != order) or (order < 1):
         raise ValueError('Order must be an int >= 1')
@@ -72,7 +73,10 @@ def _argrel(data, axis=0, window=1):
     """Private function to find relative min and max of data."""
     tmpmin = _argrelmin(data, axis=axis, order=window)
     tmpmax = _argrelmax(data, axis=axis, order=window)
-    return (list(zip(tmpmax[0], data[tmpmax[0]])), list(zip(tmpmin[0], data[tmpmin[0]])))
+    return (list(zip(tmpmax[0],
+                     data[tmpmax[0]])),
+            list(zip(tmpmin[0],
+                     data[tmpmin[0]])))
 
 
 def _argrelmin(data, axis=0, order=1, mode='clip'):
@@ -81,6 +85,7 @@ def _argrelmin(data, axis=0, order=1, mode='clip'):
     See also
     --------
     argrelextrema,argrelmax
+
     """
     return _argrelextrema(data, np.less, axis, order, mode)
 
@@ -91,6 +96,7 @@ def _argrelmax(data, axis=0, order=1, mode='clip'):
     See also
     --------
     argrelextrema,argrelmin
+
     """
     return _argrelextrema(data, np.greater, axis, order, mode)
 
@@ -141,7 +147,7 @@ def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
     """Perform parabola fitting for the _peakdetect_parabola function.
 
     keyword arguments:
-    raw_peaks -- A list of either the maximium or the minimum peaks, as given
+    raw_peaks -- A list of either the maximum or the minimum peaks, as given
         by the _peakdetect_zero_crossing function, with index used as x-axis
     x_axis -- A numpy list of all the x values
     y_axis -- A numpy list of all the y values
@@ -150,6 +156,7 @@ def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
 
     return -- A list giving all the peaks and the fitted waveform, format:
         [[x, y, [fitted_x, fitted_y]]]
+
     """
     from scipy.optimize import curve_fit
 
@@ -193,9 +200,9 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
     or larger values for maximas and minimas respectively
 
     keyword arguments:
-    y_axis -- A list containg the signal over which to find peaks
+    y_axis -- A list containing the signal over which to find peaks
     x_axis -- (optional) A x-axis whose values correspond to the y_axis list
-        and is used in the return to specify the postion of the peaks. If
+        and is used in the return to specify the position of the peaks. If
         omitted an index of the y_axis is used. (default: None)
     window -- (optional) distance to look ahead from a peak candidate to
         determine if it is the actual peak (default: 200)
@@ -209,11 +216,12 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
             Correctly used it can double the speed of the function
 
     return -- two lists [max_peaks, min_peaks] containing the positive and
-        negative peaks respectively. Each cell of the lists contains a tupple
+        negative peaks respectively. Each cell of the lists contains a tuple
         of: (position, peak_value)
         to get the average peak value do: np.mean(max_peaks, 0)[1] on the
         results to unpack one of the lists into x, y coordinates do:
         x, y = zip(*tab)
+
     """
     max_peaks = []
     min_peaks = []
@@ -226,9 +234,9 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
 
     # perform some checks
     if window < 1:
-        raise ValueError("window must be '1' or above in value")
+        raise ValueError('window must be "1" or above in value')
     if not (np.isscalar(delta) and delta >= 0):
-        raise ValueError("delta must be a positive number")
+        raise ValueError('delta must be a positive number')
 
     # maxima and minima candidates are temporarily stored in
     # mx and mn respectively
@@ -306,27 +314,28 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
 
     The biggest time eater in this function is the ifft and thereafter it's
     the '_peakdetect' function which takes only half the time of the ifft.
-    Speed improvementd could include to check if 2**n points could be used for
+    Speed improvement could include to check if 2**n points could be used for
     fft and ifft or change the '_peakdetect' to the
     '_peakdetect_zero_crossing',
     which is maybe 10 times faster than 'peakdetct'. The pro of '_peakdetect'
-    is that it resutls in one less lost peak. It should also be noted that the
+    is that it results in one less lost peak. It should also be noted that the
     time used by the ifft function can change greatly depending on the input.
 
     keyword arguments:
-    y_axis -- A list containg the signal over which to find peaks
+    y_axis -- A list containing the signal over which to find peaks
     x_axis -- A x-axis whose values correspond to the y_axis list and is used
-        in the return to specify the postion of the peaks.
+        in the return to specify the position of the peaks.
     pad_len -- (optional) By how many times the time resolution should be
         increased by, e.g. 1 doubles the resolution. The amount is rounded up
         to the nearest 2 ** n amount (default: 5)
 
     return -- two lists [max_peaks, min_peaks] containing the positive and
-        negative peaks respectively. Each cell of the lists contains a tupple
+        negative peaks respectively. Each cell of the lists contains a tuple
         of: (position, peak_value)
         to get the average peak value do: np.mean(max_peaks, 0)[1] on the
         results to unpack one of the lists into x, y coordinates do:
         x, y = zip(*tab)
+
     """
     from scipy import fft, ifft
     # check input data
@@ -335,8 +344,8 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
     # select a n amount of periods
     last_indice = - 1 - (1 - len(zero_indices) & 1)
     # Calculate the fft between the first and last zero crossing
-    # this method could be ignored if the begining and the end of the signal
-    # are discardable as any errors induced from not using whole periods
+    # this method could be ignored if the beginning and the end of the signal
+    # are discarded as any errors induced from not using whole periods
     # should mainly manifest in the beginning and the end of the signal, but
     # not in the rest of the signal
     if len(zero_indices) < 2:
@@ -350,7 +359,7 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
     def n(x):
         return (old_div(np.log(x), np.log(2))).astype('i') + 1
 
-    # padds to 2**n amount of samples
+    # pads to 2**n amount of samples
     fft_padded = padd(list(fft_data), 2 **
                       n(len(fft_data) * pad_len) - len(fft_data))
 
@@ -386,9 +395,9 @@ def _peakdetect_parabola(y_axis, x_axis, points=9):
     function, but might result in a more precise value of the peak.
 
     keyword arguments:
-    y_axis -- A list containg the signal over which to find peaks
+    y_axis -- A list containing the signal over which to find peaks
     x_axis -- A x-axis whose values correspond to the y_axis list and is used
-        in the return to specify the postion of the peaks.
+        in the return to specify the position of the peaks.
     points -- (optional) How many points around the peak should be used during
         curve fitting, must be odd (default: 9)
 
@@ -398,6 +407,7 @@ def _peakdetect_parabola(y_axis, x_axis, points=9):
         to get the average peak value do: np.mean(max_peaks, 0)[1] on the
         results to unpack one of the lists into x, y coordinates do:
         x, y = zip(*max_peaks)
+
     """
     # check input data
     x_axis, y_axis = _datacheck_peakdetect(x_axis, y_axis)
@@ -443,9 +453,9 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
     k * x + m function to the peaks for offset calculation.
 
     keyword arguments:
-    y_axis -- A list containg the signal over which to find peaks
+    y_axis -- A list containing the signal over which to find peaks
     x_axis -- A x-axis whose values correspond to the y_axis list and is used
-        in the return to specify the postion of the peaks.
+        in the return to specify the position of the peaks.
     points -- (optional) How many points around the peak should be used during
         curve fitting, must be odd (default: 9)
     lock_frequency -- (optional) Specifies if the frequency argument of the
@@ -453,11 +463,12 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         peaks or if optimization process may tinker with it. (default: False)
 
     return -- two lists [max_peaks, min_peaks] containing the positive and
-        negative peaks respectively. Each cell of the lists contains a tupple
+        negative peaks respectively. Each cell of the lists contains a tuple
         of: (position, peak_value)
         to get the average peak value do: np.mean(max_peaks, 0)[1] on the
         results to unpack one of the lists into x, y coordinates do:
         x, y = zip(*tab)
+
     """
     from scipy.optimize import curve_fit
     # check input data
@@ -478,28 +489,28 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
     # fitting a k * x + m function to the peaks might be better
     # offset_func = lambda x, k, m: k * x + m
 
-    # calculate an approximate frequenzy of the signal
-    Hz = []
+    # calculate an approximate frequency of the signal
+    hz = []
     for raw in [max_raw, min_raw]:
         if len(raw) > 1:
             peak_pos = [x_axis[index] for index in zip(*raw)[0]]
-            Hz.append(np.mean(np.diff(peak_pos)))
-    Hz = old_div(1, np.mean(Hz))
+            hz.append(np.mean(np.diff(peak_pos)))
+    hz = old_div(1, np.mean(hz))
 
     # model function
     # if cosine is used then tau could equal the x position of the peak
     # if sine were to be used then tau would be the first zero crossing
     if lock_frequency:
         # This is strange - only difference in the two "func"
-        # definitions is the "Hz" argument
+        # definitions is the "hz" argument
 
-        def func(x, A, tau):
-            return A * np.sin(2 * np.pi * Hz * (x - tau) + old_div(np.pi, 2))
+        def func(x, a, tau):
+            return a * np.sin(2 * np.pi * hz * (x - tau) + old_div(np.pi, 2))
     else:
 
-        def func(x, A, Hz, tau):
-            return A * np.sin(2 * np.pi * Hz * (x - tau) + old_div(np.pi, 2))
-    # func = lambda x, A, Hz, tau: A * np.cos(2 * np.pi * Hz * (x - tau))
+        def func(x, a, hz, tau):
+            return a * np.sin(2 * np.pi * hz * (x - tau) + old_div(np.pi, 2))
+    # func = lambda x, a, hz, tau: a * np.cos(2 * np.pi * hz * (x - tau))
 
     # get peaks
     fitted_peaks = []
@@ -512,18 +523,18 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
             # get a first approximation of tau (peak position in time)
             tau = x_axis[index]
             # get a first approximation of peak amplitude
-            A = peak[1]
+            a = peak[1]
 
             # build list of approximations
             if lock_frequency:
-                p0 = (A, tau)
+                p0 = (a, tau)
             else:
-                p0 = (A, Hz, tau)
+                p0 = (a, hz, tau)
 
             # subtract offset from waveshape
             y_data -= offset
             popt, _ = curve_fit(func, x_data, y_data, p0)
-            # retrieve tau and A i.e x and y value of peak
+            # retrieve tau and a i.e x and y value of peak
             x = popt[-1]
             y = popt[0]
 
@@ -552,17 +563,18 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
 def _peakdetect_sine_locked(y_axis, x_axis, points=9):
     """Private function for peak detection with locked sine wave.
 
-    Convinience function for calling the '_peakdetect_sine' function with
+    Convenience function for calling the '_peakdetect_sine' function with
     the lock_frequency argument as True.
 
     keyword arguments:
-    y_axis -- A list containg the signal over which to find peaks
+    y_axis -- A list containing the signal over which to find peaks
     x_axis -- A x-axis whose values correspond to the y_axis list and is used
-        in the return to specify the postion of the peaks.
+        in the return to specify the position of the peaks.
     points -- (optional) How many points around the peak should be used during
         curve fitting, must be odd (default: 9)
 
     return -- see '_peakdetect_sine'
+
     """
     return _peakdetect_sine(y_axis, x_axis, points, True)
 
@@ -596,6 +608,7 @@ def _peakdetect_zero_crossing(y_axis, x_axis=None, window=5):
         to get the average peak value do: np.mean(max_peaks, 0)[1] on the
         results to unpack one of the lists into x, y coordinates do:
         x, y = zip(*tab)
+
     """
     # check input data
     x_axis, y_axis = _datacheck_peakdetect(x_axis, y_axis)
@@ -649,38 +662,41 @@ def _smooth(x, window_len=11, window='hanning'):
     This method is based on the convolution of a scaled window on the signal.
     The signal is prepared by introducing reflected copies of the signal
     (with the window size) in both ends so that transient parts are minimized
-    in the begining and end part of the output signal.
+    in the beginning and end parts of the output signal.
 
-    input:
-        x: the input signal
-        window_len: the dimension of the smoothing window; should be an odd
-            integer
-        window: the type of window from 'flat', 'hanning', 'hamming',
-            'bartlett', 'blackman'
-            flat window will produce a moving average smoothing.
+    Parameters
+    ----------
+    x:
+        The input signal.
+    window_len:
+        The dimension of the smoothing window; should be an odd
+        integer.
+    window:
+        The type of window from 'flat', 'hanning', 'hamming', 'bartlett',
+        'blackman'.  The 'flat' window will produce a moving average smoothing.
 
-    output:
-        the smoothed signal
+    Returns
+    -------
+    out:
+        The smoothed signal.
 
-    example:
+    Examples
+    --------
+        >>> t = linspace(-2,2,0.1)
+        >>> x = sin(t)+randn(len(t))*0.1
+        >>> y = _smooth(x)
 
-    t = linspace(-2,2,0.1)
-    x = sin(t)+randn(len(t))*0.1
-    y = _smooth(x)
-
-    see also:
-
+    See Also
+    --------
     numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman,
     numpy.convolve, scipy.signal.lfilter
 
-    TODO: the window parameter could be the window itself if a list instead of
-    a string
     """
     if x.ndim != 1:
-        raise ValueError("smooth only accepts 1 dimension arrays.")
+        raise ValueError('smooth only accepts 1 dimension arrays.')
 
     if x.size < window_len:
-        raise ValueError("Input vector needs to be bigger than window size.")
+        raise ValueError('Input vector needs to be bigger than window size.')
 
     if window_len < 3:
         return x
@@ -702,15 +718,16 @@ def _smooth(x, window_len=11, window='hanning'):
 def zero_crossings(y_axis, window=11):
     """Zero crossing peak detect.
 
-    Algorithm to find zero crossings. Smoothens the curve and finds the
+    Algorithm to find zero crossings. Smooths the curve and finds the
     zero-crossings by looking for a sign change.
 
     keyword arguments:
-    y_axis -- A list containg the signal over which to find zero-crossings
+    y_axis -- A list containing the signal over which to find zero-crossings
     window -- the dimension of the smoothing window; should be an odd integer
         (default: 11)
 
     return -- the index for each zero-crossing
+
     """
     # smooth the curve
     length = len(y_axis)

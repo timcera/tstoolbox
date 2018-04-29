@@ -1,38 +1,35 @@
 """A collection of functions used by tstoolbox, wdmtoolbox, ...etc."""
 
-from __future__ import print_function
 from __future__ import division
+from __future__ import print_function
 
 from future import standard_library
 standard_library.install_aliases()
-from builtins import str
-from builtins import range
+
+import bz2
+import gzip
 import os
 import sys
-import gzip
-import bz2
+from builtins import range
+from builtins import str
+from functools import reduce
 from io import StringIO
+from urllib.parse import urlparse
+
 try:
     from fractions import gcd
 except ImportError:
     from math import gcd
-try:
-    from functools import reduce
-except ImportError:
-    pass
 
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urllib.parse import urlparse
+import numpy as np
 
 import pandas as pd
-import numpy as np
-from tabulate import tabulate as tb
+
 from tabulate import simple_separated_format
+from tabulate import tabulate as tb
 
 docstrings = {
-    'input_ts': r'''input_ts : str
+    'input_ts': r"""input_ts : str
         [optional, required if using Python API, default is '-' (stdin)]
 
         Whether from a file or standard input, data requires a first line
@@ -76,62 +73,62 @@ docstrings = {
             list, StringIO, or file name].
 
             If result is a time series, returns a pandas DataFrame.
-        ''',
-    'columns': r'''columns
+        """,
+    'columns': r"""columns
         [optional]
 
         Columns to select out of input.  Can use column names from the
         first line header or column numbers.  If using numbers, column
         number 1 is the first data column.  To pick multiple columns;
         separate by commas with no spaces. As used in `tstoolbox pick`
-        command.''',
-    'start_date': r'''start_date : str
+        command.""",
+    'start_date': r"""start_date : str
         [optional]
 
         The start_date of the series in ISOdatetime format, or 'None'
-        for beginning.''',
-    'end_date': r'''end_date : str
+        for beginning.""",
+    'end_date': r"""end_date : str
         [optional]
 
         The end_date of the series in ISOdatetime format, or 'None' for
-        end.''',
-    'dropna': r'''dropna : str
+        end.""",
+    'dropna': r"""dropna : str
         [optional, defauls it 'no']
 
         Set `dropna` to 'any' to have records dropped that have NA value
         in any column, or 'all' to have records dropped that have NA in
         all columns.  Set to 'no' to not drop any records.  The default
-        is 'no'.''',
-    'print_input': r'''print_input
+        is 'no'.""",
+    'print_input': r"""print_input
         [optional, default is False]
 
         If set to 'True' will include the input columns in the output
-        table.''',
-    'round_index': r'''round_index
+        table.""",
+    'round_index': r"""round_index
         [optional]
 
         Round the index to the nearest time point.  Can significantly
         improve the performance since can cut down on memory and
         processing requirements, however be cautious about rounding to
         a very course interval from a small one.  This could lead to
-        duplicate values in the index.''',
-    'float_format': r'''float_format
+        duplicate values in the index.""",
+    'float_format': r"""float_format
         [optional]
 
-        Format for float numbers.''',
-    'tablefmt': r'''tablefmt : str
+        Format for float numbers.""",
+    'tablefmt': r"""tablefmt : str
         [optional, default is 'simple']
 
         The table format.  Can be one of 'cvs', 'tvs', 'plain',
         'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki', 'latex',
-        'latex_raw' and 'latex_booktabs'.''',
-    'header': r'''header : str
+        'latex_raw' and 'latex_booktabs'.""",
+    'header': r"""header : str
         [optional, default is 'default']
 
         This is if you want a different header than is the default for
         this table.  Pass a list of strings for each column in the
-        table.''',
-    'pandas_offset_codes': r'''+-------+-----------------------------+
+        table.""",
+    'pandas_offset_codes': r"""+-------+-----------------------------+
         | Alias | Description                 |
         +=======+=============================+
         | B     | business day                |
@@ -235,8 +232,8 @@ docstrings = {
         | -OCT  | year ends in October          |
         +-------+-------------------------------+
         | -NOV  | year ends in November         |
-        +-------+-------------------------------+''',
-    'plotting_position_table': r'''+------------+-----+-----------------+-----------------------+
+        +-------+-------------------------------+""",
+    'plotting_position_table': r"""+------------+-----+-----------------+-----------------------+
         | Name       | a   | Equation        | Description           |
         |            |     | (1-a)/(n+1-2*a) |                       |
         +============+=====+=================+=======================+
@@ -263,14 +260,14 @@ docstrings = {
         +------------+-----+-----------------+-----------------------+
 
         Where 'i' is the sorted rank of the y value, and 'n' is the
-        total number of values to be plotted.'''
+        total number of values to be plotted."""
         }
 
 
 def b(s):
     """Make sure strings are correctly represented in Python 2 and 3."""
     try:
-        return s.encode("utf-8")
+        return s.encode('utf-8')
     except AttributeError:
         return s
 
@@ -288,8 +285,11 @@ def doc(fdict, **kwargs):
 def parsedate(dstr,
               strftime=None,
               settings=None):
-    """ Uses dateparser to parse a wide variety of dates for the
-        toolboxes.  Used for start and end dates. """
+    """Use dateparser to parse a wide variety of dates.
+
+    Used for start and end dates.
+
+    """
     import dateparser
     import datetime
 
@@ -321,32 +321,32 @@ def parsedate(dstr,
 
 
 def about(name):
-    """ This generic 'about' function is used across all toolboxes. """
+    """Return generic 'about' information used across all toolboxes."""
     import platform
     import pkg_resources
-    namever = str(pkg_resources.get_distribution(name.split(".")[0]))
-    print("package name = {0}\npackage version = {1}".format(
+    namever = str(pkg_resources.get_distribution(name.split('.')[0]))
+    print('package name = {0}\npackage version = {1}'.format(
         *namever.split()))
 
-    print("platform architecture = {0}".format(platform.architecture()))
-    print("platform machine = {0}".format(platform.machine()))
-    print("platform = {0}".format(platform.platform()))
-    print("platform processor = {0}".format(platform.processor()))
-    print("platform python_build = {0}".format(platform.python_build()))
-    print("platform python_compiler = {0}".format(platform.python_compiler()))
-    print("platform python branch = {0}".format(platform.python_branch()))
-    print("platform python implementation = {0}".format(
+    print('platform architecture = {0}'.format(platform.architecture()))
+    print('platform machine = {0}'.format(platform.machine()))
+    print('platform = {0}'.format(platform.platform()))
+    print('platform processor = {0}'.format(platform.processor()))
+    print('platform python_build = {0}'.format(platform.python_build()))
+    print('platform python_compiler = {0}'.format(platform.python_compiler()))
+    print('platform python branch = {0}'.format(platform.python_branch()))
+    print('platform python implementation = {0}'.format(
         platform.python_implementation()))
-    print("platform python revision = {0}".format(platform.python_revision()))
-    print("platform python version = {0}".format(platform.python_version()))
-    print("platform release = {0}".format(platform.release()))
-    print("platform system = {0}".format(platform.system()))
-    print("platform version = {0}".format(platform.version()))
+    print('platform python revision = {0}'.format(platform.python_revision()))
+    print('platform python version = {0}'.format(platform.python_version()))
+    print('platform release = {0}'.format(platform.release()))
+    print('platform system = {0}'.format(platform.system()))
+    print('platform version = {0}'.format(platform.version()))
 
 
 def _round_index(ntsd,
                  round_index=None):
-    """ Rounds the index, typically time, to the nearest interval. """
+    """Round the index, typically time, to the nearest interval."""
     ntsd.index = ntsd.index.round(round_index)
     return ntsd
 
@@ -359,7 +359,7 @@ def common_kwds(input_tsd=None,
                 groupby=None,
                 dropna='no',
                 round_index=None):
-    """Collected all common_kwds across sub-commands into single function.
+    """Process all common_kwds across sub-commands into single function.
 
     Parameters
     ----------
@@ -374,8 +374,8 @@ def common_kwds(input_tsd=None,
     -------
     df: DataFrame
         DataFrame altered according to options.
-    """
 
+    """
     ntsd = input_tsd
 
     if pick is not None:
@@ -550,6 +550,7 @@ def asbestfreq(data, force_freq=None):
     5. Use .is_* functions to establish A, AS, A-*, AS-*, Q, QS, M, MS
     6. Use minimum interval to establish the fixed time periods up to weekly
     7. Gives up returning None for PANDAS offset string
+
     """
     if not isinstance(data.index, pd.DatetimeIndex):
         return data
@@ -670,9 +671,9 @@ def print_input(iftrue,
                 suffix,
                 date_format=None,
                 float_format='%g',
-                tablefmt="csv",
-                showindex="never"):
-    """Used when wanting to print the input time series also."""
+                tablefmt='csv',
+                showindex='never'):
+    """Print the input time series also."""
     if suffix:
         output.rename(columns=lambda xloc: str(xloc) + suffix, inplace=True)
     if iftrue:
@@ -702,9 +703,9 @@ def _printiso(tsd,
               date_format=None,
               sep=',',
               float_format='%g',
-              showindex="never",
-              headers="keys",
-              tablefmt="csv"):
+              showindex='never',
+              headers='keys',
+              tablefmt='csv'):
     """Separate so can use in tests."""
     sys.tracebacklimit = 1000
 
@@ -747,11 +748,11 @@ def _printiso(tsd,
     elif isinstance(tsd, (int, float, tuple, pd.np.ndarray)):
         tablefmt = None
 
-    if tablefmt in ["csv", "tsv", "csv_nos", "tsv_nos"]:
-        sep = {"csv": ",",
-               "tsv": "\\t",
-               "csv_nos": ",",
-               "tsv_nos": "\\t"}[tablefmt]
+    if tablefmt in ['csv', 'tsv', 'csv_nos', 'tsv_nos']:
+        sep = {'csv': ',',
+               'tsv': '\\t',
+               'csv_nos': ',',
+               'tsv_nos': '\\t'}[tablefmt]
         if isinstance(tsd, pd.DataFrame):
             try:
                 tsd.to_csv(sys.stdout,
@@ -801,16 +802,14 @@ def test_cli():
 def printiso(tsd,
              date_format=None,
              float_format='%g',
-             tablefmt="csv",
-             headers="keys",
-             showindex="never"):
-    """
-    Default output format.
+             tablefmt='csv',
+             headers='keys',
+             showindex='never'):
+    """Print or return default output format.
 
     Used for tstoolbox, wdmtoolbox, swmmtoolbox, and hspfbintoolbox.
 
     """
-
     if test_cli():
         _printiso(tsd,
                   float_format=float_format,
@@ -823,7 +822,7 @@ def printiso(tsd,
             def rename_map(x):
                 try:
                     return x.replace(',', '_').replace(' ', '_')
-                except:
+                except AttributeError:
                     return x
             tsd.rename(columns=rename_map,
                        inplace=True)
@@ -835,6 +834,7 @@ def open_local(filein):
     Open the given input file.
 
     It can decode various formats too, such as gzip and bz2.
+
     """
     ext = os.path.splitext(filein)[1]
     if ext in ['.gz', '.GZ']:
@@ -845,7 +845,7 @@ def open_local(filein):
 
 
 def memory_optimize(tsd):
-    # Convert all datetime columns to datetime objects
+    """Convert all columns to known types."""
     tsd = tsd.apply(lambda col: pd.to_datetime(col,
                                                errors='ignore')
                     if col.dtypes == object else col, axis=0)
@@ -861,11 +861,12 @@ def memory_optimize(tsd):
 
 
 def is_valid_url(url, qualifying=None):
+    """Return whether "url" is valid."""
     min_attributes = ('scheme', 'netloc')
     qualifying = min_attributes if qualifying is None else qualifying
     token = urlparse(url)
-    return all([getattr(token, qualifying_attr)
-                for qualifying_attr in qualifying])
+    return all((getattr(token, qualifying_attr)
+                for qualifying_attr in qualifying))
 
 
 def _convert_to_numbers(numstr):
@@ -886,7 +887,7 @@ def read_iso_ts(indat,
                 extended_columns=False,
                 dropna=None,
                 force_freq=None):
-    """ Read the format printed by 'printiso' and maybe other formats.
+    """Read the format printed by 'printiso' and maybe other formats.
 
     Parameters
     ----------
@@ -900,10 +901,10 @@ def read_iso_ts(indat,
     df: DataFrame
 
         Returns a DataFrame.
-    """
 
+    """
     if isinstance(indat, (str, bytes, StringIO)):
-        lindat = b(indat).split(b(","))
+        lindat = b(indat).split(b(','))
         if indat == '-':
             # if from stdin format must be the tstoolbox standard
             # pandas read_table supports file like objects

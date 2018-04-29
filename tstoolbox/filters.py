@@ -1,13 +1,13 @@
 """Functions to filter time-series values."""
 
-from __future__ import print_function
 from __future__ import division
+from __future__ import print_function
 
 # ===imports======================
 import numpy as np
 
 # ===globals======================
-modname = "filter"
+modname = 'filter'
 
 ########
 # Exception classes
@@ -25,10 +25,10 @@ class MisMatchedKernel(Exception):
         """Return detailed error message."""
         return """
 *
-*   Length of kernel must be %i.
-*   Instead have %i
+*   Length of kernel must be {0}.
+*   Instead have {1}
 *
-""" % (self.rk, self.pw)
+""".format(self.rk, self.pw)
 
 
 class BadKernelValues(Exception):
@@ -53,12 +53,6 @@ def _transform(vector, cutoff_period, window_len, lopass=None):
     Returns
     -------
     vector of filtered values
-
-    See Also
-    --------
-
-    Examples
-    --------
 
     """
     if cutoff_period is None:

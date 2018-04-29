@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 """Collection of functions for the manipulation of time series."""
 
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-from builtins import map
-from builtins import zip
-from builtins import str
-from builtins import range
-import sys
 import os.path
+import sys
 import warnings
+from builtins import map
+from builtins import range
+from builtins import str
+from builtins import zip
+
+import mando
+from mando.rst_text_formatter import RSTHelpFormatter
 
 # The numpy import is needed like this to be able to include numpy
 # functions in the 'equation' subcommand.
@@ -19,11 +22,8 @@ from numpy import *
 
 import pandas as pd
 
-import mando
-from mando.rst_text_formatter import RSTHelpFormatter
-
-from . import tsutils
 from . import fill_functions
+from . import tsutils
 
 warnings.filterwarnings('ignore')
 fill = fill_functions.fill
@@ -47,8 +47,7 @@ _offset_aliases = {
 
 @mando.command()
 def about():
-    """Display version number and system information.
-    """
+    """Display version number and system information."""
     tsutils.about(__name__)
 
 
@@ -105,7 +104,7 @@ def createts(freq=None,
         tsd = pd.DataFrame([fillvalue] * len(tindex),
                            index=tindex)
     return tsutils.printiso(tsd,
-                            showindex="always")
+                            showindex='always')
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -370,7 +369,7 @@ def describe(input_ts='-',
 
     ntsd.index.name = 'Statistic'
     return tsutils.printiso(ntsd,
-                            showindex="always")
+                            showindex='always')
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -1051,7 +1050,7 @@ def rolling_window(input_ts='-',
                                                         center=center,
                                                         mean=meantest,
                                                         freq=freq)
-            elif statistic[:3] == "ewm":
+            elif statistic[:3] == 'ewm':
                 newts = eval('pd.stats.moments.{0}'
                              '(tsd, span=span, center=center, freq=freq)'
                              ''.format(statistic))
@@ -1382,6 +1381,7 @@ def add_trend(start_offset,
     {dropna}
     {print_input}
     {round_index}
+
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
@@ -1495,7 +1495,7 @@ def calculate_fdc(input_ts='-',
     newts.index.name = 'Plotting_position'
     newts = newts.groupby(newts.index).first()
     return tsutils.printiso(newts,
-                            showindex="always")
+                            showindex='always')
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -1636,28 +1636,28 @@ def unstack(column_names,
 
 
 mark_dict = {
-    ".": "point",
-    ",": "pixel",
-    "o": "circle",
-    "v": "triangle_down",
-    "^": "triangle_up",
-    "<": "triangle_left",
-    ">": "triangle_right",
-    "1": "tri_down",
-    "2": "tri_up",
-    "3": "tri_left",
-    "4": "tri_right",
-    "8": "octagon",
-    "s": "square",
-    "p": "pentagon",
-    "*": "star",
-    "h": "hexagon1",
-    "H": "hexagon2",
-    "+": "plus",
-    "D": "diamond",
-    "d": "thin_diamond",
-    "|": "vline",
-    "_": "hline"
+    '.': 'point',
+    ',': 'pixel',
+    'o': 'circle',
+    'v': 'triangle_down',
+    '^': 'triangle_up',
+    '<': 'triangle_left',
+    '>': 'triangle_right',
+    '1': 'tri_down',
+    '2': 'tri_up',
+    '3': 'tri_left',
+    '4': 'tri_right',
+    '8': 'octagon',
+    's': 'square',
+    'p': 'pentagon',
+    '*': 'star',
+    'h': 'hexagon1',
+    'H': 'hexagon2',
+    '+': 'plus',
+    'D': 'diamond',
+    'd': 'thin_diamond',
+    '|': 'vline',
+    '_': 'hline'
 }
 
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k',
@@ -1695,13 +1695,12 @@ def _set_ppf(ptype):
 
 
 def _plotting_position_equation(i, n, a):
-    """ Parameterized, generic plotting position equation."""
+    """Parameterized, generic plotting position equation."""
     return (i - a) / float(n + 1 - 2 * a)
 
 
 def _set_plotting_position(n, plotting_position='weibull'):
-    """ Create plotting position 1D array using linspace. """
-
+    """Create plotting position 1D array using linspace."""
     plotplist = ['weibull',
                  'benard',
                  'tukey',
@@ -2132,6 +2131,7 @@ def plot(input_ts='-',
     {start_date}
     {end_date}
     {round_index}
+
     """
     # Need to work around some old option defaults with the implementation of
     # mando
@@ -2375,7 +2375,7 @@ def plot(input_ts='-',
                     marker = mdict
                     lstyle = lstyle.rstrip(mdict)
                     break
-            for l in ["--", "-", "-.", ":", " "]:
+            for l in ['--', '-', '-.', ':', ' ']:
                 if l in lstyle:
                     linest = l
                     lstyle = lstyle.rstrip(l)
@@ -2613,6 +2613,7 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x - y), window=10000):
     Returns
     -------
     DTW distance between A and B
+
     """
     # Create cost matrix via broadcasting with large int
     ts_a, ts_b = pd.np.array(ts_a), pd.np.array(ts_b)
@@ -2846,7 +2847,7 @@ def converttz(fromtz,
                               dropna=dropna)
     tsd = tsd.tz_localize(fromtz).tz_convert(totz)
     return tsutils.printiso(tsd,
-                            showindex="always")
+                            showindex='always')
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -2959,7 +2960,7 @@ def convert_index_to_julian(epoch='julian',
     tsd.index = tsd.index.format(formatter=lambda x: str('{0:f}'.format(x)))
 
     return tsutils.printiso(tsd,
-                            showindex="always")
+                            showindex='always')
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -3149,8 +3150,8 @@ def date_offset(years=0,
                 seconds=0,
                 microseconds=0,
                 columns=None,
-                dropna="no",
-                input_ts="-",
+                dropna='no',
+                input_ts='-',
                 start_date=None,
                 end_date=None,
                 round_index=None):
@@ -3243,7 +3244,7 @@ def date_offset(years=0,
                                for i in tsd.index])
     ntsd.columns = tsd.columns
 
-    return tsutils.printiso(ntsd, showindex="always")
+    return tsutils.printiso(ntsd, showindex='always')
 
 
 def main():

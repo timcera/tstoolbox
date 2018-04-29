@@ -1,14 +1,16 @@
 #!/sjr/beodata/local/python_linux/bin/python
 """A collection of filling routines."""
 
-from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import print_function
 
-from builtins import zip
 from builtins import range
-import pandas as pd
+from builtins import zip
+
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+
+import pandas as pd
 
 from . import tsutils
 
@@ -131,7 +133,7 @@ def fill(method='ffill',
     return tsutils.print_input(print_input, tsd, ntsd, '_fill')
 
 
-#@mando.command(formatter_class=RSTHelpFormatter)
+# @mando.command(formatter_class=RSTHelpFormatter)
 def fill_by_correlation(method='move2',
                         maximum_lag=0,
                         interval='guess',
@@ -200,4 +202,3 @@ def fill_by_correlation(method='move2',
         stdevs = pd.np.std(dna)
         print(means[1] + stdevs[1]/stdevs[0]*means[0])
         print(means, stdevs)
-
