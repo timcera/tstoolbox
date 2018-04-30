@@ -682,8 +682,8 @@ def _smooth(x, window_len=11, window='hanning'):
 
     Examples
     --------
-        >>> t = linspace(-2,2,0.1)
-        >>> x = sin(t)+randn(len(t))*0.1
+        >>> t = np.linspace(-2,2,0.1)
+        >>> x = np.sin(t)+np.random.randn(len(t))*0.1
         >>> y = _smooth(x)
 
     See Also
