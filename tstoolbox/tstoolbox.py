@@ -2517,17 +2517,42 @@ def plot(input_ts='-',
                              figsize=figsize)
         plt.xlabel(xtitle or 'Time Lag {0}'.format(short_freq))
         plt.ylabel(ytitle)
-    elif type == 'bootstrap':
+    elif type in ['bootstrap', 'heatmap']:
         assert len(tsd.columns) == 1, """
 *
-*   The 'bootstrap' plot can only work with 1 time-series in the DataFrame.
+*   The '{1}' plot can only work with 1 time-series in the DataFrame.
 *   The DataFrame that you supplied has {0} time-series.
 *
-""".format(len(tsd.columns))
-        from pandas.tools.plotting import bootstrap_plot
-        bootstrap_plot(tsd, size=bootstrap_size, samples=bootstrap_samples,
-                       color='gray',
-                       figsize=figsize)
+""".format(len(tsd.columns), type)
+        if type == 'bootstrap':
+            from pandas.tools.plotting import bootstrap_plot
+            bootstrap_plot(tsd, size=bootstrap_size, samples=bootstrap_samples,
+                           color='gray',
+                           figsize=figsize)
+        elif type == 'heatmap':
+            _, ax = plt.subplots(figsize=figsize)
+            # Find beginning and end years
+            byear = tsd.index[0].year
+            eyear = tsd.index[-1].year
+            tsd = tsutils.asbestfreq(tsd)
+            dr = pd.date_range('{0}-01-01 00:00:00'.format(byear),
+                               '{0}-12-31 23:59:59'.format(eyear),
+                               freq=tsd.index.freq)
+            ntsd = tsd.reindex(index=dr)
+            groups = ntsd.iloc[:, 0].groupby(pd.TimeGrouper('A'))
+            years = pd.DataFrame()
+            for name, group in groups:
+                ngroup = group.values
+                if len(group.values) == 365:
+                    ngroup = pd.np.append(group.values, [pd.np.nan])
+                years[name.year] = ngroup
+            years = years.T
+            nr, nc = years.shape
+            extent = [-0.5, nc-0.5, nr-0.5, -0.5]
+            plt.imshow(years, interpolation=None, aspect='auto')
+            plt.colorbar()
+            ax.set_yticklabels([''] + list(range(byear, eyear + 1)))
+            grid = 'off'
     elif (type == 'bar' or
           type == 'bar_stacked' or
           type == 'barh' or
@@ -2583,12 +2608,14 @@ def plot(input_ts='-',
 *
 """.format(type))
 
-    grid = bool(grid is None)
     if invert_xaxis is True:
         plt.gca().invert_xaxis()
     if invert_yaxis is True:
         plt.gca().invert_yaxis()
+
+    grid = bool(grid is None)
     plt.grid(grid)
+
     plt.title(title)
     plt.tight_layout()
     if ofilename is None:
