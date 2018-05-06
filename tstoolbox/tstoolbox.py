@@ -1778,7 +1778,7 @@ def plot(input_ts='-',
          lognorm_xaxis=False,
          lognorm_yaxis=False,
          xy_match_line='',
-         grid=None,
+         grid=False,
          label_rotation=None,
          label_skip=1,
          force_freq=None,
@@ -2077,7 +2077,7 @@ def plot(input_ts='-',
 
         Will add a match line where x == y. Set to a line style code.
     grid
-        [optional, default is None]
+        [optional, default is False]
 
         Whether to plot grid lines on the major ticks.
     label_rotation : int
@@ -2535,6 +2535,12 @@ def plot(input_ts='-',
             byear = tsd.index[0].year
             eyear = tsd.index[-1].year
             tsd = tsutils.asbestfreq(tsd)
+            if tsd.index.freqstr != 'D':
+                raise ValueError("""
+*
+*  The "heatmap" plot type can only work with daily time series.
+*
+""")
             dr = pd.date_range('{0}-01-01 00:00:00'.format(byear),
                                '{0}-12-31 23:59:59'.format(eyear),
                                freq=tsd.index.freq)
@@ -2552,7 +2558,22 @@ def plot(input_ts='-',
             plt.imshow(years, interpolation=None, aspect='auto')
             plt.colorbar()
             ax.set_yticklabels([''] + list(range(byear, eyear + 1)))
-            grid = 'off'
+            mnths = [0, 30, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
+            mnths_labels = ['Jan',
+                            'Feb',
+                            'Mar',
+                            'Apr',
+                            'May',
+                            'Jun',
+                            'Jul',
+                            'Aug',
+                            'Sep',
+                            'Oct',
+                            'Nov',
+                            'Dec',
+                            ]
+            plt.xticks(mnths, mnths_labels)
+            grid = False
     elif (type == 'bar' or
           type == 'bar_stacked' or
           type == 'barh' or
@@ -2613,7 +2634,6 @@ def plot(input_ts='-',
     if invert_yaxis is True:
         plt.gca().invert_yaxis()
 
-    grid = bool(grid is None)
     plt.grid(grid)
 
     plt.title(title)
