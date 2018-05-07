@@ -2588,7 +2588,7 @@ def plot(input_ts='-',
                       style=style, logx=logx, logy=logy, xlim=xlim,
                       ylim=ylim,
                       figsize=figsize)
-        freq = tsutils.asbestfreq(tsd, force_freq=force_freq)[1]
+        freq = tsutils.asbestfreq(tsd, force_freq=force_freq).index.freqstr
         if freq is not None:
             if 'A' in freq:
                 endchar = 4
