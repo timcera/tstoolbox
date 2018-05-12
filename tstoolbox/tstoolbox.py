@@ -1770,7 +1770,7 @@ def plot(input_ts='-',
          ylim=None,
          secondary_y=False,
          mark_right=True,
-         scatter_matrix_diagonal='probability_density',
+         scatter_matrix_diagonal='kde',
          bootstrap_size=50,
          bootstrap_samples=500,
          norm_xaxis=False,
@@ -1824,8 +1824,9 @@ def plot(input_ts='-',
         bootstrap
             visually asses aspects of a data set by plotting random
             selections of values
-        probability_density
-            sometime called kernel density estimation (KDE)
+        kde
+            this plot is an estimation of the probablity density function based
+            on the data called kernel density estimation (KDE)
         bar
             sometimes called a column plot
         barh
@@ -1836,6 +1837,9 @@ def plot(input_ts='-',
             a horizontal stacked bar plot
         histogram
             calculate and create a histogram plot
+        heatmap
+            create a 2D heatmap of daily data, day of year x-axis, and year for
+            y-axis
         norm_xaxis
             sort, calculate probabilities, and plot data against an
             x axis normal distribution
@@ -2052,7 +2056,7 @@ def plot(input_ts='-',
         When using a secondary_y axis, should the legend label the axis of the
         various time-series automatically.
     scatter_matrix_diagonal : str
-        [optional, defaults to 'probability_density']
+        [optional, defaults to 'kde']
 
         If plot type is 'scatter_matrix', this specifies the plot along the
         diagonal.
@@ -2285,7 +2289,9 @@ def plot(input_ts='-',
     if yaxis == 'log':
         logy = True
 
-    if type in ['norm_xaxis', 'lognorm_xaxis', 'weibull_xaxis']:
+    if type in ['norm_xaxis',
+                'lognorm_xaxis',
+                'weibull_xaxis']:
         xaxis = 'normal'
         if logx is True:
             logx = False
@@ -2296,7 +2302,9 @@ def plot(input_ts='-',
 *
 """.format(xaxis, type))
 
-    if type in ['norm_yaxis', 'lognorm_yaxis', 'weibull_yaxis']:
+    if type in ['norm_yaxis',
+                'lognorm_yaxis',
+                'weibull_yaxis']:
         yaxis = 'normal'
         if logy is True:
             logy = False
@@ -2321,8 +2329,7 @@ def plot(input_ts='-',
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
                  ylim=ylim, secondary_y=secondary_y, mark_right=mark_right,
                  figsize=figsize, drawstyle=drawstyle)
-        plt.xlabel(xtitle or 'Time')
-        plt.ylabel(ytitle)
+        xtitle = xtitle or 'Time'
         if legend is True:
             plt.legend(loc='best')
     elif type in ['xy',
@@ -2342,7 +2349,8 @@ def plot(input_ts='-',
         # Make a default set of 'style' strings if 'style' is None.
         if style is None:
             typed = '.-'
-            if type in ['xy']:
+            if type in ['xy',
+                        'double_mass']:
                 typed = '*'
             style = list(zip(colors * (len(tsd.columns) // len(colors) + 1),
                              [typed] * len(tsd.columns)))
@@ -2382,9 +2390,12 @@ def plot(input_ts='-',
                     break
             lcolor = lstyle
 
-            if type in ['norm_xaxis', 'norm_yaxis',
-                        'lognorm_xaxis', 'lognorm_yaxis',
-                        'weibull_xaxis', 'weibull_yaxis']:
+            if type in ['norm_xaxis',
+                        'norm_yaxis',
+                        'lognorm_xaxis',
+                        'lognorm_yaxis',
+                        'weibull_xaxis',
+                        'weibull_yaxis']:
                 oydata = pd.np.array(ys.iloc[:, colindex].dropna())
                 oydata = pd.np.sort(oydata)[::-1]
                 n = len(oydata)
@@ -2394,31 +2405,37 @@ def plot(input_ts='-',
                 oxdata = xs[:, colindex]
                 oydata = ys[:, colindex]
 
-            if type in ['norm_yaxis', 'lognorm_yaxis', 'weibull_yaxis']:
+            if type in ['norm_yaxis',
+                        'lognorm_yaxis',
+                        'weibull_yaxis']:
                 oxdata, oydata = oydata, oxdata
                 norm_axis = ax.yaxis
 
             # Make the plot for each column
             if logy is True and logx is False:
-                ax.semilogy(oxdata, oydata,
+                ax.semilogy(oxdata,
+                            oydata,
                             linestyle=linest,
                             color=lcolor,
                             marker=marker,
                             label=lnames[colindex])
             elif logx is True and logy is False:
-                ax.semilogx(oxdata, oydata,
+                ax.semilogx(oxdata,
+                            oydata,
                             linestyle=linest,
                             color=lcolor,
                             marker=marker,
                             label=lnames[colindex])
             elif logx is True and logy is True:
-                ax.loglog(oxdata, oydata,
+                ax.loglog(oxdata,
+                          oydata,
                           linestyle=linest,
                           color=lcolor,
                           marker=marker,
                           label=lnames[colindex])
             else:
-                ax.plot(oxdata, oydata,
+                ax.plot(oxdata,
+                        oydata,
                         linestyle=linest,
                         color=lcolor,
                         marker=marker,
@@ -2426,9 +2443,12 @@ def plot(input_ts='-',
                         drawstyle=drawstyle)
 
         # Make it pretty
-        if type in ['norm_xaxis', 'norm_yaxis',
-                    'lognorm_xaxis', 'lognorm_yaxis',
-                    'weibull_xaxis', 'weibull_yaxis']:
+        if type in ['norm_xaxis',
+                    'norm_yaxis',
+                    'lognorm_xaxis',
+                    'lognorm_yaxis',
+                    'weibull_xaxis',
+                    'weibull_yaxis']:
             xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
             xtmaj_str = ['1', '10', '50', '90', '99']
             xtmin = pd.np.concatenate([pd.np.linspace(0.001, 0.01, 10),
@@ -2443,12 +2463,16 @@ def plot(input_ts='-',
             norm_axis.set_major_locator(FixedLocator(xtmaj))
             norm_axis.set_minor_locator(FixedLocator(xtmin))
 
-        if type in ['norm_xaxis', 'lognorm_xaxis', 'weibull_xaxis']:
+        if type in ['norm_xaxis',
+                    'lognorm_xaxis',
+                    'weibull_xaxis']:
             ax.set_xticklabels(xtmaj_str)
             ax.set_ylim(ylim)
             ax.set_xlim(ppf([0.01, 0.99]))
 
-        elif type in ['norm_yaxis', 'lognorm_yaxis', 'weibull_yaxis']:
+        elif type in ['norm_yaxis',
+                      'lognorm_yaxis',
+                      'weibull_yaxis']:
             ax.set_yticklabels(xtmaj_str)
             ax.set_xlim(xlim)
             ax.set_ylim(ppf(ylim))
@@ -2469,7 +2493,8 @@ def plot(input_ts='-',
             ax.set_ylim(nylim)
             ax.set_xlim(nxlim)
 
-        if type in ['xy', 'double_mass']:
+        if type in ['xy',
+                    'double_mass']:
             xtitle = xtitle or tsd.columns[0]
             ytitle = ytitle or tsd.columns[1]
         elif type in ['norm_xaxis']:
@@ -2484,39 +2509,37 @@ def plot(input_ts='-',
         if type in ['norm_yaxis', 'weibull_yaxis']:
             xtitle, ytitle = ytitle, xtitle
 
-        ax.set_xlabel(xtitle or tsd.columns[0])
-        ax.set_ylabel(ytitle or tsd.columns[1])
+        xtitle = xtitle or tsd.columns[0]
+        ytitle = ytitle or tsd.columns[1]
         if legend is True:
             ax.legend(loc='best')
-    elif type == 'probability_density':
+    elif type in ['kde',
+                  'probability_density']:
         tsd.plot(kind='kde', legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
                  ylim=ylim, secondary_y=secondary_y,
                  figsize=figsize)
-        plt.xlabel(xtitle)
-        plt.ylabel(ytitle or 'Density')
+        ytitle = ytitle or 'Density'
         if legend is True:
             plt.legend(loc='best')
+    elif type == 'kde_time':
+        pass
     elif type == 'boxplot':
         tsd.boxplot()
     elif type == 'scatter_matrix':
-        from pandas.tools.plotting import scatter_matrix
+        from pandas.plotting import scatter_matrix
         if scatter_matrix_diagonal == 'probablity_density':
             scatter_matrix_diagonal = 'kde'
-        scatter_matrix(tsd, diagonal=scatter_matrix_diagonal,
-                       figsize=figsize)
+        scatter_matrix(tsd, diagonal=scatter_matrix_diagonal)
     elif type == 'lag_plot':
-        from pandas.tools.plotting import lag_plot
-        lag_plot(tsd,
-                 figsize=figsize)
-        plt.xlabel(xtitle or 'y(t)')
-        plt.ylabel(ytitle or 'y(t+{0})'.format(short_freq or 1))
+        from pandas.plotting import lag_plot
+        lag_plot(tsd)
+        xtitle = xtitle or 'y(t)'
+        ytitle = ytitle or 'y(t+{0})'.format(short_freq or 1)
     elif type == 'autocorrelation':
-        from pandas.tools.plotting import autocorrelation_plot
-        autocorrelation_plot(tsd,
-                             figsize=figsize)
-        plt.xlabel(xtitle or 'Time Lag {0}'.format(short_freq))
-        plt.ylabel(ytitle)
+        from pandas.plotting import autocorrelation_plot
+        autocorrelation_plot(tsd)
+        xtitle = xtitle or 'Time Lag {0}'.format(short_freq)
     elif type in ['bootstrap', 'heatmap']:
         assert len(tsd.columns) == 1, """
 *
@@ -2525,10 +2548,11 @@ def plot(input_ts='-',
 *
 """.format(len(tsd.columns), type)
         if type == 'bootstrap':
-            from pandas.tools.plotting import bootstrap_plot
-            bootstrap_plot(tsd, size=bootstrap_size, samples=bootstrap_samples,
-                           color='gray',
-                           figsize=figsize)
+            from pandas.plotting import bootstrap_plot
+            bootstrap_plot(tsd,
+                           size=bootstrap_size,
+                           samples=bootstrap_samples,
+                           color='gray')
         elif type == 'heatmap':
             _, ax = plt.subplots(figsize=figsize)
             # Find beginning and end years
@@ -2554,7 +2578,6 @@ def plot(input_ts='-',
                 years[name.year] = ngroup
             years = years.T
             nr, nc = years.shape
-            extent = [-0.5, nc-0.5, nr-0.5, -0.5]
             plt.imshow(years, interpolation=None, aspect='auto')
             plt.colorbar()
             ax.set_yticklabels([''] + list(range(byear, eyear + 1)))
@@ -2612,14 +2635,10 @@ def plot(input_ts='-',
                     nticklabels.append(i.get_text()[:endchar])
             taxis.set_ticklabels(nticklabels)
             plt.setp(taxis.get_majorticklabels(), rotation=label_rotation)
-        plt.xlabel(xtitle)
-        plt.ylabel(ytitle)
         if legend is True:
             plt.legend(loc='best')
     elif type == 'histogram':
         tsd.hist(figsize=figsize)
-        plt.xlabel(xtitle)
-        plt.ylabel(ytitle)
         if legend is True:
             plt.legend(loc='best')
     else:
@@ -2628,6 +2647,9 @@ def plot(input_ts='-',
 *   Plot 'type' {0} is not supported.
 *
 """.format(type))
+
+    plt.xlabel(xtitle)
+    plt.ylabel(ytitle)
 
     if invert_xaxis is True:
         plt.gca().invert_xaxis()
