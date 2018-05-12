@@ -264,6 +264,74 @@ docstrings = {
         }
 
 
+def _set_ppf(ptype):
+    if ptype == 'norm':
+        from scipy.stats.distributions import norm
+        return norm.ppf
+    elif ptype == 'lognorm':
+        from scipy.stats.distributions import lognorm
+        return lognorm.freeze(0.5, loc=0).ppf
+    elif ptype == 'weibull':
+        def ppf(y):
+            """Percentage Point Function for the weibull distibution."""
+            return pd.np.log(-pd.np.log((1 - pd.np.array(y))))
+        return ppf
+    elif ptype is None:
+        def ppf(y):
+            return y
+        return ppf
+
+
+def _plotting_position_equation(i, n, a):
+    """Parameterized, generic plotting position equation."""
+    return (i - a) / float(n + 1 - 2 * a)
+
+
+def _set_plotting_position(n, plotting_position='weibull'):
+    """Create plotting position 1D array using linspace."""
+    plotplist = ['weibull',
+                 'benard',
+                 'tukey',
+                 'gumbel',
+                 'hazen',
+                 'cunnane',
+                 'california']
+    assert plotting_position in plotplist, """
+*
+*    The plotting_position option accepts:
+*    {1}
+*    plotting position options, you gave {0}.
+*
+""".format(plotting_position, plotplist)
+
+    if plotting_position == 'weibull':
+        return pd.np.linspace(_plotting_position_equation(1, n, 0.0),
+                              _plotting_position_equation(n, n, 0.0),
+                              n)
+    elif plotting_position == 'benard':
+        return pd.np.linspace(_plotting_position_equation(1, n, 0.3),
+                              _plotting_position_equation(n, n, 0.3),
+                              n)
+    elif plotting_position == 'tukey':
+        return pd.np.linspace(_plotting_position_equation(1, n, 1.0 / 3.0),
+                              _plotting_position_equation(n, n, 1.0 / 3.0),
+                              n)
+    elif plotting_position == 'gumbel':
+        return pd.np.linspace(_plotting_position_equation(1, n, 1.0),
+                              _plotting_position_equation(n, n, 1.0),
+                              n)
+    elif plotting_position == 'hazen':
+        return pd.np.linspace(_plotting_position_equation(1, n, 1.0 / 2.0),
+                              _plotting_position_equation(n, n, 1.0 / 2.0),
+                              n)
+    elif plotting_position == 'cunnane':
+        return pd.np.linspace(_plotting_position_equation(1, n, 2.0 / 5.0),
+                              _plotting_position_equation(n, n, 2.0 / 5.0),
+                              n)
+    elif plotting_position == 'california':
+        return pd.np.linspace(1. / n, 1., n)
+
+
 def b(s):
     """Make sure strings are correctly represented in Python 2 and 3."""
     try:
