@@ -549,8 +549,11 @@ def plot(input_ts='-',
             beginstr = 3
         else:
             beginstr = 1
-        # short freq string (day) OR (2 day)
-        short_freq = '({0})'.format(pltfreq[beginstr:-1])
+        if pltfreq == 'none':
+            short_freq = ''
+        else:
+            # short freq string (day) OR (2 day)
+            short_freq = '({0})'.format(pltfreq[beginstr:-1])
     except AttributeError:
         short_freq = ''
 
@@ -821,8 +824,8 @@ def plot(input_ts='-',
 
         if type in ['xy',
                     'double_mass']:
-            xtitle = xtitle or tsd.columns[0]
-            ytitle = ytitle or tsd.columns[1]
+            xtitle = xtitle or 'Cumulative {0}'.format(tsd.columns[0])
+            ytitle = ytitle or 'Cumulative {0}'.format(tsd.columns[1])
         elif type in ['norm_xaxis',
                       'norm_yaxis']:
             xtitle = xtitle or 'Normal Distribution'
