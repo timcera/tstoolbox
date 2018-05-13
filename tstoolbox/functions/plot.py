@@ -823,20 +823,24 @@ def plot(input_ts='-',
                     'double_mass']:
             xtitle = xtitle or tsd.columns[0]
             ytitle = ytitle or tsd.columns[1]
-        elif type in ['norm_xaxis']:
+        elif type in ['norm_xaxis',
+                      'norm_yaxis']:
             xtitle = xtitle or 'Normal Distribution'
             ytitle = ytitle or tsd.columns[0]
-        elif type in ['lognorm_xaxis']:
+        elif type in ['lognorm_xaxis',
+                      'lognorm_yaxis']:
             xtitle = xtitle or 'Log Normal Distribution'
             ytitle = ytitle or tsd.columns[0]
-        elif type in ['weibull_xaxis']:
+        elif type in ['weibull_xaxis',
+                      'weibull_yaxis']:
             xtitle = xtitle or 'Weibull Distribution'
             ytitle = ytitle or tsd.columns[0]
-        if type in ['norm_yaxis', 'weibull_yaxis']:
+
+        if type in ['norm_yaxis',
+                    'lognorm_yaxis',
+                    'weibull_yaxis']:
             xtitle, ytitle = ytitle, xtitle
 
-        xtitle = xtitle or tsd.columns[0]
-        ytitle = ytitle or tsd.columns[1]
         if legend is True:
             ax.legend(loc='best')
     elif type in ['kde',
