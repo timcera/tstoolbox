@@ -8,7 +8,6 @@ from __future__ import print_function
 import os.path
 import sys
 import warnings
-from builtins import map
 from builtins import range
 from builtins import str
 from builtins import zip
@@ -61,6 +60,67 @@ colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k',
           'cadetblue',
           'chartreuse',
           'chocolate']
+
+
+def _know_your_limits(xylimits, axis='arithmetic'):
+    """Establish axis limits.
+
+    This defines the xlim and ylim as lists rather than strings.
+    Might prove useful in the future in a more generic spot.  It
+    normalizes the different representations.
+    """
+    if isinstance(xylimits, str):
+        nlim = []
+        for lim in xylimits.split(','):
+            if lim == '':
+                nlim.append(None)
+            elif '.' in lim:
+                nlim.append(float(lim))
+            else:
+                nlim.append(int(lim))
+    else:  # tuples or lists...
+        nlim = xylimits
+
+    if axis == 'normal':
+        if nlim is None:
+            nlim = [None, None]
+        if nlim[0] is None:
+            nlim[0] = 0.01
+        if nlim[1] is None:
+            nlim[1] = 0.99
+        assert (nlim[0] > 0 and nlim[0] < 1 and
+                nlim[1] > 0 and nlim[1] < 1), """
+*
+*   Both limits must be between 0 and 1 for the
+*   'normal', 'lognormal', or 'weibull' axis.
+*
+*   Instead you have {0}.
+*
+""".format(nlim)
+
+    if nlim is None:
+        return nlim
+
+    if nlim[0] is not None and nlim[1] is not None:
+        assert nlim[0] < nlim[1], """
+*
+*   The second limit must be greater than the first.
+*
+*   You gave {0}.
+*
+""".format(nlim)
+
+    if axis == 'log':
+        assert ((nlim[0] is None or nlim[0] > 0) and
+                (nlim[1] is None or nlim[1] > 0)), """
+*
+*   If log plot cannot have limits less than or equal to 0.
+*
+*   You have {0}.
+*
+""".format(nlim)
+
+    return nlim
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -479,66 +539,6 @@ def plot(input_ts='-',
                                   round_index=round_index,
                                   dropna='no')
 
-    def _know_your_limits(xylimits, axis='arithmetic'):
-        """Establish axis limits.
-
-        This defines the xlim and ylim as lists rather than strings.
-        Might prove useful in the future in a more generic spot.  It
-        normalizes the different representations.
-        """
-        if isinstance(xylimits, str):
-            nlim = []
-            for lim in xylimits.split(','):
-                if lim == '':
-                    nlim.append(None)
-                elif '.' in lim:
-                    nlim.append(float(lim))
-                else:
-                    nlim.append(int(lim))
-        else:  # tuples or lists...
-            nlim = xylimits
-
-        if axis in ['norm', 'lognormal', 'weibull']:
-            if nlim is None:
-                nlim = [None, None]
-            if nlim[0] is None:
-                nlim[0] = 0.01
-            if nlim[1] is None:
-                nlim[1] = 0.99
-            assert (nlim[0] > 0 and nlim[0] < 1 and
-                    nlim[1] > 0 and nlim[1] < 1), """
-*
-*   Both limits must be between 0 and 1 for the
-*   'normal', 'lognormal', or 'weibull' axis.
-*
-*   Instead you have {0}.
-*
-""".format(nlim)
-
-        if nlim is None:
-            return nlim
-
-        if nlim[0] is not None and nlim[1] is not None:
-            assert nlim[0] < nlim[1], """
-*
-*   The second limit must be greater than the first.
-*
-*   You gave {0}.
-*
-""".format(nlim)
-
-        if axis == 'log':
-            assert ((nlim[0] is None or nlim[0] > 0) and
-                    (nlim[1] is None or nlim[1] > 0)), """
-*
-*   If log plot cannot have limits less than or equal to 0.
-*
-*   You have {0}.
-*
-""".format(nlim)
-
-        return nlim
-
     # This is to help pretty print the frequency
     try:
         try:
@@ -669,7 +669,13 @@ def plot(input_ts='-',
         if style is None:
             typed = '.-'
             if type in ['xy',
-                        'double_mass']:
+                        'double_mass',
+                        'norm_xaxis',
+                        'norm_yaxis',
+                        'lognorm_xaxis',
+                        'lognorm_yaxis',
+                        'weibull_xaxis',
+                        'weibull_yaxis']:
                 typed = '*'
             style = list(zip(colors * (len(tsd.columns) // len(colors) + 1),
                              [typed] * len(tsd.columns)))
@@ -788,7 +794,7 @@ def plot(input_ts='-',
                     'weibull_xaxis']:
             ax.set_xticklabels(xtmaj_str)
             ax.set_ylim(ylim)
-            ax.set_xlim(ppf([0.01, 0.99]))
+            ax.set_xlim(ppf(xlim))
 
         elif type in ['norm_yaxis',
                       'lognorm_yaxis',
@@ -929,8 +935,7 @@ def plot(input_ts='-',
             kind = 'barh'
         ax = tsd.plot(kind=kind, legend=legend, stacked=stacked,
                       style=style, logx=logx, logy=logy, xlim=xlim,
-                      ylim=ylim,
-                      figsize=figsize)
+                      ylim=ylim, figsize=figsize)
         freq = tsutils.asbestfreq(tsd, force_freq=force_freq).index.freqstr
         if freq is not None:
             if 'A' in freq:
