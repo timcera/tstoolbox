@@ -1065,9 +1065,9 @@ def plot(input_ts='-',
 *  The "heatmap" plot type can only work with daily time series.
 *
 """)
-        dr = pd.date_range('{0}-01-01 00:00:00'.format(byear),
-                           '{0}-12-31 23:59:59'.format(eyear),
-                           freq=tsd.index.freq)
+        dr = pd.date_range('{0}-01-01'.format(byear),
+                           '{0}-12-31'.format(eyear),
+                           freq='D')
         ntsd = tsd.reindex(index=dr)
         groups = ntsd.iloc[:, 0].groupby(pd.TimeGrouper('A'))
         years = pd.DataFrame()
@@ -1078,9 +1078,13 @@ def plot(input_ts='-',
             years[name.year] = ngroup
         years = years.T
         nr, nc = years.shape
-        plt.imshow(years, interpolation=None, aspect='auto')
+        plt.imshow(years,
+                   interpolation=None,
+                   aspect='auto')
         plt.colorbar()
-        ax.set_yticklabels([''] + list(range(byear, eyear + 1)))
+        yticks = list(range(byear, eyear + 1))
+        skip = len(yticks)//20 + 1
+        plt.yticks(range(0, len(yticks), skip), yticks[::skip])
         mnths = [0, 30, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
         mnths_labels = ['Jan',
                         'Feb',
