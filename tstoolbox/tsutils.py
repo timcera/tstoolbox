@@ -625,21 +625,14 @@ def asbestfreq(data, force_freq=None):
 
     ndiff = (data.index.values.astype('int64')[1:] -
              data.index.values.astype('int64')[:-1])
-    if np.any(ndiff == 0):
+    if np.any(ndiff <= 0):
         raise ValueError("""
 *
-*   Duplicate index entry record {1} (start count at 0):
-*   "{0}".
-*
-""".format(data.index[:-1][ndiff == 0][0], pd.np.where(ndiff == 0)[0][0] + 1))
-    if np.any(ndiff < 0):
-        raise ValueError("""
-*
-*   Time warp.  The datetime index is not sorted at
+*   Duplicate or time reversal index entry at
 *   record {1} (start count at 0):
 *   "{0}".
 *
-""".format(data.index[ndiff < 0][0], pd.np.where(ndiff < 0)[0][0] + 1))
+""".format(data.index[:-1][ndiff <= 0][0], pd.np.where(ndiff <= 0)[0][0] + 1))
 
     if force_freq is not None:
         return data.asfreq(force_freq)
@@ -650,12 +643,13 @@ def asbestfreq(data, force_freq=None):
     # Since pandas doesn't set data.index.freq and data.index.freqstr when
     # using .asfreq, this function returns that PANDAS time offset alias code
     # also.  Not ideal at all.
-
+    #
     # This gets most of the frequencies...
-    try:
-        return data.asfreq(data.index.inferred_freq)
-    except ValueError:
-        pass
+    if data.index.inferred_freq is not None:
+        try:
+            return data.asfreq(data.index.inferred_freq)
+        except ValueError:
+            pass
 
     # pd.infer_freq would fail if given a large dataset
     if len(data.index) > 100:
