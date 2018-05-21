@@ -939,66 +939,89 @@ def accumulate(input_ts='-',
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def rolling_window(input_ts='-',
-                   columns=None,
-                   start_date=None,
-                   end_date=None,
-                   dropna='no',
-                   span=None,
-                   statistic='mean',
-                   wintype=None,
-                   center=False,
-                   print_input=False,
-                   freq=None,
-                   groupby=None):
-    """Calculate a rolling window statistic.
+def ewm_window(input_ts='-',
+               columns=None,
+               start_date=None,
+               end_date=None,
+               dropna='no',
+               statistic='',
+               alpha_com=None,
+               alpha_span=None,
+               alpha_halflife=None,
+               alpha=None,
+               min_periods=0,
+               adjust=True,
+               ignore_na=False,
+               print_input=False,
+               ):
+    """Provides exponential weighted functions.
+
+    Exactly one of center of mass, span, half-life, and alpha must be provided.
+    Allowed values and relationship between the parameters are specified in the
+    parameter descriptions above; see the link at the end of this section for
+    a detailed explanation.
+
+    When adjust is True (default), weighted averages are calculated using
+    weights (1-alpha)**(n-1), (1-alpha)**(n-2), . . . , 1-alpha, 1.
+
+    When adjust is False, weighted averages are calculated recursively as:
+        weighted_average[0] = arg[0]; weighted_average[i]
+        = (1-alpha)*weighted_average[i-1] + alpha*arg[i].
+
+    When ignore_na is False (default), weights are based on absolute positions.
+    For example, the weights of x and y used in calculating the final weighted
+    average of [x, None, y] are (1-alpha)**2 and 1 (if adjust is True), and
+    (1-alpha)**2 and alpha (if adjust is False).
+
+    When ignore_na is True (reproducing pre-0.15.0 behavior), weights are based
+    on relative positions. For example, the weights of x and y used in
+    calculating the final weighted average of [x, None, y] are 1-alpha and
+    1 (if adjust is True), and 1-alpha and alpha (if adjust is False).
+
+    More details can be found at
+    http://pandas.pydata.org/pandas-docs/stable/computation.html#exponentially-weighted-windows
 
     Parameters
     ----------
-    span
-        [optional, default is None
-
-        The number of previous intervals to include in the calculation
-        of the statistic. If `span` is equal to 0 will give an expanding
-        rolling window.
     statistic : str
-        [optional, default is 'mean']
+        Statistic applied to each window.
 
-        For rolling window (span>0) and expanding window (span==0), one
-        of 'count', 'sum', 'mean', 'median', 'min', 'max', 'std', 'var',
-        'skew', 'kurt', 'quantile'.  For exponentially weighted windows
-        have 'ewma' for mean average, 'ewvar' for variance, and 'ewmstd'
-        for standard deviation
-    wintype : str
-        [optional, default is None]
+        +------+--------------------+
+        | corr | correlation        |
+        +------+--------------------+
+        | cov  | covariance         |
+        +------+--------------------+
+        | mean | mean               |
+        +------+--------------------+
+        | std  | standard deviation |
+        +------+--------------------+
+        | var  | variance           |
+        +------+--------------------+
 
-        The 'mean' and 'sum' `statistic` calculation can also be
-        weighted according to the `wintype` windows.  Some of the
-        following windows require additional keywords identified in
-        parenthesis: 'boxcar', 'triang', 'blackman', 'hamming',
-        'bartlett', 'parzen', 'bohman', 'blackmanharris', 'nuttall',
-        'barthann', 'kaiser' (needs beta), 'gaussian' (needs std),
-        'general_gaussian' (needs power, width) 'slepian' (needs width).
-    center
-        [optional, default is False]
+    alpha_com : float, optional
+        Specify decay in terms of center of mass, alpha=1/(1+com), for com>=0
 
-        If set to 'True' the calculation will be made for the value at
-        the center of the window.
-    groupby
-        [optional, defaults to None]
+    alpha_span : float, optional
+        Specify decay in terms of span, alpha=2/(span+1), for span1
 
-        Time offset to groupby.  Any PANDAS time offset.  This option
-        supports what is probably an unusual situation where the
-        rolling_window is performed separately within each groupby
-        period.
+    alpha_halflife : float, optional
+        Specify decay in terms of half-life, alpha=1-exp(log(0.5)/halflife),
+        for halflife>0
 
-        {pandas_offset_codes}
-    freq
-        [optional, defaults to None]
+    alpha : float, optional
+        Specify smoothing factor alpha directly, 0<alpha<=1
 
-        string or DateOffset object. Frequency to conform the data to before
-        computing the statistic. Specified as a frequency string or DateOffset
-        object.
+    min_periods : int, default 0
+        Minimum number of observations in window required to have a value
+        (otherwise result is NA).
+
+    adjust : boolean, default True
+        Divide by decaying adjustment factor in beginning periods to account
+        for imbalance in relative weightings (viewing EWMA as a moving average)
+
+    ignore_na : boolean, default False
+        Ignore missing values when calculating weights.
+
     {input_ts}
     {columns}
     {start_date}
@@ -1011,101 +1034,240 @@ def rolling_window(input_ts='-',
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              groupby=groupby,
                               dropna=dropna)
 
-    if span is None:
-        span = 2
+    ntsd = tsd.ewm(alpha_com=alpha_com,
+                   alpha_span=alpha_span,
+                   alpha_halflife=alpha_halflife,
+                   alpha=alpha,
+                   min_periods=min_periods,
+                   adjust=adjust,
+                   ignore_na=ignore_na,
+                   )
 
-    def _process_tsd(tsd,
-                     statistic='mean',
-                     span=None,
-                     center=False,
-                     wintype=None,
-                     freq=None):
-        try:
-            span = int(span)
-        except ValueError:
-            span = len(tsd)
-        window_list = [
-            'boxcar',
-            'triang',
-            'blackman',
-            'hamming',
-            'bartlett',
-            'parzen',
-            'bohman',
-            'blackmanharris',
-            'nuttall',
-            'barthann',
-            'kaiser',
-            'gaussian',
-            'general_gaussian',
-            'slepian',
-        ]
-        try:
-            if wintype in window_list and statistic in ['mean', 'sum']:
-                meantest = statistic == 'mean'
-                newts = pd.stats.moments.rolling_window(tsd,
-                                                        span,
-                                                        wintype,
-                                                        center=center,
-                                                        mean=meantest,
-                                                        freq=freq)
-            elif statistic[:3] == 'ewm':
-                newts = eval('pd.stats.moments.{0}'
-                             '(tsd, span=span, center=center, freq=freq)'
-                             ''.format(statistic))
-            else:
-                if span == 0:
-                    newts = eval('pd.stats.moments.expanding_{0}'
-                                 '(tsd, center=center, freq=freq)'
-                                 ''.format(statistic))
-                else:
-                    newts = eval('pd.stats.moments.rolling_{0}'
-                                 '(tsd, span, center=center, freq=freq)'
-                                 ''.format(statistic))
-        except AttributeError:
-            raise ValueError("""
-*
-*   Statistic '{0}' is not implemented.
-*
-""".format(statistic))
-        return newts
+    if statistic:
+        ntsd = eval('ntsd.{0}()'.format(statistic))
 
-    tmptsd = []
-    if isinstance(tsd, pd.DataFrame):
-        for nspan in str(span).split(','):
-            tmptsd.append(_process_tsd(tsd,
-                                       statistic=statistic,
-                                       span=nspan,
-                                       center=center,
-                                       wintype=wintype,
-                                       freq=freq))
-    else:
-        for nspan in str(span).split(','):
-            jtsd = pd.DataFrame()
-            for _, gb in tsd:
-                # Assume span should be yearly if 365 or 366 and you have
-                # groupby yearly.
-                xspan = nspan
-                if len(gb) in [365, 366] and int(nspan) in [365, 366]:
-                    xspan = len(gb)
-                jtsd = jtsd.append(_process_tsd(gb,
-                                                statistic=statistic,
-                                                span=xspan,
-                                                center=center,
-                                                wintype=wintype,
-                                                freq=freq))
-            tmptsd.append(jtsd)
-    ntsd = pd.concat(tmptsd, join='outer', axis=1)
-
-    ntsd.columns = [i[0] + '_' + i[1] for i in zip(ntsd.columns,
-                                                   str(span).split(','))]
     return tsutils.print_input(print_input,
                                tsd,
                                ntsd,
-                               '_' + statistic)
+                               '_ewm_' + statistic)
+
+
+@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@tsutils.doc(tsutils.docstrings)
+def expanding_window(input_ts='-',
+                     columns=None,
+                     start_date=None,
+                     end_date=None,
+                     dropna='no',
+                     statistic='',
+                     min_periods=1,
+                     center=False,
+                     print_input=False,
+                     ):
+    """Calculate an expanding window statistic.
+
+    Parameters
+    ----------
+    statistic : str
+
+        +-----------+----------------------+
+        | statistic | Meaning              |
+        +===========+======================+
+        | corr      | correlation          |
+        +-----------+----------------------+
+        | count     | count of real values |
+        +-----------+----------------------+
+        | cov       | covariance           |
+        +-----------+----------------------+
+        | kurt      | kurtosis             |
+        +-----------+----------------------+
+        | max       | maximum              |
+        +-----------+----------------------+
+        | mean      | mean                 |
+        +-----------+----------------------+
+        | median    | median               |
+        +-----------+----------------------+
+        | min       | minimum              |
+        +-----------+----------------------+
+        | skew      | skew                 |
+        +-----------+----------------------+
+        | std       | standard deviation   |
+        +-----------+----------------------+
+        | sum       | sum                  |
+        +-----------+----------------------+
+        | var       | variance             |
+        +-----------+----------------------+
+
+    min_periods : int, default 1
+        Minimum number of observations in window required to have a value
+
+    center : boolean, default False
+        Set the labels at the center of the window.
+
+    {print_input}
+    """
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna)
+
+    ntsd = tsd.expanding(min_periods=1,
+                         center=False)
+
+    if statistic:
+        ntsd = eval('ntsd.{0}()'.format(statistic))
+
+    return tsutils.print_input(print_input,
+                               tsd,
+                               ntsd,
+                               '_expanding_' + statistic)
+
+
+@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@tsutils.doc(tsutils.docstrings)
+def rolling_window(window=2,
+                   input_ts='-',
+                   columns=None,
+                   start_date=None,
+                   end_date=None,
+                   dropna='no',
+                   span=None,
+                   statistic='',
+                   min_periods=None,
+                   center=False,
+                   win_type=None,
+                   on=None,
+                   closed=None,
+                   print_input=False,
+                   freq=None):
+    """Calculate a rolling window statistic.
+
+    Parameters
+    ----------
+    window : int, or offset
+        [optional, default = 2]
+
+        Size of the moving window. This is the number of observations used for
+        calculating the statistic. Each window will be a fixed size.
+
+        If its an offset then this will be the time period of each window. Each
+        window will be a variable sized based on the observations included in
+        the time-period. This is only valid for datetimelike indexes.
+
+    min_periods : int, default None
+
+        Minimum number of observations in window required to have a value
+        (otherwise result is NA). For a window that is specified by an offset,
+        this will default to 1.
+
+    center : boolean, default False
+
+        Set the labels at the center of the window.
+
+    win_type : string, default None
+
+        Provide a window type. If None, all points are evenly weighted. See the
+        notes below for further information.
+
+    on : string, optional
+
+        For a DataFrame, column on which to calculate the rolling window,
+        rather than the index
+
+    closed : string, default None
+
+        Make the interval closed on the 'right', 'left', 'both' or 'neither'
+        endpoints. For offset-based windows, it defaults to 'right'. For fixed
+        windows, defaults to 'both'. Remaining cases not implemented for fixed
+        windows.
+
+    span : int
+        [optional, default = 2]
+
+        DEPRECATED: Changed to 'window' to be consistent with pandas.
+
+    statistic : str
+        [optional, default is '']
+
+        +----------+--------------------+
+        | corr     | correlation        |
+        +----------+--------------------+
+        | count    | count of numbers   |
+        +----------+--------------------+
+        | cov      | covariance         |
+        +----------+--------------------+
+        | kurt     | kurtosis           |
+        +----------+--------------------+
+        | max      | maximum            |
+        +----------+--------------------+
+        | mean     | mean               |
+        +----------+--------------------+
+        | median   | median             |
+        +----------+--------------------+
+        | min      | minimum            |
+        +----------+--------------------+
+        | quantile | quantile           |
+        +----------+--------------------+
+        | skew     | skew               |
+        +----------+--------------------+
+        | std      | standard deviation |
+        +----------+--------------------+
+        | sum      | sum                |
+        +----------+--------------------+
+        | var      | variance           |
+        +----------+--------------------+
+
+    {input_ts}
+    {columns}
+    {start_date}
+    {end_date}
+    {dropna}
+    {print_input}
+
+    """
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+                              start_date=start_date,
+                              end_date=end_date,
+                              pick=columns,
+                              dropna=dropna)
+
+    if span is not None:
+        window = span
+
+    window_list = [
+        'boxcar',
+        'triang',
+        'blackman',
+        'hamming',
+        'bartlett',
+        'parzen',
+        'bohman',
+        'blackmanharris',
+        'nuttall',
+        'barthann',
+        'kaiser',
+        'gaussian',
+        'general_gaussian',
+        'slepian',
+    ]
+
+    ntsd = tsd.rolling(window,
+                       min_periods=min_periods,
+                       center=center,
+                       win_type=win_type,
+                       on=on,
+                       closed=closed)
+
+    if statistic:
+        ntsd = eval('ntsd.{0}()'.format(statistic))
+
+    return tsutils.print_input(print_input,
+                               tsd,
+                               ntsd,
+                               '_rolling_{0}_{1}'.format(window, statistic))
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
