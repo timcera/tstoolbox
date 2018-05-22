@@ -227,6 +227,10 @@ def plot(input_ts='-',
         kde
             This plot is an estimation of the probability density function
             based on the data called kernel density estimation (KDE).
+        kde_time
+            This plot is an estimation of the probability density function
+            based on the data called kernel density estimation (KDE) combined
+            with a time-series plot.
         bar
             Column plot.
         barh
