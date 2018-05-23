@@ -25,9 +25,9 @@ import pandas as pd
 from . import fill_functions
 from . import tsutils
 
-from tstoolbox.functions import plot as plot
-from tstoolbox.functions import createts as createts
-from tstoolbox.functions import filter as filter
+from .functions.plot import plot
+from .functions.createts import createts
+from .functions.filter import filter
 
 warnings.filterwarnings('ignore')
 fill = fill_functions.fill
