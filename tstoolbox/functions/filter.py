@@ -10,11 +10,93 @@ import warnings
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
+import numpy as np
 import pandas as pd
 
 from .. import tsutils
 
 warnings.filterwarnings('ignore')
+
+
+class MisMatchedKernel(Exception):
+    """Error class for the wrong length kernel."""
+
+    def __init__(self, rk, pw):
+        """Initialize with lengths of kernel and requested length."""
+        self.rk = rk
+        self.pw = pw
+
+    def __str__(self):
+        """Return detailed error message."""
+        return """
+*
+*   Length of kernel must be {0}.
+*   Instead have {1}
+*
+""".format(self.rk, self.pw)
+
+
+class BadKernelValues(Exception):
+    """Error class for the negative pad width."""
+
+    def __str__(self):
+        """Return detailed error message."""
+        return """
+*
+*   Should only have positive values.
+*
+"""
+
+
+def _transform(vector, cutoff_period, window_len, lopass=None):
+    """Private function used by FFT filtering.
+
+    Parameters
+    ----------
+    vector : array_like, evenly spaced samples in time
+
+    Returns
+    -------
+    vector of filtered values
+
+    """
+    if cutoff_period is None:
+        raise ValueError("""
+*
+*   The cutoff_period must be set.
+*
+""")
+
+    if window_len is None:
+        raise ValueError("""
+*
+*   The window_len must be set.
+*
+""")
+
+    import numpy.fft as F
+    result = F.rfft(vector, len(vector))
+
+    freq = F.fftfreq(len(vector))[:len(vector)//2 + 1]
+    factor = np.ones_like(freq)
+
+    if lopass is True:
+        factor[freq > 1.0/float(cutoff_period)] = 0.0
+        factor = np.pad(factor, window_len + 1, mode='constant',
+                        constant_values=(1.0, 0.0))
+    else:
+        factor[freq < 1.0/float(cutoff_period)] = 0.0
+        factor = np.pad(factor, window_len + 1, mode='constant',
+                        constant_values=(0.0, 1.0))
+
+    factor = np.convolve(factor, [1.0/window_len]*window_len, mode=1)
+    factor = factor[window_len + 1:-(window_len + 1)]
+
+    result = result * factor
+
+    rvector = F.irfft(result, len(vector))
+
+    return np.atleast_1d(rvector)
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -86,8 +168,6 @@ def filter(filter_type,
 *
 """.format(filter_type)
 
-    from tstoolbox import filters
-
     # Trying to save some memory
     if print_input:
         otsd = tsd.copy()
@@ -97,14 +177,14 @@ def filter(filter_type,
     for col in tsd.columns:
         # fft_lowpass, fft_highpass
         if filter_type == 'fft_lowpass':
-            tsd[col].values[:] = filters._transform(tsd[col].values,
-                                                    cutoff_period,
-                                                    window_len,
-                                                    lopass=True)
+            tsd[col].values[:] = _transform(tsd[col].values,
+                                            cutoff_period,
+                                            window_len,
+                                            lopass=True)
         elif filter_type == 'fft_highpass':
-            tsd[col].values[:] = filters._transform(tsd[col].values,
-                                                    cutoff_period,
-                                                    window_len)
+            tsd[col].values[:] = _transform(tsd[col].values,
+                                            cutoff_period,
+                                            window_len)
         elif filter_type in ['flat',
                              'hanning',
                              'hamming',
