@@ -29,6 +29,7 @@ from .functions.plot import plot
 from .functions.createts import createts
 from .functions.filter import filter
 from .functions.read import read
+from .functions.date_slice import date_slice
 
 warnings.filterwarnings('ignore')
 fill = fill_functions.fill
@@ -54,37 +55,6 @@ _offset_aliases = {
 def about():
     """Display version number and system information."""
     tsutils.about(__name__)
-
-
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
-@tsutils.doc(tsutils.docstrings)
-def date_slice(input_ts='-',
-               columns=None,
-               start_date=None,
-               end_date=None,
-               dropna='no',
-               round_index=None,
-               float_format='%g'):
-    """Print out data to the screen between start_date and end_date.
-
-    Parameters
-    ----------
-    {input_ts}
-    {columns}
-    {start_date}
-    {end_date}
-    {dropna}
-    {float_format}
-    {round_index}
-
-    """
-    return tsutils.printiso(
-        tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                            start_date=start_date,
-                            end_date=end_date,
-                            pick=columns,
-                            round_index=round_index,
-                            dropna=dropna), float_format=float_format)
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
