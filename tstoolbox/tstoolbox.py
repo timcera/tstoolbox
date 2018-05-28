@@ -43,6 +43,7 @@ from .functions.calculate_fdc import calculate_fdc
 from .functions.stack import stack
 from .functions.unstack import unstack
 from .functions.fill import fill
+from .functions.gof import gof
 
 warnings.filterwarnings('ignore')
 

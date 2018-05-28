@@ -184,6 +184,7 @@ def plot(input_ts='-',
 
     Parameters
     ----------
+    {input_ts}
     ofilename : str
         [optional, defaults to 'plot.png']
 
@@ -219,7 +220,7 @@ def plot(input_ts='-',
         autocorrelation
             Plot autocorrelation.  Only available for a single time-series.
         bootstrap
-            Visually asses aspects of a data set by plotting random
+            Visually assess aspects of a data set by plotting random
             selections of values.  Only available for single time-series.
         histogram
             Calculate and create a histogram plot.  See 'kde' for a smooth
@@ -310,6 +311,9 @@ def plot(input_ts='-',
         command line supply a comma separated matplotlib color codes, or for
         the Python API a list of color code strings.
 
+        Separated 'colors', 'linestyles', and 'markerstyles' instead of using
+        the 'style' keyword.
+
         +------+---------+
         | Code | Color   |
         +======+=========+
@@ -328,11 +332,16 @@ def plot(input_ts='-',
         | k    | black   |
         +------+---------+
     linestyles
-        [optional, default to '']
+        [optional, default to 'auto']
 
-        If '' will iterate through the available matplotlib line types.
+        If 'auto' will iterate through the available matplotlib line types.
         Otherwise on the command line a comma separated list, or a list of
         strings if using the Python API.
+
+        To not display lines use a space (' ') as the linestyle code.
+
+        Separated 'colors', 'linestyles', and 'markerstyles' instead of using
+        the 'style' keyword.
 
         +------+--------------+
         | Code | Lines        |
@@ -351,12 +360,12 @@ def plot(input_ts='-',
     markerstyles
         [optional, default to ' ']
 
-        The default ' ' will not plot a marker.  If '' will iterate through the
-        available matplotlib marker types.  Otherwise on the command line
+        The default ' ' will not plot a marker.  If 'auto' will iterate through
+        the available matplotlib marker types.  Otherwise on the command line
         a comma separated list, or a list of strings if using the Python API.
 
         Separated 'colors', 'linestyles', and 'markerstyles' instead of using
-        the 'style' option.
+        the 'style' keyword.
 
         +------+----------------+
         | Code | Markers        |
@@ -409,7 +418,7 @@ def plot(input_ts='-',
     style
         [optional, default is None]
 
-        Deprecated.
+        DEPRECATED.
 
         Still available, but if None is replaced by 'colors', 'linestyles', and
         'markerstyles' options.  Currently the 'style' option will override the
@@ -645,7 +654,6 @@ def plot(input_ts='-',
 
         Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
         lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
-    {input_ts}
     {columns}
     {start_date}
     {end_date}
@@ -859,6 +867,21 @@ def plot(input_ts='-',
         xtitle = xtitle or 'Time'
         if legend is True:
             plt.legend(loc='best')
+    elif type in ['taylor']:
+        from skill_metrics import centered_rms_dev
+        from skill_metrics import taylor_diagram
+        std = [pd.np.std(tsd.iloc[:, 0])]
+        ccoef = [1.0]
+        crmsd = [0.0]
+        for col in range(1, len(tsd.columns)):
+            std.append(pd.np.std(tsd.iloc[:, col]))
+            ccoef.append(pd.np.corrcoef(tsd.iloc[:, col],
+                                        tsd.iloc[:, 0])[0][1])
+            crmsd.append(centered_rms_dev(tsd.iloc[:, col].values,
+                                          tsd.iloc[:, 0].values))
+        taylor_diagram(pd.np.array(std),
+                       pd.np.array(crmsd),
+                       pd.np.array(ccoef))
     elif type in ['xy',
                   'double_mass']:
         # PANDAS was not doing the right thing with xy plots
