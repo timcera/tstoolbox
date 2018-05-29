@@ -261,6 +261,19 @@ def plot(input_ts='-',
         weibull_yaxis
             Sort, calculate and plot data against an y axis weibull
             distribution
+        taylor
+            Creates a taylor diagram that compares three goodness of fit
+            statistics on one plot.  The three goodness of fit statistics
+            calculated and displayed are standard deviation, correlation
+            coefficient, and centered root mean square deviation.  The data
+            columns have to be organized as
+            'observed,simulated1,simulated2,simulated3,...etc.'
+        target
+            Creates a target diagram that compares three goodness of fit
+            statistics on one plot.  The three goodness of fit statistics
+            calculated and displayed are bias, root mean square deviation, and
+            centered root mean square deviation.  The data columns have to be
+            organized as 'observed,simulated1,simulated2,simulated3,...etc.'
     lag_plot_lag
         [optional, default to 1]
 
@@ -870,18 +883,37 @@ def plot(input_ts='-',
     elif type in ['taylor']:
         from skill_metrics import centered_rms_dev
         from skill_metrics import taylor_diagram
-        std = [pd.np.std(tsd.iloc[:, 0])]
+        ref = tsd.iloc[:, 0]
+        std = [pd.np.std(ref)]
         ccoef = [1.0]
         crmsd = [0.0]
         for col in range(1, len(tsd.columns)):
             std.append(pd.np.std(tsd.iloc[:, col]))
             ccoef.append(pd.np.corrcoef(tsd.iloc[:, col],
-                                        tsd.iloc[:, 0])[0][1])
+                                        ref)[0][1])
             crmsd.append(centered_rms_dev(tsd.iloc[:, col].values,
-                                          tsd.iloc[:, 0].values))
+                                          ref.values))
         taylor_diagram(pd.np.array(std),
                        pd.np.array(crmsd),
                        pd.np.array(ccoef))
+    elif type in ['target']:
+        from skill_metrics import centered_rms_dev
+        from skill_metrics import rmsd
+        from skill_metrics import bias
+        from skill_metrics import target_diagram
+        biases = []
+        rmsds = []
+        crmsds = []
+        ref = tsd.iloc[:, 0].values
+        for col in range(1, len(tsd.columns)):
+            biases.append(bias(tsd.iloc[:, col].values, ref))
+            crmsds.append(centered_rms_dev(tsd.iloc[:, col].values,
+                                           ref))
+            rmsds.append(rmsd(tsd.iloc[:, col].values,
+                              ref))
+        target_diagram(pd.np.array(biases),
+                       pd.np.array(crmsds),
+                       pd.np.array(rmsds))
     elif type in ['xy',
                   'double_mass']:
         # PANDAS was not doing the right thing with xy plots
