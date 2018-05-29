@@ -7,6 +7,9 @@ python:
 
 before_install:
   - sudo apt-get -qq update
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
 
 # Install packages
 install:
@@ -18,11 +21,6 @@ install:
   - pip install matplotlib
   - pip install coveralls
   - python setup.py install
-
-before_script: # configure a headless display to test plot generation
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
 
 script:
   - source activate $TRAVIS_PYTHON_VERSION
