@@ -23,13 +23,13 @@ install_requires = [
     'docutils',
     'mando >= 0.4',
     'rst2ansi >= 0.1.5',
-    'pandas >= 0.17.1',
     'python-dateutil >= 2.1',
     'matplotlib',
     'scipy',
     'SkillMetrics',
+    'pandas:python_version>="3.5"',
+    'pandas<0.21:python_version<"3.5"'
 ]
-
 
 setup(name='tstoolbox',
       version=version,
