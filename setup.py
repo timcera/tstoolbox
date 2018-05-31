@@ -27,8 +27,8 @@ install_requires = [
     'matplotlib',
     'scipy',
     'SkillMetrics',
-    'pandas:python_version>="3.5"',
-    'pandas<0.21:python_version<"3.5"'
+    'pandas;python_version>="3.5"',
+    'pandas<0.21;python_version<"3.5"'
 ]
 
 setup(name='tstoolbox',
