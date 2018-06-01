@@ -28,14 +28,14 @@ install_requires = [
     'docutils',
     'mando >= 0.4',
     'rst2ansi >= 0.1.5',
-    'python-dateutil >= 2.1',
-    'scipy',
-    'pandas;python_version>="3.5"',
-    'pandas<0.21;python_version<"3.5"',
     'SkillMetrics',
 ]
 
 setup_requires = ['matplotlib',
+                  'python-dateutil >= 2.1',
+                  'scipy',
+                  'pandas;python_version>="3.5"',
+                  'pandas<0.21;python_version<"3.5"',
                   'xlsxwriter']   # Should be dependency of SkillMetrics
 
 setup(name='tstoolbox',
