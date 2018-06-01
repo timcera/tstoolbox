@@ -24,12 +24,13 @@ install_requires = [
     'mando >= 0.4',
     'rst2ansi >= 0.1.5',
     'python-dateutil >= 2.1',
-    'matplotlib',
     'scipy',
-    'SkillMetrics',
     'pandas;python_version>="3.5"',
     'pandas<0.21;python_version<"3.5"'
+    'SkillMetrics',
 ]
+
+setup_requires = ['matplotlib']
 
 setup(name='tstoolbox',
       version=version,
@@ -59,6 +60,7 @@ setup(name='tstoolbox',
       packages=['tstoolbox', 'tstoolbox.functions'],
       include_package_data=True,
       zip_safe=False,
+      setup_requires=setup_requires,
       install_requires=install_requires,
       entry_points={
           'console_scripts':
