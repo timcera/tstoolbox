@@ -2,6 +2,11 @@
 import sys
 import os
 
+# temporarily redirect config directory to prevent matplotlib importing
+# testing that for writeable directory which results in sandbox error in
+# certain easy_install versions
+os.environ["MPLCONFIGDIR"] = "."
+
 try:
     from setuptools import setup
 except ImportError:
