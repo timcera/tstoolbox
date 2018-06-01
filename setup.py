@@ -26,7 +26,7 @@ install_requires = [
     'python-dateutil >= 2.1',
     'scipy',
     'pandas;python_version>="3.5"',
-    'pandas<0.21;python_version<"3.5"'
+    'pandas<0.21;python_version<"3.5"',
     'SkillMetrics',
 ]
 
