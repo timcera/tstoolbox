@@ -35,7 +35,8 @@ install_requires = [
     'SkillMetrics',
 ]
 
-setup_requires = ['matplotlib']
+setup_requires = ['matplotlib',
+                  'xlsxwriter']   # Should be dependency of SkillMetrics
 
 setup(name='tstoolbox',
       version=version,
