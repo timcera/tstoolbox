@@ -23,7 +23,8 @@ def convert_index_to_julian(epoch='julian',
                             start_date=None,
                             end_date=None,
                             round_index=None,
-                            dropna='no'):
+                            dropna='no',
+                            clean=False):
     """Convert date/time index to Julian dates from different epochs.
 
     Parameters
@@ -96,6 +97,7 @@ def convert_index_to_julian(epoch='julian',
     {end_date}
     {round_index}
     {dropna}
+    {clean}
 
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
@@ -103,7 +105,8 @@ def convert_index_to_julian(epoch='julian',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
     allowed = {'julian': lambda x: x,
                'reduced': lambda x: x - 2400000,
                'modified': lambda x: x - 2400000.5,

@@ -22,6 +22,7 @@ def convert(input_ts='-',
             start_date=None,
             end_date=None,
             dropna='no',
+            clean=False,
             factor=1.0,
             offset=0.0,
             print_input=False,
@@ -47,6 +48,7 @@ def convert(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {print_input}
     {float_format}
     {round_index}
@@ -57,7 +59,8 @@ def convert(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
     tmptsd = tsd * factor + offset
     return tsutils.print_input(print_input, tsd, tmptsd, '_convert',
                                float_format=float_format)

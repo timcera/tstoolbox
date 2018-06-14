@@ -23,6 +23,7 @@ def calculate_fdc(input_ts='-',
                   columns=None,
                   start_date=None,
                   end_date=None,
+                  clean=False,
                   percent_point_function=None,
                   plotting_position='weibull',
                   ascending=True):
@@ -48,12 +49,14 @@ def calculate_fdc(input_ts='-',
     {columns}
     {start_date}
     {end_date}
+    {clean}
 
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
-                              pick=columns)
+                              pick=columns,
+                              clean=clean)
 
     ppf = tsutils._set_ppf(percent_point_function)
     newts = pd.DataFrame()

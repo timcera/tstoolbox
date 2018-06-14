@@ -17,6 +17,7 @@ def pca(input_ts='-',
         columns=None,
         start_date=None,
         end_date=None,
+        clean=False,
         n_components=None,
         round_index=None):
     """Return the principal components analysis of the time series.
@@ -33,6 +34,7 @@ def pca(input_ts='-',
     {columns}
     {start_date}
     {end_date}
+    {clean}
     {round_index}
 
     """
@@ -42,7 +44,8 @@ def pca(input_ts='-',
                               start_date=start_date,
                               end_date=end_date,
                               round_index=round_index,
-                              pick=columns)
+                              pick=columns,
+                              clean=clean)
 
     pca = PCA(n_components)
     pca.fit(tsd.dropna(how='any'))

@@ -24,6 +24,7 @@ def remove_trend(input_ts='-',
                  start_date=None,
                  end_date=None,
                  dropna='no',
+                 clean=False,
                  round_index=None,
                  print_input=False):
     """Remove a 'trend'.
@@ -35,6 +36,7 @@ def remove_trend(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {round_index}
     {print_input}
 
@@ -44,7 +46,8 @@ def remove_trend(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
     ntsd = tsd.copy()
     for col in tsd.columns:
         index = tsd.index.astype('l')

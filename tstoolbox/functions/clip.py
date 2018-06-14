@@ -24,6 +24,7 @@ def clip(input_ts='-',
          end_date=None,
          columns=None,
          dropna='no',
+         clean=False,
          a_min=None,
          a_max=None,
          round_index=None,
@@ -47,6 +48,7 @@ def clip(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {print_input}
     {round_index}
 
@@ -56,7 +58,8 @@ def clip(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
     for col in tsd.columns:
         if a_min is None:
             try:

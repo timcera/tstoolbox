@@ -25,6 +25,7 @@ def replace(from_values,
             start_date=None,
             end_date=None,
             dropna='no',
+            clean=False,
             print_input=False):
     """Return a time-series replacing values with others.
 
@@ -46,6 +47,7 @@ def replace(from_values,
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {round_index}
     {print_input}
 
@@ -55,7 +57,8 @@ def replace(from_values,
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
 
     nfrom_values = []
     for fv in from_values.split(','):

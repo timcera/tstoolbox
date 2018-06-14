@@ -23,6 +23,7 @@ def add_trend(start_offset,
               end_offset,
               input_ts='-',
               columns=None,
+              clean=False,
               start_date=None,
               end_date=None,
               dropna='no',
@@ -41,6 +42,7 @@ def add_trend(start_offset,
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {print_input}
     {round_index}
 
@@ -50,7 +52,8 @@ def add_trend(start_offset,
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
     # Need it to be float since will be using pd.np.nan
     ntsd = tsd.copy().astype('float64')
 

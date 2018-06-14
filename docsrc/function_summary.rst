@@ -23,6 +23,7 @@ Python API Function Summary
     tstoolbox.tstoolbox.equation     
     tstoolbox.tstoolbox.fill      
     tstoolbox.tstoolbox.filter        
+    tstoolbox.tstoolbox.gof        
     tstoolbox.tstoolbox.normalization      
     tstoolbox.tstoolbox.pca               
     tstoolbox.tstoolbox.pct_change

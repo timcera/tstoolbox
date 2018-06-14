@@ -138,6 +138,7 @@ def plot(input_ts='-',
          columns=None,
          start_date=None,
          end_date=None,
+         clean=False,
          ofilename='plot.png',
          type='time',
          xtitle='',
@@ -670,6 +671,7 @@ def plot(input_ts='-',
     {columns}
     {start_date}
     {end_date}
+    {clean}
     {round_index}
 
     """
@@ -687,7 +689,8 @@ def plot(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna='all')
+                              dropna='all',
+                              clean=clean)
 
     if type in ['bootstrap',
                 'heatmap',

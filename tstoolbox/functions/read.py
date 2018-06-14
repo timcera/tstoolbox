@@ -26,6 +26,7 @@ def read(filenames,
          start_date=None,
          end_date=None,
          dropna='no',
+         clean=False,
          float_format='%g',
          round_index=None,
          how='outer'):
@@ -66,6 +67,7 @@ def read(filenames,
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {float_format}
     {round_index}
 
@@ -91,7 +93,8 @@ def read(filenames,
                                   pick=columns,
                                   round_index=round_index,
                                   dropna=dropna,
-                                  force_freq=force_freq)
+                                  force_freq=force_freq,
+                                  clean=clean)
         if append != 'combine':
             result_list.append(tsd)
         else:

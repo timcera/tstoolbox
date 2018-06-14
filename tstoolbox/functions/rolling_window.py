@@ -23,6 +23,7 @@ def rolling_window(window=2,
                    start_date=None,
                    end_date=None,
                    dropna='no',
+                   clean=False,
                    span=None,
                    statistic='',
                    min_periods=None,
@@ -114,6 +115,7 @@ def rolling_window(window=2,
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {print_input}
 
     """
@@ -121,27 +123,11 @@ def rolling_window(window=2,
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
 
     if span is not None:
         window = span
-
-    window_list = [
-        'boxcar',
-        'triang',
-        'blackman',
-        'hamming',
-        'bartlett',
-        'parzen',
-        'bohman',
-        'blackmanharris',
-        'nuttall',
-        'barthann',
-        'kaiser',
-        'gaussian',
-        'general_gaussian',
-        'slepian',
-    ]
 
     ntsd = tsd.rolling(window,
                        min_periods=min_periods,

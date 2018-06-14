@@ -233,7 +233,8 @@ docstrings = {
         +-------+-------------------------------+
         | -NOV  | year ends in November         |
         +-------+-------------------------------+""",
-    'plotting_position_table': r"""+------------+-----+-----------------+-----------------------+
+    'plotting_position_table': r"""
+        +------------+-----+-----------------+-----------------------+
         | Name       | a   | Equation        | Description           |
         |            |     | (1-a)/(n+1-2*a) |                       |
         +============+=====+=================+=======================+
@@ -260,7 +261,12 @@ docstrings = {
         +------------+-----+-----------------+-----------------------+
 
         Where 'i' is the sorted rank of the y value, and 'n' is the
-        total number of values to be plotted."""
+        total number of values to be plotted.""",
+    'clean': r"""
+        [optional, default is False]
+
+        The 'clean' command will repair an index, removing duplicate index
+        values and sorting."""
         }
 
 
@@ -426,7 +432,8 @@ def common_kwds(input_tsd=None,
                 force_freq=None,
                 groupby=None,
                 dropna='no',
-                round_index=None):
+                round_index=None,
+                clean=False):
     """Process all common_kwds across sub-commands into single function.
 
     Parameters
@@ -488,6 +495,10 @@ def common_kwds(input_tsd=None,
             ntsd = asbestfreq(ntsd)
         except ValueError:
             pass
+
+    if clean is True:
+        ntsd = ntsd.sort_index()
+        ntsd = ntsd[~ntsd.index.duplicated()]
 
     return ntsd
 

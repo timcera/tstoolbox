@@ -796,6 +796,7 @@ def peak_detection(input_ts='-',
                    start_date=None,
                    end_date=None,
                    dropna='no',
+                   clean=False,
                    method='rel',
                    extrema='peak',
                    window=24,
@@ -855,6 +856,7 @@ def peak_detection(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {float_format}
     {round_index}
     {print_input}
@@ -886,7 +888,8 @@ def peak_detection(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
 
     window = int(window)
     kwds = {}

@@ -99,6 +99,7 @@ def equation(equation_str,
              start_date=None,
              end_date=None,
              dropna='no',
+             clean=False,
              print_input='',
              round_index=None,
              float_format='%g'):
@@ -165,6 +166,7 @@ def equation(equation_str,
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {print_input}
     {float_format}
     {round_index}
@@ -175,7 +177,8 @@ def equation(equation_str,
                             end_date=end_date,
                             pick=columns,
                             round_index=round_index,
-                            dropna=dropna)
+                            dropna=dropna,
+                            clean=clean)
 
     def returnval(t, x, testeval, nequation):
         for tst in testeval:

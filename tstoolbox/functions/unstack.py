@@ -25,7 +25,8 @@ def unstack(column_names,
             start_date=None,
             end_date=None,
             round_index=None,
-            dropna='no'):
+            dropna='no',
+            clean=False):
     """Return the unstack of the input table.
 
     The unstack command takes the stacked table and converts to a
@@ -61,6 +62,7 @@ def unstack(column_names,
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {round_index}
 
     """
@@ -69,7 +71,8 @@ def unstack(column_names,
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
 
     try:
         newtsd = tsd.pivot_table(index=tsd.index,

@@ -23,7 +23,8 @@ def tstopickle(filename,
                start_date=None,
                end_date=None,
                round_index=None,
-               dropna='no'):
+               dropna='no',
+               clean=False):
     """Pickle the data into a Python pickled file.
 
     Can be brought back into Python with 'pickle.load' or 'numpy.load'.
@@ -38,6 +39,7 @@ def tstopickle(filename,
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {round_index}
 
     """
@@ -46,5 +48,6 @@ def tstopickle(filename,
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
     tsd.to_pickle(filename)

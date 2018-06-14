@@ -22,6 +22,7 @@ def ewm_window(input_ts='-',
                start_date=None,
                end_date=None,
                dropna='no',
+               clean=False,
                statistic='',
                alpha_com=None,
                alpha_span=None,
@@ -105,6 +106,7 @@ def ewm_window(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {print_input}
 
     """
@@ -112,7 +114,8 @@ def ewm_window(input_ts='-',
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
 
     ntsd = tsd.ewm(alpha_com=alpha_com,
                    alpha_span=alpha_span,

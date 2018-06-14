@@ -68,6 +68,7 @@ def dtw(input_ts='-',
         end_date=None,
         round_index=None,
         dropna='no',
+        clean=False,
         window=10000):
     """Dynamic Time Warping.
 
@@ -83,6 +84,7 @@ def dtw(input_ts='-',
     {end_date}
     {round_index}
     {dropna}
+    {clean}
 
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
@@ -90,7 +92,8 @@ def dtw(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna='no')
+                              dropna='no',
+                              clean=clean)
 
     process = {}
     for i in tsd.columns:

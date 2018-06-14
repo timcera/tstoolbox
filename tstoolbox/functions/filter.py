@@ -107,6 +107,7 @@ def filter(filter_type,
            start_date=None,
            end_date=None,
            dropna='no',
+           clean=False,
            print_input=False,
            cutoff_period=None,
            window_len=5,
@@ -139,6 +140,7 @@ def filter(filter_type,
     {columns}
     {float_format}
     {dropna}
+    {clean}
     {round_index}
     {print_input}
 
@@ -148,7 +150,8 @@ def filter(filter_type,
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
 
     assert len(tsd.values) > window_len, """
 *

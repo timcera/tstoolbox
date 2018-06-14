@@ -18,6 +18,7 @@ def expanding_window(input_ts='-',
                      start_date=None,
                      end_date=None,
                      dropna='no',
+                     clean=False,
                      statistic='',
                      min_periods=1,
                      center=False,
@@ -63,13 +64,20 @@ def expanding_window(input_ts='-',
     center : boolean, default False
         Set the labels at the center of the window.
 
+    {input_ts}
+    {columns}
+    {start_date}
+    {end_date}
+    {dropna}
+    {clean}
     {print_input}
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
 
     ntsd = tsd.expanding(min_periods=1,
                          center=False)

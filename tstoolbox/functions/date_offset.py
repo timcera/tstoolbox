@@ -25,6 +25,7 @@ def date_offset(years=0,
                 microseconds=0,
                 columns=None,
                 dropna='no',
+                clean=False,
                 input_ts='-',
                 start_date=None,
                 end_date=None,
@@ -96,6 +97,7 @@ def date_offset(years=0,
     {columns}
     {round_index}
     {dropna}
+    {clean}
 
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
@@ -103,7 +105,8 @@ def date_offset(years=0,
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna='no')
+                              dropna='no',
+                              clean=clean)
 
     relativedelta = pd.tseries.offsets.relativedelta
     ntsd = pd.DataFrame(tsd.values,

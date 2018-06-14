@@ -23,6 +23,7 @@ def stdtozrxp(input_ts='-',
               start_date=None,
               end_date=None,
               dropna='no',
+              clean=False,
               round_index=None,
               rexchange=None):
     """Print out data to the screen in a WISKI ZRXP format.
@@ -38,6 +39,7 @@ def stdtozrxp(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {round_index}
 
     """
@@ -46,7 +48,8 @@ def stdtozrxp(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
     assert len(tsd.columns) == 1, """
 *
 *   The "stdtozrxp" command can only accept a single

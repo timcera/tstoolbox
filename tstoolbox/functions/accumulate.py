@@ -22,6 +22,7 @@ def accumulate(input_ts='-',
                start_date=None,
                end_date=None,
                dropna='no',
+               clean=False,
                statistic='sum',
                round_index=None,
                print_input=False):
@@ -37,6 +38,7 @@ def accumulate(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {print_input}
     {round_index}
 
@@ -46,7 +48,8 @@ def accumulate(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
     try:
         ntsd = eval('tsd.cum{0}()'.format(statistic))
     except AttributeError:

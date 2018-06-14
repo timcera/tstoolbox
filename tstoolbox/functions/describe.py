@@ -22,6 +22,7 @@ def describe(input_ts='-',
              start_date=None,
              end_date=None,
              dropna='no',
+             clean=False,
              transpose=False):
     """Print out statistics for the time-series.
 
@@ -36,13 +37,15 @@ def describe(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {clean}
 
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
     if transpose is True:
         ntsd = tsd.describe().transpose()
     else:

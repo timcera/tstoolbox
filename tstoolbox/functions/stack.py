@@ -24,7 +24,8 @@ def stack(input_ts='-',
           start_date=None,
           end_date=None,
           round_index=None,
-          dropna='no'):
+          dropna='no',
+          clean=False):
     """Return the stack of the input table.
 
     The stack command takes the standard table and
@@ -57,6 +58,7 @@ def stack(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {round_index}
 
     """
@@ -65,7 +67,8 @@ def stack(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
 
     newtsd = pd.DataFrame(tsd.stack()).reset_index(1)
     newtsd.columns = ['Columns', 'Values']

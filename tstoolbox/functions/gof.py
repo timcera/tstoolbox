@@ -22,7 +22,8 @@ def gof(input_ts='-',
         columns=None,
         start_date=None,
         end_date=None,
-        round_index=None):
+        round_index=None,
+        clean=False):
     """Will calculate goodness of fit statistics between two time-series.
 
     The first time series must be the observed, the second the predicted
@@ -34,6 +35,7 @@ def gof(input_ts='-',
     {columns}
     {start_date}
     {end_date}
+    {clean}
     {round_index}
 
     """
@@ -51,7 +53,8 @@ def gof(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna='all')
+                              dropna='all',
+                              clean=clean)
     if len(tsd.columns) != 2:
         raise ValueError("""
 *

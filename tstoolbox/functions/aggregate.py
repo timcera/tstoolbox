@@ -24,6 +24,7 @@ def aggregate(input_ts='-',
               start_date=None,
               end_date=None,
               dropna='no',
+              clean=False,
               statistic='mean',
               agg_interval='D',
               ninterval=1,
@@ -70,6 +71,7 @@ def aggregate(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {round_index}
     {print_input}
 
@@ -102,7 +104,8 @@ def aggregate(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
     methods = statistic.split(',')
     newts = pd.DataFrame()
     for method in methods:

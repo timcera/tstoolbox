@@ -20,7 +20,8 @@ def converttz(fromtz,
               start_date=None,
               end_date=None,
               round_index=None,
-              dropna='no'):
+              dropna='no',
+              clean=False):
     """Convert the time zone of the index.
 
     Parameters
@@ -34,6 +35,7 @@ def converttz(fromtz,
     {end_date}
     {columns}
     {dropna}
+    {clean}
     {round_index}
 
     """
@@ -42,7 +44,8 @@ def converttz(fromtz,
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna=dropna)
+                              dropna=dropna,
+                              clean=clean)
     tsd = tsd.tz_localize(fromtz).tz_convert(totz)
     return tsutils.printiso(tsd,
                             showindex='always')

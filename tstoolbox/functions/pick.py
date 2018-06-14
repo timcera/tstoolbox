@@ -22,7 +22,8 @@ def pick(columns,
          start_date=None,
          end_date=None,
          round_index=None,
-         dropna='no'):
+         dropna='no',
+         clean=False):
     """Will pick a column or list of columns from input.
 
     Can use column names or column numbers.  If using numbers, column
@@ -35,6 +36,7 @@ def pick(columns,
     {start_date}
     {end_date}
     {dropna}
+    {clean}
     {round_index}
 
     """
@@ -44,4 +46,5 @@ def pick(columns,
                             end_date=end_date,
                             pick=columns,
                             round_index=round_index,
-                            dropna=dropna))
+                            dropna=dropna,
+                            clean=clean))

@@ -92,6 +92,11 @@ filter
 .. program-output:: tstoolbox filter --help
    :prompt:
 
+gof
+~~~
+.. program-output:: tstoolbox gof --help
+   :prompt:
+
 normalization
 ~~~~~~~~~~~~~
 .. program-output:: tstoolbox normalization --help
