@@ -28,6 +28,9 @@ import pandas as pd
 from tabulate import simple_separated_format
 from tabulate import tabulate as tb
 
+from pint import UnitRegistry
+ureg = UnitRegistry()
+
 docstrings = {
     'input_ts': r"""input_ts : str
         [optional, required if using Python API, default is '-' (stdin)]
@@ -364,6 +367,9 @@ def parsedate(dstr,
     Used for start and end dates.
 
     """
+    if dstr is None:
+        return dstr
+
     import dateparser
     import datetime
 
@@ -421,8 +427,39 @@ def about(name):
 def _round_index(ntsd,
                  round_index=None):
     """Round the index, typically time, to the nearest interval."""
+    if round_index is None:
+        return ntsd
     ntsd.index = ntsd.index.round(round_index)
     return ntsd
+
+
+def _pick_column_or_value(tsd, var, unit):
+    try:
+        var = np.array([float(var)])
+    except ValueError:
+        var = tsd.ix[:, var].values
+    return var
+
+
+def make_list(strorlist, n=0):
+    if strorlist is None:
+        return None
+    if isinstance(strorlist, (str, bytes)):
+        strorlist = strorlist.split(",")
+    if n > 0:
+        if len(strorlist) != n:
+            raise ValueError("""
+*
+*   The length should be {0}, but it is {1}.
+*
+""".format(n, len(strorlist)))
+    nstrorlist = []
+    for i in strorlist:
+        try:
+            nstrorlist.append(int(i))
+        except ValueError:
+            nstrorlist.append(i)
+    return nstrorlist
 
 
 def common_kwds(input_tsd=None,
@@ -433,7 +470,11 @@ def common_kwds(input_tsd=None,
                 groupby=None,
                 dropna='no',
                 round_index=None,
-                clean=False):
+                clean=False,
+                variables=None,
+                variables_ts=None,
+                units=None,
+                bestfreq=True):
     """Process all common_kwds across sub-commands into single function.
 
     Parameters
@@ -453,18 +494,62 @@ def common_kwds(input_tsd=None,
     """
     ntsd = input_tsd
 
-    if pick is not None:
-        ntsd = _pick(ntsd,
-                     pick)
+    if pick is not None and variables is not None:
+        raise ValueError("""
+*
+*   The 'pick' and 'variables' keywords have very similar functions and cannot
+*   be used together.  'pick' will select column number(s) or name(s) from the
+*   input.  The 'variables' keyword allows for the selection of column name(s)
+*   from the input, or to represent a constant value, or a mixture of column
+*   names and values.
+*
+""")
 
-    if start_date is not None or end_date is not None:
-        ntsd = _date_slice(ntsd,
-                           start_date=parsedate(start_date),
-                           end_date=parsedate(end_date))
+    ntsd = _pick(ntsd, pick)
 
-    if force_freq is not None:
-        ntsd = asbestfreq(ntsd,
-                          force_freq=force_freq)
+    if clean is True:
+        ntsd = ntsd.sort_index()
+        ntsd = ntsd[~ntsd.index.duplicated()]
+
+    if bestfreq is True:
+        ntsd = asbestfreq(ntsd, force_freq=force_freq)
+
+    if variables is not None:
+        collector = []
+        names = []
+        if variables_ts is None:
+            index = [0]
+        else:
+            index = [pd.TimeStamp(variables_ts)]
+        for inx, v in enumerate(variables):
+            try:
+                collector.append(np.array([float(v)]))
+                try:
+                    names.append('var{0}:{1}'.format(inx, units[inx]))
+                except IndexError:
+                    names.append('var{0}'.format(inx))
+            except ValueError:
+                collector.append(_pick(ntsd, v))
+                index = ntsd.index
+                if ':' not in ntsd.columns[inx]:
+                    try:
+                        names.append('{0}:{1}'.format(ntsd.columns[inx],
+                                                      units[inx]))
+                    except IndexError:
+                        names.append('{0}'.format(ntsd.columns[inx]))
+                else:
+                    names.append(ntsd.columns[inx])
+        nv = pd.DataFrame()
+        for v in collector:
+            nv = nv.join(pd.DataFrame(index=index,
+                                      data=pd.np.broadcast_to(v, [len(index)]),
+                                      how='outer'))
+        ntsd = nv
+        ntsd.columns[:] = names
+
+    ntsd = _date_slice(ntsd,
+                       start_date=parsedate(start_date),
+                       end_date=parsedate(end_date))
 
     if ntsd.index.is_all_dates is True:
         ntsd.index.name = 'Datetime'
@@ -475,9 +560,7 @@ def common_kwds(input_tsd=None,
         else:
             return ntsd.groupby(pd.TimeGrouper(groupby))
 
-    if round_index is not None:
-        return _round_index(ntsd,
-                            round_index=round_index)
+    ntsd = _round_index(ntsd, round_index=round_index)
 
     if dropna not in ['any', 'all', 'no']:
         raise ValueError("""
@@ -496,15 +579,18 @@ def common_kwds(input_tsd=None,
         except ValueError:
             pass
 
-    if clean is True:
-        ntsd = ntsd.sort_index()
-        ntsd = ntsd[~ntsd.index.duplicated()]
+    if variables is not None:
+        varis = [ntsd.iloc[:, i].values
+                 for i in list(range(len(ntsd.columns)))]
+        return varis
 
     return ntsd
 
 
 def _pick(tsd, columns):
-    columns = columns.split(',')
+    columns = make_list(columns)
+    if not columns:
+        return tsd
     ncolumns = []
 
     for i in columns:
@@ -634,6 +720,9 @@ def asbestfreq(data, force_freq=None):
     if not isinstance(data.index, pd.DatetimeIndex):
         return data
 
+    if force_freq is not None:
+        return data.asfreq(force_freq)
+
     ndiff = (data.index.values.astype('int64')[1:] -
              data.index.values.astype('int64')[:-1])
     if np.any(ndiff <= 0):
@@ -644,9 +733,6 @@ def asbestfreq(data, force_freq=None):
 *   "{0}".
 *
 """.format(data.index[:-1][ndiff <= 0][0], pd.np.where(ndiff <= 0)[0][0] + 1))
-
-    if force_freq is not None:
-        return data.asfreq(force_freq)
 
     if data.index.freq is not None:
         return data
@@ -667,7 +753,10 @@ def asbestfreq(data, force_freq=None):
         slic = slice(None, 99)
     else:
         slic = slice(None, None)
-    infer_freq = pd.infer_freq(data.index[slic])
+    try:
+        infer_freq = pd.infer_freq(data.index[slic])
+    except ValueError:
+        infer_freq = None
     if infer_freq is not None:
         return data.asfreq(infer_freq)
 
@@ -1081,11 +1170,10 @@ def read_iso_ts(indat,
     if result.index.is_all_dates is True:
         result.index.name = 'Datetime'
 
-        if force_freq is not None:
-            try:
-                return asbestfreq(result, force_freq=force_freq)
-            except ValueError:
-                return result
+        try:
+            return asbestfreq(result, force_freq=force_freq)
+        except ValueError:
+            return result
 
     if dropna in [b('any'), b('all')]:
         result.dropna(how=dropna, inplace=True)

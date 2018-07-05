@@ -54,5 +54,6 @@ class TestRead(TestCase):
         ''' Unstack the data_stacked.csv file and compare against the
             in-memory version of the data_unstacked.csv file.
         '''
-        out = tstoolbox.unstack('Columns', input_ts='tests/data_stacked.csv')
+        out = tstoolbox.unstack('Columns',
+                                input_ts='tests/data_stacked.csv')
         assert_frame_equal(out, self.unstacked)

@@ -67,12 +67,7 @@ def unstack(column_names,
 
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              round_index=round_index,
-                              dropna=dropna,
-                              clean=clean)
+                              bestfreq=False)
 
     try:
         newtsd = tsd.pivot_table(index=tsd.index,
@@ -97,4 +92,12 @@ def unstack(column_names,
     # Remove weird characters from column names
     newtsd.rename(columns=lambda x: ''.join(
         [i for i in str(x) if i not in '\'" ']))
+
+    newtsd = tsutils.common_kwds(newtsd,
+                                 start_date=start_date,
+                                 end_date=end_date,
+                                 dropna=dropna,
+                                 clean=clean,
+                                 round_index=round_index)
+
     return tsutils.printiso(newtsd)
