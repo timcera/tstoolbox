@@ -16,10 +16,10 @@ pkgs="\
      "
 
 # pandas no longer supports 2.6
-envs=(~/python_ves/python-2.7.13 \
-      ~/python_ves/python-3.4.5 \
-      ~/python_ves/python-3.5.2 \
-      ~/python_ves/python-3.6.0)
+envs=(~/python_ves/python-2.7.13)
+#      ~/python_ves/python-3.4.5 \
+#      ~/python_ves/python-3.5.2 \
+#      ~/python_ves/python-3.6.0)
 
 for env in ${envs[@]}; do
     echo "${env}"
@@ -47,6 +47,6 @@ coverage erase
 coverage run `which nosetests`
 coverage report --include="${program}/*" --omit="tests/*"
 coverage html --include="${program}/*" --omit="tests/*"
-flake8 ${program}/__init__.py ${program}/${program}.py ${program}/tsutils.py --exit-zero
+flake8 ${program}/__init__.py ${program}/${program}.py ${program}/tsutils.py ${program}/functions/*.py --exit-zero
 deactivate
 

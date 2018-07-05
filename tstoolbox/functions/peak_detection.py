@@ -566,9 +566,9 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         fitted_peaks.append(peak_data)
 
     # structure date for output
-    max_peaks = [[x[0], x[1]] for x in fitted_peaks[0]]
+    max_peaks = [[xval[0], xval[1]] for xval in fitted_peaks[0]]
     # max_fitted = map(lambda x: x[-1], fitted_peaks[0])
-    min_peaks = [[x[0], x[1]] for x in fitted_peaks[1]]
+    min_peaks = [[xval[0], xval[1]] for xval in fitted_peaks[1]]
     # min_fitted = map(lambda x: x[-1], fitted_peaks[1])
 
     return [max_peaks, min_peaks]
