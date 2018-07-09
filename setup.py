@@ -33,6 +33,7 @@ install_requires = [
     'matplotlib',
     'scipy',
     'pandas',
+    'pint',
     'xlsxwriter',
     'SkillMetrics',
 ]
