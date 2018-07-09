@@ -29,9 +29,11 @@ install_requires = [
     'mando >= 0.4',
     'rst2ansi >= 0.1.5',
     'python-dateutil >= 2.1',
+    'numpy',
+    'matplotlib',
     'scipy',
-    'pandas;python_version>="3.5"',
-    'pandas<0.21;python_version<"3.5"',
+    'pandas',
+    'xlsxwriter',
     'SkillMetrics',
 ]
 
@@ -73,4 +75,5 @@ setup(name='tstoolbox',
               ['tstoolbox=tstoolbox.tstoolbox:main']
       },
       test_suite='tests',
+      python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*',
       )
