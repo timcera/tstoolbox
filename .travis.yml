@@ -19,11 +19,11 @@ before_install:
 # Install packages
 install:
   - pip install --upgrade pip
-  - pip install wheel
-  - pip install matplotlib
-  - pip install scipy
-  - pip install xlsxwriter
-  - pip install coveralls
+  - pip install --upgrade wheel setuptools
+  - pip install --upgrade matplotlib
+  - pip install --upgrade scipy
+  - pip install --upgrade xlsxwriter
+  - pip install --upgrade coveralls
   - python setup.py install
 
 script:
