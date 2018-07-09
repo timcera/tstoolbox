@@ -30,11 +30,9 @@ install_requires = [
     'rst2ansi >= 0.1.5',
     'python-dateutil >= 2.1',
     'numpy',
-    'matplotlib',
     'scipy',
     'pandas',
     'pint',
-    'xlsxwriter',
     'SkillMetrics',
 ]
 
