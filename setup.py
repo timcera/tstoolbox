@@ -33,11 +33,11 @@ install_requires = [
     'scipy',
     'pandas',
     'pint',
-    'SkillMetrics',
+    'matplotlib',
+    'xlsxwriter',
 ]
 
-setup_requires = ['matplotlib',
-                  'xlsxwriter']   # Should be dependency of SkillMetrics
+setup_requires = []
 
 setup(name='tstoolbox',
       version=version,
@@ -64,7 +64,9 @@ setup(name='tstoolbox',
       author='Tim Cera, P.E.',
       author_email='tim@cerazone.net',
       url='http://timcera.bitbucket.io/tstoolbox/docsrc/index.html',
-      packages=['tstoolbox', 'tstoolbox.functions'],
+      packages=['tstoolbox',
+                'tstoolbox.functions',
+                'tstoolbox.skill_metrics'],
       include_package_data=True,
       zip_safe=False,
       setup_requires=setup_requires,

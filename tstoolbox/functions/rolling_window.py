@@ -31,8 +31,7 @@ def rolling_window(window=2,
                    win_type=None,
                    on=None,
                    closed=None,
-                   print_input=False,
-                   freq=None):
+                   print_input=False):
     """Calculate a rolling window statistic.
 
     Parameters

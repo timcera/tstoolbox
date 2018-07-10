@@ -75,8 +75,7 @@ docstrings = {
             of a [pandas DataFrame, pandas Series, dict, tuple,
             list, StringIO, or file name].
 
-            If result is a time series, returns a pandas DataFrame.
-        """,
+            If result is a time series, returns a pandas DataFrame.""",
     'columns': r"""columns
         [optional]
 
@@ -236,8 +235,7 @@ docstrings = {
         +-------+-------------------------------+
         | -NOV  | year ends in November         |
         +-------+-------------------------------+""",
-    'plotting_position_table': r"""
-        +------------+-----+-----------------+-----------------------+
+    'plotting_position_table': r"""+------------+-----+-----------------+-----------------------+
         | Name       | a   | Equation        | Description           |
         |            |     | (1-a)/(n+1-2*a) |                       |
         +============+=====+=================+=======================+
@@ -265,7 +263,7 @@ docstrings = {
 
         Where 'i' is the sorted rank of the y value, and 'n' is the
         total number of values to be plotted.""",
-    'clean': r"""
+    'clean': r"""clean
         [optional, default is False]
 
         The 'clean' command will repair an index, removing duplicate index

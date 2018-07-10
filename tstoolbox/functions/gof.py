@@ -32,6 +32,10 @@ def gof(input_ts='-',
     Parameters
     ----------
     {input_ts}
+    stats
+        [optional]
+
+        The statistics that will be presented.
     {columns}
     {start_date}
     {end_date}
@@ -62,7 +66,7 @@ def gof(input_ts='-',
 *
 """.format(len(tsd.columns)))
 
-    import skill_metrics as sm
+    from .. import skill_metrics as sm
     import pandas as pd
 
     statval = []
