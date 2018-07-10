@@ -10,38 +10,38 @@ from . import plot_target_axes
 def target_diagram(*args, **kwargs):
     '''
     Plot a target diagram from statistics of different series.
-    
+
     target_diagram(Bs,RMSDs,RMSDz,keyword=value)
-    
+
     The first 3 arguments must be the inputs as described below followed by
-    keywords in the format OPTION = value. An example call to the function 
+    keywords in the format OPTION = value. An example call to the function
     would be:
-    
+
     target_diagram(Bs,RMSDs,RMSDz,markerdisplayed='marker')
-    
+
     INPUTS:
     Bs    : Bias (B) or Normalized Bias (B*). Plotted along y-axis
             as "Bias".
     RMSDs : unbiased Root-Mean-Square Difference (RMSD') or normalized
-            unbiased Root-Mean-Square Difference (RMSD*'). Plotted along 
+            unbiased Root-Mean-Square Difference (RMSD*'). Plotted along
             x-axis as "uRMSD".
-    RMSDz : total Root-Mean-Square Difference (RMSD) or other quantities 
+    RMSDz : total Root-Mean-Square Difference (RMSD) or other quantities
             (if 'nonRMSDz' == 'on'). Labeled on plot as "RMSD".
-    
+
     OUTPUTS:
     None.
-    
+
     LIST OF OPTIONS:
-    For an exhaustive list of options to customize your diagram, call the 
+    For an exhaustive list of options to customize your diagram, call the
     function without arguments at a Python command line:
     % python
-    >>> import skill_metrics as sm
-    >>> sm.target_diagram()
-    
+    >> from tstoolbox.skill_metrics.target_diagram import target_diagram
+    >> target_diagram()
+
     Reference:
- 
-    Jolliff, J. K., J. C. Kindle, I. Shulman, B. Penta, M. Friedrichs, 
-      R. Helber, and R. Arnone (2009), Skill assessment for coupled 
+
+    Jolliff, J. K., J. C. Kindle, I. Shulman, B. Penta, M. Friedrichs,
+      R. Helber, and R. Arnone (2009), Skill assessment for coupled
       biological/physical models of marine systems, J. Mar. Sys., 76(1-2),
       64-82, doi:10.1016/j.jmarsys.2008.05.014
 
@@ -63,10 +63,10 @@ def target_diagram(*args, **kwargs):
 
     #  Get axis values for plot
     axes = get_target_diagram_axes(RMSDs,Bs,option)
-    
+
     # Plot axes for target diagram
     if option['overlay'] == 'off': plot_target_axes(axes)
-    
+
     # __ Overlay circles
     overlay_target_diagram_circles(option)
 
@@ -77,33 +77,33 @@ def target_diagram(*args, **kwargs):
     elif lowcase == 'colorbar':
         plot_pattern_diagram_colorbar(RMSDs,Bs,RMSDz,option)
     else:
-        raise ValueError('Unrecognized option: ' + 
+        raise ValueError('Unrecognized option: ' +
                          option['markerdisplayed'])
 
 def _get_target_diagram_arguments(*args):
     '''
     Get arguments for target_diagram function.
-    
+
     Retrieves the arguments supplied to the TARGET_DIAGRAM function as
     arguments and displays the optional arguments if none are supplied.
-    Otherwise, tests the first 3 arguments are numeric quantities and 
+    Otherwise, tests the first 3 arguments are numeric quantities and
     returns their values.
-    
+
     INPUTS:
     args : variable-length input argument list
-    
+
     OUTPUTS:
     Bs    : Bias (B) or Normalized Bias (B*). Plotted along y-axis
             as "Bias".
     RMSDs : unbiased Root-Mean-Square Difference (RMSD') or normalized
-            unbiased Root-Mean-Square Difference (RMSD*'). Plotted along 
+            unbiased Root-Mean-Square Difference (RMSD*'). Plotted along
             x-axis as "uRMSD".
-    RMSDz : total Root-Mean-Square Difference (RMSD) or other quantities 
+    RMSDz : total Root-Mean-Square Difference (RMSD) or other quantities
             (if 'nonRMSDz' == 'on'). Labeled on plot as "RMSD".
     '''
-    
+
     import numbers
-    
+
     Bs=[]; RMSDs=[]; RMSDz=[];
     nargin = len(args)
     if nargin == 0:
@@ -131,7 +131,7 @@ def _get_target_diagram_arguments(*args):
         RMSDs = np.array(RMSDs,ndmin=1)
     if not isinstance(RMSDs, np.ndarray):
         raise ValueError('Argument RMSDs is not a numeric array')
- 
+
     if isinstance(RMSDz, array):
         RMSDz = np.array(RMSDz)
     if isinstance(RMSDz, numbers.Number):
@@ -147,19 +147,19 @@ def _display_target_diagram_options():
     '''
 
     _disp('General options:')
-    _dispopt("'overlay'","'on' / 'off' (default): " + 
+    _dispopt("'overlay'","'on' / 'off' (default): " +
             'Switch to overlay current statistics on target diagram. ' +
             '\n\t\tOnly markers will be displayed.')
-    _dispopt("'colormap'","'on'/ 'off' (default): "  + 
+    _dispopt("'colormap'","'on'/ 'off' (default): "  +
         "Switch to map color shading of markers to colormap ('on')\n\t\t"  +
-        "or min to max range of RMSDz values ('off').\n\t\t"  + 
+        "or min to max range of RMSDz values ('off').\n\t\t"  +
         "Set to same value as option['nonRMSDz'].")
     _disp('')
-    
+
     _disp('Marker options:')
-    _dispopt("'MarkerDisplayed'", 
+    _dispopt("'MarkerDisplayed'",
         "'marker' (default): Experiments are represented by individual symbols\n\t\t" +
-        "'colorBar': Experiments are represented by a color described " + 
+        "'colorBar': Experiments are represented by a color described " +
         'in a colorbar')
     _disp("OPTIONS when 'MarkerDisplayed' == 'marker'")
     _dispopt("'markerLabel'",'Labels for markers')
@@ -168,12 +168,12 @@ def _display_target_diagram_options():
     _dispopt("'markerLegend'","'on' / 'off' (default): Use legend for markers'")
     _dispopt("'markerSize'",'Marker size (Default: 10)')
     _disp("OPTIONS when 'MarkerDisplayed' == 'colorbar'")
-    _dispopt("'nonRMSDz'","'on'/ 'off' (default): " + 
+    _dispopt("'nonRMSDz'","'on'/ 'off' (default): " +
             'Values in RMSDs do not correspond to total RMS Differences.\n\t\t' +
             '(Used to make range of RMSDs values appear above color bar.)')
     _dispopt("'titleColorBar'",'Title of the colorbar.')
     _disp('')
-     
+
     _disp('Axes options:')
     _dispopt("'ticks'",'define tick positions ' +
             '(default is that used by axis function)')
@@ -184,7 +184,7 @@ def _display_target_diagram_options():
     _dispopt("'equalAxes'","'on' (default) / 'off': Set axes to be equal")
     _dispopt("'limitAxis'",'Max for the Bias & uRMSD axis')
     _disp('')
-     
+
     _disp('Diagram options:')
     _dispopt("'alpha'","Blending of symbol face color (0.0 transparent through 1.0 opaque)" +
              "\n\t\t" + "(Default: 1.0)")
@@ -205,7 +205,7 @@ def _dispopt(optname,optval):
     Displays option name and values
 
     This is a support function for the DISPLAY_TARGET_DIAGRAM_OPTIONS function.
-    It displays the option name OPTNAME on a line by itself followed by its 
+    It displays the option name OPTNAME on a line by itself followed by its
     value OPTVAL on the following line.
     '''
 
