@@ -398,6 +398,13 @@ def parsedate(dstr,
     return pdate.strftime(strftime)
 
 
+def merge_dicts(*dict_args):
+    result = {}
+    for d in dict_args:
+        result.update(d)
+    return result
+
+
 def about(name):
     """Return generic 'about' information used across all toolboxes."""
     import platform

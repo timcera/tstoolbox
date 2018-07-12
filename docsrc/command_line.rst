@@ -82,6 +82,16 @@ equation
 .. program-output:: tstoolbox equation --help
    :prompt:
 
+ewm_window
+~~~~~~~~~~
+.. program-output:: tstoolbox ewm_window --help
+   :prompt:
+
+expanding_window
+~~~~~~~~~~~~~~~~
+.. program-output:: tstoolbox expanding_window --help
+   :prompt:
+
 fill
 ~~~~
 .. program-output:: tstoolbox fill --help
