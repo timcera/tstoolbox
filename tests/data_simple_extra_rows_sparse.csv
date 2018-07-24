@@ -1,0 +1,8 @@
+#Date,Value
+2000-01-01, 4.5
+2000-01-02, 4.6
+2000-01-03, 4.7
+ This record needs to be skipped.
+2000-01-04, 4.8
+And this one.
+2000-01-05, 4.9

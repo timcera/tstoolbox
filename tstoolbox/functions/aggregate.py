@@ -29,6 +29,7 @@ def aggregate(input_ts='-',
               agg_interval='D',
               ninterval=1,
               round_index=None,
+              skiprows=None,
               print_input=False):
     """Take a time series and aggregate to specified frequency.
 
@@ -73,6 +74,7 @@ def aggregate(input_ts='-',
     {dropna}
     {clean}
     {round_index}
+    {skiprows}
     {print_input}
 
     """
@@ -99,7 +101,8 @@ def aggregate(input_ts='-',
             'yearly': 'A'}
     agg_interval = aggd.get(agg_interval, agg_interval)
 
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

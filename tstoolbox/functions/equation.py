@@ -99,6 +99,7 @@ def equation(equation_str,
              start_date=None,
              end_date=None,
              dropna='no',
+             skiprows=None,
              clean=False,
              print_input='',
              round_index=None,
@@ -166,13 +167,15 @@ def equation(equation_str,
     {start_date}
     {end_date}
     {dropna}
+    {skiprows}
     {clean}
     {print_input}
     {float_format}
     {round_index}
 
     """
-    x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                skiprows=skiprows),
                             start_date=start_date,
                             end_date=end_date,
                             pick=columns,

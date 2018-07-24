@@ -26,6 +26,7 @@ def unstack(column_names,
             end_date=None,
             round_index=None,
             dropna='no',
+            skiprows=None,
             clean=False):
     """Return the unstack of the input table.
 
@@ -62,11 +63,13 @@ def unstack(column_names,
     {start_date}
     {end_date}
     {dropna}
+    {skiprows}
     {clean}
     {round_index}
 
     """
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               bestfreq=False)
 
     try:

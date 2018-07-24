@@ -22,6 +22,7 @@ def ewm_window(input_ts='-',
                start_date=None,
                end_date=None,
                dropna='no',
+               skiprows=None,
                clean=False,
                statistic='',
                alpha_com=None,
@@ -106,11 +107,13 @@ def ewm_window(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {skiprows}
     {clean}
     {print_input}
 
     """
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

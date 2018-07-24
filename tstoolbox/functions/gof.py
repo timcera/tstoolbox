@@ -23,7 +23,8 @@ def gof(input_ts='-',
         start_date=None,
         end_date=None,
         round_index=None,
-        clean=False):
+        clean=False,
+        skiprows=None):
     """Will calculate goodness of fit statistics between two time-series.
 
     The first time series must be the observed, the second the predicted
@@ -40,6 +41,7 @@ def gof(input_ts='-',
     {start_date}
     {end_date}
     {clean}
+    {skiprows}
     {round_index}
 
     """
@@ -52,7 +54,8 @@ def gof(input_ts='-',
             pass
 
     # Use dropna='all' to make sure that both have the same missing data.
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

@@ -25,6 +25,7 @@ def accumulate(input_ts='-',
                clean=False,
                statistic='sum',
                round_index=None,
+               skiprows=None,
                print_input=False):
     """Calculate accumulating statistics.
 
@@ -39,11 +40,13 @@ def accumulate(input_ts='-',
     {end_date}
     {dropna}
     {clean}
-    {print_input}
     {round_index}
+    {skiprows}
+    {print_input}
 
     """
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

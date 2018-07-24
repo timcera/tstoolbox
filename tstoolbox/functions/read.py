@@ -26,6 +26,7 @@ def read(filenames,
          start_date=None,
          end_date=None,
          dropna='no',
+         skiprows=None,
          clean=False,
          float_format='%g',
          round_index=None,
@@ -67,6 +68,7 @@ def read(filenames,
     {start_date}
     {end_date}
     {dropna}
+    {skiprows}
     {clean}
     {float_format}
     {round_index}
@@ -87,7 +89,8 @@ def read(filenames,
     result_list = []
     for index, i in enumerate(filenames):
         tsd = tsutils.common_kwds(
-                                  tsutils.read_iso_ts(i),
+                                  tsutils.read_iso_ts(i,
+                                                      skiprows=skiprows),
                                   start_date=start_date,
                                   end_date=end_date,
                                   pick=columns,

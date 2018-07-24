@@ -21,7 +21,8 @@ def converttz(fromtz,
               end_date=None,
               round_index=None,
               dropna='no',
-              clean=False):
+              clean=False,
+              skiprows=None):
     """Convert the time zone of the index.
 
     Parameters
@@ -36,10 +37,12 @@ def converttz(fromtz,
     {columns}
     {dropna}
     {clean}
+    {skiprows}
     {round_index}
 
     """
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

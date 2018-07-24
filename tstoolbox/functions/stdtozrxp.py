@@ -23,6 +23,7 @@ def stdtozrxp(input_ts='-',
               start_date=None,
               end_date=None,
               dropna='no',
+              skiprows=None,
               clean=False,
               round_index=None,
               rexchange=None):
@@ -39,11 +40,13 @@ def stdtozrxp(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {skiprows}
     {clean}
     {round_index}
 
     """
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

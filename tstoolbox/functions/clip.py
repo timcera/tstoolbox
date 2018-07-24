@@ -25,6 +25,7 @@ def clip(input_ts='-',
          columns=None,
          dropna='no',
          clean=False,
+         skiprows=None,
          a_min=None,
          a_max=None,
          round_index=None,
@@ -49,11 +50,13 @@ def clip(input_ts='-',
     {end_date}
     {dropna}
     {clean}
+    {skiprows}
     {print_input}
     {round_index}
 
     """
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

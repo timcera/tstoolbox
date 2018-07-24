@@ -24,6 +24,7 @@ def calculate_fdc(input_ts='-',
                   start_date=None,
                   end_date=None,
                   clean=False,
+                  skiprows=None,
                   percent_point_function=None,
                   plotting_position='weibull',
                   ascending=True):
@@ -49,10 +50,12 @@ def calculate_fdc(input_ts='-',
     {columns}
     {start_date}
     {end_date}
+    {skiprows}
     {clean}
 
     """
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

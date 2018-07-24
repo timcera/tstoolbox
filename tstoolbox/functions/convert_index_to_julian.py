@@ -24,7 +24,8 @@ def convert_index_to_julian(epoch='julian',
                             end_date=None,
                             round_index=None,
                             dropna='no',
-                            clean=False):
+                            clean=False,
+                            skiprows=None):
     """Convert date/time index to Julian dates from different epochs.
 
     Parameters
@@ -98,9 +99,11 @@ def convert_index_to_julian(epoch='julian',
     {round_index}
     {dropna}
     {clean}
+    {skiprows}
 
     """
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

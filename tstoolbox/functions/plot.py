@@ -139,6 +139,7 @@ def plot(input_ts='-',
          start_date=None,
          end_date=None,
          clean=False,
+         skiprows=None,
          ofilename='plot.png',
          type='time',
          xtitle='',
@@ -672,6 +673,7 @@ def plot(input_ts='-',
     {start_date}
     {end_date}
     {clean}
+    {skiprows}
     {round_index}
 
     """
@@ -684,7 +686,8 @@ def plot(input_ts='-',
     import matplotlib.pyplot as plt
     from matplotlib.ticker import FixedLocator
 
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

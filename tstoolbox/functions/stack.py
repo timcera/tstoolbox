@@ -25,6 +25,7 @@ def stack(input_ts='-',
           end_date=None,
           round_index=None,
           dropna='no',
+          skiprows=None,
           clean=False):
     """Return the stack of the input table.
 
@@ -58,11 +59,13 @@ def stack(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {skiprows}
     {clean}
     {round_index}
 
     """
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

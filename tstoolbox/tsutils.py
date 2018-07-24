@@ -267,7 +267,15 @@ docstrings = {
         [optional, default is False]
 
         The 'clean' command will repair an index, removing duplicate index
-        values and sorting."""
+        values and sorting.""",
+    'skiprows': r"""skiprows: list-like or integer or callable, default None
+        Line numbers to skip (0-indexed) or number of lines to skip (int)
+        at the start of the file.
+
+		If callable, the callable function will be evaluated against the row
+		indices, returning True if the row should be skipped and False
+		otherwise.  An example of a valid callable argument would be ``lambda
+        x: x in [0, 2]``."""
         }
 
 
@@ -449,6 +457,8 @@ def _pick_column_or_value(tsd, var, unit):
 def make_list(strorlist, n=0):
     if strorlist is None:
         return None
+    if isinstance(strorlist, (int, float, list)):
+        return strorlist
     if isinstance(strorlist, (str, bytes)):
         strorlist = strorlist.split(",")
     if n > 0:
@@ -458,13 +468,7 @@ def make_list(strorlist, n=0):
 *   The length should be {0}, but it is {1}.
 *
 """.format(n, len(strorlist)))
-    nstrorlist = []
-    for i in strorlist:
-        try:
-            nstrorlist.append(int(i))
-        except ValueError:
-            nstrorlist.append(i)
-    return nstrorlist
+    return _convert_to_numbers(strorlist)
 
 
 def common_kwds(input_tsd=None,
@@ -1036,9 +1040,9 @@ def is_valid_url(url, qualifying=None):
                 for qualifying_attr in qualifying))
 
 
-def _convert_to_numbers(numstr):
+def _convert_to_numbers(inputlist):
     ret = []
-    for each in numstr:
+    for each in inputlist:
         try:
             ret.append(int(each))
         except ValueError:
@@ -1053,7 +1057,8 @@ def read_iso_ts(indat,
                 parse_dates=True,
                 extended_columns=False,
                 dropna=None,
-                force_freq=None):
+                force_freq=None,
+                skiprows=None):
     """Read the format printed by 'printiso' and maybe other formats.
 
     Parameters
@@ -1070,6 +1075,7 @@ def read_iso_ts(indat,
         Returns a DataFrame.
 
     """
+    skiprows = make_list(skiprows)
     if isinstance(indat, (str, bytes, StringIO)):
         lindat = b(indat).split(b(','))
         if indat == '-':
@@ -1139,7 +1145,8 @@ def read_iso_ts(indat,
                                           keep_default_na=True,
                                           sep=sep,
                                           skipinitialspace=True,
-                                          engine='python')
+                                          engine='python',
+                                          skiprows=skiprows)
         result.columns = [fstr.format(fname, str(i).strip())
                           for i in result.columns]
 

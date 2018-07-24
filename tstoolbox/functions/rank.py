@@ -20,6 +20,7 @@ def rank(input_ts='-',
          start_date=None,
          end_date=None,
          dropna='no',
+         skiprows=None,
          clean=False,
          axis=0,
          method='average',
@@ -98,7 +99,8 @@ def rank(input_ts='-',
     {round_index}
 
     """
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

@@ -22,6 +22,7 @@ def describe(input_ts='-',
              start_date=None,
              end_date=None,
              dropna='no',
+             skiprows=None,
              clean=False,
              transpose=False):
     """Print out statistics for the time-series.
@@ -37,10 +38,12 @@ def describe(input_ts='-',
     {start_date}
     {end_date}
     {dropna}
+    {skiprows}
     {clean}
 
     """
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

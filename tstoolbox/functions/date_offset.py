@@ -26,6 +26,7 @@ def date_offset(years=0,
                 columns=None,
                 dropna='no',
                 clean=False,
+                skiprows=None,
                 input_ts='-',
                 start_date=None,
                 end_date=None,
@@ -98,9 +99,11 @@ def date_offset(years=0,
     {round_index}
     {dropna}
     {clean}
+    {skiprows}
 
     """
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                  skiprows=skiprows),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
