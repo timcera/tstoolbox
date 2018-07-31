@@ -44,6 +44,7 @@ from .functions.pca import pca
 from .functions.normalization import normalization
 from .functions.converttz import converttz
 from .functions.convert_index_to_julian import convert_index_to_julian
+from .functions.convert_index import convert_index
 from .functions.pct_change import pct_change
 from .functions.rank import rank
 from .functions.date_offset import date_offset
