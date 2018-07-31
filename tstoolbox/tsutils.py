@@ -77,7 +77,7 @@ docstrings = {
 
             If result is a time series, returns a pandas DataFrame.""",
     'columns': r"""columns
-        [optional]
+        [optional, defaults to all columns]
 
         Columns to select out of input.  Can use column names from the
         first line header or column numbers.  If using numbers, column
@@ -85,12 +85,12 @@ docstrings = {
         separate by commas with no spaces. As used in `tstoolbox pick`
         command.""",
     'start_date': r"""start_date : str
-        [optional]
+        [optional, defaults to first date in time-series.]
 
         The start_date of the series in ISOdatetime format, or 'None'
         for beginning.""",
     'end_date': r"""end_date : str
-        [optional]
+        [optional, defaults to last date in time-series.]
 
         The end_date of the series in ISOdatetime format, or 'None' for
         end.""",
@@ -107,7 +107,7 @@ docstrings = {
         If set to 'True' will include the input columns in the output
         table.""",
     'round_index': r"""round_index
-        [optional]
+        [optional, default is None which will do nothing to the index]
 
         Round the index to the nearest time point.  Can significantly
         improve the performance since can cut down on memory and
@@ -268,13 +268,14 @@ docstrings = {
 
         The 'clean' command will repair an index, removing duplicate index
         values and sorting.""",
-    'skiprows': r"""skiprows: list-like or integer or callable, default None
+    'skiprows': r"""skiprows: list-like or integer or callable
+        [optional, default is None which will infer header from first line]
         Line numbers to skip (0-indexed) or number of lines to skip (int)
         at the start of the file.
 
-		If callable, the callable function will be evaluated against the row
-		indices, returning True if the row should be skipped and False
-		otherwise.  An example of a valid callable argument would be ``lambda
+        If callable, the callable function will be evaluated against the row
+        indices, returning True if the row should be skipped and False
+        otherwise.  An example of a valid callable argument would be ``lambda
         x: x in [0, 2]``."""
         }
 
