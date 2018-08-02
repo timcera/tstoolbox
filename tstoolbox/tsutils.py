@@ -1106,7 +1106,7 @@ def read_iso_ts(indat,
             # if from stdin format must be the tstoolbox standard
             # pandas read_table supports file like objects
             header = 0
-            sep = ','
+            sep = None
             fpi = sys.stdin
             fname = '_'
         elif isinstance(indat, StringIO):
