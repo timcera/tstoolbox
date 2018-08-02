@@ -24,6 +24,8 @@ def date_slice(input_ts='-',
                dropna='no',
                clean=False,
                skiprows=None,
+               index_type='datetime',
+               names=None,
                round_index=None,
                float_format='%g'):
     """Print out data to the screen between start_date and end_date.
@@ -37,13 +39,17 @@ def date_slice(input_ts='-',
     {dropna}
     {clean}
     {skiprows}
+    {index_type}
+    {names}
     {float_format}
     {round_index}
 
     """
     return tsutils.printiso(
         tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                skiprows=skiprows),
+                                                skiprows=skiprows,
+                                                names=names,
+                                                index_type=index_type),
                             start_date=start_date,
                             end_date=end_date,
                             pick=columns,

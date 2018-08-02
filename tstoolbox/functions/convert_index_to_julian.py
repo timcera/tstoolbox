@@ -5,8 +5,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from builtins import str
-
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
@@ -25,6 +23,8 @@ def convert_index_to_julian(epoch='julian',
                             round_index=None,
                             dropna='no',
                             clean=False,
+                            index_type='datetime',
+                            names=None,
                             skiprows=None):
     """DEPRECATED use convert_index instead.
 
@@ -46,4 +46,6 @@ def convert_index_to_julian(epoch='julian',
                                    round_index=round_index,
                                    dropna=dropna,
                                    clean=clean,
-                                   skiprows=skiprows)
+                                   skiprows=skiprows,
+                                   names=names,
+                                   index_type=index_type)

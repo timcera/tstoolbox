@@ -32,6 +32,16 @@ from pint import UnitRegistry
 ureg = UnitRegistry()
 
 docstrings = {
+    'names': r"""names
+        [optional, default is None.]
+
+        If None, the column names are taken from the first row after
+        'skiprows'.""",
+    'index_type': r"""index_type : str
+        [optional, default is 'datetime']
+
+        Can be either 'number' or 'datetime'.  Use 'number' with index
+        values that are Julian dates, or other epoch reference.""",
     'input_ts': r"""input_ts : str
         [optional, required if using Python API, default is '-' (stdin)]
 
@@ -461,7 +471,8 @@ def make_list(strorlist, n=0):
     if isinstance(strorlist, (int, float, list)):
         return strorlist
     if isinstance(strorlist, (str, bytes)):
-        strorlist = strorlist.split(",")
+        if "," in strorlist:
+            strorlist = strorlist.split(",")
     if n > 0:
         if len(strorlist) != n:
             raise ValueError("""
@@ -899,7 +910,7 @@ def _printiso(tsd,
 
         print_index = True
         if tsd.index.is_all_dates is True:
-            if tsd.index.name is None:
+            if not tsd.index.name:
                 tsd.index.name = 'Datetime'
             # Someone made the decision about the name
             # This is how I include time zone info by tacking on to the
@@ -1042,6 +1053,15 @@ def is_valid_url(url, qualifying=None):
 
 
 def _convert_to_numbers(inputlist):
+    if not isinstance(inputlist, (list, tuple)):
+        try:
+            ret = int(inputlist)
+        except ValueError:
+            try:
+                ret = float(inputlist)
+            except ValueError:
+                pass
+        return ret
     ret = []
     for each in inputlist:
         try:
@@ -1059,7 +1079,9 @@ def read_iso_ts(indat,
                 extended_columns=False,
                 dropna=None,
                 force_freq=None,
-                skiprows=None):
+                skiprows=None,
+                index_type='datetime',
+                names=None):
     """Read the format printed by 'printiso' and maybe other formats.
 
     Parameters
@@ -1077,6 +1099,7 @@ def read_iso_ts(indat,
 
     """
     skiprows = make_list(skiprows)
+    result = {}
     if isinstance(indat, (str, bytes, StringIO)):
         lindat = b(indat).split(b(','))
         if indat == '-':
@@ -1100,7 +1123,6 @@ def read_iso_ts(indat,
         elif len(lindat) > 1:
             result = pd.DataFrame({'values': _convert_to_numbers(lindat)},
                                   index=list(range(len(lindat))))
-            return result
         elif os.path.exists(indat):
             # a local file
             header = 'infer'
@@ -1137,17 +1159,24 @@ def read_iso_ts(indat,
             na_values.append(spcs)
             na_values.append(spcs + 'nan')
 
-        result = pd.io.parsers.read_table(fpi,
-                                          header=header,
-                                          index_col=index_col,
-                                          infer_datetime_format=True,
-                                          parse_dates=True,
-                                          na_values=na_values,
-                                          keep_default_na=True,
-                                          sep=sep,
-                                          skipinitialspace=True,
-                                          engine='python',
-                                          skiprows=skiprows)
+        if len(result) == 0:
+            if names is not None:
+                header = None
+                names = make_list(names)
+            if index_type == 'number':
+                parse_dates = False
+            result = pd.io.parsers.read_table(fpi,
+                                              header=header,
+                                              names=names,
+                                              index_col=index_col,
+                                              infer_datetime_format=True,
+                                              parse_dates=parse_dates,
+                                              na_values=na_values,
+                                              keep_default_na=True,
+                                              sep=sep,
+                                              skipinitialspace=True,
+                                              engine='python',
+                                              skiprows=skiprows)
         result.columns = [fstr.format(fname, str(i).strip())
                           for i in result.columns]
 
@@ -1181,7 +1210,7 @@ def read_iso_ts(indat,
             pass
 
     if result.index.is_all_dates is True:
-        result.index.name = 'Datetime'
+        result.index.name = 'datetime'
 
         try:
             return asbestfreq(result, force_freq=force_freq)

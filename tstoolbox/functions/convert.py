@@ -24,6 +24,8 @@ def convert(input_ts='-',
             dropna='no',
             clean=False,
             skiprows=None,
+            index_type='datetime',
+            names=None,
             factor=1.0,
             offset=0.0,
             print_input=False,
@@ -51,13 +53,17 @@ def convert(input_ts='-',
     {dropna}
     {clean}
     {skiprows}
+    {index_type}
+    {names}
     {print_input}
     {float_format}
     {round_index}
 
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows),
+                                                  skiprows=skiprows,
+                                                  names=names,
+                                                  index_type=index_type),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

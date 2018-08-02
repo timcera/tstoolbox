@@ -19,6 +19,8 @@ def pca(input_ts='-',
         end_date=None,
         clean=False,
         skiprows=None,
+        index_type='datetime',
+        names=None,
         n_components=None,
         round_index=None):
     """Return the principal components analysis of the time series.
@@ -37,13 +39,17 @@ def pca(input_ts='-',
     {end_date}
     {clean}
     {skiprows}
+    {index_type}
+    {names}
     {round_index}
 
     """
     from sklearn.decomposition import PCA
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows),
+                                                  skiprows=skiprows,
+                                                  names=names,
+                                                  index_type=index_type),
                               start_date=start_date,
                               end_date=end_date,
                               round_index=round_index,

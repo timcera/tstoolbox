@@ -29,6 +29,8 @@ def add_trend(start_offset,
               dropna='no',
               round_index=None,
               skiprows=None,
+              index_type='datetime',
+              names=None,
               print_input=False):
     """Add a trend.
 
@@ -46,11 +48,15 @@ def add_trend(start_offset,
     {clean}
     {round_index}
     {skiprows}
+    {index_type}
+    {names}
     {print_input}
 
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows),
+                                                  skiprows=skiprows,
+                                                  names=names,
+                                                  index_type=index_type),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

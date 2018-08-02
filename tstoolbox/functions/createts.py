@@ -22,6 +22,7 @@ warnings.filterwarnings('ignore')
 def createts(freq=None,
              fillvalue=None,
              input_ts=None,
+             index_type='datetime',
              start_date=None,
              end_date=None):
     """Create empty time series, optionally fill with a value.
@@ -42,6 +43,7 @@ def createts(freq=None,
     {input_ts}
     {start_date}
     {end_date}
+    {index_type}
 
     """
     if input_ts is None:
@@ -58,7 +60,8 @@ def createts(freq=None,
 """.format(start_date, end_date, freq)
 
     if input_ts is not None:
-        tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts),
+        tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
+                                                      index_type=index_type),
                                   start_date=start_date,
                                   end_date=end_date)
         tsd = pd.DataFrame([fillvalue] * len(tsd.index),

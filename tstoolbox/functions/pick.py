@@ -24,6 +24,8 @@ def pick(columns,
          round_index=None,
          dropna='no',
          skiprows=None,
+         index_type='datetime',
+         names=None,
          clean=False):
     """Will pick a column or list of columns from input.
 
@@ -38,13 +40,17 @@ def pick(columns,
     {end_date}
     {dropna}
     {skiprows}
+    {index_type}
+    {names}
     {clean}
     {round_index}
 
     """
     return tsutils.printiso(
         tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                skiprows=skiprows),
+                                                skiprows=skiprows,
+                                                names=names,
+                                                index_type=index_type),
                             start_date=start_date,
                             end_date=end_date,
                             pick=columns,

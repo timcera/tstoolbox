@@ -25,6 +25,8 @@ def fill(input_ts='-',
          end_date=None,
          columns=None,
          clean=False,
+         index_type='datetime',
+         names=None,
          skiprows=None,):
     """Fill missing values (NaN) with different methods.
 
@@ -83,12 +85,16 @@ def fill(input_ts='-',
     {end_date}
     {clean}
     {skiprows}
+    {index_type}
+    {names}
     {columns}
 
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   dropna='all',
-                                                  skiprows=skiprows),
+                                                  skiprows=skiprows,
+                                                  names=names,
+                                                  index_type=index_type),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

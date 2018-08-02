@@ -5,8 +5,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from builtins import str
-
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
@@ -33,6 +31,8 @@ def convert_index(to,
                   round_index=None,
                   dropna='no',
                   clean=False,
+                  index_type='datetime',
+                  names=None,
                   skiprows=None):
     """Convert datetime to/from Julian dates from different epochs.
 
@@ -131,10 +131,18 @@ def convert_index(to,
     {dropna}
     {clean}
     {skiprows}
+    {names}
+    {index_type}
 
     """
+    if to == 'datetime':
+        index_type = 'number'
+    elif to == 'number':
+        index_type = 'datetime'
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows),
+                                                  skiprows=skiprows,
+                                                  names=names,
+                                                  index_type=index_type),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
@@ -201,7 +209,11 @@ def convert_index(to,
         if epoch in dailies:
             interval = 'D'
 
+
     if to == 'number':
+        # Index must be datetime - let's make sure
+        tsd.index = pd.to_datetime(tsd.index)
+
         frac = 1.0
         if interval in ['H']:
             frac = 24.0
@@ -223,6 +235,8 @@ def convert_index(to,
         if tsutils.test_cli():
             tsd.index = tsd.index.format(formatter=index_str_formatter)
     elif to == 'datetime':
+        if interval is None:
+            interval = 'D'
         tsd.index = pd.to_datetime(tsd.index.values,
                                    origin=epoch_dates.setdefault(epoch, epoch),
                                    unit=interval)
@@ -233,6 +247,7 @@ def convert_index(to,
 *
 """.format(to))
 
-    tsd.index.name = '{0}_date'.format(epoch)
+    if names is None:
+        tsd.index.name = '{0}_date'.format(epoch)
     return tsutils.printiso(tsd,
                             showindex='always')

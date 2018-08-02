@@ -19,6 +19,8 @@ def expanding_window(input_ts='-',
                      end_date=None,
                      dropna='no',
                      skiprows=None,
+                     index_type='datetime',
+                     names=None,
                      clean=False,
                      statistic='',
                      min_periods=1,
@@ -71,11 +73,15 @@ def expanding_window(input_ts='-',
     {end_date}
     {dropna}
     {skiprows}
+    {index_type}
+    {names}
     {clean}
     {print_input}
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows),
+                                                  skiprows=skiprows,
+                                                  names=names,
+                                                  index_type=index_type),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,

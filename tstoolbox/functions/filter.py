@@ -108,6 +108,8 @@ def filter(filter_type,
            end_date=None,
            dropna='no',
            skiprows=None,
+           index_type='datetime',
+           names=None,
            clean=False,
            print_input=False,
            cutoff_period=None,
@@ -142,13 +144,17 @@ def filter(filter_type,
     {float_format}
     {dropna}
     {skiprows}
+    {index_type}
+    {names}
     {clean}
     {round_index}
     {print_input}
 
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows),
+                                                  skiprows=skiprows,
+                                                  names=names,
+                                                  index_type=index_type),
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
