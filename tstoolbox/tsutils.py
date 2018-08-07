@@ -532,6 +532,8 @@ def common_kwds(input_tsd=None,
         ntsd = ntsd.sort_index()
         ntsd = ntsd[~ntsd.index.duplicated()]
 
+    ntsd = _round_index(ntsd, round_index=round_index)
+
     if bestfreq is True:
         ntsd = asbestfreq(ntsd, force_freq=force_freq)
 
@@ -580,8 +582,6 @@ def common_kwds(input_tsd=None,
             return ntsd.groupby(lambda x: x.month)
         else:
             return ntsd.groupby(pd.TimeGrouper(groupby))
-
-    ntsd = _round_index(ntsd, round_index=round_index)
 
     if dropna not in ['any', 'all', 'no']:
         raise ValueError("""

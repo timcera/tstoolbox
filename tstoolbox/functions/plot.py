@@ -48,20 +48,7 @@ marker_list = [
                '_',
               ]
 
-color_list = ['b', 'g', 'r', 'c', 'm', 'y', 'k',
-              'aliceblue',
-              'antiquewhite',
-              'aqua',
-              'aquamarine',
-              'azure',
-              'beige',
-              'bisque',
-              'blanchedalmond',
-              'blueviolet',
-              'burlywood',
-              'cadetblue',
-              'chartreuse',
-              'chocolate']
+color_list = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
 
 line_list = [
              '-',
