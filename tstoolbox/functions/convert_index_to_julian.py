@@ -12,6 +12,7 @@ import pandas as pd
 
 from .. import tsutils
 
+from tstoolbox.tstoolbox import convert_index
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
@@ -37,15 +38,15 @@ def convert_index_to_julian(epoch='julian',
         from tstoolbox import tstoolbox
         ndf = ntstoolbox.convert_index('julian', ...)
     """
-    return tstoolbox.convert_index('julian',
-                                   epoch='julian',
-                                   columns=columns,
-                                   input_ts=input_ts,
-                                   start_date=start_date,
-                                   end_date=end_date,
-                                   round_index=round_index,
-                                   dropna=dropna,
-                                   clean=clean,
-                                   skiprows=skiprows,
-                                   names=names,
-                                   index_type=index_type)
+    return convert_index('julian',
+                         epoch='julian',
+                         columns=columns,
+                         input_ts=input_ts,
+                         start_date=start_date,
+                         end_date=end_date,
+                         round_index=round_index,
+                         dropna=dropna,
+                         clean=clean,
+                         skiprows=skiprows,
+                         names=names,
+                         index_type=index_type)
