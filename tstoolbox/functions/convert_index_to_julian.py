@@ -12,7 +12,7 @@ import pandas as pd
 
 from .. import tsutils
 
-from tstoolbox.tstoolbox import convert_index
+from . import convert_index
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
