@@ -33,7 +33,8 @@ install_requires = [
     'scipy',
     'pandas',
     'pint',
-    'matplotlib',
+    "matplotlib < 3 ; python_version < '3.5'",
+    "matplotlib ; python_version >= '3.5'",
     'xlsxwriter',
 ]
 
