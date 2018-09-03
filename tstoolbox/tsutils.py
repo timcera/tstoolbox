@@ -400,10 +400,10 @@ def parsedate(dstr,
     if dstr is None:
         return dstr
 
-    pdate = dateparser.parse(dstr, settings=settings)
-
-    if pdate is None:
+    try:
         pdate = pd.to_datetime(dstr)
+    except ValueError:
+        pdate = dateparser.parse(dstr, settings=settings)
 
     if pdate is None:
         raise ValueError("""
