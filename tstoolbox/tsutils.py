@@ -471,8 +471,7 @@ def make_list(strorlist, n=0):
     if isinstance(strorlist, (int, float, list)):
         return strorlist
     if isinstance(strorlist, (str, bytes)):
-        if "," in strorlist:
-            strorlist = strorlist.split(",")
+        strorlist = strorlist.split(",")
     if n > 0:
         if len(strorlist) != n:
             raise ValueError("""
@@ -1054,6 +1053,7 @@ def is_valid_url(url, qualifying=None):
 
 def _convert_to_numbers(inputlist):
     if not isinstance(inputlist, (list, tuple)):
+        ret = inputlist
         try:
             ret = int(inputlist)
         except ValueError:
