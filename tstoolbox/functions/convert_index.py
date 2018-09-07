@@ -9,6 +9,7 @@ import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 import pandas as pd
+from pandas.tseries.frequencies import to_offset
 
 from .. import tsutils
 
@@ -46,25 +47,50 @@ def convert_index(to,
     interval
         [optional, defaults to None]
 
-        The 'interval' parameter defines the unit time.  One of the pandas
+        The `interval` parameter defines the unit time.  One of the pandas
         offset codes.  The default of 'None' will set the unit time for all
-        defined epochs to daily except 'unix' which will be set to seconds.
+        defined epochs to daily except 'unix' which will defaults to seconds.
+
+        You can give any smaller unit time than daily for all defined epochs
+        except 'unix' which requires an interval less than seconds.
+
+        +------------+--------------------+----------------------+
+        | epoch      | `interval`=None    | Available `interval` |
+        +============+====================+======================+
+        | julian,    | 'D', 'daily',      | 'D', 'daily', or     |
+        | reduced,   |                    | smaller              |
+        | modified,  |                    |                      |
+        | truncated, |                    |                      |
+        | dublin,    |                    |                      |
+        | cnes,      |                    |                      |
+        | ccsds,     |                    |                      |
+        | lop,       |                    |                      |
+        | lilian,    |                    |                      |
+        | rata_die,  |                    |                      |
+        | mars_sol   |                    |                      |
+        +------------+--------------------+----------------------+
+        | unix       | 'S', 'seconds'     | 'S', 'seconds', or   |
+        |            |                    | smaller              |
+        +------------+--------------------+----------------------+
+        | arbitrary  | frequency of input | frequency of input   |
+        | epoch      |                    | or smaller           |
+        +------------+--------------------+----------------------+
 
         {pandas_offset_codes}
     epoch : str
         [optional, defaults to 'julian']
 
-        Can be one of, 'julian', 'reduced', 'modified',
-        'truncated', 'dublin', 'cnes', 'ccsds', 'lop', 'lilian', 'rata_die',
-        'mars_sol_date', 'unix', or a date and time.
+        Can be one of, 'julian', 'reduced', 'modified', 'truncated', 'dublin',
+        'cnes', 'ccsds', 'lop', 'lilian', 'rata_die', 'mars_sol_date', 'unix',
+        or a date and time.
 
         If supplying a date and time, most formats are recognized, however
         the closer the format is to ISO 8601 the better.  Also should check and
         make sure date was parsed as expected.  If supplying only a date, the
         epoch starts at midnight the morning of that date.
 
-        The 'unix' epoch uses an `interval` of seconds, and all other defined
-        epochs use and interval of 'daily'.
+        The 'unix' epoch uses a default `interval` of seconds, and all other
+        defined epochs use a default `interval` of 'daily'.
 
         +-----------+----------------+----------------+-------------+
         | epoch     | Epoch          | Calculation    | Notes       |
@@ -187,56 +213,69 @@ def convert_index(to,
                    'mars_sol': '1873-12-29T12',
                    'unix': 'unix'}
 
+    dt = pd.datetime(2000, 1, 1)
+    if epoch == 'unix':
+        maxinterval = 'S'
+    elif epoch in dailies:
+        maxinterval = 'D'
+    else:
+        maxinterval = tsutils.asbestfreq(tsd).index.freqstr
+
     if interval is not None:
         if epoch == 'unix':
-            if interval not in ['s', 'second']:
+            if dt + to_offset(interval) > dt + to_offset('S'):
                 raise ValueError("""
 *
-*   The `interval` for the 'unix' epoch must be 's' for seconds.
+*   The `interval` for the 'unix' epoch must be less than 'S' for seconds.
 *
 """)
-        if epoch in dailies:
-            if interval != 'D':
+        elif epoch in dailies:
+            if dt + to_offset(interval) > dt + to_offset('D'):
                 raise ValueError("""
 *
-*   The `interval` for the '{0}' epoch must be 'D' for daily.
+*   The `interval` for the '{0}' epoch must be less than 'D' for daily.
 *
 """.format(epoch))
+        else:
+            if dt + to_offset(interval) > dt + to_offset(maxinterval):
+                raise ValueError("""
+*
+*   The `interval` for the '{0}' epoch must be less than the interval
+*   of the time-series, which is '{1}'.
+*
+""".format(epoch, maxinterval))
 
     else:
         if epoch == 'unix':
-            interval = 's'
-        if epoch in dailies:
+            interval = 'S'
+        elif epoch in dailies:
             interval = 'D'
-
+        else:
+            interval = maxinterval
 
     if to == 'number':
         # Index must be datetime - let's make sure
         tsd.index = pd.to_datetime(tsd.index)
 
-        frac = 1.0
-        if interval in ['H']:
-            frac = 24.0
-        elif interval in ['M']:
-            frac = 24*60.0
-        elif interval in ['s', 'second']:
-            frac = 60*60*24.0
-        elif interval in ['L', 'ms', 'Mili']:
-            frac = 60*60*24*1000.0
-        elif interval in ['U', 'us', 'Micro']:
-            frac = 60*60*24*1000*1000.0
-        elif interval in ['N', 'Nano']:
-            frac = 60*60*24*1000*1000*1000.0
+        try:
+            frac = to_offset(maxinterval).nanos/to_offset(interval).nanos
+        except ValueError:
+            frac = 1.0
+
         try:
             tsd.index = allowed[epoch](tsd.index.to_julian_date())*frac
         except KeyError:
-            tsd.index = (tsd.index.to_julian_date() -
-                         pd.to_datetime(tsutils.parsedate(epoch)).to_julian_date())*frac
+            epoch_date = tsutils.parsedate(epoch)
+            if interval in ['M', 'MS']:
+                tsd.index = ((tsd.index.year - epoch_date.year)*12 +
+                             tsd.index.month - epoch_date.month)
+            elif interval in ['W']:
+                tsd.index = ((tsd.index.to_julian_date() -
+                              epoch_date.to_julian_date())/7.0).astype('i')
+
         if tsutils.test_cli():
             tsd.index = tsd.index.format(formatter=index_str_formatter)
     elif to == 'datetime':
-        if interval is None:
-            interval = 'D'
         tsd.index = pd.to_datetime(tsd.index.values,
                                    origin=epoch_dates.setdefault(epoch, epoch),
                                    unit=interval)

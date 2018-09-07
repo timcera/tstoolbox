@@ -8,11 +8,10 @@ from __future__ import print_function
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
-import pandas as pd
-
 from .. import tsutils
 
 from . import convert_index
+
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
