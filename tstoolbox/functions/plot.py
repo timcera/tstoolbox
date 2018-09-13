@@ -142,7 +142,7 @@ def plot(input_ts='-',
          sharey=False,
          colors='auto',
          linestyles='auto',
-         markerstyles='',
+         markerstyles=' ',
          style='auto',
          logx=False,
          logy=False,
@@ -335,6 +335,29 @@ def plot(input_ts='-',
         +------+---------+
         | k    | black   |
         +------+---------+
+
+        +---------+-----------+
+        | Number  | Color     |
+        +=========+===========+
+        | 0.75    | 0.75 gray |
+        +---------+-----------+
+        | ...etc. |           |
+        +---------+-----------+
+
+        +------------------+
+        | HTML Color Names |
+        +==================+
+        | red              |
+        +------------------+
+        | burlywood        |
+        +------------------+
+        | chartreuse       |
+        +------------------+
+        | ...etc.          |
+        +------------------+
+
+        Color reference:
+        http://matplotlib.org/api/colors_api.html
     linestyles
         [optional, default to 'auto']
 
@@ -350,13 +373,19 @@ def plot(input_ts='-',
         +------+--------------+
         | Code | Lines        |
         +======+==============+
-        | -    | solid        |
+        | \-   | solid        |
         +------+--------------+
         | --   | dashed       |
         +------+--------------+
         | -.   | dash_dot     |
         +------+--------------+
         | :    | dotted       |
+        +------+--------------+
+        | None | draw nothing |
+        +------+--------------+
+        | ' '  | draw nothing |
+        +------+--------------+
+        | ''   | draw nothing |
         +------+--------------+
 
         Line reference:
@@ -400,138 +429,13 @@ def plot(input_ts='-',
         +------+----------------+
         | p    | pentagon       |
         +------+----------------+
-        | *    | star           |
+        | \*   | star           |
         +------+----------------+
         | h    | hexagon1       |
         +------+----------------+
         | H    | hexagon2       |
         +------+----------------+
-        | +    | plus           |
-        +------+----------------+
-        | x    | x              |
-        +------+----------------+
-        | D    | diamond        |
-        +------+----------------+
-        | d    | thin diamond   |
-        +------+----------------+
-        | _    | hline          |
-        +------+----------------+
-
-        Marker reference:
-        http://matplotlib.org/api/markers_api.html
-    style
-        [optional, default is None]
-
-        DEPRECATED.
-
-        Still available, but if None is replaced by 'colors', 'linestyles', and
-        'markerstyles' options.  Currently the 'style' option will override the
-        others.
-
-        Comma separated matplotlib style strings matplotlib line style per
-        time-series.  Just combine codes in 'ColorMarkerLine' order, for
-        example r*-- is a red dashed line with star marker.
-
-        +------+---------+
-        | Code | Color   |
-        +======+=========+
-        | b    | blue    |
-        +------+---------+
-        | g    | green   |
-        +------+---------+
-        | r    | red     |
-        +------+---------+
-        | c    | cyan    |
-        +------+---------+
-        | m    | magenta |
-        +------+---------+
-        | y    | yellow  |
-        +------+---------+
-        | k    | black   |
-        +------+---------+
-        | w    | white   |
-        +------+---------+
-
-        +---------+-----------+
-        | Number  | Color     |
-        +=========+===========+
-        | 0.75    | 0.75 gray |
-        +---------+-----------+
-        | ...etc. |           |
-        +---------+-----------+
-
-        +------------------+
-        | HTML Color Names |
-        +==================+
-        | red              |
-        +------------------+
-        | burlywood        |
-        +------------------+
-        | chartreuse       |
-        +------------------+
-        | ...etc.          |
-        +------------------+
-
-        Color reference:
-        http://matplotlib.org/api/colors_api.html
-
-        +------+--------------+
-        | Code | Lines        |
-        +======+==============+
-        | -    | solid        |
-        +------+--------------+
-        | --   | dashed       |
-        +------+--------------+
-        | -.   | dash_dot     |
-        +------+--------------+
-        | :    | dotted       |
-        +------+--------------+
-        | None | draw nothing |
-        +------+--------------+
-        | ' '  | draw nothing |
-        +------+--------------+
-        | ''   | draw nothing |
-        +------+--------------+
-
-        Line reference:
-        http://matplotlib.org/api/artist_api.html
-
-        +------+----------------+
-        | Code | Markers        |
-        +======+================+
-        | .    | point          |
-        +------+----------------+
-        | o    | circle         |
-        +------+----------------+
-        | v    | triangle down  |
-        +------+----------------+
-        | ^    | triangle up    |
-        +------+----------------+
-        | <    | triangle left  |
-        +------+----------------+
-        | >    | triangle right |
-        +------+----------------+
-        | 1    | tri_down       |
-        +------+----------------+
-        | 2    | tri_up         |
-        +------+----------------+
-        | 3    | tri_left       |
-        +------+----------------+
-        | 4    | tri_right      |
-        +------+----------------+
-        | 8    | octagon        |
-        +------+----------------+
-        | s    | square         |
-        +------+----------------+
-        | p    | pentagon       |
-        +------+----------------+
-        | *    | star           |
-        +------+----------------+
-        | h    | hexagon1       |
-        +------+----------------+
-        | H    | hexagon2       |
-        +------+----------------+
-        | +    | plus           |
+        | \+   | plus           |
         +------+----------------+
         | x    | x              |
         +------+----------------+
@@ -549,8 +453,19 @@ def plot(input_ts='-',
         +------+----------------+
 
         Marker reference:
-        http://matplotlib.org/api/markers_api.html
 
+        Marker reference:
+        http://matplotlib.org/api/markers_api.html
+    style
+        [optional, default is None]
+
+        Still available, but if None is replaced by 'colors', 'linestyles', and
+        'markerstyles' options.  Currently the 'style' option will override the
+        others.
+
+        Comma separated matplotlib style strings matplotlib line style per
+        time-series.  Just combine codes in 'ColorMarkerLine' order, for
+        example r*-- is a red dashed line with star marker.
     logx
         DEPRECATED: use '--xaxis="log"' instead.
     logy
@@ -872,10 +787,15 @@ def plot(input_ts='-',
         colcnt = tsd.shape[1]
 
     if type == 'time':
-        tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
-                 sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
-                 ylim=ylim, secondary_y=secondary_y, mark_right=mark_right,
-                 figsize=figsize, drawstyle=drawstyle)
+        ax = tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
+                      sharey=sharey, style=None, logx=logx, logy=logy,
+                      xlim=xlim, ylim=ylim, secondary_y=secondary_y,
+                      mark_right=mark_right, figsize=figsize,
+                      drawstyle=drawstyle)
+        for index, line in enumerate(ax.lines):
+            plt.setp(line, color=style[index][0])
+            plt.setp(line, marker=style[index][1])
+            plt.setp(line, linestyle=style[index][2])
         xtitle = xtitle or 'Time'
         if legend is True:
             plt.legend(loc='best')
@@ -1054,10 +974,14 @@ def plot(input_ts='-',
 
     elif type in ['kde',
                   'probability_density']:
-        tsd.plot(kind='kde', legend=legend, subplots=subplots, sharex=sharex,
-                 sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
-                 ylim=ylim, secondary_y=secondary_y,
-                 figsize=figsize)
+        ax = tsd.plot(kind='kde', legend=legend, subplots=subplots,
+                      sharex=sharex, sharey=sharey, style=None, logx=logx,
+                      logy=logy, xlim=xlim, ylim=ylim, secondary_y=secondary_y,
+                      figsize=figsize)
+        for index, line in enumerate(ax.lines):
+            plt.setp(line, color=style[index][0])
+            plt.setp(line, marker=style[index][1])
+            plt.setp(line, linestyle=style[index][2])
         ytitle = ytitle or 'Density'
         if legend is True:
             plt.legend(loc='best')
@@ -1069,9 +993,13 @@ def plot(input_ts='-',
                                        figsize=figsize,
                                        gridspec_kw={'width_ratios': [1, 4]})
         tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
-                 sharey=sharey, style=style, logx=logx, logy=logy, xlim=xlim,
+                 sharey=sharey, style=None, logx=logx, logy=logy, xlim=xlim,
                  ylim=ylim, secondary_y=secondary_y, mark_right=mark_right,
                  figsize=figsize, drawstyle=drawstyle, ax=ax1)
+        for index, line in enumerate(ax1.lines):
+            plt.setp(line, color=style[index][0])
+            plt.setp(line, marker=style[index][1])
+            plt.setp(line, linestyle=style[index][2])
         xtitle = xtitle or 'Time'
         ylimits = ax1.get_ylim()
         ny = pd.np.linspace(ylimits[0], ylimits[1], 1000)
@@ -1172,6 +1100,10 @@ def plot(input_ts='-',
         ax = tsd.plot(kind=kind, legend=legend, stacked=stacked,
                       style=style, logx=logx, logy=logy, xlim=xlim,
                       ylim=ylim, figsize=figsize)
+        for index, line in enumerate(ax.lines):
+            plt.setp(line, color=style[index][0])
+            plt.setp(line, marker=style[index][1])
+            plt.setp(line, linestyle=style[index][2])
         freq = tsutils.asbestfreq(tsd, force_freq=force_freq).index.freqstr
         if freq is not None:
             if 'A' in freq:
