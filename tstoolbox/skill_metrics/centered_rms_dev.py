@@ -1,10 +1,13 @@
 import numpy as np
 
-def centered_rms_dev(predicted,reference):
-    '''
-    Calculates the centered root-mean-square (RMS) difference between 
-    two variables PREDICTED and REFERENCE (E'). The latter is calculated 
-    using the formula:
+from . import utils
+
+
+def centered_rms_dev(predicted, reference):
+    """
+    Calculate the centered root-mean-square difference between two variables.
+
+    The latter is calculated using the formula:
 
     (E')^2 = sum_(n=1)^N [(p_n - mean(p))(r_n - mean(r))]^2/N
 
@@ -25,18 +28,9 @@ def centered_rms_dev(predicted,reference):
         prochford@thesymplectic.com
 
     Created on Nov 24, 2016
-    '''
-
+    """
     # Check that dimensions of predicted and reference fields match
-    pdims= predicted.shape
-    rdims= reference.shape
-    if not np.array_equal(pdims,rdims):
-        message = 'predicted and reference field dimensions do not' + \
-            ' match.\n' + \
-            'shape(predicted)= ' + str(pdims) + ', ' + \
-            'shape(reference)= ' + str(rdims) + \
-            '\npredicted type: ' + str(type(predicted))
-        raise ValueError(message)
+    utils.check_arrays(predicted, reference)
 
     # Calculate means
     pmean = np.mean(predicted)
@@ -44,7 +38,7 @@ def centered_rms_dev(predicted,reference):
 
     # Calculate (E')^2
     crmsd = np.square((predicted - pmean) - (reference - rmean))
-    crmsd = np.sum(crmsd)/predicted.size
+    crmsd = np.sum(crmsd) / predicted.size
     crmsd = np.sqrt(crmsd)
 
     return crmsd

@@ -1,8 +1,10 @@
 import numpy as np
 
+from . import utils
+
 
 def nse(predicted, reference):
-    '''
+    """
     Calculate the Nash-Sutcliffe efficiency.
 
     Calculates the Nash-Sutcliffe efficiency between two variables
@@ -42,19 +44,9 @@ def nse(predicted, reference):
 
     Output:
     NSE : Nash-Sutcliffe Efficiency
-
-    '''
-
+    """
     # Check that dimensions of predicted and reference fields match
-    pdims = predicted.shape
-    rdims = reference.shape
-    if not np.array_equal(pdims, rdims):
-        message = 'predicted and reference field dimensions do not' + \
-            ' match.\n' + \
-            'shape(predicted)= ' + str(pdims) + ', ' + \
-            'shape(reference)= ' + str(rdims) + \
-            '\npredicted type: ' + str(type(predicted))
-        raise ValueError(message)
+    utils.check_array(predicted, reference)
 
     # Calculate the NSE
     nse = 1 - (np.sum((predicted - reference)**2) /

@@ -1,26 +1,28 @@
 import matplotlib.pyplot as plt
+
 import numpy as np
 
+
 def overlay_target_diagram_circles(option):
-    '''
-    Overlays circle contours on a target diagram.
-    
+    """
+    Overlay circle contours on a target diagram.
+
     Plots circle contours on a target diagram to indicate standard
     deviation ranges and observational uncertainty threshold.
-    
+
     INPUTS:
-    option : dictionary containing option values. (Refer to 
+    option : dictionary containing option values. (Refer to
              GET_TARGET_DIAGRAM_OPTIONS function for more information.)
     option['axismax'] : maximum for the X & Y values. Used to set
             default circles when no contours specified
-    option['circles'] : radii of circles to draw to indicate isopleths 
+    option['circles'] : radii of circles to draw to indicate isopleths
             of standard deviation
-    option['circleLineSpec'] : circle line specification (default dashed 
+    option['circleLineSpec'] : circle line specification (default dashed
             black, '--k')
-    option['normalized']     : statistics supplied are normalized with 
+    option['normalized']     : statistics supplied are normalized with
             respect to the standard deviation of reference values
     option['obsUncertainty'] : Observational Uncertainty (default of 0)
-    
+
     OUTPUTS:
     None.
 
@@ -28,9 +30,8 @@ def overlay_target_diagram_circles(option):
         Symplectic, LLC
         www.thesymplectic.com
         prochford@thesymplectic.com
-    '''
-
-    theta = np.arange(0, 2*np.pi, 0.01)
+    """
+    theta = np.arange(0, 2 * np.pi, 0.01)
     unit = np.ones(len(theta))
     # 1 - reference circle if normalized
     if option['normalized'] == 'on':
@@ -62,20 +63,19 @@ def overlay_target_diagram_circles(option):
         X, Y = pol2cart(theta, rho)
         plt.plot(X, Y, '--b')
 
+
 def pol2cart(phi, rho):
-    '''
-    Transforms corresponding elements of polar coordinate arrays to 
-    Cartesian coordinates.
-    
+    """
+    Transform corresponding polar coordinate arrays to Cartesian coordinates.
+
     INPUTS:
     phi : polar angle counter-clockwise from x-axis in radians
     rho : radius
-    
+
     OUTPUTS:
     x   : Cartesian x-coordinate
     y   : Cartesian y-coordinate
-    '''
-
+    """
     x = np.multiply(rho, np.cos(phi))
     y = np.multiply(rho, np.sin(phi))
     return x, y

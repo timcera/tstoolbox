@@ -1,9 +1,11 @@
 import numpy as np
 
-def bias(predicted,reference):
-    '''
-    Calculate the bias (B) between two variables PREDICTED and 
-    REFERENCE (E'). The latter is calculated using the formula:
+from . import utils
+
+
+def bias(predicted, reference):
+    """
+    Calculate the bias between PREDICTED and REFERENCE.
 
     B = mean(p) - mean(r)
 
@@ -23,20 +25,11 @@ def bias(predicted,reference):
         prochford@thesymplectic.com
 
     Created on Dec 9, 2016
-    '''
-
+    """
     # Check that dimensions of predicted and reference fields match
-    pdims= predicted.shape
-    rdims= reference.shape
-    if not np.array_equal(pdims,rdims):
-        message = 'predicted and reference field dimensions do not' + \
-            ' match.\n' + \
-            'shape(predicted)= ' + str(pdims) + ', ' + \
-            'shape(reference)= ' + str(rdims) + \
-            '\npredicted type: ' + str(type(predicted))
-        raise ValueError(message)
+    utils.check_arrays(predicted, reference)
 
-    # Calculate means
+    # Calculate bias in means
     b = np.mean(predicted) - np.mean(reference)
 
     return b
