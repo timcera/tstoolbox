@@ -91,7 +91,7 @@ def read(filenames,
     filenames = filenames.split(',')
     result = pd.DataFrame()
     result_list = []
-    for index, i in enumerate(filenames):
+    for i in filenames:
         tsd = tsutils.common_kwds(
                                   tsutils.read_iso_ts(i,
                                                       skiprows=skiprows,
