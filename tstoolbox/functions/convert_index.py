@@ -32,7 +32,6 @@ def convert_index(to,
                   round_index=None,
                   dropna='no',
                   clean=False,
-                  index_type='datetime',
                   names=None,
                   skiprows=None):
     """Convert datetime to/from Julian dates from different epochs.
@@ -158,7 +157,6 @@ def convert_index(to,
     {clean}
     {skiprows}
     {names}
-    {index_type}
 
     """
     if to == 'datetime':
@@ -214,11 +212,10 @@ def convert_index(to,
                    'unix': 'unix'}
 
     dt = pd.datetime(2000, 1, 1)
+    maxinterval = 'D'
     if epoch == 'unix':
         maxinterval = 'S'
-    elif epoch in dailies:
-        maxinterval = 'D'
-    else:
+    elif index_type == 'datetime':
         maxinterval = tsutils.asbestfreq(tsd).index.freqstr
 
     if interval is not None:
@@ -246,12 +243,7 @@ def convert_index(to,
 """.format(epoch, maxinterval))
 
     else:
-        if epoch == 'unix':
-            interval = 'S'
-        elif epoch in dailies:
-            interval = 'D'
-        else:
-            interval = maxinterval
+        interval = maxinterval
 
     if to == 'number':
         # Index must be datetime - let's make sure
