@@ -51,29 +51,9 @@ def convert_index(to,
         defined epochs to daily except 'unix' which will defaults to seconds.
 
         You can give any smaller unit time than daily for all defined epochs
-        except 'unix' which requires an interval less than seconds.
-
-        +------------+--------------------+----------------------+
-        | epoch      | `interval`=None    | Available `interval` |
-        +============+====================+======================+
-        | julian,    | 'D', 'daily',      | 'D', 'daily', or     |
-        | reduced,   |                    | smaller              |
-        | modified,  |                    |                      |
-        | truncated, |                    |                      |
-        | dublin,    |                    |                      |
-        | cnes,      |                    |                      |
-        | ccsds,     |                    |                      |
-        | lop,       |                    |                      |
-        | lilian,    |                    |                      |
-        | rata_die,  |                    |                      |
-        | mars_sol   |                    |                      |
-        +------------+--------------------+----------------------+
-        | unix       | 'S', 'seconds'     | 'S', 'seconds', or   |
-        |            |                    | smaller              |
-        +------------+--------------------+----------------------+
-        | arbitrary  | frequency of input | frequency of input   |
-        | epoch      |                    | or smaller           |
-        +------------+--------------------+----------------------+
+        except 'unix' which requires an interval less than seconds.  For an
+        epoch that begins with an arbitrary date, you can use any interval
+        equal to or smaller than the frequency of the time-series.
 
         {pandas_offset_codes}
     epoch : str
@@ -161,16 +141,22 @@ def convert_index(to,
     """
     if to == 'datetime':
         index_type = 'number'
+        nstart_date = None
+        nend_date = None
+        nround_index = None
     elif to == 'number':
         index_type = 'datetime'
+        nstart_date = start_date
+        nend_date = end_date
+        nround_index = round_index
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
                                                   index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
+                              start_date=nstart_date,
+                              end_date=nend_date,
                               pick=columns,
-                              round_index=round_index,
+                              round_index=nround_index,
                               dropna=dropna,
                               clean=clean)
     allowed = {'julian': lambda x: x,
@@ -280,5 +266,20 @@ def convert_index(to,
 
     if names is None:
         tsd.index.name = '{0}_date'.format(epoch)
+
+    if to == 'datetime':
+        index_type = 'number'
+        nstart_date = start_date
+        nend_date = end_date
+        nround_index = round_index
+    elif to == 'number':
+        index_type = 'datetime'
+        nstart_date = None
+        nend_date = None
+        nround_index = None
+    tsd = tsutils.common_kwds(tsd,
+                              start_date=nstart_date,
+                              end_date=nend_date,
+                              round_index=nround_index)
     return tsutils.printiso(tsd,
                             showindex='always')
