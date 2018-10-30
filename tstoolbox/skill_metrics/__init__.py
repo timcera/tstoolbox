@@ -1,5 +1,6 @@
 __version__ = '1.1.4'
 
+from .apc_bias import apc_bias
 from .bias import bias
 from .brier_score import brier_score
 from .centered_rms_dev import centered_rms_dev
@@ -10,10 +11,13 @@ from .get_target_diagram_axes import get_target_diagram_axes
 from .get_target_diagram_options import get_target_diagram_options
 from .get_taylor_diagram_axes import get_taylor_diagram_axes
 from .get_taylor_diagram_options import get_taylor_diagram_options
+from .kge import kge
+from .index_agreement import index_agreement
 from .nse import nse
 from .overlay_target_diagram_circles import overlay_target_diagram_circles
 from .overlay_taylor_diagram_circles import overlay_taylor_diagram_circles
 from .overlay_taylor_diagram_lines import overlay_taylor_diagram_lines
+from .pc_bias import pc_bias
 from .plot_pattern_diagram_colorbar import plot_pattern_diagram_colorbar
 from .plot_pattern_diagram_markers import plot_pattern_diagram_markers
 from .plot_target_axes import plot_target_axes

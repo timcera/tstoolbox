@@ -8,9 +8,8 @@ from __future__ import print_function
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
-from .. import tsutils
-
 from . import convert_index
+from .. import tsutils
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
@@ -26,7 +25,7 @@ def convert_index_to_julian(epoch='julian',
                             index_type='datetime',
                             names=None,
                             skiprows=None):
-    """DEPRECATED use convert_index instead.
+    """DEPRECATED: Use convert_index instead.
 
     For command line::
 

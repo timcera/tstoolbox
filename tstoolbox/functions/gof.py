@@ -50,7 +50,17 @@ def gof(input_ts='-',
 
     """
     if stats == 'all':
-        stats = ['bias', 'rmsd', 'crmsd', 'corrcoef', 'ss']
+        stats = ['bias',
+                 'pc_bias',
+                 'apc_bias',
+                 'rmsd',
+                 'crmsd',
+                 'corrcoef',
+                 'murphyss',
+                 'nse',
+                 'kge',
+                 'index_agreement',
+                 'brierss']
     else:
         try:
             stats = stats.split(',')
@@ -84,20 +94,44 @@ def gof(input_ts='-',
     pred = tsd.iloc[:, 1].values
 
     if 'bias' in stats:
-        statval.append(['Bias', sm.bias(pred, ref)])
+        statval.append(['Bias',
+                        sm.bias(pred, ref)])
+
+    if 'pc_bias' in stats:
+        statval.append(['Percent bias',
+                        sm.pc_bias(pred, ref)])
+
+    if 'apc_bias' in stats:
+        statval.append(['Absolute percent bias',
+                        sm.apc_bias(pred, ref)])
 
     if 'rmsd' in stats:
-        statval.append(['rmsd', sm.rmsd(pred, ref)])
+        statval.append(['Root-mean-square Deviation (RMSD)',
+                        sm.rmsd(pred, ref)])
 
     if 'crmsd' in stats:
-        statval.append(['crmsd', sm.centered_rms_dev(pred, ref)])
+        statval.append(['Centered Root-mean-square Deviation (CRMSD)',
+                        sm.centered_rms_dev(pred, ref)])
 
     if 'corrcoef' in stats:
-        statval.append(['corrcoef', pd.np.corrcoef(pred, ref)[0, 1]])
+        statval.append(['Correlation coefficient (r)',
+                        pd.np.corrcoef(pred, ref)[0, 1]])
 
-    if 'ss' in stats:
+    if 'murphyss' in stats:
         statval.append(['Skill score (Murphy)',
                         sm.skill_score_murphy(pred, ref)])
+
+    if 'nse' in stats:
+        statval.append(['Nash-Sutcliffe Efficiency',
+                        sm.nse(pred, ref)])
+
+    if 'kge' in stats:
+        statval.append(['Kling-Gupta Efficiency',
+                        sm.kge(pred, ref)])
+
+    if 'index_agreement' in stats:
+        statval.append(['Index of agreement',
+                        sm.index_agreement(pred, ref)])
 
     return tsutils.printiso(statval,
                             tablefmt='plain',

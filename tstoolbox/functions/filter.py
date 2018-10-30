@@ -11,6 +11,7 @@ import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 import numpy as np
+
 import pandas as pd
 
 from .. import tsutils

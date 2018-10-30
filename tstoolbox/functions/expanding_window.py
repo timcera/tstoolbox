@@ -77,6 +77,7 @@ def expanding_window(input_ts='-',
     {names}
     {clean}
     {print_input}
+
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
@@ -88,8 +89,8 @@ def expanding_window(input_ts='-',
                               dropna=dropna,
                               clean=clean)
 
-    ntsd = tsd.expanding(min_periods=1,
-                         center=False)
+    ntsd = tsd.expanding(min_periods=min_periods,
+                         center=center)
 
     if statistic:
         ntsd = eval('ntsd.{0}()'.format(statistic))

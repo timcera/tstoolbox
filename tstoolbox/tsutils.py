@@ -286,7 +286,12 @@ docstrings = {
         If callable, the callable function will be evaluated against the row
         indices, returning True if the row should be skipped and False
         otherwise.  An example of a valid callable argument would be ``lambda
-        x: x in [0, 2]``."""
+        x: x in [0, 2]``.""",
+    'groupby': r"""groupby: str
+        [optional, default is None]
+        The pandas offset code to group the time-series data into.  A special
+        code is also available to group 'months_across_years' that will group
+        into twelve categories for each month."""
         }
 
 
@@ -502,10 +507,6 @@ def common_kwds(input_tsd=None,
     input_tsd: DataFrame
         Input data which should be a DataFrame.
 
-    required: str, bytes, tuple of str or bytes, list
-        If str or bytes then split on "," and represents column names in
-        input_tsd.
-
     Returns
     -------
     df: DataFrame
@@ -524,6 +525,8 @@ def common_kwds(input_tsd=None,
 *   names and values.
 *
 """)
+
+    units = make_list(units)
 
     ntsd = _pick(ntsd, pick)
 

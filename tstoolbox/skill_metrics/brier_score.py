@@ -48,10 +48,10 @@ def brier_score(forecast, observed):
 
     # Check for valid values
     index = np.where(np.logical_or(forecast < 0, forecast > 1))
-    if sum(index) > 0:
+    if np.sum(index) > 0:
         raise ValueError('Forecast has values outside interval [0,1].')
     index = np.where(np.logical_and(observed != 0, observed != 1))
-    if sum(index) > 0:
+    if np.sum(index) > 0:
         raise ValueError('Observed has values not equal to 0 or 1.')
 
     # Calculate score

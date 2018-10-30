@@ -36,7 +36,7 @@ def ewm_window(input_ts='-',
                ignore_na=False,
                print_input=False,
                ):
-    """Provides exponential weighted functions.
+    """Calculate exponential weighted functions.
 
     Exactly one of center of mass, span, half-life, and alpha must be provided.
     Allowed values and relationship between the parameters are specified in the

@@ -15,6 +15,7 @@ from .. import tsutils
 
 
 def index_str_formatter(x):
+    """Format index string depending on type of 'x'."""
     if int(x) == x:
         return '{0:d}'.format(int(x))
     return '{0:.10f}'.format(x)

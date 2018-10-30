@@ -9,7 +9,6 @@ import itertools
 import os.path
 import sys
 import warnings
-
 from builtins import range
 from builtins import str
 from builtins import zip
@@ -171,7 +170,7 @@ def plot(input_ts='-',
          round_index=None,
          plotting_position='weibull',
          lag_plot_lag=1):
-    """Plot data.
+    r"""Plot data.
 
     Parameters
     ----------

@@ -84,7 +84,7 @@ def taylor_statistics(predicted, reference, field=''):
         raise ValueError('REFERENCE argument must be a dictionary.')
 
     # Check that dimensions of predicted and reference fields match
-    utils.check_array(predicted, reference)
+    utils.check_arrays(predicted, reference)
 
     # Calculate correlation coefficient
     ccoef = np.corrcoef(p, r)

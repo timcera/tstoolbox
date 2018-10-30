@@ -13,12 +13,13 @@ from builtins import zip
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
+import numpy as np
+
 import pandas as pd
 
-from .. import tsutils
-
 from past.utils import old_div
-import numpy as np
+
+from .. import tsutils
 
 warnings.filterwarnings('ignore')
 

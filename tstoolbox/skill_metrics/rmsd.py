@@ -32,7 +32,7 @@ def rmsd(predicted, reference):
     Created on Dec 9, 2016
     """
     # Check that dimensions of predicted and reference fields match
-    utils.check_array(predicted, reference)
+    utils.check_arrays(predicted, reference)
 
     # Calculate the RMSE
     r = np.sqrt(np.sum(np.square(predicted - reference)) / len(predicted))
