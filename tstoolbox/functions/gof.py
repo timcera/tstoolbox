@@ -67,7 +67,7 @@ def gof(input_ts='-',
         except AttributeError:
             pass
 
-    # Use dropna='all' to make sure that both have the same missing data.
+    # Use dropna='no' to get the lengths of both time-series.
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -76,7 +76,7 @@ def gof(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna='all',
+                              dropna='no',
                               clean=clean)
     if len(tsd.columns) != 2:
         raise ValueError("""
@@ -84,6 +84,9 @@ def gof(input_ts='-',
 *   The gof algorithms work with two time-series only.  You gave {0}.
 *
 """.format(len(tsd.columns)))
+    lennao, lennas = tsd.isna().sum()
+
+    tsd = tsd.dropna(how='any')
 
     from .. import skill_metrics as sm
     import pandas as pd
@@ -133,6 +136,12 @@ def gof(input_ts='-',
         statval.append(['Index of agreement',
                         sm.index_agreement(pred, ref)])
 
+    statval.append(['Observed NaN count',
+                    lennao])
+    statval.append(['Simulated NaN count',
+                    lennas])
+    statval.append(['Common count observed and simulated',
+                    len(tsd.index)])
     return tsutils.printiso(statval,
                             tablefmt='plain',
                             headers=['Statistic', 'Value'])
