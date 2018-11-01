@@ -1,21 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-test_read
-----------------------------------
-
-Tests for `tstoolbox.read`
-
-read is used by many other tests.
-"""
-
-from unittest import TestCase
-from pandas.util.testing import assert_frame_equal
 import shlex
 import subprocess
+from unittest import TestCase
 
 import pandas
+from pandas.util.testing import assert_frame_equal
 
 from tstoolbox import tstoolbox
 from tstoolbox import tsutils
@@ -68,50 +59,44 @@ class TestRead(TestCase):
 """
 
     def test_read_direct(self):
-        ''' Test read API for single column - daily.
-        '''
+        """Test read API for single column - daily."""
         out = tstoolbox.read('tests/data_simple.csv')
         assert_frame_equal(out, self.read_direct)
 
     def test_read_mulitple_direct(self):
-        ''' Test read API for multiple columns - daily.
-        '''
-        out = tstoolbox.read('tests/data_simple.csv,tests/data_simple.csv', append="columns")
+        """Test read API for multiple columns - daily."""
+        out = tstoolbox.read('tests/data_simple.csv,tests/data_simple.csv',
+                             append=r'columns')
         assert_frame_equal(out, self.read_multiple_direct)
 
     def test_read_bi_monthly(self):
-        ''' Test read API for bi monthly time series.
-        '''
+        """Test read API for bi monthly time series."""
         out = tstoolbox.read('tests/data_bi_daily.csv')
         assert_frame_equal(out, self.read_tsstep_2_daily)
 
     def test_read_cli(self):
-        ''' Test read CLI for single column - daily.
-        '''
+        """Test read CLI for single column - daily."""
         args = 'tstoolbox read tests/data_simple.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.read_cli)
 
     def test_read_multiple_cli(self):
-        ''' Test read CLI for multiple columns - daily.
-        '''
+        """Test read CLI for multiple columns - daily."""
         args = 'tstoolbox read --append columns tests/data_simple.csv,tests/data_simple.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.read_multiple_cli)
 
     def test_read_bi_monthly_cli(self):
-        ''' Test read CLI for bi monthly time series.
-        '''
+        """Test read CLI for bi monthly time series."""
         args = 'tstoolbox read tests/data_bi_daily.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.read_tsstep_2_daily_cli)
 
     def test_read_blank_header_cli(self):
-        ''' Test reading of files with blank titles in header.
-        '''
+        """Test reading of files with blank titles in header."""
         args = 'tstoolbox aggregate --agg_interval D --input_ts tests/data_empty_cols.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args,
@@ -119,8 +104,7 @@ class TestRead(TestCase):
         self.assertEqual(out[0], self.read_blanks)
 
     def test_read_multiple_spaces(self):
-        ''' Test reading of files with multiple spaces in data.
-        '''
+        """Test reading of files with multiple spaces in data."""
         args = 'tstoolbox aggregate --agg_interval D --input_ts tests/data_spaces.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args,

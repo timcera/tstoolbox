@@ -1,19 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-test skiprows option
-----------------------------------
-
-skiprows is available in many of the functions is used by many other tests.
-"""
-
 from unittest import TestCase
-from pandas.util.testing import assert_frame_equal
-import shlex
-import subprocess
 
 import pandas
+from pandas.util.testing import assert_frame_equal
 
 from tstoolbox import tstoolbox
 from tstoolbox import tsutils
@@ -52,13 +43,11 @@ class TestRead(TestCase):
 
 
     def test_read_direct(self):
-        ''' Test read API for single column - daily.
-        '''
+        """Test read API for single column - daily."""
         out = tstoolbox.read('tests/data_simple_extra_rows.csv', skiprows=2)
         assert_frame_equal(out, self.read_direct)
 
     def test_read_direct_sparse(self):
-        ''' Test read API for single column - daily.
-        '''
+        """Test read API for single column - daily."""
         out = tstoolbox.read('tests/data_simple_extra_rows_sparse.csv', skiprows=[4, 6])
         assert_frame_equal(out, self.read_direct_sparse)

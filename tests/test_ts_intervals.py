@@ -1,23 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-test_ts_intervals
-----------------------------------
-
-Tests for `tstoolbox` module.
-"""
-
-import shlex
-import subprocess
 import os
-import glob
 import tempfile
-
-import pandas
-
 from unittest import TestCase
-from pandas.util.testing import assert_frame_equal
+
 import pandas as pd
 
 from tstoolbox import tstoolbox
@@ -55,11 +42,12 @@ pd_tstep_minterval = {
 
 class TestAddTrend(TestCase):
     def setUp(self):
-        ''' Creates a whole bunch of time-series at different intervals in
-            'pandacodes' and different number of intervals, the maximum number
-            of intervals is the third term in each entry in pd_tstep_minterval.
-            Then writes them out to files that will be read in the tests.
-        '''
+        """Create a whole bunch of time-series at different intervals.
+
+        Uses 'pandacodes' and different number of intervals, the maximum number
+        of intervals is the third term in each entry in pd_tstep_minterval.
+        Then writes them out to files that will be read in the tests.
+        """
         self.fps = {}
         for testpc in pandacodes:
             sdate, periods, nintervals = pd_tstep_minterval[testpc]
@@ -73,11 +61,8 @@ class TestAddTrend(TestCase):
                 self.fps[(tstep, testpc)] = tempfile.mkstemp()
                 df.to_csv(self.fps[(tstep, testpc)][1], sep=',', header=True)
 
-
     def test_ts_intervals(self):
-        ''' Test many intervals to make sure tstoolbox makes a good guess.
-        '''
-
+        """Test many intervals to make sure tstoolbox makes a good guess."""
         # 'matches' lists out things that should match but tstoolbox will give
         # the simpler answer.  For example 4 quarters is equal to a 1 year
         # interval.  Also difficult for tstoolbox to figure out that a 2 month
@@ -91,50 +76,50 @@ class TestAddTrend(TestCase):
                    '8BQ': '2BA',
                    '4QS': '1AS',
                    '8QS': '2AS',
-                   #'2M': '1M',
+                   # '2M': '1M',
                    '3M': '1Q',
-                   #'4M': '1M',
-                   #'5M': '1M',
+                   # '4M': '1M',
+                   # '5M': '1M',
                    '6M': '2Q',
-                   #'7M': '1M',
-                   #'8M': '1M',
+                   # '7M': '1M',
+                   # '8M': '1M',
                    '9M': '3Q',
-                   #'10M': '1M',
-                   #'11M': '1M',
-                   #'2BMS': '1BMS',
+                   # '10M': '1M',
+                   # '11M': '1M',
+                   # '2BMS': '1BMS',
                    '3BMS': '1BQS',
-                   #'4BMS': '1BMS',
-                   #'5BMS': '1BMS',
+                   # '4BMS': '1BMS',
+                   # '5BMS': '1BMS',
                    '6BMS': '2BQS',
-                   #'7BMS': '1BMS',
-                   #'8BMS': '1BMS',
+                   # '7BMS': '1BMS',
+                   # '8BMS': '1BMS',
                    '9BMS': '3BQS',
-                   #'10BMS': '1BMS',
-                   #'11BMS': '1BMS',
-                   #'2BM': '1BM',
+                   # '10BMS': '1BMS',
+                   # '11BMS': '1BMS',
+                   # '2BM': '1BM',
                    '3BM': '1BQ',
-                   #'4BM': '1BM',
-                   #'5BM': '1BM',
+                   # '4BM': '1BM',
+                   # '5BM': '1BM',
                    '6BM': '2BQ',
-                   #'7BM': '1BM',
-                   #'8BM': '1BM',
+                   # '7BM': '1BM',
+                   # '8BM': '1BM',
                    '9BM': '3BQ',
-                   #'10BM': '1BM',
-                   #'11BM': '1BM',
-                   #'2MS': '1MS',
+                   # '10BM': '1BM',
+                   # '11BM': '1BM',
+                   # '2MS': '1MS',
                    '3MS': '1QS',
-                   #'4MS': '1MS',
-                   #'5MS': '1MS',
+                   # '4MS': '1MS',
+                   # '5MS': '1MS',
                    '6MS': '2QS',
-                   #'7MS': '1MS',
-                   #'8MS': '1MS',
+                   # '7MS': '1MS',
+                   # '8MS': '1MS',
                    '9MS': '3QS',
-                   #'10MS': '1MS',
-                   #'11MS': '1MS',
+                   # '10MS': '1MS',
+                   # '11MS': '1MS',
                    '5B': '1W',
                    '7D': '1W',
 
-                   #BUG!!!
+                   # BUG!!!
                    '2B': '2D',
                    '3B': '1D',
                    '4B': '2D',
@@ -160,10 +145,8 @@ class TestAddTrend(TestCase):
                 self.assertEqual([i for i in testcode if not i.isdigit()],
                                  [i for i in inferred_code.split('-')[0] if not i.isdigit()])
 
-
     def tearDown(self):
-        ''' Remove the temporary files.
-        '''
+        """Remove the temporary files."""
         for key in self.fps:
             fname = self.fps[key][1]
             if os.path.exists(fname):

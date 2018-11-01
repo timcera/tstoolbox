@@ -1,17 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-test_add_trend
-----------------------------------
-
-Tests for `tstoolbox` module.
-"""
-
-from unittest import TestCase
-from pandas.util.testing import assert_frame_equal
 import shlex
 import subprocess
+from unittest import TestCase
+
+from pandas.util.testing import assert_frame_equal
 
 from tstoolbox import tstoolbox
 from tstoolbox import tsutils
@@ -75,12 +69,12 @@ class TestAddTrend(TestCase):
         self.add_trend_direct = tsutils.memory_optimize(self.add_trend_direct)
 
     def test_add_trend_direct(self):
-        ''' Add trend using API '''
+        """Add trend using API."""
         out = tstoolbox.add_trend(-1.0, 1.0, input_ts='tests/data_flat.csv')
         assert_frame_equal(out, self.add_trend_direct)
 
     def test_add_trend_cli(self):
-        ''' Add trend using the CLI '''
+        """Add trend using the CLI."""
         args = 'tstoolbox add_trend -1 1 --input_ts="tests/data_flat.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]

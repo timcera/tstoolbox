@@ -1,21 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-test_round_index
-----------------------------------
-
-Tests for `tstoolbox.round_index`
-
-round_index is used by many other tests.
-"""
-
-from unittest import TestCase
-from pandas.util.testing import assert_frame_equal
 import shlex
 import subprocess
+from unittest import TestCase
 
 import pandas
+from pandas.util.testing import assert_frame_equal
 
 from tstoolbox import tstoolbox
 from tstoolbox import tsutils
@@ -68,45 +59,39 @@ class Testround_index(TestCase):
 """
 
     def test_round_index_direct(self):
-        ''' Test round_index API for single column - daily.
-        '''
+        """Test round_index API for single column - daily."""
         out = tstoolbox.read('tests/data_simple.csv', round_index='D')
         assert_frame_equal(out, self.round_index_direct)
 
     def test_round_index_mulitple_direct(self):
-        ''' Test round_index API for multiple columns - daily.
-        '''
+        """Test round_index API for multiple columns - daily."""
         out = tstoolbox.read('tests/data_simple.csv,tests/data_simple.csv',
-                             append="columns",
+                             append='columns',
                              round_index='D')
         assert_frame_equal(out, self.round_index_multiple_direct)
 
     def test_round_index_bi_monthly(self):
-        ''' Test round_index API for bi monthly time series.
-        '''
+        """Test round_index API for bi monthly time series."""
         out = tstoolbox.read('tests/data_bi_daily.csv',
                              round_index='D')
         assert_frame_equal(out, self.round_index_tsstep_2_daily)
 
     def test_round_index_cli(self):
-        ''' Test round_index CLI for single column - daily.
-        '''
+        """Test round_index CLI for single column - daily."""
         args = 'tstoolbox read --round_index="D" tests/data_simple.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.round_index_cli)
 
     def test_round_index_multiple_cli(self):
-        ''' Test round_index CLI for multiple columns - daily.
-        '''
+        """Test round_index CLI for multiple columns - daily."""
         args = 'tstoolbox read --round_index="D" tests/data_simple.csv,tests/data_simple.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.round_index_multiple_cli)
 
     def test_round_index_bi_monthly_cli(self):
-        ''' Test round_index CLI for bi monthly time series.
-        '''
+        """Test round_index CLI for bi monthly time series."""
         args = 'tstoolbox read --round_index="D" tests/data_bi_daily.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()

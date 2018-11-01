@@ -1,13 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-test_tstoolbox
-----------------------------------
-
-Tests for `tstoolbox` module.
-"""
-
 from unittest import TestCase
 
 from tstoolbox import tstoolbox
@@ -32,8 +25,7 @@ class TestFDC(TestCase):
                 self.assertAlmostEqual(t1, t2)
 
     def test_flat_norm(self):
-        ''' Test linear ramp CLI calculation of the FDC.
-        '''
+        """Test linear ramp CLI calculation of the FDC."""
         out = capture.capture(tstoolbox.calculate_fdc,
                               input_ts='tests/data_flat_01.csv')
         teststr = """Exceedance, Value, Exceedance_Label
@@ -67,8 +59,7 @@ class TestFDC(TestCase):
         self.linebyline(out, teststr)
 
     def test_flat_linear(self):
-        ''' Test FDC API with linear plotting position.
-        '''
+        """Test FDC API with linear plotting position."""
         out = capture.capture(tstoolbox.calculate_fdc,
                               plotting_position='california',
                               input_ts='tests/data_flat_01.csv')
@@ -103,8 +94,7 @@ class TestFDC(TestCase):
         self.linebyline(out, teststr)
 
     def test_sunspot(self):
-        ''' Test normal plotting position FDC API.
-        '''
+        """Test normal plotting position FDC API."""
         out = capture.capture(tstoolbox.calculate_fdc,
                               plotting_position='weibull',
                               input_ts='tests/data_sunspot.csv')

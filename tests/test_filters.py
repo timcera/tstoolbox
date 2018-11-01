@@ -1,29 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-test_peak_detect
-----------------------------------
-
-Tests for `tstoolbox` module.
-"""
-
 from __future__ import print_function
 
-from unittest import TestCase
-from pandas.util.testing import assert_frame_equal
-from nose.tools import assert_raises_regexp
 import os
+from unittest import TestCase
 
-import shlex
-import subprocess
+from nose.tools import assert_raises_regexp
 
-import pandas as pd
+from pandas.util.testing import assert_frame_equal
 
 from tstoolbox import tstoolbox
-from tstoolbox import tsutils
 
-test_sinwave = '''Datetime,0,0_peak,0_valley
+test_sinwave = """Datetime,0,0_peak,0_valley
 2000-01-01 00:00:00,0.0,,
 2000-01-01 01:00:00,0.258819045103,,
 2000-01-01 02:00:00,0.5,,
@@ -48,7 +37,8 @@ test_sinwave = '''Datetime,0,0_peak,0_valley
 2000-01-01 21:00:00,-0.707106781187,,
 2000-01-01 22:00:00,-0.5,,
 2000-01-01 23:00:00,-0.258819045103,,
-'''
+"""
+
 
 class TestFilter(TestCase):
     def setUp(self):
@@ -56,11 +46,14 @@ class TestFilter(TestCase):
         self.ats.index.name = 'Datetime'
         self.ats.columns = ['Value']
 
-        self.flat_3 = self.ats.join(tstoolbox.read(os.path.join('tests', 'data_filter_flat.csv')))
+        self.flat_3 = self.ats.join(tstoolbox.read(os.path.join('tests',
+                                                                'data_filter_flat.csv')))
 
-        self.hanning = self.ats.join(tstoolbox.read(os.path.join('tests', 'data_filter_hanning.csv')))
+        self.hanning = self.ats.join(tstoolbox.read(os.path.join('tests',
+                                                                 'data_filter_hanning.csv')))
 
-        self.fft_lowpass = self.ats.join(tstoolbox.read(os.path.join('tests', 'data_filter_fft_lowpass.csv')))
+        self.fft_lowpass = self.ats.join(tstoolbox.read(os.path.join('tests',
+                                                                     'data_filter_fft_lowpass.csv')))
 
         self.fft_highpass = self.ats.copy()
         self.fft_highpass.columns = ['Value_filter']
@@ -99,14 +92,14 @@ class TestFilter(TestCase):
 
     def test_large_window_len(self):
         with assert_raises_regexp(AssertionError,
-                "Input vector \(length="):
+                                  'Input vector \(length='):
             out = tstoolbox.filter('flat',
                                    input_ts='tests/data_sine.csv',
                                    window_len=1000)
 
     def test_filter_type(self):
         with assert_raises_regexp(AssertionError,
-                r"Filter type "):
+                                  r'Filter type '):
             out = tstoolbox.filter('flatter',
                                    input_ts='tests/data_sine.csv')
 #

@@ -1,24 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-test_tstoolbox
-----------------------------------
-
-Tests for `tstoolbox` module.
-"""
-
-from unittest import TestCase
-from pandas.util.testing import assert_frame_equal
-import subprocess
 import shlex
+import subprocess
+from unittest import TestCase
 
 import pandas
+from pandas.util.testing import assert_frame_equal
 
 import tstoolbox.tsutils as tsutils
 from tstoolbox import tstoolbox
 
 from . import capture
+
 
 class TestRollingWindow(TestCase):
     def setUp(self):
@@ -41,25 +35,19 @@ class TestRollingWindow(TestCase):
                 self.compare_rolling_window_mean)
 
     def test_rolling_window_sum(self):
-        ''' API test: Rolling window sum for data_simple.csv is 9.1 for all
-            time steps.
-        '''
+        """API: Rolling window sum for data_simple.csv is 9.1."""
         out = tstoolbox.rolling_window(statistic='sum',
                                        input_ts='tests/data_simple.csv')
         assert_frame_equal(out, self.compare_rolling_window_sum)
 
     def test_rolling_window_mean(self):
-        ''' API test: Rolling window mean for data_simple.csv is 4.55 for all
-            time steps.
-        '''
+        """API: Rolling window mean for data_simple.csv is 4.55."""
         out = tstoolbox.rolling_window(statistic='mean',
                                        input_ts='tests/data_simple.csv')
         assert_frame_equal(out, self.compare_rolling_window_mean)
 
     def test_rolling_window_sum_cli(self):
-        ''' CLI test: Rolling window mean for data_simple.csv is 9.1 for all
-            time steps.
-        '''
+        """CLI: Rolling window mean for data_simple.csv is 9.1."""
         args = ('tstoolbox rolling_window '
                 '--statistic="sum" '
                 '--input_ts="tests/data_simple.csv"')
@@ -68,9 +56,7 @@ class TestRollingWindow(TestCase):
         self.assertEqual(out[0], self.compare_rolling_window_sum_cli)
 
     def test_rolling_window_mean_cli(self):
-        ''' CLI test: Rolling window sum for data_simple.csv is 4.55 for all
-            time steps.
-        '''
+        """CLI: Rolling window sum for data_simple.csv is 4.55."""
         args = ('tstoolbox rolling_window '
                 '--statistic="mean" '
                 '--input_ts="tests/data_simple.csv"')

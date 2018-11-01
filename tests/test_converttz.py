@@ -1,20 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-test_converttz
-----------------------------------
-
-Tests for `tstoolbox.converttz`
-
-"""
-
 from unittest import TestCase
-from pandas.util.testing import assert_frame_equal
-import shlex
-import subprocess
 
 import pandas as pd
+from pandas.util.testing import assert_frame_equal
 
 from tstoolbox import tstoolbox
 from tstoolbox import tsutils
@@ -28,8 +18,6 @@ class TestConvertTZ(TestCase):
         self.read_direct = tsutils.memory_optimize(self.read_direct)
 
     def test_converttz_from_UTC(self):
-        ''' Test
-        '''
         out = tstoolbox.converttz('UTC',
                                   'EST',
                                   input_ts='tests/data_sunspot.csv')
