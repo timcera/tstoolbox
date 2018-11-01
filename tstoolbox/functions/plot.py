@@ -688,24 +688,49 @@ def plot(input_ts='-',
         except AttributeError:
             pass
 
+    if style != 'auto':
+
+        nstyle = style.split(',')
+        if len(nstyle) != len(tsd.columns):
+            raise ValueError("""
+*
+*   You have to have the same number of style strings as time-series to plot.
+*   You supplied '{0}' for style which has {1} style strings,
+*   but you have {2} time-series.
+*
+""".format(style, len(nstyle), len(tsd.columns)))
+        colors = []
+        markerstyles = []
+        linestyles = []
+        for st in nstyle:
+            colors.append(st[0])
+            if len(st) == 1:
+                markerstyles.append(' ')
+                linestyles.append('-')
+                continue
+            if st[1] in marker_list:
+                markerstyles.append(st[1])
+                try:
+                    linestyles.append(st[2:])
+                except IndexError:
+                    linestyles.append(' ')
+            else:
+                markerstyles.append(' ')
+                linestyles.append(st[1:])
+
     icolors = itertools.cycle(colors)
     imarkerstyles = itertools.cycle(markerstyles)
     ilinestyles = itertools.cycle(linestyles)
 
-    if style == 'auto':
-        cl = [next(icolors) for i in list(range(len(tsd.columns)))]
-        ms = [next(imarkerstyles) for i in list(range(len(tsd.columns)))]
-        ls = [next(ilinestyles) for i in list(range(len(tsd.columns)))]
+    style = ['{0}{1}{2}'.format(next(icolors),
+                                next(imarkerstyles),
+                                next(ilinestyles))
+             for i in list(range(len(tsd.columns)))]
 
-        icolors = itertools.cycle(colors)
-        imarkerstyles = itertools.cycle(markerstyles)
-        ilinestyles = itertools.cycle(linestyles)
-        style = ['{0}{1}{2}'.format(c, m, l) for c, m, l in zip(cl, ms, ls)]
-    else:
-        try:
-            style = style.split(',')
-        except AttributeError:
-            pass
+    # reset to beginning of iterator
+    icolors = itertools.cycle(colors)
+    imarkerstyles = itertools.cycle(markerstyles)
+    ilinestyles = itertools.cycle(linestyles)
 
     if (logx is True or
             logy is True or
@@ -794,7 +819,7 @@ def plot(input_ts='-',
         for index, line in enumerate(ax.lines):
             plt.setp(line, color=style[index][0])
             plt.setp(line, marker=style[index][1])
-            plt.setp(line, linestyle=style[index][2])
+            plt.setp(line, linestyle=style[index][2:])
         xtitle = xtitle or 'Time'
         if legend is True:
             plt.legend(loc='best')
@@ -856,6 +881,8 @@ def plot(input_ts='-',
 
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
+        if legend is True:
+            ax.legend(loc='best')
 
         if type == 'double_mass':
             xtitle = xtitle or 'Cumulative {0}'.format(tsd.columns[0])
@@ -980,7 +1007,7 @@ def plot(input_ts='-',
         for index, line in enumerate(ax.lines):
             plt.setp(line, color=style[index][0])
             plt.setp(line, marker=style[index][1])
-            plt.setp(line, linestyle=style[index][2])
+            plt.setp(line, linestyle=style[index][2:])
         ytitle = ytitle or 'Density'
         if legend is True:
             plt.legend(loc='best')
@@ -998,7 +1025,7 @@ def plot(input_ts='-',
         for index, line in enumerate(ax1.lines):
             plt.setp(line, color=style[index][0])
             plt.setp(line, marker=style[index][1])
-            plt.setp(line, linestyle=style[index][2])
+            plt.setp(line, linestyle=style[index][2:])
         xtitle = xtitle or 'Time'
         ylimits = ax1.get_ylim()
         ny = pd.np.linspace(ylimits[0], ylimits[1], 1000)
@@ -1007,9 +1034,9 @@ def plot(input_ts='-',
             pdf = gaussian_kde(xvals)
             ax0.plot(pdf(ny),
                      ny,
-                     linestyle=next(ilinestyles),
-                     color=next(icolors),
-                     marker=next(imarkerstyles),
+                     linestyle=style[col][2:],
+                     color=style[col][0],
+                     marker=style[col][1],
                      label=tsd.columns[col],
                      drawstyle=drawstyle)
         ax0.set(xlabel='Probability Density', ylabel=ytitle)
@@ -1102,7 +1129,7 @@ def plot(input_ts='-',
         for index, line in enumerate(ax.lines):
             plt.setp(line, color=style[index][0])
             plt.setp(line, marker=style[index][1])
-            plt.setp(line, linestyle=style[index][2])
+            plt.setp(line, linestyle=style[index][2:])
         freq = tsutils.asbestfreq(tsd, force_freq=force_freq).index.freqstr
         if freq is not None:
             if 'A' in freq:
