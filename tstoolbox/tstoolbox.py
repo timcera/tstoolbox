@@ -12,7 +12,6 @@ import warnings
 import mando
 
 from . import tsutils
-
 from .functions.accumulate import accumulate
 from .functions.add_trend import add_trend
 from .functions.aggregate import aggregate
@@ -60,7 +59,7 @@ def about():
 
 
 def main():
-    """Main function."""
+    """Set debug and run mando.main function."""
     if not os.path.exists('debug_tstoolbox'):
         sys.tracebacklimit = 0
     mando.main()

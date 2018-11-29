@@ -31,6 +31,8 @@ def clip(input_ts='-',
          a_min=None,
          a_max=None,
          round_index=None,
+         source_units=None,
+         target_units=None,
          print_input=False):
     """Return a time-series with values limited to [a_min, a_max].
 
@@ -56,6 +58,8 @@ def clip(input_ts='-',
     {index_type}
     {print_input}
     {names}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -68,6 +72,8 @@ def clip(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
     for col in tsd.columns:
         if a_min is None:

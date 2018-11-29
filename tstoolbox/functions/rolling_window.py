@@ -34,6 +34,8 @@ def rolling_window(window=2,
                    win_type=None,
                    on=None,
                    closed=None,
+                   source_units=None,
+                   target_units=None,
                    print_input=False):
     """Calculate a rolling window statistic.
 
@@ -121,6 +123,8 @@ def rolling_window(window=2,
     {index_type}
     {names}
     {clean}
+    {source_units}
+    {target_units}
     {print_input}
 
     """
@@ -132,6 +136,8 @@ def rolling_window(window=2,
                               end_date=end_date,
                               pick=columns,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     if span is not None:

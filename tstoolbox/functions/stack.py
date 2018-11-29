@@ -28,6 +28,8 @@ def stack(input_ts='-',
           skiprows=None,
           index_type='datetime',
           names=None,
+          source_units=None,
+          target_units=None,
           clean=False):
     """Return the stack of the input table.
 
@@ -65,6 +67,8 @@ def stack(input_ts='-',
     {index_type}
     {names}
     {clean}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -77,6 +81,8 @@ def stack(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     newtsd = pd.DataFrame(tsd.stack()).reset_index(1)

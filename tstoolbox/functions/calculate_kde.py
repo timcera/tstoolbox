@@ -28,6 +28,8 @@ def calculate_kde(ascending=True,
                   clean=False,
                   skiprows=None,
                   index_type='datetime',
+                  source_units=None,
+                  target_units=None,
                   names=None):
     """Return the kernel density estimation (KDE) curve.
 
@@ -47,6 +49,8 @@ def calculate_kde(ascending=True,
     {skiprows}
     {index_type}
     {names}
+    {source_units}
+    {target_units}
     {clean}
 
     """
@@ -57,6 +61,8 @@ def calculate_kde(ascending=True,
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     if len(tsd.columns) > 1:

@@ -34,6 +34,8 @@ def ewm_window(input_ts='-',
                min_periods=0,
                adjust=True,
                ignore_na=False,
+               source_units=None,
+               target_units=None,
                print_input=False,
                ):
     """Calculate exponential weighted functions.
@@ -113,6 +115,8 @@ def ewm_window(input_ts='-',
     {index_type}
     {names}
     {clean}
+    {source_units}
+    {target_units}
     {print_input}
 
     """
@@ -124,6 +128,8 @@ def ewm_window(input_ts='-',
                               end_date=end_date,
                               pick=columns,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     ntsd = tsd.ewm(alpha_com=alpha_com,

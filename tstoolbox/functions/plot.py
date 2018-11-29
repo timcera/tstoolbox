@@ -6,8 +6,6 @@ from __future__ import division
 from __future__ import print_function
 
 import itertools
-import os.path
-import sys
 import warnings
 from builtins import range
 from builtins import str
@@ -169,6 +167,8 @@ def plot(input_ts='-',
          invert_yaxis=False,
          round_index=None,
          plotting_position='weibull',
+         source_units=None,
+         target_units=None,
          lag_plot_lag=1):
     r"""Plot data.
 
@@ -579,6 +579,8 @@ def plot(input_ts='-',
     {skiprows}
     {index_type}
     {names}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -600,6 +602,8 @@ def plot(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna='all',
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     if type in ['bootstrap',
@@ -1193,14 +1197,3 @@ def plot(input_ts='-',
     if ofilename is None:
         return plt
     plt.savefig(ofilename)
-
-
-def main():
-    """Main function."""
-    if not os.path.exists('debug_tstoolbox'):
-        sys.tracebacklimit = 0
-    mando.main()
-
-
-if __name__ == '__main__':
-    main()

@@ -32,6 +32,8 @@ def aggregate(input_ts='-',
               skiprows=None,
               index_type='datetime',
               names=None,
+              source_units=None,
+              target_units=None,
               print_input=False):
     """Take a time series and aggregate to specified frequency.
 
@@ -79,6 +81,8 @@ def aggregate(input_ts='-',
     {skiprows}
     {index_type}
     {names}
+    {source_units}
+    {target_units}
     {print_input}
 
     """
@@ -114,6 +118,8 @@ def aggregate(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
     methods = statistic.split(',')
     newts = pd.DataFrame()

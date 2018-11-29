@@ -34,6 +34,8 @@ def convert_index(to,
                   dropna='no',
                   clean=False,
                   names=None,
+                  source_units=None,
+                  target_units=None,
                   skiprows=None):
     """Convert datetime to/from Julian dates from different epochs.
 
@@ -138,6 +140,8 @@ def convert_index(to,
     {clean}
     {skiprows}
     {names}
+    {source_units}
+    {target_units}
 
     """
     if to == 'datetime':
@@ -159,6 +163,8 @@ def convert_index(to,
                               pick=columns,
                               round_index=nround_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
     allowed = {'julian': lambda x: x,
                'reduced': lambda x: x - 2400000,

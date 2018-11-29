@@ -24,6 +24,8 @@ def convert_index_to_julian(epoch='julian',
                             clean=False,
                             index_type='datetime',
                             names=None,
+                            source_units=None,
+                            target_units=None,
                             skiprows=None):
     """DEPRECATED: Use convert_index instead.
 
@@ -47,4 +49,6 @@ def convert_index_to_julian(epoch='julian',
                          clean=clean,
                          skiprows=skiprows,
                          names=names,
+                         source_units=source_units,
+                         target_units=target_units,
                          index_type=index_type)

@@ -28,6 +28,8 @@ def stdtozrxp(input_ts='-',
               names=None,
               clean=False,
               round_index=None,
+              source_units=None,
+              target_units=None,
               rexchange=None):
     """Print out data to the screen in a WISKI ZRXP format.
 
@@ -46,6 +48,8 @@ def stdtozrxp(input_ts='-',
     {index_type}
     {names}
     {clean}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -58,6 +62,8 @@ def stdtozrxp(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
     assert len(tsd.columns) == 1, """
 *

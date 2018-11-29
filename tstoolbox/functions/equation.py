@@ -105,6 +105,8 @@ def equation(equation_str,
              clean=False,
              print_input='',
              round_index=None,
+             source_units=None,
+             target_units=None,
              float_format='%g'):
     """Apply <equation_str> to the time series data.
 
@@ -175,6 +177,8 @@ def equation(equation_str,
     {print_input}
     {names}
     {float_format}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -187,6 +191,8 @@ def equation(equation_str,
                             pick=columns,
                             round_index=round_index,
                             dropna=dropna,
+                            source_units=source_units,
+                            target_units=target_units,
                             clean=clean)
 
     def returnval(t, x, testeval, nequation):

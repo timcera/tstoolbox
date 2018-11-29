@@ -22,6 +22,8 @@ def pca(input_ts='-',
         index_type='datetime',
         names=None,
         n_components=None,
+        source_units=None,
+        target_units=None,
         round_index=None):
     """Return the principal components analysis of the time series.
 
@@ -41,6 +43,8 @@ def pca(input_ts='-',
     {skiprows}
     {index_type}
     {names}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -54,6 +58,8 @@ def pca(input_ts='-',
                               end_date=end_date,
                               round_index=round_index,
                               pick=columns,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     pca = PCA(n_components)

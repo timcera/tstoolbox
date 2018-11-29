@@ -31,6 +31,8 @@ def add_trend(start_offset,
               skiprows=None,
               index_type='datetime',
               names=None,
+              source_units=None,
+              target_units=None,
               print_input=False):
     """Add a trend.
 
@@ -50,6 +52,8 @@ def add_trend(start_offset,
     {skiprows}
     {index_type}
     {names}
+    {source_units}
+    {target_units}
     {print_input}
 
     """
@@ -62,6 +66,8 @@ def add_trend(start_offset,
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
     # Need it to be float since will be using pd.np.nan
     ntsd = tsd.copy().astype('float64')

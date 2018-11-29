@@ -89,6 +89,8 @@ def dtw(input_ts='-',
     {dropna}
     {skiprows}
     {index_type}
+    {source_units}
+    {target_units}
     {names}
     {clean}
 
@@ -102,6 +104,8 @@ def dtw(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna='no',
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     process = {}

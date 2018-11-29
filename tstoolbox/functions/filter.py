@@ -116,6 +116,8 @@ def filter(filter_type,
            cutoff_period=None,
            window_len=5,
            float_format='%g',
+           source_units=None,
+           target_units=None,
            round_index=None):
     """Apply different filters to the time-series.
 
@@ -149,6 +151,8 @@ def filter(filter_type,
     {names}
     {clean}
     {round_index}
+    {source_units}
+    {target_units}
     {print_input}
 
     """
@@ -161,6 +165,8 @@ def filter(filter_type,
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     assert len(tsd.values) > window_len, """

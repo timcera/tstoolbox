@@ -26,6 +26,8 @@ def pick(columns,
          skiprows=None,
          index_type='datetime',
          names=None,
+         source_units=None,
+         target_units=None,
          clean=False):
     """Will pick a column or list of columns from input.
 
@@ -43,6 +45,8 @@ def pick(columns,
     {index_type}
     {names}
     {clean}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -56,4 +60,6 @@ def pick(columns,
                             pick=columns,
                             round_index=round_index,
                             dropna=dropna,
+                            source_units=source_units,
+                            target_units=target_units,
                             clean=clean))

@@ -27,6 +27,8 @@ def date_slice(input_ts='-',
                index_type='datetime',
                names=None,
                round_index=None,
+               source_units=None,
+               target_units=None,
                float_format='%g'):
     """Print out data to the screen between start_date and end_date.
 
@@ -42,6 +44,8 @@ def date_slice(input_ts='-',
     {index_type}
     {names}
     {float_format}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -55,4 +59,6 @@ def date_slice(input_ts='-',
                             pick=columns,
                             round_index=round_index,
                             dropna=dropna,
+                            source_units=source_units,
+                            target_units=target_units,
                             clean=clean), float_format=float_format)

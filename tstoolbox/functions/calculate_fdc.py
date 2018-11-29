@@ -29,6 +29,8 @@ def calculate_fdc(input_ts='-',
                   names=None,
                   percent_point_function=None,
                   plotting_position='weibull',
+                  source_units=None,
+                  target_units=None,
                   ascending=True):
     """Return the frequency distribution curve.
 
@@ -55,6 +57,8 @@ def calculate_fdc(input_ts='-',
     {skiprows}
     {index_type}
     {names}
+    {source_units}
+    {target_units}
     {clean}
 
     """
@@ -65,6 +69,8 @@ def calculate_fdc(input_ts='-',
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     ppf = tsutils._set_ppf(percent_point_function)

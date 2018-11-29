@@ -32,6 +32,8 @@ def date_offset(years=0,
                 input_ts='-',
                 start_date=None,
                 end_date=None,
+                source_units=None,
+                target_units=None,
                 round_index=None):
     """Apply an offset to a time-series.
 
@@ -103,6 +105,8 @@ def date_offset(years=0,
     {clean}
     {skiprows}
     {index_type}
+    {source_units}
+    {target_units}
     {names}
 
     """
@@ -115,6 +119,8 @@ def date_offset(years=0,
                               pick=columns,
                               round_index=round_index,
                               dropna='no',
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     relativedelta = pd.tseries.offsets.relativedelta

@@ -29,6 +29,8 @@ def remove_trend(input_ts='-',
                  names=None,
                  clean=False,
                  round_index=None,
+                 source_units=None,
+                 target_units=None,
                  print_input=False):
     """Remove a 'trend'.
 
@@ -44,6 +46,8 @@ def remove_trend(input_ts='-',
     {names}
     {clean}
     {round_index}
+    {source_units}
+    {target_units}
     {print_input}
 
     """
@@ -56,6 +60,8 @@ def remove_trend(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
     ntsd = tsd.copy()
     for col in tsd.columns:

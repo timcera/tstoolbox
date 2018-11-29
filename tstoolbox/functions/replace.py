@@ -29,6 +29,8 @@ def replace(from_values,
             index_type='datetime',
             names=None,
             clean=False,
+            source_units=None,
+            target_units=None,
             print_input=False):
     """Return a time-series replacing values with others.
 
@@ -55,6 +57,8 @@ def replace(from_values,
     {names}
     {clean}
     {round_index}
+    {source_units}
+    {target_units}
     {print_input}
 
     """
@@ -67,6 +71,8 @@ def replace(from_values,
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     nfrom_values = []

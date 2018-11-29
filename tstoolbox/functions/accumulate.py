@@ -28,6 +28,8 @@ def accumulate(input_ts='-',
                skiprows=None,
                index_type='datetime',
                names=None,
+               source_units=None,
+               target_units=None,
                print_input=False):
     """Calculate accumulating statistics.
 
@@ -47,6 +49,8 @@ def accumulate(input_ts='-',
     {index_type}
     {names}
     {print_input}
+    {source_units}
+    {target_units}
 
     """
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
@@ -58,6 +62,8 @@ def accumulate(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
     try:
         ntsd = eval('tsd.cum{0}()'.format(statistic))

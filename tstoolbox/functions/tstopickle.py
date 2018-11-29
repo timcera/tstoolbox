@@ -27,6 +27,8 @@ def tstopickle(filename,
                skiprows=None,
                index_type='datetime',
                names=None,
+               source_units=None,
+               target_units=None,
                clean=False):
     """Pickle the data into a Python pickled file.
 
@@ -46,6 +48,8 @@ def tstopickle(filename,
     {index_type}
     {names}
     {clean}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -58,5 +62,7 @@ def tstopickle(filename,
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
     tsd.to_pickle(filename)

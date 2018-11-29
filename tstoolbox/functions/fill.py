@@ -27,6 +27,8 @@ def fill(input_ts='-',
          clean=False,
          index_type='datetime',
          names=None,
+         source_units=None,
+         target_units=None,
          skiprows=None,):
     """Fill missing values (NaN) with different methods.
 
@@ -87,6 +89,8 @@ def fill(input_ts='-',
     {skiprows}
     {index_type}
     {names}
+    {source_units}
+    {target_units}
     {columns}
 
     """
@@ -98,6 +102,8 @@ def fill(input_ts='-',
                               start_date=start_date,
                               end_date=end_date,
                               pick=columns,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
     if print_input is True:
         ntsd = tsd.copy()

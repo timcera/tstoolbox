@@ -809,6 +809,8 @@ def peak_detection(input_ts='-',
                    lock_frequency=False,
                    float_format='%g',
                    round_index=None,
+                   source_units=None,
+                   target_units=None,
                    print_input=''):
     r"""Peak and valley detection.
 
@@ -866,6 +868,8 @@ def peak_detection(input_ts='-',
     {clean}
     {float_format}
     {round_index}
+    {source_units}
+    {target_units}
     {print_input}
 
     """
@@ -899,6 +903,8 @@ def peak_detection(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     window = int(window)

@@ -30,6 +30,8 @@ def convert(input_ts='-',
             offset=0.0,
             print_input=False,
             round_index=None,
+            source_units=None,
+            target_units=None,
             float_format='%g'):
     """Convert values of a time series by applying a factor and offset.
 
@@ -57,6 +59,8 @@ def convert(input_ts='-',
     {names}
     {print_input}
     {float_format}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -69,6 +73,8 @@ def convert(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
     tmptsd = tsd * factor + offset
     return tsutils.print_input(print_input, tsd, tmptsd, '_convert',

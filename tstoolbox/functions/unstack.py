@@ -29,6 +29,8 @@ def unstack(column_names,
             skiprows=None,
             index_type='datetime',
             names=None,
+            source_units=None,
+            target_units=None,
             clean=False):
     """Return the unstack of the input table.
 
@@ -69,6 +71,8 @@ def unstack(column_names,
     {index_type}
     {names}
     {clean}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -107,6 +111,8 @@ def unstack(column_names,
                                  end_date=end_date,
                                  dropna=dropna,
                                  clean=clean,
+                                 source_units=source_units,
+                                 target_units=target_units,
                                  round_index=round_index)
 
     return tsutils.printiso(newtsd)

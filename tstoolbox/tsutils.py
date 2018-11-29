@@ -25,13 +25,34 @@ import numpy as np
 
 import pandas as pd
 
+from pint import UnitRegistry
+
 from tabulate import simple_separated_format
 from tabulate import tabulate as tb
 
-from pint import UnitRegistry
 ureg = UnitRegistry()
 
 docstrings = {
+    'target_units': r"""target_units
+        [optional, default is None]
+
+        The main purpose of this option is to convert units from those
+        specified in the header line of the input into 'target_units'.
+
+        The units of the input time-series or values are specified as the
+        second field of a ':' delimited name in the header line of the input or
+        in the 'source_units' keyword.
+
+        Any unit string compatible with the 'pint' library can be used.
+
+        This option will also add the 'target_units' string to the column
+        names.""",
+    'source_units': r"""source_units
+        [optional, default is None]
+
+        If unit is specified for the column as the second field of a ':'
+        delimited column name, then the specified units and the 'source_units'
+        must match exactly.""",
     'names': r"""names
         [optional, default is None.]
 
@@ -93,7 +114,11 @@ docstrings = {
         first line header or column numbers.  If using numbers, column
         number 1 is the first data column.  To pick multiple columns;
         separate by commas with no spaces. As used in `tstoolbox pick`
-        command.""",
+        command.
+
+        This solves a big problem so that you don't have to create a data set
+        with a certain order, you can rearrange columns when data is read
+        in.""",
     'start_date': r"""start_date : str
         [optional, defaults to first date in time-series.]
 
@@ -280,15 +305,18 @@ docstrings = {
         values and sorting.""",
     'skiprows': r"""skiprows: list-like or integer or callable
         [optional, default is None which will infer header from first line]
+
         Line numbers to skip (0-indexed) or number of lines to skip (int)
         at the start of the file.
 
         If callable, the callable function will be evaluated against the row
         indices, returning True if the row should be skipped and False
-        otherwise.  An example of a valid callable argument would be ``lambda
-        x: x in [0, 2]``.""",
+        otherwise.  An example of a valid callable argument would be
+
+        ``lambda x: x in [0, 2]``.""",
     'groupby': r"""groupby: str
         [optional, default is None]
+
         The pandas offset code to group the time-series data into.  A special
         code is also available to group 'months_across_years' that will group
         into twelve categories for each month."""
@@ -423,6 +451,7 @@ def parsedate(dstr,
 
 
 def merge_dicts(*dict_args):
+    """Merge multiple dictionaries."""
     result = {}
     for d in dict_args:
         result.update(d)
@@ -463,6 +492,7 @@ def _round_index(ntsd,
 
 
 def _pick_column_or_value(tsd, var, unit):
+    """Return a keyword value or a time-series."""
     try:
         var = np.array([float(var)])
     except ValueError:
@@ -471,12 +501,13 @@ def _pick_column_or_value(tsd, var, unit):
 
 
 def make_list(strorlist, n=0):
+    """Make comma separated strings into lists."""
     if strorlist is None:
         return None
     if isinstance(strorlist, (int, float, list)):
         return strorlist
     if isinstance(strorlist, (str, bytes)):
-        strorlist = strorlist.split(",")
+        strorlist = strorlist.split(',')
     if n > 0:
         if len(strorlist) != n:
             raise ValueError("""
@@ -498,7 +529,8 @@ def common_kwds(input_tsd=None,
                 clean=False,
                 variables=None,
                 variables_ts=None,
-                units=None,
+                target_units=None,
+                source_units=None,
                 bestfreq=True):
     """Process all common_kwds across sub-commands into single function.
 
@@ -526,7 +558,8 @@ def common_kwds(input_tsd=None,
 *
 """)
 
-    units = make_list(units)
+    target_units = make_list(target_units)
+    source_units = make_list(source_units)
 
     ntsd = _pick(ntsd, pick)
 
@@ -548,22 +581,26 @@ def common_kwds(input_tsd=None,
             index = [pd.TimeStamp(variables_ts)]
         for inx, v in enumerate(variables):
             try:
+                # See if 'variable' is a value.
                 collector.append(np.array([float(v)]))
                 try:
-                    names.append('var{0}:{1}'.format(inx, units[inx]))
+                    names.append('var{0}:{1}'.format(inx,
+                                                     source_units[inx]))
                 except IndexError:
                     names.append('var{0}'.format(inx))
             except ValueError:
+                # The 'variable' is a column.
                 collector.append(_pick(ntsd, v))
                 index = ntsd.index
                 if ':' not in ntsd.columns[inx]:
                     try:
                         names.append('{0}:{1}'.format(ntsd.columns[inx],
-                                                      units[inx]))
+                                                      source_units[inx]))
                     except IndexError:
                         names.append('{0}'.format(ntsd.columns[inx]))
                 else:
                     names.append(ntsd.columns[inx])
+
         nv = pd.DataFrame()
         for v in collector:
             nv = nv.join(pd.DataFrame(index=index,
@@ -571,6 +608,37 @@ def common_kwds(input_tsd=None,
                                       how='outer'))
         ntsd = nv
         ntsd.columns[:] = names
+
+    if source_units is not None:
+
+        if len(source_units) != len(ntsd.columns):
+            raise ValueError("""
+*
+*   To use the 'source_units' keyword to assign units, you must assign a unit
+*   for every column in the input.  You have {0} items where
+*   source_units={1}
+*   and there are {2} columns in the input data
+*   {3}.
+*
+""".format(len(source_units), source_units, len(ntsd.columns), ntsd.columns))
+
+        names = []
+        for inx in list(range(len(ntsd.columns))):
+            words = ntsd.columns[inx].split(':')
+            testunits = source_units[inx]
+            if len(words) > 1:
+                names.append(ntsd.columns[inx])
+                if words[1] != testunits:
+                    raise ValueError("""
+*
+*   If 'source_units' specified must match units from column name.  Column
+*   name units are specified as the second ':' delimited field.
+*   You specified 'source_units' as {0}, but column name units are {1}.
+*
+""".format(source_units[inx], words[1]))
+            else:
+                names.append('{0}:{1}'.format(ntsd.columns[inx], testunits))
+        ntsd.columns = names
 
     ntsd = _date_slice(ntsd,
                        start_date=parsedate(start_date),
@@ -602,11 +670,40 @@ def common_kwds(input_tsd=None,
         except ValueError:
             pass
 
-    if variables is not None:
-        varis = [ntsd.iloc[:, i].values
-                 for i in list(range(len(ntsd.columns)))]
-        return varis
+    # Convert source_units to target_units.
+    if target_units is not None:
 
+        if len(target_units) != len(ntsd.columns):
+            raise ValueError("""
+*
+*   To use the 'target_units' keyword to assign units, you must assign a unit
+*   for every column in the input.  You have {0} items where
+*   target_units={1}
+*   and there are {2} columns in the input data
+*   {3}.
+*
+""".format(len(target_units), target_units, len(ntsd.columns), ntsd.columns))
+
+        if source_units is None:
+            raise ValueError("""
+*
+*   To specify target_units, you must also specify source_units.  You can
+*   specify source_units either by using the source_units keyword or placing
+*   in the name of the data column as the second ':' separated field.
+*
+""")
+
+        ncolumns = []
+        for inx, colname in enumerate(ntsd.columns):
+            words = colname.split(':')
+            if len(words) > 1:
+                import pint
+                # convert words[1] to target_units[inx]
+                ureg = pint.UnitRegistry()
+                ntsd[colname] = ntsd[colname] * ureg(words[1]).to(target_units[inx])
+                words[1] = target_units[inx]
+            ncolumns.append(':'.join(words))
+        ntsd.columns = ncolumns
     return ntsd
 
 

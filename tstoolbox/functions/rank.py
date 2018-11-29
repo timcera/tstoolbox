@@ -32,6 +32,8 @@ def rank(input_ts='-',
          pct=False,
          print_input=False,
          float_format='%g',
+         source_units=None,
+         target_units=None,
          round_index=None):
     """Compute numerical data ranks (1 through n) along axis.
 
@@ -101,6 +103,8 @@ def rank(input_ts='-',
     {clean}
     {print_input}
     {float_format}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -113,6 +117,8 @@ def rank(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     # Trying to save some memory

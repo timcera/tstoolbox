@@ -30,6 +30,8 @@ def read(filenames,
          index_type='datetime',
          names=None,
          clean=False,
+         source_units=None,
+         target_units=None,
          float_format='%g',
          round_index=None,
          how='outer'):
@@ -74,6 +76,8 @@ def read(filenames,
     {index_type}
     {names}
     {clean}
+    {source_units}
+    {target_units}
     {float_format}
     {round_index}
 
@@ -103,7 +107,9 @@ def read(filenames,
                                   round_index=round_index,
                                   dropna=dropna,
                                   force_freq=force_freq,
-                                  clean=clean)
+                                  clean=clean,
+                                  source_units=source_units,
+                                  target_units=target_units)
         if append != 'combine':
             result_list.append(tsd)
         else:

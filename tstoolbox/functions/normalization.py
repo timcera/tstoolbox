@@ -30,6 +30,8 @@ def normalization(input_ts='-',
                   pct_rank_method='average',
                   print_input=False,
                   round_index=None,
+                  source_units=None,
+                  target_units=None,
                   float_format='%g'):
     """Return the normalization of the time series.
 
@@ -71,6 +73,8 @@ def normalization(input_ts='-',
     {clean}
     {print_input}
     {float_format}
+    {source_units}
+    {target_units}
     {round_index}
 
     """
@@ -83,6 +87,8 @@ def normalization(input_ts='-',
                               pick=columns,
                               round_index=round_index,
                               dropna=dropna,
+                              source_units=source_units,
+                              target_units=target_units,
                               clean=clean)
 
     # Trying to save some memory
