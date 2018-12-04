@@ -72,6 +72,8 @@ def dtw(input_ts='-',
         index_type='datetime',
         names=None,
         clean=False,
+        source_units=None,
+        target_units=None,
         window=10000):
     """Dynamic Time Warping.
 
