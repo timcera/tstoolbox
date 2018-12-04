@@ -500,14 +500,36 @@ def _pick_column_or_value(tsd, var, unit):
     return var
 
 
-def make_list(strorlist, n=0):
-    """Make comma separated strings into lists."""
-    if strorlist is None:
-        return None
-    if isinstance(strorlist, (int, float, list)):
+def make_list(*strorlist, n=0):
+    """Normalize strings, converting to numbers or lists.
+    """
+    if isinstance(strorlist, (list, tuple)) and len(strorlist) == 1:
+        strorlist = strorlist[0]
+
+    if isinstance(strorlist, (type(None), int, float)):
+        """ None   -> None
+            1      -> 1
+            1.2    -> 1.2
+
+        BOOMERANG
+        """
         return strorlist
-    if isinstance(strorlist, (str, bytes)):
+
+    if (isinstance(strorlist, (str, bytes))
+        and (strorlist == 'None'
+             or strorlist.strip() == '')):
+        """ 'None' -> None
+            ''     -> None
+        """
+        return None
+
+    if isinstance(strorlist, (str, bytes)) and ',' in strorlist:
+        """ '1, 2, 3'  -> ['1', '2', '3']
+            '1,rt,5.7' -> ['1', 'rt', '5.7']
+        """
         strorlist = strorlist.split(',')
+
+    # At this point 'strorlist' variable should be a list or tuple.
     if n > 0:
         if len(strorlist) != n:
             raise ValueError("""
@@ -515,7 +537,33 @@ def make_list(strorlist, n=0):
 *   The length should be {0}, but it is {1}.
 *
 """.format(n, len(strorlist)))
-    return _convert_to_numbers(strorlist)
+
+    # [1, 2, 3]  -> [1, 2, 3]
+    # ['1', '2'] -> [1, 2]
+
+    # [1, 'er', 5.6]   -> [1, 'er', 5.6]
+    # [1,'er',5.6]     -> [1, 'er', 5.6]
+    # ['1','er','5.6'] -> [1, 'er', 5.6]
+
+    ret = []
+    for each in strorlist:
+        if isinstance(each, (type(None), int, float)):
+            ret.append(each)
+            continue
+        if each is None:
+            ret.append(None)
+            continue
+        try:
+            ret.append(int(each))
+        except ValueError:
+            try:
+                ret.append(float(each))
+            except ValueError:
+                if each.strip() == '' or each == 'None':
+                    ret.append(None)
+                    continue
+                ret.append(each)
+    return ret
 
 
 def common_kwds(input_tsd=None,
@@ -1151,29 +1199,6 @@ def is_valid_url(url, qualifying=None):
                 for qualifying_attr in qualifying))
 
 
-def _convert_to_numbers(inputlist):
-    if not isinstance(inputlist, (list, tuple)):
-        ret = inputlist
-        try:
-            ret = int(inputlist)
-        except ValueError:
-            try:
-                ret = float(inputlist)
-            except ValueError:
-                pass
-        return ret
-    ret = []
-    for each in inputlist:
-        try:
-            ret.append(int(each))
-        except ValueError:
-            try:
-                ret.append(float(each))
-            except ValueError:
-                ret.append(each)
-    return ret
-
-
 def read_iso_ts(indat,
                 parse_dates=True,
                 extended_columns=False,
@@ -1221,7 +1246,7 @@ def read_iso_ts(indat,
             fpi = StringIO(b(indat).decode())
             fname = ''
         elif len(lindat) > 1:
-            result = pd.DataFrame({'values': _convert_to_numbers(lindat)},
+            result = pd.DataFrame({'values': make_list(lindat)},
                                   index=list(range(len(lindat))))
         elif os.path.exists(indat):
             # a local file
