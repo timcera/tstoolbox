@@ -500,9 +500,14 @@ def _pick_column_or_value(tsd, var, unit):
     return var
 
 
-def make_list(*strorlist, n=0):
+def make_list(*strorlist, **kwds):
     """Normalize strings, converting to numbers or lists.
     """
+    try:
+        n = kwds.pop('n')
+    except KeyError:
+        n = 0
+
     if isinstance(strorlist, (list, tuple)) and len(strorlist) == 1:
         strorlist = strorlist[0]
 
