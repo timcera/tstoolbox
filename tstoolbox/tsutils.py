@@ -508,17 +508,19 @@ def make_list(*strorlist, **kwds):
     except KeyError:
         n = 0
 
-    if isinstance(strorlist, (list, tuple)) and len(strorlist) == 1:
+    if (isinstance(strorlist, (list, tuple)) and
+            len(strorlist) == 1 and
+            strorlist[0] is None):
+        return None
+
+    if (isinstance(strorlist, (list, tuple)) and
+            len(strorlist) == 1):
         strorlist = strorlist[0]
 
-    if isinstance(strorlist, (type(None), int, float)):
-        """ None   -> None
-            1      -> 1
-            1.2    -> 1.2
-
-        BOOMERANG
+    if strorlist is None or isinstance(strorlist, (type(None))):
+        """ None -> None
         """
-        return strorlist
+        return None
 
     if (isinstance(strorlist, (str, bytes))
         and (strorlist == 'None'
@@ -528,11 +530,28 @@ def make_list(*strorlist, **kwds):
         """
         return None
 
-    if isinstance(strorlist, (str, bytes)) and ',' in strorlist:
-        """ '1, 2, 3'  -> ['1', '2', '3']
-            '1,rt,5.7' -> ['1', 'rt', '5.7']
+    if isinstance(strorlist, (int, float)):
+        """ 1      -> [1]
+            1.2    -> [1.2]
         """
+        return [strorlist]
+
+    if isinstance(strorlist, (str, bytes)):
+        """ '1'   -> [1]
+            '5.7' -> [5.7]
+        """
+        try:
+            return [int(strorlist)]
+        except ValueError:
+            try:
+                return [float(strorlist)]
+            except ValueError:
+                pass
+
+    try:
         strorlist = strorlist.split(',')
+    except AttributeError:
+        pass
 
     # At this point 'strorlist' variable should be a list or tuple.
     if n > 0:
@@ -542,6 +561,9 @@ def make_list(*strorlist, **kwds):
 *   The length should be {0}, but it is {1}.
 *
 """.format(n, len(strorlist)))
+
+    # '1, 2, 3'  -> ['1', '2', '3']
+    # '1,rt,5.7' -> ['1', 'rt', '5.7']
 
     # [1, 2, 3]  -> [1, 2, 3]
     # ['1', '2'] -> [1, 2]
@@ -1228,7 +1250,11 @@ def read_iso_ts(indat,
         Returns a DataFrame.
 
     """
-    skiprows = make_list(skiprows)
+    try:
+        skiprows = int(skiprows)
+    except (ValueError, TypeError):
+        skiprows = make_list(skiprows)
+
     result = {}
     if isinstance(indat, (str, bytes, StringIO)):
         lindat = b(indat).split(b(','))
@@ -1250,9 +1276,6 @@ def read_iso_ts(indat,
             sep = None
             fpi = StringIO(b(indat).decode())
             fname = ''
-        elif len(lindat) > 1:
-            result = pd.DataFrame({'values': make_list(lindat)},
-                                  index=list(range(len(lindat))))
         elif os.path.exists(indat):
             # a local file
             header = 'infer'
@@ -1265,6 +1288,9 @@ def read_iso_ts(indat,
             sep = None
             fpi = indat
             fname = ''
+        elif len(lindat) >= 1:
+            result = pd.DataFrame({'values': make_list(lindat)},
+                                  index=list(range(len(lindat))))
         else:
             raise ValueError("""
 *
