@@ -814,6 +814,21 @@ def plot(input_ts='-',
                   'weibull_yaxis']:
         colcnt = tsd.shape[1]
 
+    if type in ['xy',
+                'double_mass',
+                'norm_xaxis',
+                'norm_yaxis',
+                'lognorm_xaxis',
+                'lognorm_yaxis',
+                'weibull_xaxis',
+                'weibull_yaxis',
+                'heatmap']:
+        _, ax = plt.subplots(figsize=figsize)
+        plotdict = {(False, True): ax.semilogy,
+                    (True, False): ax.semilogx,
+                    (True, True): ax.loglog,
+                    (False, False): ax.plot}
+
     if type == 'time':
         ax = tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
                       sharey=sharey, style=None, logx=logx, logy=logy,
@@ -867,7 +882,6 @@ def plot(input_ts='-',
         # if you wanted lines between markers.
         # Fell back to using raw matplotlib.
         # Boy I do not like matplotlib.
-        _, ax = plt.subplots(figsize=figsize)
 
         for colindex in range(colcnt):
             ndf = tsd.iloc[:, colindex*2:colindex*2 + 2]
@@ -875,13 +889,14 @@ def plot(input_ts='-',
                 ndf = ndf.dropna().cumsum()
             oxdata = pd.np.array(ndf.iloc[:, 0])
             oydata = pd.np.array(ndf.iloc[:, 1])
-            ax.plot(oxdata,
-                    oydata,
-                    linestyle=next(ilinestyles),
-                    color=next(icolors),
-                    marker=next(imarkerstyles),
-                    label=lnames[colindex],
-                    drawstyle=drawstyle)
+
+            plotdict[(logx, logy)](oxdata,
+                                   oydata,
+                                   linestyle=next(ilinestyles),
+                                   color=next(icolors),
+                                   marker=next(imarkerstyles),
+                                   label=lnames[colindex],
+                                   drawstyle=drawstyle)
 
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
@@ -898,12 +913,6 @@ def plot(input_ts='-',
                   'lognorm_yaxis',
                   'weibull_xaxis',
                   'weibull_yaxis']:
-        # PANDAS was not doing the right thing with xy plots
-        # if you wanted lines between markers.
-        # Fell back to using raw matplotlib.
-        # Boy I do not like matplotlib.
-        _, ax = plt.subplots(figsize=figsize)
-
         ppf = tsutils._set_ppf(type.split('_')[0])
         ys = tsd.iloc[:, :]
 
@@ -921,36 +930,13 @@ def plot(input_ts='-',
                 oxdata, oydata = oydata, oxdata
                 norm_axis = ax.yaxis
 
-            # Make the plot for each column
-            if logy is True and logx is False:
-                ax.semilogy(oxdata,
-                            oydata,
-                            linestyle=next(ilinestyles),
-                            color=next(icolors),
-                            marker=next(imarkerstyles),
-                            label=lnames[colindex])
-            elif logx is True and logy is False:
-                ax.semilogx(oxdata,
-                            oydata,
-                            linestyle=next(ilinestyles),
-                            color=next(icolors),
-                            marker=next(imarkerstyles),
-                            label=lnames[colindex])
-            elif logx is True and logy is True:
-                ax.loglog(oxdata,
-                          oydata,
-                          linestyle=next(ilinestyles),
-                          color=next(icolors),
-                          marker=next(imarkerstyles),
-                          label=lnames[colindex])
-            else:
-                ax.plot(oxdata,
-                        oydata,
-                        linestyle=next(ilinestyles),
-                        color=next(icolors),
-                        marker=next(imarkerstyles),
-                        label=lnames[colindex],
-                        drawstyle=drawstyle)
+            plotdict[(logx, logy)](oxdata,
+                                   oydata,
+                                   linestyle=next(ilinestyles),
+                                   color=next(icolors),
+                                   marker=next(imarkerstyles),
+                                   label=lnames[colindex],
+                                   drawstyle=drawstyle)
 
         # Make it pretty
         xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
@@ -1070,7 +1056,6 @@ def plot(input_ts='-',
                        samples=bootstrap_samples,
                        color='gray')
     elif type == 'heatmap':
-        _, ax = plt.subplots(figsize=figsize)
         # Find beginning and end years
         byear = tsd.index[0].year
         eyear = tsd.index[-1].year
