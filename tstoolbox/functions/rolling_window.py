@@ -9,6 +9,7 @@ import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import pandas as pd
 
 from .. import tsutils
 
@@ -17,7 +18,9 @@ warnings.filterwarnings('ignore')
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def rolling_window(window=2,
+def rolling_window(statistic=None,
+                   groupby=None,
+                   window=None,
                    input_ts='-',
                    columns=None,
                    start_date=None,
@@ -28,7 +31,6 @@ def rolling_window(window=2,
                    names=None,
                    clean=False,
                    span=None,
-                   statistic='',
                    min_periods=None,
                    center=False,
                    win_type=None,
@@ -41,7 +43,39 @@ def rolling_window(window=2,
 
     Parameters
     ----------
-    window : int, or offset
+    statistic : str
+        [optional, default is '']
+
+        +----------+--------------------+
+        | corr     | correlation        |
+        +----------+--------------------+
+        | count    | count of numbers   |
+        +----------+--------------------+
+        | cov      | covariance         |
+        +----------+--------------------+
+        | kurt     | kurtosis           |
+        +----------+--------------------+
+        | max      | maximum            |
+        +----------+--------------------+
+        | mean     | mean               |
+        +----------+--------------------+
+        | median   | median             |
+        +----------+--------------------+
+        | min      | minimum            |
+        +----------+--------------------+
+        | quantile | quantile           |
+        +----------+--------------------+
+        | skew     | skew               |
+        +----------+--------------------+
+        | std      | standard deviation |
+        +----------+--------------------+
+        | sum      | sum                |
+        +----------+--------------------+
+        | var      | variance           |
+        +----------+--------------------+
+
+    {groupby}
+    window :
         [optional, default = 2]
 
         Size of the moving window. This is the number of observations used for
@@ -78,41 +112,10 @@ def rolling_window(window=2,
         windows, defaults to 'both'. Remaining cases not implemented for fixed
         windows.
 
-    span : int
+    span :
         [optional, default = 2]
 
         DEPRECATED: Changed to 'window' to be consistent with pandas.
-
-    statistic : str
-        [optional, default is '']
-
-        +----------+--------------------+
-        | corr     | correlation        |
-        +----------+--------------------+
-        | count    | count of numbers   |
-        +----------+--------------------+
-        | cov      | covariance         |
-        +----------+--------------------+
-        | kurt     | kurtosis           |
-        +----------+--------------------+
-        | max      | maximum            |
-        +----------+--------------------+
-        | mean     | mean               |
-        +----------+--------------------+
-        | median   | median             |
-        +----------+--------------------+
-        | min      | minimum            |
-        +----------+--------------------+
-        | quantile | quantile           |
-        +----------+--------------------+
-        | skew     | skew               |
-        +----------+--------------------+
-        | std      | standard deviation |
-        +----------+--------------------+
-        | sum      | sum                |
-        +----------+--------------------+
-        | var      | variance           |
-        +----------+--------------------+
 
     {input_ts}
     {columns}
@@ -138,22 +141,47 @@ def rolling_window(window=2,
                               dropna=dropna,
                               source_units=source_units,
                               target_units=target_units,
-                              clean=clean)
+                              clean=clean,
+                              groupby=groupby)
 
     if span is not None:
         window = span
+    if window is None:
+        window = 2
 
-    ntsd = tsd.rolling(window,
-                       min_periods=min_periods,
-                       center=center,
-                       win_type=win_type,
-                       on=on,
-                       closed=closed)
+    window = tsutils.make_list(window)
 
-    if statistic:
-        ntsd = eval('ntsd.{0}()'.format(statistic))
+    ntsd = pd.DataFrame()
+    for win in window:
+        statstr = ''
+        if statistic in ['corr',
+                         'count',
+                         'cov',
+                         'kurt',
+                         'max',
+                         'mean',
+                         'median',
+                         'min',
+                         'quantile',
+                         'skew',
+                         'std',
+                         'sum',
+                         'var']:
+            statstr = '.{statistic}()'.format(**locals())
+        etsd = eval('''tsd.apply(lambda x:
+                       x.rolling({win},
+                                 min_periods={min_periods},
+                                 center={center},
+                                 win_type={win_type},
+                                 on={on},
+                                 closed={closed}){statstr}
+                                 )'''.format(**locals()))
+        etsd.columns = ['{0}_rolling_{1}_{2}'.format(i, win, statistic)
+                        for i in etsd.columns]
+
+        ntsd = ntsd.join(etsd, how='outer')
 
     return tsutils.print_input(print_input,
                                tsd,
                                ntsd,
-                               '_rolling_{0}_{1}'.format(window, statistic))
+                               None)

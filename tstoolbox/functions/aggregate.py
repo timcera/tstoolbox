@@ -20,14 +20,15 @@ warnings.filterwarnings('ignore')
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def aggregate(input_ts='-',
+              groupby=None,
+              statistic='mean',
               columns=None,
               start_date=None,
               end_date=None,
               dropna='no',
               clean=False,
-              statistic='mean',
-              agg_interval='D',
-              ninterval=1,
+              agg_interval=None,
+              ninterval=None,
               round_index=None,
               skiprows=None,
               index_type='datetime',
@@ -42,35 +43,9 @@ def aggregate(input_ts='-',
     statistic : str
         [optional, defaults to 'mean']
 
-        'mean', 'sum', 'std', 'max', 'min', 'median', 'first', or 'last'
-        to calculate the aggregation.  Can also be a comma separated list of
-        statistic methods.
-    agg_interval : str
-        [optional, defaults to 'D']
-        The interval to aggregate the time series.  Any of the PANDAS
-        offset codes.
-
-        {pandas_offset_codes}
-
-        There are some deprecated aggregation interval names in
-        tstoolbox, DON'T USE!
-
-        +---------------+-----+
-        | Instead of... | Use |
-        +===============+=====+
-        | hourly        | H   |
-        +---------------+-----+
-        | daily         | D   |
-        +---------------+-----+
-        | monthly       | M   |
-        +---------------+-----+
-        | yearly        | A   |
-        +---------------+-----+
-
-    ninterval : int
-        [optional, defaults to 1]
-
-        The number of agg_interval to use for the aggregation.
+        'mean', 'sem', 'sum', 'std', 'max', 'min', 'median', 'first', 'last' or
+        'ohlc' to calculate on each group.
+    {groupby}
     {input_ts}
     {columns}
     {start_date}
@@ -84,16 +59,23 @@ def aggregate(input_ts='-',
     {source_units}
     {target_units}
     {print_input}
-
+    agg_interval :
+        DEPRECATED:
+        Use the 'groupby' option instead.
+    ninterval :
+        DEPRECATED:
+        Just prefix the number in front of the 'groupby' pandas offset code.
     """
     statslist = ['mean',
                  'sum',
                  'std',
+                 'sem',
                  'max',
                  'min',
                  'median',
                  'first',
-                 'last']
+                 'last',
+                 'ohlc']
     assert statistic in statslist, """
 ***
 *** The statistic option must be one of:
@@ -107,7 +89,53 @@ def aggregate(input_ts='-',
             'daily': 'D',
             'monthly': 'M',
             'yearly': 'A'}
-    agg_interval = aggd.get(agg_interval, agg_interval)
+
+    if agg_interval is not None:
+        if groupby is not None:
+            raise ValueError("""
+*
+*   You cannot specify both 'groupby' and 'agg_interval'.  The 'agg_interval'
+*   option is deprecated in favor of 'groupby'.
+*
+""")
+        warnings.warn("""
+*
+*   The 'agg_interval' option has been deprecated in favor of 'groupby' to be
+*   consistent with other tstoolbox commands.
+*
+""")
+        groupby = aggd.get(agg_interval, agg_interval)
+    else:
+        groupby = 'D'
+
+    if ninterval is not None:
+        ninterval = int(ninterval)
+
+        import re
+        try:
+            _ = int(re.match(r'^\d+', groupby).group())
+            raise ValueError("""
+*
+*   You cannot specify the 'ninterval' option and prefix a number in the
+*   'groupby' option.  The 'ninterval' option is deprecated in favor of
+*   prefixing the number in the pandas offset code used in the 'groupby'
+*   option.
+*
+""")
+        except AttributeError:
+            pass
+
+        warnings.warn("""
+*
+*   The 'ninterval' option has been deprecated in favor of prefixing the desired
+*   interval in front of the 'groupby' pandas offset code.
+*
+*   For example: instead of 'grouby="D"' and 'ninterval=7', you can just
+*   have 'groupby="7D"'.
+*
+""")
+    else:
+        ninterval = ''
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
@@ -121,33 +149,12 @@ def aggregate(input_ts='-',
                               source_units=source_units,
                               target_units=target_units,
                               clean=clean)
-    methods = statistic.split(',')
+    methods = tsutils.make_list(statistic)
     newts = pd.DataFrame()
     for method in methods:
-        if method == 'mean':
-            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval)).mean()
-        elif method == 'sum':
-            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval)).sum()
-        elif method == 'std':
-            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval)).std()
-        elif method == 'max':
-            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval)).max()
-        elif method == 'min':
-            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval)).min()
-        elif method == 'median':
-            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval)).median()
-        elif method == 'first':
-            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval)).first()
-        elif method == 'last':
-            tmptsd = tsd.resample('{0:d}{1}'.format(ninterval,
-                                                    agg_interval)).last()
+        tmptsd = eval("""tsd.resample('{0}{1}').{2}()""".format(ninterval,
+                                                                groupby,
+                                                                method))
         tmptsd.rename(columns=lambda x: x + '_' + method, inplace=True)
         newts = newts.join(tmptsd, how='outer')
     return tsutils.print_input(print_input, tsd, newts, '')

@@ -726,7 +726,7 @@ def common_kwds(input_tsd=None,
         if groupby == 'months_across_years':
             return ntsd.groupby(lambda x: x.month)
         else:
-            return ntsd.groupby(pd.TimeGrouper(groupby))
+            return ntsd.resample(groupby)
 
     if dropna not in ['any', 'all', 'no']:
         raise ValueError("""
