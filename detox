@@ -9,10 +9,11 @@ pkgs="\
      numpy \
      scipy \
      matplotlib \
-     nose \
      pandas \
      coverage \
      flake8 \
+     pytest \
+     pytest-cov \
      "
 
 # pandas no longer supports 2.6
@@ -31,19 +32,15 @@ for env in ${envs[@]}; do
     rm -rf build
     python setup.py develop
 
-    nosetests \
-        --with-coverage \
-        --cover-tests \
-        --cover-package=${program} \
-        --cover-branches \
-        --cover-erase \
-        -s
+    pytest \
+        --doctest-modules \
+        --ignore docsrc
     deactivate
 done
 
 source "${env}"/bin/activate
 coverage erase
-coverage run `which nosetests`
+coverage run `which pytest`
 coverage report --include="${program}/*" --omit="tests/*"
 coverage html --include="${program}/*" --omit="tests/*"
 flake8 ${program}/__init__.py ${program}/${program}.py ${program}/tsutils.py ${program}/functions/*.py --exit-zero

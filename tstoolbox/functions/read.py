@@ -92,7 +92,7 @@ def read(filenames,
     if force_freq is not None:
         dropna = 'no'
 
-    filenames = filenames.split(',')
+    filenames = tsutils.make_list(filenames)
     result = pd.DataFrame()
     result_list = []
     for i in filenames:

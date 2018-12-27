@@ -75,29 +75,11 @@ def replace(from_values,
                               target_units=target_units,
                               clean=clean)
 
-    nfrom_values = []
-    for fv in from_values.split(','):
-        if fv == 'None':
-            nfrom_values.append(None)
-            continue
-        try:
-            nfrom_values.append(int(fv))
-        except ValueError:
-            nfrom_values.append(float(fv))
+    nfrom_values = tsutils.make_list(from_values)
 
-    nto_values = []
-    for tv in to_values.split(','):
-        if tv == 'None':
-            nto_values.append(None)
-            continue
-        try:
-            nto_values.append(int(tv))
-        except ValueError:
-            nto_values.append(float(tv))
+    nto_values = tsutils.make_list(to_values)
 
     ntsd = tsd.replace(nfrom_values, nto_values)
-    if dropna in ['any', 'all']:
-        ntsd = ntsd.dropna(axis='index', how=dropna)
 
     return tsutils.print_input(
         print_input, tsd, ntsd, '_replace')

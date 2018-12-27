@@ -52,12 +52,14 @@ docstrings = {
 
         If unit is specified for the column as the second field of a ':'
         delimited column name, then the specified units and the 'source_units'
-        must match exactly.""",
+        must match exactly.
+
+        Any unit string compatible with the 'pint' library can be used.""",
     'names': r"""names
         [optional, default is None.]
 
         If None, the column names are taken from the first row after
-        'skiprows'.""",
+        'skiprows' from the input dataset.""",
     'index_type': r"""index_type : str
         [optional, default is 'datetime']
 
@@ -66,10 +68,13 @@ docstrings = {
     'input_ts': r"""input_ts : str
         [optional, required if using Python API, default is '-' (stdin)]
 
-        Whether from a file or standard input, data requires a first line
-        header of column names.  Most separators will be automatically
-        detected. Most common date formats can be used, but the closer to ISO
-        8601 date/time standard the better.
+        Whether from a file or standard input, data requires a header of column
+        names.  The default header is the first line of the input, but this can
+        be changed using the 'skiprows' option.
+
+        Most separators will be automatically detected. Most common date
+        formats can be used, but the closer to ISO 8601 date/time standard the
+        better.
 
         Command line::
 
@@ -162,9 +167,8 @@ docstrings = {
     'header': r"""header : str
         [optional, default is 'default']
 
-        This is if you want a different header than is the default for
-        this table.  Pass a list of strings for each column in the
-        table.""",
+        This is if you want a different header than is the default for this
+        output table.  Pass a list of strings for each column in the table.""",
     'pandas_offset_codes': r"""+-------+-----------------------------+
         | Alias | Description                 |
         +=======+=============================+
@@ -348,13 +352,15 @@ def _plotting_position_equation(i, n, a):
 
 def _set_plotting_position(n, plotting_position='weibull'):
     """Create plotting position 1D array using linspace."""
-    plotplist = ['weibull',
-                 'benard',
-                 'tukey',
-                 'gumbel',
-                 'hazen',
-                 'cunnane',
-                 'california']
+    plotplist = [
+        'weibull',
+        'benard',
+        'tukey',
+        'gumbel',
+        'hazen',
+        'cunnane',
+        'california',
+    ]
     assert plotting_position in plotplist, """
 *
 *    The plotting_position option accepts:
@@ -364,31 +370,47 @@ def _set_plotting_position(n, plotting_position='weibull'):
 """.format(plotting_position, plotplist)
 
     if plotting_position == 'weibull':
-        return pd.np.linspace(_plotting_position_equation(1, n, 0.0),
-                              _plotting_position_equation(n, n, 0.0),
-                              n)
+        return pd.np.linspace(
+            _plotting_position_equation(1, n, 0.0),
+            _plotting_position_equation(n, n, 0.0),
+            n,
+        )
     elif plotting_position == 'benard':
-        return pd.np.linspace(_plotting_position_equation(1, n, 0.3),
-                              _plotting_position_equation(n, n, 0.3),
-                              n)
+        return pd.np.linspace(
+            _plotting_position_equation(1, n, 0.3),
+            _plotting_position_equation(n, n, 0.3),
+            n,
+        )
     elif plotting_position == 'tukey':
-        return pd.np.linspace(_plotting_position_equation(1, n, 1.0 / 3.0),
-                              _plotting_position_equation(n, n, 1.0 / 3.0),
-                              n)
+        return pd.np.linspace(
+            _plotting_position_equation(1, n, 1.0 / 3.0),
+            _plotting_position_equation(n, n, 1.0 / 3.0),
+            n,
+        )
     elif plotting_position == 'gumbel':
-        return pd.np.linspace(_plotting_position_equation(1, n, 1.0),
-                              _plotting_position_equation(n, n, 1.0),
-                              n)
+        return pd.np.linspace(
+            _plotting_position_equation(1, n, 1.0),
+            _plotting_position_equation(n, n, 1.0),
+            n,
+        )
     elif plotting_position == 'hazen':
-        return pd.np.linspace(_plotting_position_equation(1, n, 1.0 / 2.0),
-                              _plotting_position_equation(n, n, 1.0 / 2.0),
-                              n)
+        return pd.np.linspace(
+            _plotting_position_equation(1, n, 1.0 / 2.0),
+            _plotting_position_equation(n, n, 1.0 / 2.0),
+            n,
+        )
     elif plotting_position == 'cunnane':
-        return pd.np.linspace(_plotting_position_equation(1, n, 2.0 / 5.0),
-                              _plotting_position_equation(n, n, 2.0 / 5.0),
-                              n)
+        return pd.np.linspace(
+            _plotting_position_equation(1, n, 2.0 / 5.0),
+            _plotting_position_equation(n, n, 2.0 / 5.0),
+            n,
+        )
     elif plotting_position == 'california':
-        return pd.np.linspace(1. / n, 1., n)
+        return pd.np.linspace(
+            1. / n,
+            1.,
+            n,
+        )
 
 
 def b(s):
@@ -404,14 +426,20 @@ def doc(fdict, **kwargs):
     def f(fn):
         fn.__doc__ = fn.__doc__.format(**fdict)
         for attr in kwargs:
-            setattr(fn, attr, kwargs[attr])
+            setattr(
+                fn,
+                attr,
+                kwargs[attr],
+            )
         return fn
     return f
 
 
-def parsedate(dstr,
-              strftime=None,
-              settings=None):
+def parsedate(
+    dstr,
+    strftime=None,
+    settings=None,
+):
     """Use dateparser to parse a wide variety of dates.
 
     Used for start and end dates.
@@ -482,8 +510,10 @@ def about(name):
     print('platform version = {0}'.format(platform.version()))
 
 
-def _round_index(ntsd,
-                 round_index=None):
+def _round_index(
+    ntsd,
+    round_index=None,
+):
     """Round the index, typically time, to the nearest interval."""
     if round_index is None:
         return ntsd
@@ -491,12 +521,16 @@ def _round_index(ntsd,
     return ntsd
 
 
-def _pick_column_or_value(tsd, var, unit):
+def _pick_column_or_value(
+    tsd,
+    var,
+    unit,
+):
     """Return a keyword value or a time-series."""
     try:
         var = np.array([float(var)])
     except ValueError:
-        var = tsd.ix[:, var].values
+        var = tsd.loc[:, var].values
     return var
 
 
@@ -508,13 +542,13 @@ def make_list(*strorlist, **kwds):
     except KeyError:
         n = 0
 
-    if (isinstance(strorlist, (list, tuple)) and
-            len(strorlist) == 1 and
-            strorlist[0] is None):
+    if (isinstance(strorlist, (list, tuple))
+            and len(strorlist) == 1
+            and strorlist[0] is None):
         return None
 
-    if (isinstance(strorlist, (list, tuple)) and
-            len(strorlist) == 1):
+    if (isinstance(strorlist, (list, tuple))
+            and len(strorlist) == 1):
         strorlist = strorlist[0]
 
     if strorlist is None or isinstance(strorlist, (type(None))):
@@ -523,8 +557,8 @@ def make_list(*strorlist, **kwds):
         return None
 
     if (isinstance(strorlist, (str, bytes))
-        and (strorlist == 'None'
-             or strorlist.strip() == '')):
+            and (strorlist == 'None'
+            or strorlist.strip() == '')):
         """ 'None' -> None
             ''     -> None
         """
@@ -593,20 +627,22 @@ def make_list(*strorlist, **kwds):
     return ret
 
 
-def common_kwds(input_tsd=None,
-                start_date=None,
-                end_date=None,
-                pick=None,
-                force_freq=None,
-                groupby=None,
-                dropna='no',
-                round_index=None,
-                clean=False,
-                variables=None,
-                variables_ts=None,
-                target_units=None,
-                source_units=None,
-                bestfreq=True):
+def common_kwds(
+    input_tsd=None,
+    start_date=None,
+    end_date=None,
+    pick=None,
+    force_freq=None,
+    groupby=None,
+    dropna='no',
+    round_index=None,
+    clean=False,
+    variables=None,
+    variables_ts=None,
+    target_units=None,
+    source_units=None,
+    bestfreq=True,
+):
     """Process all common_kwds across sub-commands into single function.
 
     Parameters
@@ -736,9 +772,9 @@ def common_kwds(input_tsd=None,
 """.format(dropna))
 
     if dropna in ['any', 'all']:
-        ntsd.dropna(axis='index',
-                    how=dropna,
-                    inplace=True)
+        ntsd = ntsd.dropna(axis='index',
+                           how=dropna,
+                          )
     else:
         try:
             ntsd = asbestfreq(ntsd)
@@ -782,7 +818,10 @@ def common_kwds(input_tsd=None,
     return ntsd
 
 
-def _pick(tsd, columns):
+def _pick(
+    tsd,
+    columns,
+):
     columns = make_list(columns)
     if not columns:
         return tsd
@@ -845,9 +884,11 @@ def _pick(tsd, columns):
     return newtsd
 
 
-def _date_slice(input_tsd,
-                start_date=None,
-                end_date=None):
+def _date_slice(
+    input_tsd,
+    start_date=None,
+    end_date=None,
+):
     """Private function to slice time series."""
     if input_tsd.index.is_all_dates:
         accdate = []
@@ -898,7 +939,10 @@ _WEEKLIES = {
 }
 
 
-def asbestfreq(data, force_freq=None):
+def asbestfreq(
+    data,
+    force_freq=None,
+):
     """Test to determine best frequency to represent data.
 
     This uses several techniques.
@@ -1022,14 +1066,16 @@ def asbestfreq(data, force_freq=None):
 
 
 # Utility
-def print_input(iftrue,
-                intds,
-                output,
-                suffix,
-                date_format=None,
-                float_format='%g',
-                tablefmt='csv',
-                showindex='never'):
+def print_input(
+    iftrue,
+    intds,
+    output,
+    suffix,
+    date_format=None,
+    float_format='%g',
+    tablefmt='csv',
+    showindex='never',
+):
     """Print the input time series also."""
     if suffix:
         output.rename(columns=lambda xloc: str(xloc) + suffix, inplace=True)
@@ -1037,32 +1083,41 @@ def print_input(iftrue,
         return printiso(intds.join(output,
                                    lsuffix='_1',
                                    rsuffix='_2',
-                                   how='outer'),
+                                   how='outer',
+                                  ),
                         date_format=date_format,
                         float_format=float_format,
                         tablefmt=tablefmt,
-                        showindex=showindex)
+                        showindex=showindex,
+                       )
     return printiso(output,
                     date_format=date_format,
                     float_format=float_format,
                     tablefmt=tablefmt,
-                    showindex=showindex)
+                    showindex=showindex,
+                   )
 
 
-def _apply_across_columns(func, xtsd, **kwds):
+def _apply_across_columns(
+    func,
+    xtsd,
+    **kwds
+):
     """Apply a function to each column in turn."""
     for col in xtsd.columns:
         xtsd[col] = func(xtsd[col], **kwds)
     return xtsd
 
 
-def _printiso(tsd,
-              date_format=None,
-              sep=',',
-              float_format='%g',
-              showindex='never',
-              headers='keys',
-              tablefmt='csv'):
+def _printiso(
+    tsd,
+    date_format=None,
+    sep=',',
+    float_format='%g',
+    showindex='never',
+    headers='keys',
+    tablefmt='csv',
+):
     """Separate so can use in tests."""
     sys.tracebacklimit = 1000
 
@@ -1156,12 +1211,14 @@ def test_cli():
     return cli
 
 
-def printiso(tsd,
-             date_format=None,
-             float_format='%g',
-             tablefmt='csv',
-             headers='keys',
-             showindex='never'):
+def printiso(
+    tsd,
+    date_format=None,
+    float_format='%g',
+    tablefmt='csv',
+    headers='keys',
+    showindex='never',
+):
     """Print or return default output format.
 
     Used for tstoolbox, wdmtoolbox, swmmtoolbox, and hspfbintoolbox.
@@ -1217,7 +1274,10 @@ def memory_optimize(tsd):
     return tsd
 
 
-def is_valid_url(url, qualifying=None):
+def is_valid_url(
+    url,
+    qualifying=None,
+):
     """Return whether "url" is valid."""
     min_attributes = ('scheme', 'netloc')
     qualifying = min_attributes if qualifying is None else qualifying
@@ -1226,14 +1286,16 @@ def is_valid_url(url, qualifying=None):
                 for qualifying_attr in qualifying))
 
 
-def read_iso_ts(indat,
-                parse_dates=True,
-                extended_columns=False,
-                dropna=None,
-                force_freq=None,
-                skiprows=None,
-                index_type='datetime',
-                names=None):
+def read_iso_ts(
+    indat,
+    parse_dates=True,
+    extended_columns=False,
+    dropna=None,
+    force_freq=None,
+    skiprows=None,
+    index_type='datetime',
+    names=None,
+):
     """Read the format printed by 'printiso' and maybe other formats.
 
     Parameters
@@ -1257,7 +1319,6 @@ def read_iso_ts(indat,
 
     result = {}
     if isinstance(indat, (str, bytes, StringIO)):
-        lindat = b(indat).split(b(','))
         if indat == '-':
             # if from stdin format must be the tstoolbox standard
             # pandas read_table supports file like objects
@@ -1288,15 +1349,12 @@ def read_iso_ts(indat,
             sep = None
             fpi = indat
             fname = ''
-        elif len(lindat) >= 1:
-            result = pd.DataFrame({'values': make_list(lindat)},
-                                  index=list(range(len(lindat))))
         else:
             raise ValueError("""
 *
 *   Can't figure out what "input_ts={0}" is.
 *   I tested if it was a string or StringIO object, DataFrame, local file,
-*   or an URL.  If you want to pull from stdin use "-".
+*   or an URL.  If you want to pull from stdin use "-" or redirection/piping.
 *
 """.format(indat))
 
@@ -1333,8 +1391,8 @@ def read_iso_ts(indat,
                                               skipinitialspace=True,
                                               engine='python',
                                               skiprows=skiprows)
-        result.columns = [fstr.format(fname, str(i).strip())
-                          for i in result.columns]
+            result.columns = [fstr.format(fname, str(i).strip())
+                              for i in result.columns]
 
     elif isinstance(indat, pd.DataFrame):
         result = indat

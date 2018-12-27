@@ -105,15 +105,22 @@ def aggregate(input_ts='-',
 *
 """)
         groupby = aggd.get(agg_interval, agg_interval)
-    else:
+
+    if groupby is None:
         groupby = 'D'
+    else:
+        groupby = aggd.get(groupby, groupby)
 
     if ninterval is not None:
         ninterval = int(ninterval)
 
-        import re
+        inter = None
         try:
-            _ = int(re.match(r'^\d+', groupby).group())
+            inter = int(groupby[0])
+        except (ValueError, TypeError):
+            pass
+
+        if inter is not None:
             raise ValueError("""
 *
 *   You cannot specify the 'ninterval' option and prefix a number in the
@@ -122,8 +129,6 @@ def aggregate(input_ts='-',
 *   option.
 *
 """)
-        except AttributeError:
-            pass
 
         warnings.warn("""
 *

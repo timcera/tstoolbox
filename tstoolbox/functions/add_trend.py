@@ -72,9 +72,9 @@ def add_trend(start_offset,
     # Need it to be float since will be using pd.np.nan
     ntsd = tsd.copy().astype('float64')
 
-    ntsd.ix[:, :] = pd.np.nan
-    ntsd.ix[0, :] = float(start_offset)
-    ntsd.ix[-1, :] = float(end_offset)
+    ntsd.iloc[:, :] = pd.np.nan
+    ntsd.iloc[0, :] = float(start_offset)
+    ntsd.iloc[-1, :] = float(end_offset)
     ntsd = ntsd.interpolate(method='values')
 
     ntsd = ntsd + tsd

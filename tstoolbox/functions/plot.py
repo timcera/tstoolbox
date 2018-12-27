@@ -62,17 +62,7 @@ def _know_your_limits(xylimits, axis='arithmetic'):
     Might prove useful in the future in a more generic spot.  It
     normalizes the different representations.
     """
-    if isinstance(xylimits, str):
-        nlim = []
-        for lim in xylimits.split(','):
-            if lim == '':
-                nlim.append(None)
-            elif '.' in lim:
-                nlim.append(float(lim))
-            else:
-                nlim.append(int(lim))
-    else:  # tuples or lists...
-        nlim = xylimits
+    nlim = tsutils.make_list(xylimits)
 
     if axis == 'normal':
         if nlim is None:
@@ -643,7 +633,7 @@ def plot(input_ts='-',
         short_freq = ''
 
     if legend_names:
-        lnames = legend_names.split(',')
+        lnames = tsutils.make_list(legend_names)
         assert len(lnames) == len(set(lnames)), """
 *
 *   Each name in legend_names must be unique.
@@ -671,30 +661,23 @@ def plot(input_ts='-',
     if colors == 'auto':
         colors = color_list
     else:
-        try:
-            colors = colors.split(',')
-        except AttributeError:
-            pass
+        colors = tsutils.make_list(colors)
 
     if linestyles == 'auto':
         linestyles = line_list
     else:
-        try:
-            linestyles = linestyles.split(',')
-        except AttributeError:
-            pass
+        linestyles = tsutils.make_list(linestyles)
 
     if markerstyles == 'auto':
         markerstyles = marker_list
     else:
-        try:
-            markerstyles = markerstyles.split(',')
-        except AttributeError:
-            pass
+        markerstyles = tsutils.make_list(markerstyles)
+        if markerstyles is None:
+            markerstyles = ' '
 
     if style != 'auto':
 
-        nstyle = style.split(',')
+        nstyle = tsutils.make_list(style)
         if len(nstyle) != len(tsd.columns):
             raise ValueError("""
 *
@@ -721,6 +704,11 @@ def plot(input_ts='-',
             else:
                 markerstyles.append(' ')
                 linestyles.append(st[1:])
+    if linestyles is None:
+        linestyles = [' ']
+    else:
+        linestyles = [' ' if i == '  ' else i for i in linestyles]
+    markerstyles = [' ' if i is None else i for i in markerstyles]
 
     icolors = itertools.cycle(colors)
     imarkerstyles = itertools.cycle(markerstyles)
@@ -790,8 +778,7 @@ def plot(input_ts='-',
     xlim = _know_your_limits(xlim, axis=xaxis)
     ylim = _know_your_limits(ylim, axis=yaxis)
 
-    figsize = [float(i) for i in figsize.split(',')]
-    plt.figure(figsize=figsize)
+    figsize = tsutils.make_list(figsize)
 
     if not isinstance(tsd.index, pd.DatetimeIndex):
         tsd.insert(0, tsd.index.name, tsd.index)

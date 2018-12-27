@@ -7,6 +7,7 @@ from unittest import TestCase
 
 import pandas
 from pandas.util.testing import assert_frame_equal
+import pytest
 
 from tstoolbox import tstoolbox
 from tstoolbox import tsutils
@@ -41,14 +42,14 @@ class TestAggregate(TestCase):
     def test_aggregate_direct_mean(self):
         """Test daily mean aggregation."""
         out = tstoolbox.aggregate(statistic='mean',
-                                  agg_interval='daily',
+                                  groupby='daily',
                                   input_ts='tests/data_flat.csv')
         assert_frame_equal(out, self.aggregate_direct_mean)
 
     def test_aggregate_direct_sum(self):
         """Test daily mean summation."""
         out = tstoolbox.aggregate(statistic='sum',
-                                  agg_interval='daily',
+                                  groupby='daily',
                                   input_ts='tests/data_flat.csv')
         assert_frame_equal(out, self.aggregate_direct_sum)
 
@@ -69,3 +70,45 @@ class TestAggregate(TestCase):
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
         self.assertEqual(out, self.aggregate_cli_sum)
+
+    def test_aggregate_groupby(self):
+        """Test API ValueError, groupby and agg_interval."""
+        with pytest.raises(ValueError):
+            _ = tstoolbox.aggregate(statistic="sum",
+                                    groupby="D",
+                                    agg_interval="D",
+                                    input_ts="tests/data_flat.csv",
+                                   )
+
+    def test_aggregate_ninterval_groupby(self):
+        """Test API ValueError, ninterval and groupby."""
+        with pytest.raises(ValueError):
+            _ = tstoolbox.aggregate(statistic="sum",
+                                    groupby="7D",
+                                    ninterval=7,
+                                    input_ts="tests/data_flat.csv",
+                                   )
+
+    def test_aggregate_bad_statistic(self):
+        """Test API statistic name."""
+        with pytest.raises(AssertionError):
+            _ = tstoolbox.aggregate(statistic="camel",
+                                    groupby="D",
+                                    input_ts="tests/data_flat.csv",
+                                   )
+
+    def test_aggregate_agg_interval(self):
+        """Test API agg_interval."""
+        with pytest.warns(UserWarning):
+            _ = tstoolbox.aggregate(statistic="mean",
+                                    agg_interval="D",
+                                    input_ts="tests/data_flat.csv",
+                                   )
+
+    def test_aggregate_ninterval(self):
+        """Test API ninterval."""
+        with pytest.warns(UserWarning):
+            _ = tstoolbox.aggregate(statistic="mean",
+                                    ninterval=7,
+                                    input_ts="tests/data_flat.csv",
+                                   )

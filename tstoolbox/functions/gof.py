@@ -100,7 +100,7 @@ def gof(input_ts='-',
                  'brierss']
     else:
         try:
-            stats = stats.split(',')
+            stats = tsutils.make_list(stats)
         except AttributeError:
             pass
 
