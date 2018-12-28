@@ -169,23 +169,25 @@ def filter(filter_type,
                               target_units=target_units,
                               clean=clean)
 
-    assert len(tsd.values) > window_len, """
+    if len(tsd.values) < window_len:
+        raise ValueError("""
 *
 *   Input vector (length={0}) needs to be bigger than window size ({1}).
 *
-""".format(len(tsd.values), window_len)
+""".format(len(tsd.values), window_len))
 
-    assert filter_type in ['flat',
+    if filter_type not in ['flat',
                            'hanning',
                            'hamming',
                            'bartlett',
                            'blackman',
                            'fft_highpass',
-                           'fft_lowpass'], """
+                           'fft_lowpass']:
+        raise ValueError("""
 *
 *   Filter type {0} not implemented.
 *
-""".format(filter_type)
+""".format(filter_type))
 
     # Trying to save some memory
     if print_input:

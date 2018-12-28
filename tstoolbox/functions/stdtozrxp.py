@@ -65,12 +65,13 @@ def stdtozrxp(input_ts='-',
                               source_units=source_units,
                               target_units=target_units,
                               clean=clean)
-    assert len(tsd.columns) == 1, """
+    if len(tsd.columns) != 1:
+        raise ValueError("""
 *
 *   The "stdtozrxp" command can only accept a single
 *   'time-series, instead it is seeing {0}.
 *
-""".format(len(tsd.columns))
+""".format(len(tsd.columns)))
 
     if rexchange:
         print('#REXCHANGE{0}|*|'.format(rexchange))

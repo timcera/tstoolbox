@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-import shlex
-import subprocess
 from unittest import TestCase
 
 import pandas as pd
@@ -10,7 +6,6 @@ from pandas.util.testing import assert_frame_equal
 import pytest
 
 from tstoolbox import tstoolbox
-from tstoolbox import tsutils
 
 
 class TestRead(TestCase):
@@ -18,8 +13,7 @@ class TestRead(TestCase):
         base = pd.read_csv('tests/data_missing.csv',
                            index_col=[0],
                            parse_dates=True,
-                           skipinitialspace=True,
-                          ).astype('float64')
+                           skipinitialspace=True).astype('float64')
         base.index.name = 'Datetime'
         self.cumsum = base.cumsum()
         self.cumsum.columns = [i + '_sum' for i in self.cumsum.columns]
@@ -27,14 +21,13 @@ class TestRead(TestCase):
     def test_cumsum(self):
         """Test cumsum."""
         out = tstoolbox.accumulate(input_ts='tests/data_missing.csv',
-                                   dropna='any',
-                                  )
+                                   dropna='any')
         assert_frame_equal(out, self.cumsum)
 
-    def test_stats(self):
-        """Test stat names."""
-        with pytest.raises(ValueError):
-            out = tstoolbox.accumulate(input_ts='tests/data_missing.csv',
-                                       dropna='any',
-                                       statistic='camel',
-                                       )
+
+def test_stats():
+    """Test stat names."""
+    with pytest.raises(ValueError):
+        _ = tstoolbox.accumulate(input_ts='tests/data_missing.csv',
+                                 dropna='any',
+                                 statistic='camel')

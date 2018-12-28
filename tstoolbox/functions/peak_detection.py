@@ -876,23 +876,25 @@ def peak_detection(input_ts='-',
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
 
-    assert extrema in ['peak', 'valley', 'both'], """
+    if extrema not in ['peak', 'valley', 'both']:
+        raise ValueError("""
 *
 *   The `extrema` argument must be one of 'peak',
 *   'valley', or 'both'.  You supplied {0}.
 *
-""".format(extrema)
+""".format(extrema))
 
-    assert method in ['rel',
+    if method not in ['rel',
                       'minmax',
                       'zero_crossing',
                       'parabola',
-                      'sine'], """
+                      'sine']:
+        raise ValueError("""
 *
 *   The `method` argument must be one of 'rel', 'minmax',
 *   'zero_crossing', 'parabola', or 'sine'.  You supplied {0}.
 *
-""".format(method)
+""".format(method))
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,

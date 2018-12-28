@@ -524,7 +524,6 @@ def _round_index(
 def _pick_column_or_value(
     tsd,
     var,
-    unit,
 ):
     """Return a keyword value or a time-series."""
     try:

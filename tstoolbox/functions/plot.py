@@ -71,37 +71,40 @@ def _know_your_limits(xylimits, axis='arithmetic'):
             nlim[0] = 0.01
         if nlim[1] is None:
             nlim[1] = 0.99
-        assert (nlim[0] > 0 and nlim[0] < 1 and
-                nlim[1] > 0 and nlim[1] < 1), """
+        if (nlim[0] < 0 or nlim[0] > 1 or
+            nlim[1] < 0 or nlim[1] > 1):
+            raise ValueError("""
 *
 *   Both limits must be between 0 and 1 for the
 *   'normal', 'lognormal', or 'weibull' axis.
 *
 *   Instead you have {0}.
 *
-""".format(nlim)
+""".format(nlim))
 
     if nlim is None:
         return nlim
 
     if nlim[0] is not None and nlim[1] is not None:
-        assert nlim[0] < nlim[1], """
+        if nlim[0] >= nlim[1]:
+            raise ValueError("""
 *
 *   The second limit must be greater than the first.
 *
 *   You gave {0}.
 *
-""".format(nlim)
+""".format(nlim))
 
     if axis == 'log':
-        assert ((nlim[0] is None or nlim[0] > 0) and
-                (nlim[1] is None or nlim[1] > 0)), """
+        if ((nlim[0] is not None and nlim[0] <= 0) or
+            (nlim[1] is not None and nlim[1] <= 0)):
+            raise ValueError("""
 *
 *   If log plot cannot have limits less than or equal to 0.
 *
 *   You have {0}.
 *
-""".format(nlim)
+""".format(nlim))
 
     return nlim
 
@@ -600,12 +603,13 @@ def plot(input_ts='-',
                 'heatmap',
                 'autocorrelation',
                 'lag_plot']:
-        assert len(tsd.columns) == 1, """
+        if len(tsd.columns) != 1:
+            raise ValueError("""
 *
 *   The '{1}' plot can only work with 1 time-series in the DataFrame.
 *   The DataFrame that you supplied has {0} time-series.
 *
-""".format(len(tsd.columns), type)
+""".format(len(tsd.columns), type))
 
     if por is True:
         tsd = tsutils.common_kwds(tsutils.read_iso_ts(tsd),
@@ -634,11 +638,12 @@ def plot(input_ts='-',
 
     if legend_names:
         lnames = tsutils.make_list(legend_names)
-        assert len(lnames) == len(set(lnames)), """
+        if len(lnames) != len(set(lnames)):
+            raise ValueError("""
 *
 *   Each name in legend_names must be unique.
 *
-"""
+""")
         if len(tsd.columns) == len(lnames):
             renamedict = dict(list(zip(tsd.columns, lnames)))
         elif type == 'xy' and len(tsd.columns) // 2 == len(lnames):

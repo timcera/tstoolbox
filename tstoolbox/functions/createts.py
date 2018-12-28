@@ -47,9 +47,10 @@ def createts(freq=None,
 
     """
     if input_ts is None:
-        assert ((start_date is not None) and
-                (end_date is not None) and
-                (freq is not None)), """
+        if ((start_date is None) or
+            (end_date is None) or
+            (freq is None)):
+            raise ValueError("""
 *
 *   If input_ts is None, then start_date, end_date, and freq must be supplied.
 *   Instead you have:
@@ -57,7 +58,7 @@ def createts(freq=None,
 *   end_date = {1},
 *   freq = {2}
 *
-""".format(start_date, end_date, freq)
+""".format(start_date, end_date, freq))
 
     if input_ts is not None:
         tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,

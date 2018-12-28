@@ -1,11 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-import shlex
-import subprocess
 from unittest import TestCase
-
-from nose.tools import assert_raises_regexp
 
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
@@ -188,7 +182,7 @@ class TestReplace(TestCase):
     def test_replace_linear(self):
         """Test linear interpolation replace API."""
         out = tstoolbox.replace([3.0, 4.5, 6.0, 7.5, 9.0],
-                                [1  , 1  , 1  , 1  , 1  ],
+                                [1, 1, 1, 1, 1],
                                 input_ts=self.linear_compare
                                )
         assert_frame_equal(out, self.ats)

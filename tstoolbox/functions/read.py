@@ -82,12 +82,13 @@ def read(filenames,
     {round_index}
 
     """
-    assert append in ['combine', 'rows', 'columns'], """
+    if append not in ['combine', 'rows', 'columns']:
+        raise ValueError("""
 *
 *   The "append" keyword must be "combine", "rows", or "columns".
 *   You game me {0}.
 *
-""".format(append)
+""".format(append))
 
     if force_freq is not None:
         dropna = 'no'

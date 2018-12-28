@@ -76,14 +76,15 @@ def aggregate(input_ts='-',
                  'first',
                  'last',
                  'ohlc']
-    assert statistic in statslist, """
-***
-*** The statistic option must be one of:
-*** {1}
-*** to calculate the aggregation.
-*** You gave {0}.
-***
-""".format(statistic, statslist)
+    if statistic not in statslist:
+        raise ValueError("""
+*
+*   The statistic option must be one of:
+*   {1}
+*   to apply to each aggregation.
+*   You gave {0}.
+*
+""".format(statistic, statslist))
 
     aggd = {'hourly': 'H',
             'daily': 'D',

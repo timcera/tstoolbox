@@ -47,7 +47,7 @@ def test_time_multiple_traces_new_style_plot():
                   tol=0.019, extensions=['png'])
 def test_time_markers():
     tstoolbox.plot(type='time',
-                   columns=[2,3],
+                   columns=[2, 3],
                    linestyles=' ',
                    markerstyles='auto',
                    input_ts='tests/data_daily_sample.csv')
@@ -109,7 +109,7 @@ def test_double_mass_mult():
                   tol=0.019, extensions=['png'])
 def test_double_mass_marker():
     tstoolbox.plot(type='double_mass',
-                   columns=[2,3,3,2],
+                   columns=[2, 3, 3, 2],
                    linestyles=' ',
                    markerstyles='auto',
                    input_ts='tests/data_daily_sample.csv')
