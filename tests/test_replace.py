@@ -13,7 +13,7 @@ from . import capture
 class TestReplace(TestCase):
     def setUp(self):
         dindex = pd.date_range('2011-01-01T00:00:00', periods=26, freq='H')
-        self.ats = pd.np.ones((26)).astype('float64')
+        self.ats = pd.np.ones((26)).astype('float32')
         self.ats = pd.DataFrame(self.ats,
                                 index=dindex,
                                 columns=['Value_with_missing_replace'])
