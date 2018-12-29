@@ -13,10 +13,10 @@ from . import capture
 class TestReplace(TestCase):
     def setUp(self):
         dindex = pd.date_range('2011-01-01T00:00:00', periods=26, freq='H')
-        self.ats = pd.np.ones((26)).astype('float32')
+        self.ats = pd.np.ones((26))
         self.ats = pd.DataFrame(self.ats,
                                 index=dindex,
-                                columns=['Value_with_missing_replace'])
+                                columns=['Value_with_missing_replace']).astype('float32')
         self.ats.index.name = 'Datetime'
 
         self.ats_cli = capture.capture(tsutils._printiso, self.ats)

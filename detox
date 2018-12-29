@@ -14,12 +14,13 @@ pkgs="\
      flake8 \
      pytest \
      pytest-cov \
+     pytest-mpl \
      "
 
 # pandas no longer supports 2.6
-envs=(~/python_ves/python-2.7.13)
-#      ~/python_ves/python-3.5.2 \
-#      ~/python_ves/python-3.6.0)
+envs=(~/python_ves/python-2.7.13 \
+      ~/python_ves/python-3.5.2 \
+      ~/python_ves/python-3.6.0)
 
 for env in ${envs[@]}; do
     echo "${env}"
@@ -34,11 +35,12 @@ for env in ${envs[@]}; do
 
     pytest \
         --doctest-modules \
-        --ignore docsrc
+        --ignore docsrc \
+        --mpl
     deactivate
 done
 
-source "${env}"/bin/activate
+source ~/python_ves/python-2.7.13/bin/activate
 coverage erase
 coverage run `which pytest`
 coverage report --include="${program}/*" --omit="tests/*"

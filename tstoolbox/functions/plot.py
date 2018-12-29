@@ -173,6 +173,8 @@ def plot(input_ts='-',
 
         Output filename for the plot.  Extension defines
         the type, ('.png').
+
+        Within the Python API, if None will return the figure.
     type : str
         [optional, defaults to 'time']
 
