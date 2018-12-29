@@ -90,7 +90,7 @@ def test_aggregate_ninterval_groupby():
 
 def test_aggregate_bad_statistic():
     """Test API statistic name."""
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         _ = tstoolbox.aggregate(statistic="camel",
                                 groupby="D",
                                 input_ts="tests/data_flat.csv")

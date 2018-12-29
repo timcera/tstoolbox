@@ -5,7 +5,7 @@ from __future__ import print_function
 
 from unittest import TestCase
 
-from nose.tools import assert_raises_regexp
+import pytest
 
 import pandas as pd
 from pandas.util.testing import assert_index_equal
@@ -41,6 +41,6 @@ class TestRead(TestCase):
         assert_index_equal(out, self.data.index)
 
     def test_exception(self):
-        with assert_raises_regexp(AssertionError,
-                r'If input_ts is None, then start_date, end_date'):
+        with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.createts()
+        assert r'If input_ts is None, then start_date, end_date' in str(e_info.value)

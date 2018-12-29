@@ -5,10 +5,9 @@ import shlex
 import subprocess
 from unittest import TestCase
 
-from nose.tools import assert_raises_regexp
-
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
+import pytest
 
 import tstoolbox.tsutils as tsutils
 from tstoolbox import tstoolbox
@@ -248,10 +247,10 @@ class TestFill(TestCase):
 
     def test_fill_value(self):
         """Test fill with value API."""
-        with assert_raises_regexp(ValueError,
-                                  r"The allowable values for 'method' are"):
-            out = tstoolbox.fill(method='a',
-                                 input_ts='tests/data_missing.csv')
+        with pytest.raises(ValueError) as e_info:
+            _ = tstoolbox.fill(method='a',
+                               input_ts='tests/data_missing.csv')
+        assert r"The allowable values for 'method' are" in str(e_info.value)
 
     def test_fill_ffill_cli(self):
         """Test forward fill CLI."""

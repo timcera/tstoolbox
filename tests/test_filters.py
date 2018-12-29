@@ -6,9 +6,8 @@ from __future__ import print_function
 import os
 from unittest import TestCase
 
-from nose.tools import assert_raises_regexp
-
 from pandas.util.testing import assert_frame_equal
+import pytest
 
 from tstoolbox import tstoolbox
 
@@ -91,18 +90,18 @@ class TestFilter(TestCase):
         assert_frame_equal(out, out1)
 
     def test_large_window_len(self):
-        with assert_raises_regexp(AssertionError,
-                                  'Input vector \(length='):
-            out = tstoolbox.filter('flat',
-                                   input_ts='tests/data_sine.csv',
-                                   window_len=1000)
+        with pytest.raises(ValueError) as e_info:
+            _ = tstoolbox.filter('flat',
+                                 input_ts='tests/data_sine.csv',
+                                 window_len=1000)
+        assert r'Input vector (length=' in str(e_info.value)
 
     def test_filter_type(self):
-        with assert_raises_regexp(AssertionError,
-                                  r'Filter type '):
-            out = tstoolbox.filter('flatter',
-                                   input_ts='tests/data_sine.csv')
-#
+        with pytest.raises(ValueError) as e_info:
+            _ = tstoolbox.filter('flatter',
+                                 input_ts='tests/data_sine.csv')
+        assert r'Filter type ' in str(e_info.value)
+
 #    def test_filter_fft_highpass(self):
 #        out = tstoolbox.filter('fft_highpass',
 #                               input_ts='tests/data_sine.csv',

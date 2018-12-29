@@ -5,10 +5,9 @@ import shlex
 import subprocess
 from unittest import TestCase
 
-from nose.tools import assert_raises_regexp
-
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
+import pytest
 
 from tstoolbox import tstoolbox
 from tstoolbox import tsutils
@@ -207,15 +206,18 @@ class TestPeakDetect(TestCase):
         self.assertEqual(out, output_peak_detection)
 
     def test_peak_type_error(self):
-        with assert_raises_regexp(AssertionError, 'The `extrema` argument must be one'):
-            out = tstoolbox.peak_detection(method='sine',
-                                           points=9,
-                                           input_ts=self.ats,
-                                           print_input=True,
-                                           extrema='booth')
-        with assert_raises_regexp(AssertionError, 'The `method` argument must be one'):
-            out = tstoolbox.peak_detection(method='sin',
-                                           points=9,
-                                           input_ts=self.ats,
-                                           print_input=True,
-                                           extrema='both')
+        with pytest.raises(ValueError) as e_info:
+            _ = tstoolbox.peak_detection(method='sine',
+                                         points=9,
+                                         input_ts=self.ats,
+                                         print_input=True,
+                                         extrema='booth')
+
+        assert 'The `extrema` argument must be one' in str(e_info.value)
+        with pytest.raises(ValueError) as e_info:
+            _ = tstoolbox.peak_detection(method='sin',
+                                         points=9,
+                                         input_ts=self.ats,
+                                         print_input=True,
+                                         extrema='both')
+        assert 'The `method` argument must be one' in str(e_info.value)
