@@ -749,6 +749,13 @@ def common_kwds(
             else:
                 names.append('{0}:{1}'.format(ntsd.columns[inx], testunits))
         ntsd.columns = names
+    else:
+        source_units = []
+        for nu in ntsd.columns:
+            try:
+                source_units.append(nu.split(':')[1])
+            except IndexError:
+                source_units.append('')
 
     ntsd = _date_slice(ntsd,
                        start_date=parsedate(start_date),
@@ -810,8 +817,13 @@ def common_kwds(
                 import pint
                 # convert words[1] to target_units[inx]
                 ureg = pint.UnitRegistry()
-                ntsd[colname] = ntsd[colname] * ureg(words[1]).to(target_units[inx])
-                words[1] = target_units[inx]
+                ureg.autoconvert_offset_to_baseunit = True
+                Q_ = ureg.Quantity
+                try:
+                    ntsd[colname] = Q_(ntsd[colname], ureg(words[1])).to(target_units[inx])
+                    words[1] = target_units[inx]
+                except AttributeError:
+                    pass
             ncolumns.append(':'.join(words))
         ntsd.columns = ncolumns
     return ntsd
