@@ -104,4 +104,4 @@ def expanding_window(input_ts='-',
     return tsutils.print_input(print_input,
                                tsd,
                                ntsd,
-                               '_expanding_' + statistic)
+                               'expanding.' + statistic)

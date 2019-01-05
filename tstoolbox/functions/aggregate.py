@@ -161,6 +161,6 @@ def aggregate(input_ts='-',
         tmptsd = eval("""tsd.resample('{0}{1}').{2}()""".format(ninterval,
                                                                 groupby,
                                                                 method))
-        tmptsd.rename(columns=lambda x: x + '_' + method, inplace=True)
+        tmptsd.columns = [tsutils.renamer(i, method) for i in tmptsd.columns]
         newts = newts.join(tmptsd, how='outer')
     return tsutils.print_input(print_input, tsd, newts, '')

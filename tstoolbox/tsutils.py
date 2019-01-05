@@ -754,7 +754,7 @@ def common_kwds(
         for nu in ntsd.columns:
             try:
                 source_units.append(nu.split(':')[1])
-            except IndexError:
+            except (AttributeError, IndexError):
                 source_units.append('')
 
     ntsd = _date_slice(ntsd,
@@ -814,10 +814,8 @@ def common_kwds(
         for inx, colname in enumerate(ntsd.columns):
             words = colname.split(':')
             if len(words) > 1:
-                import pint
                 # convert words[1] to target_units[inx]
-                ureg = pint.UnitRegistry()
-                ureg.autoconvert_offset_to_baseunit = True
+                ureg = UnitRegistry()
                 Q_ = ureg.Quantity
                 try:
                     ntsd[colname] = Q_(ntsd[colname], ureg(words[1])).to(target_units[inx])
@@ -1076,20 +1074,41 @@ def asbestfreq(
     return data
 
 
+# Print the suffix into the third ":" separated field.
+def renamer(xloc, suffix):
+    if suffix is None:
+        suffix = ""
+    try:
+        words = xloc.split(":")
+    except AttributeError:
+        words = [str(xloc)]
+    if len(words) == 1:
+        words.append("")
+        words.append(suffix)
+    elif len(words) == 2:
+        words.append(suffix)
+    elif len(words) == 3:
+        if words[2] != "" and suffix != "":
+            words[2] = words[2] + "_" + suffix
+        elif words[2] == "" and suffix != "":
+            words[2] = suffix
+    return ":".join(words)
+
+
 # Utility
 def print_input(
     iftrue,
     intds,
     output,
-    suffix,
+    suffix="",
     date_format=None,
     float_format='%g',
     tablefmt='csv',
     showindex='never',
 ):
     """Print the input time series also."""
-    if suffix:
-        output.rename(columns=lambda xloc: str(xloc) + suffix, inplace=True)
+
+    output.columns = [renamer(i, suffix) for i in output.columns]
     if iftrue:
         return printiso(intds.join(output,
                                    lsuffix='_1',
@@ -1404,6 +1423,13 @@ def read_iso_ts(
                                               skiprows=skiprows)
             result.columns = [fstr.format(fname, str(i).strip())
                               for i in result.columns]
+
+            tmpc = result.columns.values
+            for index, i in enumerate(result.columns):
+                if 'Unnamed:' in i:
+                    words = i.split(':')
+                    tmpc[index] = words[0].strip() + words[1].strip()
+            result.columns = tmpc
 
     elif isinstance(indat, pd.DataFrame):
         result = indat

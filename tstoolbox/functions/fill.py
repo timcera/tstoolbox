@@ -149,7 +149,7 @@ def fill(input_ts='-',
     ntsd = ntsd.iloc[1:-1]
     tsd.index.name = 'Datetime'
     ntsd.index.name = 'Datetime'
-    return tsutils.print_input(print_input, tsd, ntsd, '_fill')
+    return tsutils.print_input(print_input, tsd, ntsd, 'fill')
 
 
 # @mando.command(formatter_class=RSTHelpFormatter)

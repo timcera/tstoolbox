@@ -95,5 +95,5 @@ def pct_change(input_ts='-',
                                               fill_method=fill_method,
                                               limit=limit,
                                               freq=freq),
-                               '_pct_change',
+                               'pctchange',
                                float_format=float_format)

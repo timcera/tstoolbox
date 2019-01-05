@@ -939,15 +939,14 @@ def peak_detection(input_ts='-',
         func = _peakdetect_fft
         kwds['pad_len'] = int(pad_len)
 
-    if extrema == 'peak':
-        tmptsd = tsd.rename(columns=lambda x: str(x) + '_peak', copy=True)
-    if extrema == 'valley':
-        tmptsd = tsd.rename(columns=lambda x: str(x) + '_valley', copy=True)
+    tmptsd = tsd.copy()
     if extrema == 'both':
-        tmptsd = tsd.rename(columns=lambda x: str(x) + '_peak', copy=True)
-        tmptsd = tmptsd.join(
-            tsd.rename(columns=lambda x: str(x) + '_valley', copy=True),
-            how='outer')
+        tmptsd.columns = [tsutils.renamer(i, 'peak') for i in tsd.columns]
+        atmpst = tsd.copy()
+        atmpst.columns = [tsutils.renamer(i, 'valley') for i in tsd.columns]
+        tmptsd = tmptsd.join(atmpst, how='outer')
+    else:
+        tmptsd.columns = [tsutils.renamer(i, extrema) for i in tsd.columns]
 
     for cols in tmptsd.columns:
         if method in ['fft', 'parabola', 'sine']:
@@ -955,9 +954,9 @@ def peak_detection(input_ts='-',
                 tmptsd[cols].values, list(range(len(tmptsd[cols]))), **kwds)
         else:
             maxpeak, minpeak = func(tmptsd[cols].values, **kwds)
-        if cols[-5:] == '_peak':
+        if cols[-4:] == 'peak':
             datavals = maxpeak
-        if cols[-7:] == '_valley':
+        if cols[-6:] == 'valley':
             datavals = minpeak
         maxx, _ = list(zip(*datavals))
         hold = tmptsd[cols][pd.np.array(maxx).astype('i')]

@@ -235,5 +235,5 @@ def equation(equation_str,
     return tsutils.print_input(print_input,
                                x,
                                y,
-                               '_equation',
+                               'equation',
                                float_format=float_format)

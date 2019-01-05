@@ -71,4 +71,4 @@ def remove_trend(input_ts='-',
         ntsd[col] = lin[0] * index + lin[1]
         ntsd[col] = tsd[col] - ntsd[col]
     return tsutils.print_input(
-        print_input, tsd, ntsd, '_rem_trend')
+        print_input, tsd, ntsd, 'remtrend')

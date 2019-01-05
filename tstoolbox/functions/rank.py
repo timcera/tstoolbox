@@ -135,5 +135,5 @@ def rank(input_ts='-',
                                         na_option=na_option,
                                         ascending=ascending,
                                         pct=pct),
-                               '_rank',
+                               'rank',
                                float_format=float_format)

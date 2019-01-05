@@ -83,4 +83,4 @@ def add_trend(start_offset,
     return tsutils.print_input(print_input,
                                tsd,
                                ntsd,
-                               '_trend')
+                               'trend')

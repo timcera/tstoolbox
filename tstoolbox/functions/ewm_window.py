@@ -147,4 +147,4 @@ def ewm_window(input_ts='-',
     return tsutils.print_input(print_input,
                                tsd,
                                ntsd,
-                               '_ewm_' + statistic)
+                               'ewm.' + statistic)

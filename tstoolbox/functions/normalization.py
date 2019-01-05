@@ -118,5 +118,5 @@ def normalization(input_ts='-',
     return tsutils.print_input(print_input,
                                otsd,
                                tsd,
-                               '_{0}'.format(mode),
+                               '{0}'.format(mode),
                                float_format=float_format)

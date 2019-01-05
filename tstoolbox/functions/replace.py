@@ -82,4 +82,4 @@ def replace(from_values,
     ntsd = tsd.replace(nfrom_values, nto_values)
 
     return tsutils.print_input(
-        print_input, tsd, ntsd, '_replace')
+        print_input, tsd, ntsd, 'replace')

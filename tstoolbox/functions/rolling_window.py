@@ -176,7 +176,7 @@ def rolling_window(statistic=None,
                                  on={on},
                                  closed={closed}){statstr}
                                  )'''.format(**locals()))
-        etsd.columns = ['{0}_rolling_{1}_{2}'.format(i, win, statistic)
+        etsd.columns = [tsutils.renamer(i, 'rolling.{0}'.format(statistic))
                         for i in etsd.columns]
 
         ntsd = ntsd.join(etsd, how='outer')

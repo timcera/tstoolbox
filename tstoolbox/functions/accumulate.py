@@ -73,4 +73,4 @@ def accumulate(input_ts='-',
 *   Statistic {0} is not implemented.
 *
 """.format(statistic))
-    return tsutils.print_input(print_input, tsd, ntsd, '_' + statistic)
+    return tsutils.print_input(print_input, tsd, ntsd, statistic)

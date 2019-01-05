@@ -77,5 +77,5 @@ def convert(input_ts='-',
                               target_units=target_units,
                               clean=clean)
     tmptsd = tsd * factor + offset
-    return tsutils.print_input(print_input, tsd, tmptsd, '_convert',
+    return tsutils.print_input(print_input, tsd, tmptsd, 'convert',
                                float_format=float_format)

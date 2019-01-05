@@ -221,5 +221,5 @@ def filter(filter_type,
                 w = eval('pd.np.' + filter_type + '(window_len)')
             tsd[col].values[:] = pd.np.convolve(w / w.sum(), s, mode='valid')
 
-    return tsutils.print_input(print_input, otsd, tsd, '_filter',
+    return tsutils.print_input(print_input, otsd, tsd, 'filter',
                                float_format=float_format)

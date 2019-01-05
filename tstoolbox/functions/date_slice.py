@@ -32,6 +32,9 @@ def date_slice(input_ts='-',
                float_format='%g'):
     """Print out data to the screen between start_date and end_date.
 
+    This isn't really useful anymore because "start_date" and "end_date" are
+    available in all sub-commands.
+
     Parameters
     ----------
     {input_ts}

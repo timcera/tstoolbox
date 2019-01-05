@@ -93,4 +93,4 @@ def clip(input_ts='-',
             n_max = float(a_max)
 
     return tsutils.print_input(
-        print_input, tsd, tsd.clip(n_min, n_max), '_clip')
+        print_input, tsd, tsd.clip(n_min, n_max), 'clip')
