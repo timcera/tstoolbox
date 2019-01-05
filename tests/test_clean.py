@@ -10,7 +10,7 @@ from pandas.util.testing import assert_frame_equal
 
 from tstoolbox import tstoolbox
 
-test_sinwave = """Datetime,0,0_peak,0_valley
+test_sinwave = """Datetime,0::,0::peak,0::valley
 2000-01-01 00:00:00,0.0,,
 2000-01-01 01:00:00,0.258819045103,,
 2000-01-01 02:00:00,0.5,,

@@ -53,7 +53,7 @@ class TestRead(TestCase):
 
         self.read_tsstep_2_daily.index.name = 'Datetime'
 
-        self.read_blanks = b"""Datetime,Value_mean,Unnamed: 2_mean,Unnamed: 3_mean,Unnamed: 4_mean,Unnamed: 5_mean,Unnamed: 6_mean,Unnamed: 7_mean,Unnamed: 8_mean,Unnamed: 9_mean
+        self.read_blanks = b"""Datetime,Value::mean,Unnamed2::mean,Unnamed3::mean,Unnamed4::mean,Unnamed5::mean,Unnamed6::mean,Unnamed7::mean,Unnamed8::mean,Unnamed9::mean
 2000-01-01,2.46667,,,,,,,,
 2000-01-02,3.4,,,,,,,,
 """

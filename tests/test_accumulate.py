@@ -6,6 +6,7 @@ from pandas.util.testing import assert_frame_equal
 import pytest
 
 from tstoolbox import tstoolbox
+from tstoolbox import tsutils
 
 
 class TestRead(TestCase):
@@ -16,7 +17,8 @@ class TestRead(TestCase):
                            skipinitialspace=True).astype('float64')
         base.index.name = 'Datetime'
         self.cumsum = base.cumsum()
-        self.cumsum.columns = [i + '_sum' for i in self.cumsum.columns]
+        self.cumsum.columns = [tsutils.renamer(i, 'sum')
+                               for i in self.cumsum.columns]
 
     def test_cumsum(self):
         """Test cumsum."""

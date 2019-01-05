@@ -13,13 +13,17 @@ class TestDescribe(TestCase):
     def setUp(self):
         self.data_0_to_1 = tstoolbox.read(
             'tests/data_sunspot_normalized_0_to_1.csv')
+        self.data_0_to_1.columns = ['Area::minmax']
         self.data_10_to_20 = tstoolbox.read(
             'tests/data_sunspot_normalized_10_to_20.csv')
+        self.data_10_to_20.columns = ['Area::minmax']
         self.data_zscore = tstoolbox.read(
             'tests/data_sunspot_normalized_zscore.csv')
+        self.data_zscore.columns = ['Area::zscore']
         self.data_zscore = tsutils.memory_optimize(self.data_zscore)
         self.data_pct_rank = tstoolbox.read(
             'tests/data_sunspot_normalized_pct_rank.csv')
+        self.data_pct_rank.columns = ['Area::pct_rank']
         self.data_pct_rank = tsutils.memory_optimize(self.data_pct_rank)
 
     def test_normalize_0_to_1(self):

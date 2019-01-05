@@ -11,7 +11,7 @@ import pytest
 
 from tstoolbox import tstoolbox
 
-test_sinwave = """Datetime,0,0_peak,0_valley
+test_sinwave = """Datetime,0::,0::peak,0::valley
 2000-01-01 00:00:00,0.0,,
 2000-01-01 01:00:00,0.258819045103,,
 2000-01-01 02:00:00,0.5,,
@@ -47,15 +47,18 @@ class TestFilter(TestCase):
 
         self.flat_3 = self.ats.join(tstoolbox.read(os.path.join('tests',
                                                                 'data_filter_flat.csv')))
+        self.flat_3.columns = ['Value', 'Value::filter']
 
         self.hanning = self.ats.join(tstoolbox.read(os.path.join('tests',
                                                                  'data_filter_hanning.csv')))
+        self.hanning.columns = ['Value', 'Value::filter']
 
         self.fft_lowpass = self.ats.join(tstoolbox.read(os.path.join('tests',
                                                                      'data_filter_fft_lowpass.csv')))
+        self.fft_lowpass.columns = ['Value', 'Value::filter']
 
         self.fft_highpass = self.ats.copy()
-        self.fft_highpass.columns = ['Value_filter']
+        self.fft_highpass.columns = ['Value::filter']
         self.fft_highpass = self.ats.join(self.fft_highpass)
 
     def test_filter_flat(self):
@@ -85,7 +88,7 @@ class TestFilter(TestCase):
                                input_ts='tests/data_sine.csv',
                                window_len=2)
         out1 = tstoolbox.read('tests/data_sine.csv')
-        out1.columns = ['Value_filter']
+        out1.columns = ['Value::filter']
         # NOp
         assert_frame_equal(out, out1)
 

@@ -18,14 +18,16 @@ class TestRollingWindow(TestCase):
     def setUp(self):
         dr = pandas.date_range('2000-01-01', periods=2, freq='D')
         ts = pandas.Series([pandas.np.nan, 9.1], index=dr)
-        self.compare_rolling_window_sum = pandas.DataFrame(ts,
-                columns=['Value_rolling_2_sum'])
+        self.compare_rolling_window_sum = pandas.DataFrame(
+            ts,
+            columns=['Value::rolling.sum'])
         self.compare_rolling_window_sum.index.name = 'Datetime'
 
         dr = pandas.date_range('2000-01-01', periods=2, freq='D')
         ts = pandas.Series([pandas.np.nan, 4.55], index=dr)
         self.compare_rolling_window_mean = pandas.DataFrame(
-            ts, columns=['Value_rolling_2_mean'])
+            ts,
+            columns=['Value::rolling.mean'])
         self.compare_rolling_window_mean.index.name = 'Datetime'
 
         self.compare_rolling_window_sum_cli = capture.capture(tsutils._printiso,

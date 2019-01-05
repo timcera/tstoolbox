@@ -9,6 +9,10 @@ from tstoolbox import tstoolbox
 df = tstoolbox.aggregate(agg_interval='D',
                          clean=True,
                          input_ts='tests/02234500_65_65.csv')
+# Pull this in once.
+dfa = tstoolbox.aggregate(agg_interval='A',
+                          clean=True,
+                          input_ts='tests/02234500_65_65.csv')
 
 @pytest.mark.mpl_image_compare
 def test_time_plot():
@@ -159,25 +163,25 @@ def test_probability_density():
 @pytest.mark.mpl_image_compare
 def test_bar():
     return tstoolbox.plot(type='bar',
-                          input_ts=df,
+                          input_ts=dfa,
                           ofilename=None)
 
 @pytest.mark.mpl_image_compare
 def test_barh():
     return tstoolbox.plot(type='barh',
-                          input_ts=df,
+                          input_ts=dfa,
                           ofilename=None)
 
 @pytest.mark.mpl_image_compare
 def test_bar_stacked():
     return tstoolbox.plot(type='bar_stacked',
-                          input_ts=df,
+                          input_ts=dfa,
                           ofilename=None)
 
 @pytest.mark.mpl_image_compare
 def test_barh_stacked():
     return tstoolbox.plot(type='barh_stacked',
-                          input_ts=df,
+                          input_ts=dfa,
                           ofilename=None)
 
 @pytest.mark.mpl_image_compare

@@ -1,4 +1,5 @@
 
+import sys
 from unittest import TestCase
 
 import pandas as pd
@@ -9,6 +10,10 @@ from tstoolbox import tstoolbox
 
 from . import capture
 
+if sys.version_info > (3, 0):
+    dtype = 'float32'
+else:
+    dtype = 'float64'
 
 class TestReplace(TestCase):
     def setUp(self):
@@ -16,15 +21,15 @@ class TestReplace(TestCase):
         self.ats = pd.np.ones((26))
         self.ats = pd.DataFrame(self.ats,
                                 index=dindex,
-                                columns=['Value_with_missing_replace']).astype('float32')
+                                columns=['Value_with_missing::replace']).astype(dtype)
         self.ats.index.name = 'Datetime'
 
         self.ats_cli = capture.capture(tsutils._printiso, self.ats)
 
         self.freplace_compare = self.ats.copy()
-        self.freplace_compare['Value_with_missing_replace'][
+        self.freplace_compare['Value_with_missing::replace'][
             '2011-01-01T09:00:00':'2011-01-01T12:00:00'] = 3
-        self.freplace_compare['Value_with_missing_replace'][
+        self.freplace_compare['Value_with_missing::replace'][
             '2011-01-01T13:00:00'] = 9
 
         self.freplace_compare.columns = ['Value_with_missing']
@@ -32,9 +37,9 @@ class TestReplace(TestCase):
                                                  self.freplace_compare)
 
         self.breplace_compare = self.ats.copy()
-        self.breplace_compare['Value_with_missing_replace'][
+        self.breplace_compare['Value_with_missing::replace'][
             '2011-01-01T09:00:00'] = 3
-        self.breplace_compare['Value_with_missing_replace'][
+        self.breplace_compare['Value_with_missing::replace'][
             '2011-01-01T10:00:00':'2011-01-01T13:00:00'] = 9
 
         self.breplace_compare.columns = ['Value_with_missing']
@@ -42,15 +47,15 @@ class TestReplace(TestCase):
                                                  self.breplace_compare)
 
         self.linear_compare = self.ats.copy()
-        self.linear_compare['Value_with_missing_replace'][
+        self.linear_compare['Value_with_missing::replace'][
             '2011-01-01T09:00:00'] = 3.0
-        self.linear_compare['Value_with_missing_replace'][
+        self.linear_compare['Value_with_missing::replace'][
             '2011-01-01T10:00:00'] = 4.5
-        self.linear_compare['Value_with_missing_replace'][
+        self.linear_compare['Value_with_missing::replace'][
             '2011-01-01T11:00:00'] = 6.0
-        self.linear_compare['Value_with_missing_replace'][
+        self.linear_compare['Value_with_missing::replace'][
             '2011-01-01T12:00:00'] = 7.5
-        self.linear_compare['Value_with_missing_replace'][
+        self.linear_compare['Value_with_missing::replace'][
             '2011-01-01T13:00:00'] = 9.0
 
         self.linear_compare.columns = ['Value_with_missing']
@@ -58,9 +63,9 @@ class TestReplace(TestCase):
                                                   self.linear_compare)
 
         self.nearest_compare = self.ats.copy()
-        self.nearest_compare['Value_with_missing_replace'][
+        self.nearest_compare['Value_with_missing::replace'][
             '2011-01-01T09:00:00':'2011-01-01T11:00:00'] = 3.0
-        self.nearest_compare['Value_with_missing_replace'][
+        self.nearest_compare['Value_with_missing::replace'][
             '2011-01-01T12:00:00':'2011-01-01T13:00:00'] = 9.0
 
         self.nearest_compare.columns = ['Value_with_missing']
@@ -68,23 +73,23 @@ class TestReplace(TestCase):
                                                    self.nearest_compare)
 
         self.median_compare = self.ats.copy()
-        self.median_compare['Value_with_missing_replace'][
+        self.median_compare['Value_with_missing::replace'][
             '2011-01-01T01:00:00'] = 2.0
-        self.median_compare['Value_with_missing_replace'][
+        self.median_compare['Value_with_missing::replace'][
             '2011-01-01T09:00:00'] = 3.0
-        self.median_compare['Value_with_missing_replace'][
+        self.median_compare['Value_with_missing::replace'][
             '2011-01-01T10:00:00'] = 2.0
-        self.median_compare['Value_with_missing_replace'][
+        self.median_compare['Value_with_missing::replace'][
             '2011-01-01T11:00:00'] = 2.0
-        self.median_compare['Value_with_missing_replace'][
+        self.median_compare['Value_with_missing::replace'][
             '2011-01-01T12:00:00'] = 2.0
-        self.median_compare['Value_with_missing_replace'][
+        self.median_compare['Value_with_missing::replace'][
             '2011-01-01T13:00:00'] = 9.0
-        self.median_compare['Value_with_missing_replace'][
+        self.median_compare['Value_with_missing::replace'][
             '2011-01-01T16:00:00'] = 2.0
-        self.median_compare['Value_with_missing_replace'][
+        self.median_compare['Value_with_missing::replace'][
             '2011-01-01T22:00:00'] = 2.0
-        self.median_compare['Value_with_missing_replace'][
+        self.median_compare['Value_with_missing::replace'][
             '2011-01-01T23:00:00'] = 2.0
 
         self.median_compare.columns = ['Value_with_missing']
@@ -92,23 +97,23 @@ class TestReplace(TestCase):
                                                   self.median_compare)
 
         self.max_compare = self.ats.copy()
-        self.max_compare['Value_with_missing_replace'][
+        self.max_compare['Value_with_missing::replace'][
             '2011-01-01T01:00:00'] = 9.0
-        self.max_compare['Value_with_missing_replace'][
+        self.max_compare['Value_with_missing::replace'][
             '2011-01-01T09:00:00'] = 3.0
-        self.max_compare['Value_with_missing_replace'][
+        self.max_compare['Value_with_missing::replace'][
             '2011-01-01T10:00:00'] = 9.0
-        self.max_compare['Value_with_missing_replace'][
+        self.max_compare['Value_with_missing::replace'][
             '2011-01-01T11:00:00'] = 9.0
-        self.max_compare['Value_with_missing_replace'][
+        self.max_compare['Value_with_missing::replace'][
             '2011-01-01T12:00:00'] = 9.0
-        self.max_compare['Value_with_missing_replace'][
+        self.max_compare['Value_with_missing::replace'][
             '2011-01-01T13:00:00'] = 9.0
-        self.max_compare['Value_with_missing_replace'][
+        self.max_compare['Value_with_missing::replace'][
             '2011-01-01T16:00:00'] = 9.0
-        self.max_compare['Value_with_missing_replace'][
+        self.max_compare['Value_with_missing::replace'][
             '2011-01-01T22:00:00'] = 9.0
-        self.max_compare['Value_with_missing_replace'][
+        self.max_compare['Value_with_missing::replace'][
             '2011-01-01T23:00:00'] = 9.0
 
         self.max_compare.columns = ['Value_with_missing']
@@ -116,23 +121,23 @@ class TestReplace(TestCase):
                                                self.max_compare)
 
         self.min_compare = self.ats.copy()
-        self.min_compare['Value_with_missing_replace'][
+        self.min_compare['Value_with_missing::replace'][
             '2011-01-01T01:00:00'] = 2.0
-        self.min_compare['Value_with_missing_replace'][
+        self.min_compare['Value_with_missing::replace'][
             '2011-01-01T09:00:00'] = 3.0
-        self.min_compare['Value_with_missing_replace'][
+        self.min_compare['Value_with_missing::replace'][
             '2011-01-01T10:00:00'] = 2.0
-        self.min_compare['Value_with_missing_replace'][
+        self.min_compare['Value_with_missing::replace'][
             '2011-01-01T11:00:00'] = 2.0
-        self.min_compare['Value_with_missing_replace'][
+        self.min_compare['Value_with_missing::replace'][
             '2011-01-01T12:00:00'] = 2.0
-        self.min_compare['Value_with_missing_replace'][
+        self.min_compare['Value_with_missing::replace'][
             '2011-01-01T13:00:00'] = 9.0
-        self.min_compare['Value_with_missing_replace'][
+        self.min_compare['Value_with_missing::replace'][
             '2011-01-01T16:00:00'] = 2.0
-        self.min_compare['Value_with_missing_replace'][
+        self.min_compare['Value_with_missing::replace'][
             '2011-01-01T22:00:00'] = 2.0
-        self.min_compare['Value_with_missing_replace'][
+        self.min_compare['Value_with_missing::replace'][
             '2011-01-01T23:00:00'] = 2.0
 
         self.min_compare.columns = ['Value_with_missing']
@@ -140,23 +145,23 @@ class TestReplace(TestCase):
                                                self.min_compare)
 
         self.con_compare = self.ats.copy()
-        self.con_compare['Value_with_missing_replace'][
+        self.con_compare['Value_with_missing::replace'][
             '2011-01-01T01:00:00'] = 2.42
-        self.con_compare['Value_with_missing_replace'][
+        self.con_compare['Value_with_missing::replace'][
             '2011-01-01T09:00:00'] = 3.0
-        self.con_compare['Value_with_missing_replace'][
+        self.con_compare['Value_with_missing::replace'][
             '2011-01-01T10:00:00'] = 2.42
-        self.con_compare['Value_with_missing_replace'][
+        self.con_compare['Value_with_missing::replace'][
             '2011-01-01T11:00:00'] = 2.42
-        self.con_compare['Value_with_missing_replace'][
+        self.con_compare['Value_with_missing::replace'][
             '2011-01-01T12:00:00'] = 2.42
-        self.con_compare['Value_with_missing_replace'][
+        self.con_compare['Value_with_missing::replace'][
             '2011-01-01T13:00:00'] = 9.0
-        self.con_compare['Value_with_missing_replace'][
+        self.con_compare['Value_with_missing::replace'][
             '2011-01-01T16:00:00'] = 2.42
-        self.con_compare['Value_with_missing_replace'][
+        self.con_compare['Value_with_missing::replace'][
             '2011-01-01T22:00:00'] = 2.42
-        self.con_compare['Value_with_missing_replace'][
+        self.con_compare['Value_with_missing::replace'][
             '2011-01-01T23:00:00'] = 2.42
 
         self.con_compare.columns = ['Value_with_missing']

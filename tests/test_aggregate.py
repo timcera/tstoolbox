@@ -19,22 +19,22 @@ class TestAggregate(TestCase):
 
         ts = pandas.Series([2, 2], index=dr)
         self.aggregate_direct_mean = pandas.DataFrame(ts,
-                                                      columns=['Value_mean'])
+                                                      columns=['Value::mean'])
         self.aggregate_direct_mean.index.name = 'Datetime'
         self.aggregate_direct_mean = tsutils.memory_optimize(self.aggregate_direct_mean)
 
 
         ts = pandas.Series([48, 48], index=dr)
-        self.aggregate_direct_sum = pandas.DataFrame(ts, columns=['Value_sum'])
+        self.aggregate_direct_sum = pandas.DataFrame(ts, columns=['Value::sum'])
         self.aggregate_direct_sum.index.name = 'Datetime'
         self.aggregate_direct_sum = tsutils.memory_optimize(self.aggregate_direct_sum)
 
-        self.aggregate_cli_mean = b"""Datetime,Value_mean
+        self.aggregate_cli_mean = b"""Datetime,Value::mean
 2011-01-01,2
 2011-01-02,2
 """
 
-        self.aggregate_cli_sum = b"""Datetime,Value_sum
+        self.aggregate_cli_sum = b"""Datetime,Value::sum
 2011-01-01,48
 2011-01-02,48
 """

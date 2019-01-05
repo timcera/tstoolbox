@@ -12,7 +12,7 @@ import pytest
 from tstoolbox import tstoolbox
 from tstoolbox import tsutils
 
-output_peak_detection = b"""Datetime,0,0_peak,0_valley
+output_peak_detection = b"""Datetime,0,0::peak,0::valley
 2000-01-01 00:00:00,0,,
 2000-01-01 01:00:00,0.258819,,
 2000-01-01 02:00:00,0.5,,
@@ -79,16 +79,16 @@ class TestPeakDetect(TestCase):
         self.compare = self.compare.join(
             pd.Series(pd.np.zeros(len(self.ats)).astype('f'),
                       index=self.ats.index,
-                      name='0_peak'))
+                      name='0::peak'))
         self.compare = self.compare.join(
             pd.Series(pd.np.zeros(len(self.ats)).astype('f'),
                       index=self.ats.index,
-                      name='0_valley'))
+                      name='0::valley'))
         self.compare.index.name = 'Datetime'
-        self.compare['0_peak'] = pd.np.nan
-        self.compare.loc[self.compare[0] == 1, '0_peak'] = 1
-        self.compare['0_valley'] = pd.np.nan
-        self.compare.loc[self.compare[0] == -1, '0_valley'] = -1
+        self.compare['0::peak'] = pd.np.nan
+        self.compare.loc[self.compare[0] == 1, '0::peak'] = 1
+        self.compare['0::valley'] = pd.np.nan
+        self.compare.loc[self.compare[0] == -1, '0::valley'] = -1
         self.compare = tsutils.memory_optimize(self.compare)
 
     def test_peak_rel_direct(self):

@@ -13,7 +13,7 @@ from tstoolbox import tsutils
 
 class TestAddTrend(TestCase):
     def setUp(self):
-        self.add_trend_cli = b"""Datetime,Value_trend
+        self.add_trend_cli = b"""Datetime,Value::trend
 2011-01-01 00:00:00,1
 2011-01-01 01:00:00,1.04255
 2011-01-01 02:00:00,1.08511
