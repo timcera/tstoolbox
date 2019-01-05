@@ -10,10 +10,6 @@ from tstoolbox import tstoolbox
 
 from . import capture
 
-if sys.version_info > (3, 0):
-    dtype = 'float32'
-else:
-    dtype = 'float64'
 
 class TestReplace(TestCase):
     def setUp(self):
@@ -21,7 +17,7 @@ class TestReplace(TestCase):
         self.ats = pd.np.ones((26))
         self.ats = pd.DataFrame(self.ats,
                                 index=dindex,
-                                columns=['Value_with_missing::replace']).astype(dtype)
+                                columns=['Value_with_missing::replace'])
         self.ats.index.name = 'Datetime'
 
         self.ats_cli = capture.capture(tsutils._printiso, self.ats)
@@ -174,7 +170,7 @@ class TestReplace(TestCase):
                                 [1, 1],
                                 input_ts=self.freplace_compare
                                )
-        assert_frame_equal(out, self.ats)
+        assert_frame_equal(out, self.ats, check_dtype=False)
 
     def test_replace_breplace(self):
         """Test backward replace API."""
@@ -182,7 +178,7 @@ class TestReplace(TestCase):
                                 [1, 1],
                                 input_ts=self.breplace_compare
                                )
-        assert_frame_equal(out, self.ats)
+        assert_frame_equal(out, self.ats, check_dtype=False)
 
     def test_replace_linear(self):
         """Test linear interpolation replace API."""
@@ -190,7 +186,7 @@ class TestReplace(TestCase):
                                 [1, 1, 1, 1, 1],
                                 input_ts=self.linear_compare
                                )
-        assert_frame_equal(out, self.ats)
+        assert_frame_equal(out, self.ats, check_dtype=False)
 
     def test_replace_nearest(self):
         """Test nearest replace API."""
@@ -198,7 +194,7 @@ class TestReplace(TestCase):
                                 [1, 1],
                                 input_ts=self.nearest_compare
                                )
-        assert_frame_equal(out, self.ats)
+        assert_frame_equal(out, self.ats, check_dtype=False)
 
     def test_replace_median(self):
         """Test replace with median API."""
@@ -207,7 +203,7 @@ class TestReplace(TestCase):
                                 input_ts=self.median_compare,
                                )
         self.maxDiff = None
-        assert_frame_equal(out, self.ats)
+        assert_frame_equal(out, self.ats, check_dtype=False)
 
     def test_replace_max(self):
         """Test replace with max API."""
@@ -215,7 +211,7 @@ class TestReplace(TestCase):
                                 [1, 1],
                                 input_ts=self.max_compare,
                                )
-        assert_frame_equal(out, self.ats)
+        assert_frame_equal(out, self.ats, check_dtype=False)
 
     def test_replace_min(self):
         """Test replace with min API."""
@@ -223,7 +219,7 @@ class TestReplace(TestCase):
                                 [1, 1, 1],
                                 input_ts=self.min_compare,
                                )
-        assert_frame_equal(out, self.ats)
+        assert_frame_equal(out, self.ats, check_dtype=False)
 
     def test_replace_con(self):
         """Test replace with con API."""
@@ -231,7 +227,7 @@ class TestReplace(TestCase):
                                 [1, 1, 1],
                                 input_ts=self.con_compare,
                                )
-        assert_frame_equal(out, self.ats)
+        assert_frame_equal(out, self.ats, check_dtype=False)
 
 #    def test_replace_freplace_cli(self):
 #        """Test forward replace CLI."""
