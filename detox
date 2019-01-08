@@ -22,6 +22,8 @@ envs=(~/python_ves/python-2.7.13 \
       ~/python_ves/python-3.5.2 \
       ~/python_ves/python-3.6.0)
 
+pytest_opts='--doctest-modules --ignore docsrc --mpl'
+
 for env in ${envs[@]}; do
     echo "${env}"
 
@@ -32,17 +34,13 @@ for env in ${envs[@]}; do
     pip uninstall -y ${program}
     rm -rf build
     python setup.py develop
-
-    pytest \
-        --doctest-modules \
-        --ignore docsrc \
-        --mpl
+    pytest ${pytest_opts}
     deactivate
 done
 
 source ~/python_ves/python-2.7.13/bin/activate
 coverage erase
-coverage run `which pytest`
+coverage run `which pytest` ${pytest_opts}
 coverage report --include="${program}/*" --omit="tests/*"
 coverage html --include="${program}/*" --omit="tests/*"
 flake8 ${program}/__init__.py ${program}/${program}.py ${program}/tsutils.py ${program}/functions/*.py --exit-zero
