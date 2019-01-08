@@ -73,11 +73,11 @@ def calculate_fdc(input_ts='-',
                               target_units=target_units,
                               clean=clean)
 
-    ppf = tsutils._set_ppf(percent_point_function)
+    ppf = tsutils.set_ppf(percent_point_function)
     newts = pd.DataFrame()
     for col in tsd:
         tmptsd = tsd[col].dropna()
-        xdat = ppf(tsutils._set_plotting_position(tmptsd.count(),
+        xdat = ppf(tsutils.set_plotting_position(tmptsd.count(),
                                                   plotting_position)) * 100
         tmptsd.sort_values(ascending=ascending, inplace=True)
         tmptsd.index = xdat

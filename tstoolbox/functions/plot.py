@@ -907,7 +907,7 @@ def plot(input_ts='-',
                   'lognorm_yaxis',
                   'weibull_xaxis',
                   'weibull_yaxis']:
-        ppf = tsutils._set_ppf(type.split('_')[0])
+        ppf = tsutils.set_ppf(type.split('_')[0])
         ys = tsd.iloc[:, :]
 
         for colindex in range(colcnt):
@@ -915,7 +915,7 @@ def plot(input_ts='-',
             oydata = pd.np.sort(oydata)[::-1]
             n = len(oydata)
             norm_axis = ax.xaxis
-            oxdata = ppf(tsutils._set_plotting_position(n,
+            oxdata = ppf(tsutils.set_plotting_position(n,
                                                         plotting_position))
 
             if type in ['norm_yaxis',

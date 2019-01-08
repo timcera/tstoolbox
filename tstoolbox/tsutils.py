@@ -327,7 +327,7 @@ docstrings = {
         }
 
 
-def _set_ppf(ptype):
+def set_ppf(ptype):
     if ptype == 'norm':
         from scipy.stats.distributions import norm
         return norm.ppf
@@ -350,7 +350,7 @@ def _plotting_position_equation(i, n, a):
     return (i - a) / float(n + 1 - 2 * a)
 
 
-def _set_plotting_position(n, plotting_position='weibull'):
+def set_plotting_position(n, plotting_position='weibull'):
     """Create plotting position 1D array using linspace."""
     plotplist = [
         'weibull',
@@ -361,13 +361,14 @@ def _set_plotting_position(n, plotting_position='weibull'):
         'cunnane',
         'california',
     ]
-    assert plotting_position in plotplist, """
+    if plotting_position not in plotplist:
+        raise ValueError("""
 *
 *    The plotting_position option accepts:
 *    {1}
 *    plotting position options, you gave {0}.
 *
-""".format(plotting_position, plotplist)
+""".format(plotting_position, plotplist))
 
     if plotting_position == 'weibull':
         return pd.np.linspace(
