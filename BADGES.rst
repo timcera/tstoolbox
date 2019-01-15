@@ -13,3 +13,7 @@
 .. image:: http://img.shields.io/badge/license-BSD-lightgrey.svg
     :alt: tstoolbox license
     :target: https://pypi.python.org/pypi/tstoolbox/
+
+.. image:: http://img.shields.io/pypi/dd/tstoolbox.svg
+    :alt: tstoolbox downloads
+    :target: https://pypi.python.org/pypi/tstoolbox/
