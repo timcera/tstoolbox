@@ -28,7 +28,8 @@ def gof(input_ts='-',
         names=None,
         source_units=None,
         target_units=None,
-        skiprows=None):
+        skiprows=None,
+        tablefmt='plain'):
     """Will calculate goodness of fit statistics between two time-series.
 
     The first time series must be the observed, the second the predicted
@@ -73,6 +74,10 @@ def gof(input_ts='-',
         | brierss         | sum(f - o)^2/N                                   |
         |                 |     f = forecast probabilities                   |
         +-----------------+--------------------------------------------------+
+        | mean            | observed mean, simulated mean                    |
+        +-----------------+--------------------------------------------------+
+        | stdev           | observed stdev, simulated stdev                  |
+        +-----------------+--------------------------------------------------+
 
     {columns}
     {start_date}
@@ -84,6 +89,7 @@ def gof(input_ts='-',
     {source_units}
     {target_units}
     {round_index}
+    {tablefmt}
 
     """
     if stats == 'all':
@@ -97,7 +103,9 @@ def gof(input_ts='-',
                  'nse',
                  'kge',
                  'index_agreement',
-                 'brierss']
+                 'brierss',
+                 'mean',
+                 'stdev']
     else:
         try:
             stats = tsutils.make_list(stats)
@@ -152,7 +160,7 @@ def gof(input_ts='-',
                         sm.rmsd(pred, ref)])
 
     if 'crmsd' in stats:
-        statval.append(['Centered Root-mean-square Deviation (CRMSD)',
+        statval.append(['Centered RMSD (CRMSD)',
                         sm.centered_rms_dev(pred, ref)])
 
     if 'corrcoef' in stats:
@@ -175,12 +183,26 @@ def gof(input_ts='-',
         statval.append(['Index of agreement',
                         sm.index_agreement(pred, ref)])
 
-    statval.append(['Observed NaN count',
-                    lennao])
-    statval.append(['Simulated NaN count',
-                    lennas])
     statval.append(['Common count observed and simulated',
                     len(tsd.index)])
+
+    statval.append(['Count of NaNs',
+                    '',
+                    lennao,
+                    lennas])
+
+    if 'mean' in stats:
+        statval.append(['Mean',
+                        '',
+                        ref.mean(),
+                        pred.mean()])
+
+    if 'stdev' in stats:
+        statval.append(['Standard deviation',
+                        '',
+                        ref.std(),
+                        pred.std()])
+
     return tsutils.printiso(statval,
-                            tablefmt='plain',
-                            headers=['Statistic', 'Value'])
+                            tablefmt=tablefmt,
+                            headers=['Statistic', 'Comparison', 'Observed', 'Simulated'])

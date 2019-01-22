@@ -161,7 +161,7 @@ docstrings = {
     'tablefmt': r"""tablefmt : str
         [optional, default is 'simple']
 
-        The table format.  Can be one of 'cvs', 'tvs', 'plain',
+        The table format.  Can be one of 'csv', 'tsv', 'plain',
         'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki', 'latex',
         'latex_raw' and 'latex_booktabs'.""",
     'header': r"""header : str
@@ -1442,7 +1442,7 @@ def read_iso_ts(
         result = pd.DataFrame({'values': indat})
 
     elif isinstance(indat, (int, float)):
-        result = pd.DataFrame({'value': indat}, index=[0])
+        result = pd.DataFrame({'values': indat}, index=[0])
 
     else:
         raise ValueError("""
@@ -1462,7 +1462,12 @@ def read_iso_ts(
             pass
 
     if result.index.is_all_dates is True:
-        result.index.name = 'datetime'
+        words = result.index.name.split(":")
+        if len(words) > 1:
+            result.index = result.index.dt.localize(words[1])
+            result.index.name = 'Datetime:{0}'.format(words[1])
+        else:
+            result.index.name = 'Datetime'
 
         try:
             return asbestfreq(result, force_freq=force_freq)
