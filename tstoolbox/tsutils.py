@@ -1462,7 +1462,10 @@ def read_iso_ts(
             pass
 
     if result.index.is_all_dates is True:
-        words = result.index.name.split(":")
+        try:
+            words = result.index.name.split(":")
+        except AttributeError:
+            words = ''
         if len(words) > 1:
             result.index = result.index.dt.localize(words[1])
             result.index.name = 'Datetime:{0}'.format(words[1])
