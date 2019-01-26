@@ -323,7 +323,15 @@ docstrings = {
 
         The pandas offset code to group the time-series data into.  A special
         code is also available to group 'months_across_years' that will group
-        into twelve categories for each month."""
+        into twelve categories for each month.""",
+    'force_freq': r"""force_freq: str
+        [optional]
+
+        Force this frequency for the files.  Typically you will only want to
+        enforce a smaller interval where tstoolbox will insert missing values
+        as needed.  WARNING: you may lose data if not careful with this option.
+        In general, letting the algorithm determine the frequency should always
+        work, but this option will override.  Use PANDAS offset codes."""
         }
 
 

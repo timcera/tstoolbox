@@ -57,14 +57,7 @@ def read(filenames,
         indices will append rows, matching row indices will append columns, and
         matching column/row indices use the value from the first dataset.  You
         can use "row" to force an append along either axis.
-    force_freq
-        [optional]
-
-        Force this frequency for the files.  Typically you will only want to
-        enforce a smaller interval where tstoolbox will insert missing values
-        as needed.  WARNING: you may lose data if not careful with this option.
-        In general, letting the algorithm determine the frequency should always
-        work, but this option will override.  Use PANDAS offset codes.
+    {force_freq}
 
         {pandas_offset_codes}
 

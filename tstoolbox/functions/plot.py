@@ -545,13 +545,7 @@ def plot(input_ts='-',
 
         Plot from first good value to last good value.  Strips NANs
         from beginning and end.
-    force_freq
-        [optional]
-
-        Force this frequency for the plot.  WARNING: you may
-        lose data if not careful with this option.  In general, letting the
-        algorithm determine the frequency should always work, but this option
-        will override.  Use PANDAS offset codes,
+    {force_freq}
     invert_xaxis
         [optional, default is False]
 
