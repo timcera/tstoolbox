@@ -61,6 +61,13 @@ def converttz(fromtz,
                               source_units=source_units,
                               target_units=target_units,
                               clean=clean)
-    tsd = tsd.tz_localize(fromtz).tz_convert(totz)
+
+    # TODO Should test that 'fromtz' matches time zone that might be already
+    # set in tsd.
+
+    try:
+        tsd = tsd.tz_localize(fromtz).tz_convert(totz)
+    except TypeError:
+        tsd = tsd.tz_convert(totz)
     return tsutils.printiso(tsd,
                             showindex='always')
