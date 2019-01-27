@@ -914,7 +914,10 @@ def _date_slice(
             if testdate is None:
                 tdate = None
             else:
-                tdate = pd.Timestamp(testdate)
+                if input_tsd.index.tz is None:
+                    tdate = pd.Timestamp(testdate)
+                else:
+                    tdate = pd.Timestamp(testdate, tz=input_tsd.index.tz)
                 # Is this comparison cheaper than the .join?
                 if not pd.np.any(input_tsd.index == tdate):
                     # Create a dummy column at the date I want, then delete
