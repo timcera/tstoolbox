@@ -31,10 +31,20 @@ def converttz(fromtz,
 
     Parameters
     ----------
-    fromtz : str
+    fromtz: str
         The time zone of the original time-series.
-    totz : str
+
+        The 'EST', 'EDT', and 'America/New_York' could in some sense be
+        thought of as the same, however 'EST' and 'EDT' would force the time
+        index to have the same offset from UTC, regardless of daylight savings
+        time, where 'America/New_York' would implement the appropriate daylight
+        savings offset.
+
+    totz: str
         The time zone of the converted time-series.
+
+        Same note applies as for `fromtz`.
+
     {input_ts}
     {start_date}
     {end_date}
