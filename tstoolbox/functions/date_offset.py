@@ -15,14 +15,8 @@ from .. import tsutils
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def date_offset(years=0,
-                months=0,
-                weeks=0,
-                days=0,
-                hours=0,
-                minutes=0,
-                seconds=0,
-                microseconds=0,
+def date_offset(intervals,
+                offset,
                 columns=None,
                 dropna='no',
                 clean=False,
@@ -39,63 +33,17 @@ def date_offset(years=0,
 
     Parameters
     ----------
-    years: number
-        [optional, default is 0]
+    intervals: int
 
-        Relative number of years to offset the datetime index,
-        may be negative; adding or subtracting a relativedelta with
-        relative information performs the corresponding arithmetic
-        operation on the original datetime value with the information in
-    months: number
-        [optional, default is 0]
+        Number of intervals of `offset` to shift the time index.  A positive
+        integer moves the index forward, negative moves it backwards.
 
-        Relative number of months to offset the datetime index,
-        may be negative; adding or subtracting a relativedelta with
-        relative information performs the corresponding arithmetic
-        operation on the original datetime value with the information in
-    weeks: number
-        [optional, default is 0]
+    offset: str
 
-        Relative number of weeks to offset the datetime index,
-        may be negative; adding or subtracting a relativedelta with
-        relative information performs the corresponding arithmetic
-        operation on the original datetime value with the information in
-    days: number
-        [optional, default is 0]
+        Pandas offset.
 
-        Relative number of days to offset the datetime index,
-        may be negative; adding or subtracting a relativedelta with
-        relative information performs the corresponding arithmetic
-        operation on the original datetime value with the information in
-    hours: number
-        [optional, default is 0]
+        {pandas_offset_codes}
 
-        Relative number of hours to offset the datetime index,
-        may be negative; adding or subtracting a relativedelta with
-        relative information performs the corresponding arithmetic
-        operation on the original datetime value with the information in
-    minutes: number
-        [optional, default is 0]
-
-        Relative number of minutes to offset the datetime index,
-        may be negative; adding or subtracting a relativedelta with
-        relative information performs the corresponding arithmetic
-        operation on the original datetime value with the information in
-    seconds: number
-        [optional, default is 0]
-
-        Relative number of seconds to offset the datetime index,
-        may be negative; adding or subtracting a relativedelta with
-        relative information performs the corresponding arithmetic
-        operation on the original datetime value with the information in
-    microseconds: number
-        [optional, default is 0]
-
-        Relative number of microseconds to offset the datetime index,
-        may be negative; adding or subtracting a relativedelta with
-        relative information performs the corresponding arithmetic
-        operation on the original datetime value with the information in
-        the relativedelta.
     {input_ts}
     {start_date}
     {end_date}
@@ -123,17 +71,5 @@ def date_offset(years=0,
                               target_units=target_units,
                               clean=clean)
 
-    relativedelta = pd.tseries.offsets.relativedelta
-    ntsd = pd.DataFrame(tsd.values,
-                        index=[i +
-                               relativedelta(years=years,
-                                             months=months,
-                                             days=days,
-                                             hours=hours,
-                                             minutes=minutes,
-                                             seconds=seconds,
-                                             microseconds=microseconds)
-                               for i in tsd.index])
-    ntsd.columns = tsd.columns
-
-    return tsutils.printiso(ntsd, showindex='always')
+    return tsutils.printiso(tsd.tshift(intervals, offset),
+                            showindex='always')
