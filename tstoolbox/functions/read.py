@@ -56,7 +56,7 @@ def read(filenames,
         The type of appending to do.  For "combine" option matching column
         indices will append rows, matching row indices will append columns, and
         matching column/row indices use the value from the first dataset.  You
-        can use "row" to force an append along either axis.
+        can use "row" or "column" to force an append along either axis.
     {force_freq}
 
         {pandas_offset_codes}
