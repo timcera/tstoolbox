@@ -9,7 +9,7 @@ Help::
 
 about
 ~~~~~
-.. program-output:: tstoolbox add_trend --help
+.. program-output:: tstoolbox about --help
    :prompt:
 
 accumulate
