@@ -20,14 +20,14 @@ class TestRollingWindow(TestCase):
         ts = pandas.Series([pandas.np.nan, 9.1], index=dr)
         self.compare_rolling_window_sum = pandas.DataFrame(
             ts,
-            columns=['Value::rolling.sum'])
+            columns=['Value::rolling.2.sum'])
         self.compare_rolling_window_sum.index.name = 'Datetime'
 
         dr = pandas.date_range('2000-01-01', periods=2, freq='D')
         ts = pandas.Series([pandas.np.nan, 4.55], index=dr)
         self.compare_rolling_window_mean = pandas.DataFrame(
             ts,
-            columns=['Value::rolling.mean'])
+            columns=['Value::rolling.2.mean'])
         self.compare_rolling_window_mean.index.name = 'Datetime'
 
         self.compare_rolling_window_sum_cli = capture.capture(tsutils._printiso,
@@ -50,18 +50,14 @@ class TestRollingWindow(TestCase):
 
     def test_rolling_window_sum_cli(self):
         """CLI: Rolling window mean for data_simple.csv is 9.1."""
-        args = ('tstoolbox rolling_window '
-                '--statistic="sum" '
-                '--input_ts="tests/data_simple.csv"')
+        args = 'tstoolbox rolling_window sum --input_ts="tests/data_simple.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.compare_rolling_window_sum_cli)
 
     def test_rolling_window_mean_cli(self):
         """CLI: Rolling window sum for data_simple.csv is 4.55."""
-        args = ('tstoolbox rolling_window '
-                '--statistic="mean" '
-                '--input_ts="tests/data_simple.csv"')
+        args = 'tstoolbox rolling_window mean --input_ts="tests/data_simple.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.compare_rolling_window_mean_cli)
