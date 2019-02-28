@@ -16,29 +16,29 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('rolling_window', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def rolling_window(statistic=None,
-                   groupby=None,
-                   window=None,
-                   input_ts='-',
-                   columns=None,
-                   start_date=None,
-                   end_date=None,
-                   dropna='no',
-                   skiprows=None,
-                   index_type='datetime',
-                   names=None,
-                   clean=False,
-                   span=None,
-                   min_periods=None,
-                   center=False,
-                   win_type=None,
-                   on=None,
-                   closed=None,
-                   source_units=None,
-                   target_units=None,
-                   print_input=False):
+def rolling_window_cli(statistic=None,
+                       groupby=None,
+                       window=None,
+                       input_ts='-',
+                       columns=None,
+                       start_date=None,
+                       end_date=None,
+                       dropna='no',
+                       skiprows=None,
+                       index_type='datetime',
+                       names=None,
+                       clean=False,
+                       span=None,
+                       min_periods=None,
+                       center=False,
+                       win_type=None,
+                       on=None,
+                       closed=None,
+                       source_units=None,
+                       target_units=None,
+                       print_input=False):
     """Calculate a rolling window statistic.
 
     Parameters
@@ -131,6 +131,51 @@ def rolling_window(statistic=None,
     {print_input}
 
     """
+    tsutils._printiso(rolling_window(statistic=statistic,
+                                     groupby=groupby,
+                                     window=window,
+                                     input_ts=input_ts,
+                                     columns=columns,
+                                     start_date=start_date,
+                                     end_date=end_date,
+                                     dropna=dropna,
+                                     skiprows=skiprows,
+                                     index_type=index_type,
+                                     names=names,
+                                     clean=clean,
+                                     span=span,
+                                     min_periods=min_periods,
+                                     center=center,
+                                     win_type=win_type,
+                                     on=on,
+                                     closed=closed,
+                                     source_units=source_units,
+                                     target_units=target_units,
+                                     print_input=print_input))
+
+
+def rolling_window(statistic=None,
+                   groupby=None,
+                   window=None,
+                   input_ts='-',
+                   columns=None,
+                   start_date=None,
+                   end_date=None,
+                   dropna='no',
+                   skiprows=None,
+                   index_type='datetime',
+                   names=None,
+                   clean=False,
+                   span=None,
+                   min_periods=None,
+                   center=False,
+                   win_type=None,
+                   on=None,
+                   closed=None,
+                   source_units=None,
+                   target_units=None,
+                   print_input=False):
+    """Calculate a rolling window statistic."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -181,7 +226,7 @@ def rolling_window(statistic=None,
 
         ntsd = ntsd.join(etsd, how='outer')
 
-    return tsutils.print_input(print_input,
-                               tsd,
-                               ntsd,
-                               None)
+    return tsutils.return_input(print_input,
+                                tsd,
+                                ntsd,
+                                None)

@@ -17,25 +17,25 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('aggregate', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def aggregate(input_ts='-',
-              groupby=None,
-              statistic='mean',
-              columns=None,
-              start_date=None,
-              end_date=None,
-              dropna='no',
-              clean=False,
-              agg_interval=None,
-              ninterval=None,
-              round_index=None,
-              skiprows=None,
-              index_type='datetime',
-              names=None,
-              source_units=None,
-              target_units=None,
-              print_input=False):
+def aggregate_cli(input_ts='-',
+                  groupby=None,
+                  statistic='mean',
+                  columns=None,
+                  start_date=None,
+                  end_date=None,
+                  dropna='no',
+                  clean=False,
+                  agg_interval=None,
+                  ninterval=None,
+                  round_index=None,
+                  skiprows=None,
+                  index_type='datetime',
+                  names=None,
+                  source_units=None,
+                  target_units=None,
+                  print_input=False):
     """Take a time series and aggregate to specified frequency.
 
     Parameters
@@ -66,6 +66,43 @@ def aggregate(input_ts='-',
         DEPRECATED:
         Just prefix the number in front of the 'groupby' pandas offset code.
     """
+    tsutils._printiso(aggregate(input_ts=input_ts,
+                                groupby=groupby,
+                                statistic=statistic,
+                                columns=columns,
+                                start_date=start_date,
+                                end_date=end_date,
+                                dropna=dropna,
+                                clean=clean,
+                                agg_interval=agg_interval,
+                                ninterval=ninterval,
+                                round_index=round_index,
+                                skiprows=skiprows,
+                                index_type=index_type,
+                                names=names,
+                                source_units=source_units,
+                                target_units=target_units,
+                                print_input=print_input))
+
+
+def aggregate(input_ts='-',
+              groupby=None,
+              statistic='mean',
+              columns=None,
+              start_date=None,
+              end_date=None,
+              dropna='no',
+              clean=False,
+              agg_interval=None,
+              ninterval=None,
+              round_index=None,
+              skiprows=None,
+              index_type='datetime',
+              names=None,
+              source_units=None,
+              target_units=None,
+              print_input=False):
+    """Take a time series and aggregate to specified frequency."""
     statslist = ['mean',
                  'sum',
                  'std',
@@ -163,4 +200,7 @@ def aggregate(input_ts='-',
                                                                 method))
         tmptsd.columns = [tsutils.renamer(i, method) for i in tmptsd.columns]
         newts = newts.join(tmptsd, how='outer')
-    return tsutils.print_input(print_input, tsd, newts, '')
+    return tsutils.return_input(print_input,
+                                tsd,
+                                newts,
+                                '')

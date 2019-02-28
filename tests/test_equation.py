@@ -79,7 +79,7 @@ class TestEquation(TestCase):
         self.equation_multiple_cols_03 = tsutils.memory_optimize(self.equation_multiple_cols_03)
 
         self.equation_multiple_cols_03_cli = capture.capture(tsutils._printiso,
-                self.equation_multiple_cols_03, float_format='%.2f')
+                self.equation_multiple_cols_03)
 
         dindex = pd.date_range('2011-01-01T00:00:00', periods=48, freq='H')
         ts1 = [2]*48

@@ -17,21 +17,21 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('unstack', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def unstack(column_names,
-            input_ts='-',
-            columns=None,
-            start_date=None,
-            end_date=None,
-            round_index=None,
-            dropna='no',
-            skiprows=None,
-            index_type='datetime',
-            names=None,
-            source_units=None,
-            target_units=None,
-            clean=False):
+def unstack_cli(column_names,
+                input_ts='-',
+                columns=None,
+                start_date=None,
+                end_date=None,
+                round_index=None,
+                dropna='no',
+                skiprows=None,
+                index_type='datetime',
+                names=None,
+                source_units=None,
+                target_units=None,
+                clean=False):
     """Return the unstack of the input table.
 
     The unstack command takes the stacked table and converts to a
@@ -76,6 +76,35 @@ def unstack(column_names,
     {round_index}
 
     """
+    tsutils._printiso(unstack(column_names,
+                              input_ts=input_ts,
+                              columns=columns,
+                              start_date=start_date,
+                              end_date=end_date,
+                              round_index=round_index,
+                              dropna=dropna,
+                              skiprows=skiprows,
+                              index_type=index_type,
+                              names=names,
+                              source_units=source_units,
+                              target_units=target_units,
+                              clean=clean))
+
+
+def unstack(column_names,
+            input_ts='-',
+            columns=None,
+            start_date=None,
+            end_date=None,
+            round_index=None,
+            dropna='no',
+            skiprows=None,
+            index_type='datetime',
+            names=None,
+            source_units=None,
+            target_units=None,
+            clean=False):
+    """Return the unstack of the input table."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -115,4 +144,4 @@ def unstack(column_names,
                                  target_units=target_units,
                                  round_index=round_index)
 
-    return tsutils.printiso(newtsd)
+    return newtsd

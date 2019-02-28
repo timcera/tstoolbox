@@ -1120,24 +1120,33 @@ def print_input(
 ):
     """Print the input time series also."""
 
+    return _printiso(return_input(iftrue,
+                                  intds,
+                                  output,
+                                  suffix=suffix,
+                                  date_format=date_format,
+                                  float_format=float_format,
+                                  tablefmt=tablefmt,
+                                  showindex=showindex))
+
+
+def return_input(iftrue,
+                 intds,
+                 output,
+                 suffix="",
+                 date_format=None,
+                 float_format='%g',
+                 tablefmt='csv',
+                 showindex='never'):
+    """Print the input time series also."""
+
     output.columns = [renamer(i, suffix) for i in output.columns]
     if iftrue:
-        return printiso(intds.join(output,
-                                   lsuffix='_1',
-                                   rsuffix='_2',
-                                   how='outer',
-                                  ),
-                        date_format=date_format,
-                        float_format=float_format,
-                        tablefmt=tablefmt,
-                        showindex=showindex,
-                       )
-    return printiso(output,
-                    date_format=date_format,
-                    float_format=float_format,
-                    tablefmt=tablefmt,
-                    showindex=showindex,
-                   )
+        return intds.join(output,
+                          lsuffix='_1',
+                          rsuffix='_2',
+                          how='outer')
+    return output
 
 
 def _apply_across_columns(
@@ -1204,9 +1213,9 @@ def _printiso(
 
     if tablefmt in ['csv', 'tsv', 'csv_nos', 'tsv_nos']:
         sep = {'csv': ',',
-               'tsv': '\\t',
+               'tsv': '\t',
                'csv_nos': ',',
-               'tsv_nos': '\\t'}[tablefmt]
+               'tsv_nos': '\t'}[tablefmt]
         if isinstance(tsd, pd.DataFrame):
             try:
                 tsd.to_csv(sys.stdout,

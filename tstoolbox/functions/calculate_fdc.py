@@ -17,21 +17,21 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('calculate_fdc', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def calculate_fdc(input_ts='-',
-                  columns=None,
-                  start_date=None,
-                  end_date=None,
-                  clean=False,
-                  skiprows=None,
-                  index_type='datetime',
-                  names=None,
-                  percent_point_function=None,
-                  plotting_position='weibull',
-                  source_units=None,
-                  target_units=None,
-                  ascending=True):
+def calculate_fdc_cli(input_ts='-',
+                      columns=None,
+                      start_date=None,
+                      end_date=None,
+                      clean=False,
+                      skiprows=None,
+                      index_type='datetime',
+                      names=None,
+                      percent_point_function=None,
+                      plotting_position='weibull',
+                      source_units=None,
+                      target_units=None,
+                      ascending=True):
     """Return the frequency distribution curve.
 
     DOES NOT return a time-series.
@@ -62,6 +62,35 @@ def calculate_fdc(input_ts='-',
     {clean}
 
     """
+    tsutils._printiso(calculate_fdc(input_ts=input_ts,
+                                    columns=columns,
+                                    start_date=start_date,
+                                    end_date=end_date,
+                                    clean=clean,
+                                    skiprows=skiprows,
+                                    index_type=index_type,
+                                    names=names,
+                                    percent_point_function=percent_point_function,
+                                    plotting_position=plotting_position,
+                                    source_units=source_units,
+                                    target_units=target_units,
+                                    ascending=ascending))
+
+
+def calculate_fdc(input_ts='-',
+                  columns=None,
+                  start_date=None,
+                  end_date=None,
+                  clean=False,
+                  skiprows=None,
+                  index_type='datetime',
+                  names=None,
+                  percent_point_function=None,
+                  plotting_position='weibull',
+                  source_units=None,
+                  target_units=None,
+                  ascending=True):
+    """Return the frequency distribution curve."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -84,5 +113,4 @@ def calculate_fdc(input_ts='-',
         newts = newts.join(tmptsd, how='outer')
     newts.index.name = 'Plotting_position'
     newts = newts.groupby(newts.index).first()
-    return tsutils.printiso(newts,
-                            showindex='always')
+    return newts

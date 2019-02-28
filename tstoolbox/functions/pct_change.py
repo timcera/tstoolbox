@@ -13,26 +13,26 @@ import pandas as pd
 from .. import tsutils
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('pct_change', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def pct_change(input_ts='-',
-               columns=None,
-               start_date=None,
-               end_date=None,
-               dropna='no',
-               skiprows=None,
-               index_type='datetime',
-               names=None,
-               clean=False,
-               periods=1,
-               fill_method='pad',
-               limit=None,
-               freq=None,
-               print_input=False,
-               round_index=None,
-               source_units=None,
-               target_units=None,
-               float_format='%g'):
+def pct_change_cli(input_ts='-',
+                   columns=None,
+                   start_date=None,
+                   end_date=None,
+                   dropna='no',
+                   skiprows=None,
+                   index_type='datetime',
+                   names=None,
+                   clean=False,
+                   periods=1,
+                   fill_method='pad',
+                   limit=None,
+                   freq=None,
+                   print_input=False,
+                   round_index=None,
+                   source_units=None,
+                   target_units=None,
+                   float_format='%g'):
     """Return the percent change between times.
 
     Parameters
@@ -70,6 +70,45 @@ def pct_change(input_ts='-',
     {round_index}
 
     """
+    tsutils._printiso(pct_change(input_ts='-',
+                                 columns=None,
+                                 start_date=None,
+                                 end_date=None,
+                                 dropna='no',
+                                 skiprows=None,
+                                 index_type='datetime',
+                                 names=None,
+                                 clean=False,
+                                 periods=1,
+                                 fill_method='pad',
+                                 limit=None,
+                                 freq=None,
+                                 print_input=False,
+                                 round_index=None,
+                                 source_units=None,
+                                 target_units=None,
+                                 float_format='%g'))
+
+
+def pct_change(input_ts='-',
+               columns=None,
+               start_date=None,
+               end_date=None,
+               dropna='no',
+               skiprows=None,
+               index_type='datetime',
+               names=None,
+               clean=False,
+               periods=1,
+               fill_method='pad',
+               limit=None,
+               freq=None,
+               print_input=False,
+               round_index=None,
+               source_units=None,
+               target_units=None,
+               float_format='%g'):
+    """Return the percent change between times."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -89,11 +128,11 @@ def pct_change(input_ts='-',
     else:
         otsd = pd.DataFrame()
 
-    return tsutils.print_input(print_input,
-                               otsd,
-                               tsd.pct_change(periods=periods,
-                                              fill_method=fill_method,
-                                              limit=limit,
-                                              freq=freq),
-                               'pctchange',
-                               float_format=float_format)
+    return tsutils.return_input(print_input,
+                                otsd,
+                                tsd.pct_change(periods=periods,
+                                               fill_method=fill_method,
+                                               limit=limit,
+                                               freq=freq),
+                                'pctchange',
+                                float_format=float_format)

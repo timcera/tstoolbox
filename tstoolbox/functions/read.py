@@ -17,24 +17,24 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('read', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def read(filenames,
-         force_freq=None,
-         append='columns',
-         columns=None,
-         start_date=None,
-         end_date=None,
-         dropna='no',
-         skiprows=None,
-         index_type='datetime',
-         names=None,
-         clean=False,
-         source_units=None,
-         target_units=None,
-         float_format='%g',
-         round_index=None,
-         how='outer'):
+def read_cli(filenames,
+             force_freq=None,
+             append='columns',
+             columns=None,
+             start_date=None,
+             end_date=None,
+             dropna='no',
+             skiprows=None,
+             index_type='datetime',
+             names=None,
+             clean=False,
+             source_units=None,
+             target_units=None,
+             float_format='%g',
+             round_index=None,
+             how='outer'):
     """Collect time series from a list of pickle or csv files.
 
     Prints the read in time-series in the tstoolbox standard format.
@@ -75,6 +75,42 @@ def read(filenames,
     {round_index}
 
     """
+    tsutils._printiso(read(filenames,
+                           force_freq=force_freq,
+                           append=append,
+                           columns=columns,
+                           start_date=start_date,
+                           end_date=end_date,
+                           dropna=dropna,
+                           skiprows=skiprows,
+                           index_type=index_type,
+                           names=names,
+                           clean=clean,
+                           source_units=source_units,
+                           target_units=target_units,
+                           float_format=float_format,
+                           round_index=round_index,
+                           how=how),
+                      float_format=float_format)
+
+
+def read(filenames,
+         force_freq=None,
+         append='columns',
+         columns=None,
+         start_date=None,
+         end_date=None,
+         dropna='no',
+         skiprows=None,
+         index_type='datetime',
+         names=None,
+         clean=False,
+         source_units=None,
+         target_units=None,
+         float_format='%g',
+         round_index=None,
+         how='outer'):
+    """Collect time series from a list of pickle or csv files."""
     if append not in ['combine', 'rows', 'columns']:
         raise ValueError("""
 *
@@ -114,5 +150,4 @@ def read(filenames,
 
     result.sort_index(inplace=True)
 
-    return tsutils.printiso(result,
-                            float_format=float_format)
+    return result

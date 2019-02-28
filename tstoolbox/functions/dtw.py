@@ -60,21 +60,19 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x - y), window=10000):
     return cost[-1, -1]
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('dtw', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def dtw(input_ts='-',
-        columns=None,
-        start_date=None,
-        end_date=None,
-        round_index=None,
-        dropna='no',
-        skiprows=None,
-        index_type='datetime',
-        names=None,
-        clean=False,
-        source_units=None,
-        target_units=None,
-        window=10000):
+def dtw_cli(input_ts='-',
+            columns=None,
+            start_date=None,
+            end_date=None,
+            round_index=None,
+            dropna='no',
+            skiprows=None,
+            index_type='datetime',
+            names=None,
+            clean=False,
+            window=10000):
     """Dynamic Time Warping.
 
     Parameters
@@ -97,6 +95,31 @@ def dtw(input_ts='-',
     {clean}
 
     """
+    tsutils._printiso(dtw(input_ts=input_ts,
+                          columns=columns,
+                          start_date=start_date,
+                          end_date=end_date,
+                          round_index=round_index,
+                          dropna=dropna,
+                          skiprows=skiprows,
+                          index_type=index_type,
+                          names=names,
+                          clean=clean,
+                          window=window))
+
+
+def dtw(input_ts='-',
+        columns=None,
+        start_date=None,
+        end_date=None,
+        round_index=None,
+        dropna='no',
+        skiprows=None,
+        index_type='datetime',
+        names=None,
+        clean=False,
+        window=10000):
+    """Dynamic Time Warping."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -120,4 +143,4 @@ def dtw(input_ts='-',
     ncols = ntsd.columns
     ncols = ['Variables'] + [str(i) + 'DTW_score' for i in ncols[1:]]
     ntsd.columns = ncols
-    return tsutils.printiso(ntsd)
+    return ntsd

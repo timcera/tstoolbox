@@ -16,21 +16,21 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('stdtozrxp', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def stdtozrxp(input_ts='-',
-              columns=None,
-              start_date=None,
-              end_date=None,
-              dropna='no',
-              skiprows=None,
-              index_type='datetime',
-              names=None,
-              clean=False,
-              round_index=None,
-              source_units=None,
-              target_units=None,
-              rexchange=None):
+def stdtozrxp_cli(input_ts='-',
+                  columns=None,
+                  start_date=None,
+                  end_date=None,
+                  dropna='no',
+                  skiprows=None,
+                  index_type='datetime',
+                  names=None,
+                  clean=False,
+                  round_index=None,
+                  source_units=None,
+                  target_units=None,
+                  rexchange=None):
     """Print out data to the screen in a WISKI ZRXP format.
 
     Parameters
@@ -53,6 +53,35 @@ def stdtozrxp(input_ts='-',
     {round_index}
 
     """
+    stdtozrxp(input_ts=input_ts,
+              columns=columns,
+              start_date=start_date,
+              end_date=end_date,
+              dropna=dropna,
+              skiprows=skiprows,
+              index_type=index_type,
+              names=names,
+              clean=clean,
+              round_index=round_index,
+              source_units=source_units,
+              target_units=target_units,
+              rexchange=rexchange)
+
+
+def stdtozrxp(input_ts='-',
+              columns=None,
+              start_date=None,
+              end_date=None,
+              dropna='no',
+              skiprows=None,
+              index_type='datetime',
+              names=None,
+              clean=False,
+              round_index=None,
+              source_units=None,
+              target_units=None,
+              rexchange=None):
+    """Print out data to the screen in a WISKI ZRXP format."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,

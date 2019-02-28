@@ -15,23 +15,23 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('replace', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def replace(from_values,
-            to_values,
-            round_index=None,
-            input_ts='-',
-            columns=None,
-            start_date=None,
-            end_date=None,
-            dropna='no',
-            skiprows=None,
-            index_type='datetime',
-            names=None,
-            clean=False,
-            source_units=None,
-            target_units=None,
-            print_input=False):
+def replace_cli(from_values,
+                to_values,
+                round_index=None,
+                input_ts='-',
+                columns=None,
+                start_date=None,
+                end_date=None,
+                dropna='no',
+                skiprows=None,
+                index_type='datetime',
+                names=None,
+                clean=False,
+                source_units=None,
+                target_units=None,
+                print_input=False):
     """Return a time-series replacing values with others.
 
     Parameters
@@ -62,6 +62,39 @@ def replace(from_values,
     {print_input}
 
     """
+    tsutils._printiso(replace(from_values,
+                              to_values,
+                              round_index=round_index,
+                              input_ts=input_ts,
+                              columns=columns,
+                              start_date=start_date,
+                              end_date=end_date,
+                              dropna=dropna,
+                              skiprows=skiprows,
+                              index_type=index_type,
+                              names=names,
+                              clean=clean,
+                              source_units=source_units,
+                              target_units=target_units,
+                              print_input=print_input))
+
+
+def replace(from_values,
+            to_values,
+            round_index=None,
+            input_ts='-',
+            columns=None,
+            start_date=None,
+            end_date=None,
+            dropna='no',
+            skiprows=None,
+            index_type='datetime',
+            names=None,
+            clean=False,
+            source_units=None,
+            target_units=None,
+            print_input=False):
+    """Return a time-series replacing values with others."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -81,5 +114,5 @@ def replace(from_values,
 
     ntsd = tsd.replace(nfrom_values, nto_values)
 
-    return tsutils.print_input(
+    return tsutils.return_input(
         print_input, tsd, ntsd, 'replace')

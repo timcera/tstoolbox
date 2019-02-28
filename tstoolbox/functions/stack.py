@@ -17,20 +17,20 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('stack',formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def stack(input_ts='-',
-          columns=None,
-          start_date=None,
-          end_date=None,
-          round_index=None,
-          dropna='no',
-          skiprows=None,
-          index_type='datetime',
-          names=None,
-          source_units=None,
-          target_units=None,
-          clean=False):
+def stack_cli(input_ts='-',
+              columns=None,
+              start_date=None,
+              end_date=None,
+              round_index=None,
+              dropna='no',
+              skiprows=None,
+              index_type='datetime',
+              names=None,
+              source_units=None,
+              target_units=None,
+              clean=False):
     """Return the stack of the input table.
 
     The stack command takes the standard table and
@@ -72,6 +72,33 @@ def stack(input_ts='-',
     {round_index}
 
     """
+    tsutils._printiso(stack(input_ts=input_ts,
+                            columns=columns,
+                            start_date=start_date,
+                            end_date=end_date,
+                            round_index=round_index,
+                            dropna=dropna,
+                            skiprows=skiprows,
+                            index_type=index_type,
+                            names=names,
+                            source_units=source_units,
+                            target_units=target_units,
+                            clean=clean))
+
+
+def stack(input_ts='-',
+          columns=None,
+          start_date=None,
+          end_date=None,
+          round_index=None,
+          dropna='no',
+          skiprows=None,
+          index_type='datetime',
+          names=None,
+          source_units=None,
+          target_units=None,
+          clean=False):
+    """Return the stack of the input table."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -89,4 +116,4 @@ def stack(input_ts='-',
     newtsd.columns = ['Columns', 'Values']
     newtsd = newtsd.groupby('Columns').apply(
         lambda d: d.sort_values('Columns')).reset_index('Columns', drop=True)
-    return tsutils.printiso(newtsd)
+    return newtsd

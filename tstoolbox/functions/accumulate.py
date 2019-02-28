@@ -15,22 +15,22 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('accumulate', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def accumulate(input_ts='-',
-               columns=None,
-               start_date=None,
-               end_date=None,
-               dropna='no',
-               clean=False,
-               statistic='sum',
-               round_index=None,
-               skiprows=None,
-               index_type='datetime',
-               names=None,
-               source_units=None,
-               target_units=None,
-               print_input=False):
+def accumulate_cli(input_ts='-',
+                   columns=None,
+                   start_date=None,
+                   end_date=None,
+                   dropna='no',
+                   clean=False,
+                   statistic='sum',
+                   round_index=None,
+                   skiprows=None,
+                   index_type='datetime',
+                   names=None,
+                   source_units=None,
+                   target_units=None,
+                   print_input=False):
     """Calculate accumulating statistics.
 
     Parameters
@@ -53,6 +53,37 @@ def accumulate(input_ts='-',
     {target_units}
 
     """
+    tsutils._printiso(accumulate(input_ts=input_ts,
+                                 columns=columns,
+                                 start_date=start_date,
+                                 end_date=end_date,
+                                 dropna=dropna,
+                                 clean=clean,
+                                 statistic=statistic,
+                                 round_index=round_index,
+                                 skiprows=skiprows,
+                                 index_type=index_type,
+                                 names=names,
+                                 source_units=source_units,
+                                 target_units=target_units,
+                                 print_input=print_input))
+
+
+def accumulate(input_ts='-',
+               columns=None,
+               start_date=None,
+               end_date=None,
+               dropna='no',
+               clean=False,
+               statistic='sum',
+               round_index=None,
+               skiprows=None,
+               index_type='datetime',
+               names=None,
+               source_units=None,
+               target_units=None,
+               print_input=False):
+    """Calculate accumulating statistics."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -73,4 +104,7 @@ def accumulate(input_ts='-',
 *   Statistic {0} is not implemented.
 *
 """.format(statistic))
-    return tsutils.print_input(print_input, tsd, ntsd, statistic)
+    return tsutils.return_input(print_input,
+                                tsd,
+                                ntsd,
+                                statistic)

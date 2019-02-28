@@ -15,21 +15,21 @@ import pandas as pd
 from .. import tsutils
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('fill', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def fill(input_ts='-',
-         method='ffill',
-         interval='guess',
-         print_input=False,
-         start_date=None,
-         end_date=None,
-         columns=None,
-         clean=False,
-         index_type='datetime',
-         names=None,
-         source_units=None,
-         target_units=None,
-         skiprows=None,):
+def fill_cli(input_ts='-',
+             method='ffill',
+             interval='guess',
+             print_input=False,
+             start_date=None,
+             end_date=None,
+             columns=None,
+             clean=False,
+             index_type='datetime',
+             names=None,
+             source_units=None,
+             target_units=None,
+             skiprows=None,):
     """Fill missing values (NaN) with different methods.
 
     Missing values can occur because of NaN, or because the time series
@@ -94,6 +94,35 @@ def fill(input_ts='-',
     {columns}
 
     """
+    tsutils._printiso(fill(input_ts=input_ts,
+                           method=method,
+                           interval=interval,
+                           print_input=print_input,
+                           start_date=start_date,
+                           end_date=end_date,
+                           columns=columns,
+                           clean=clean,
+                           index_type=index_type,
+                           names=names,
+                           source_units=source_units,
+                           target_units=target_units,
+                           skiprows=skiprows))
+
+
+def fill(input_ts='-',
+         method='ffill',
+         interval='guess',
+         print_input=False,
+         start_date=None,
+         end_date=None,
+         columns=None,
+         clean=False,
+         index_type='datetime',
+         names=None,
+         source_units=None,
+         target_units=None,
+         skiprows=None):
+    """Fill missing values (NaN) with different methods."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   dropna='all',
                                                   skiprows=skiprows,
@@ -149,7 +178,10 @@ def fill(input_ts='-',
     ntsd = ntsd.iloc[1:-1]
     tsd.index.name = 'Datetime'
     ntsd.index.name = 'Datetime'
-    return tsutils.print_input(print_input, tsd, ntsd, 'fill')
+    return tsutils.return_input(print_input,
+                                tsd,
+                                ntsd,
+                                'fill')
 
 
 # @mando.command(formatter_class=RSTHelpFormatter)

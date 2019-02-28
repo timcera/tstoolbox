@@ -21,7 +21,7 @@ def index_str_formatter(x):
     return '{0:.10f}'.format(x)
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('convert_index', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def convert_index(to,
                   interval=None,
@@ -144,6 +144,39 @@ def convert_index(to,
     {target_units}
 
     """
+    tsd = convert_index(to,
+                        interval=interval,
+                        epoch=epoch,
+                        input_ts=input_ts,
+                        columns=columns,
+                        start_date=start_date,
+                        end_date=end_date,
+                        round_index=round_index,
+                        dropna=dropna,
+                        clean=clean,
+                        names=names,
+                        source_units=source_units,
+                        target_units=target_units,
+                        skiprows=skiprows)
+    tsd.index = tsd.index.format(formatter=index_str_formatter)
+    tsutils._printiso(tsd)
+
+
+def convert_index(to,
+                  interval=None,
+                  epoch='julian',
+                  input_ts='-',
+                  columns=None,
+                  start_date=None,
+                  end_date=None,
+                  round_index=None,
+                  dropna='no',
+                  clean=False,
+                  names=None,
+                  source_units=None,
+                  target_units=None,
+                  skiprows=None):
+    """Convert datetime to/from Julian dates from different epochs."""
     if to == 'datetime':
         index_type = 'number'
         nstart_date = None
@@ -258,8 +291,6 @@ def convert_index(to,
                 tsd.index = ((tsd.index.to_julian_date() -
                               epoch_date.to_julian_date())/7.0).astype('i')
 
-        if tsutils.test_cli():
-            tsd.index = tsd.index.format(formatter=index_str_formatter)
     elif to == 'datetime':
         tsd.index = pd.to_datetime(tsd.index.values,
                                    origin=epoch_dates.setdefault(epoch, epoch),
@@ -288,5 +319,4 @@ def convert_index(to,
                               start_date=nstart_date,
                               end_date=nend_date,
                               round_index=nround_index)
-    return tsutils.printiso(tsd,
-                            showindex='always')
+    return tsd

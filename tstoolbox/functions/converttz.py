@@ -11,22 +11,22 @@ from mando.rst_text_formatter import RSTHelpFormatter
 from .. import tsutils
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('converttz', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def converttz(fromtz,
-              totz,
-              input_ts='-',
-              columns=None,
-              start_date=None,
-              end_date=None,
-              round_index=None,
-              dropna='no',
-              clean=False,
-              index_type='datetime',
-              names=None,
-              source_units=None,
-              target_units=None,
-              skiprows=None):
+def converttz_cli(fromtz,
+                  totz,
+                  input_ts='-',
+                  columns=None,
+                  start_date=None,
+                  end_date=None,
+                  round_index=None,
+                  dropna='no',
+                  clean=False,
+                  index_type='datetime',
+                  names=None,
+                  source_units=None,
+                  target_units=None,
+                  skiprows=None):
     """Convert the time zone of the index.
 
     Parameters
@@ -59,6 +59,38 @@ def converttz(fromtz,
     {round_index}
 
     """
+    tsutils._printiso(converttz(fromtz,
+                                totz,
+                                input_ts=input_ts,
+                                columns=columns,
+                                start_date=start_date,
+                                end_date=end_date,
+                                round_index=round_index,
+                                dropna=dropna,
+                                clean=clean,
+                                index_type=index_type,
+                                names=names,
+                                source_units=source_units,
+                                target_units=target_units,
+                                skiprows=skiprows),
+                      showindex='always')
+
+
+def converttz(fromtz,
+              totz,
+              input_ts='-',
+              columns=None,
+              start_date=None,
+              end_date=None,
+              round_index=None,
+              dropna='no',
+              clean=False,
+              index_type='datetime',
+              names=None,
+              source_units=None,
+              target_units=None,
+              skiprows=None):
+    """Convert the time zone of the index."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -79,5 +111,4 @@ def converttz(fromtz,
         tsd = tsd.tz_localize(fromtz).tz_convert(totz)
     except TypeError:
         tsd = tsd.tz_convert(totz)
-    return tsutils.printiso(tsd,
-                            showindex='always')
+    return tsd

@@ -17,21 +17,21 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('remove_trend', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def remove_trend(input_ts='-',
-                 columns=None,
-                 start_date=None,
-                 end_date=None,
-                 dropna='no',
-                 skiprows=None,
-                 index_type='datetime',
-                 names=None,
-                 clean=False,
-                 round_index=None,
-                 source_units=None,
-                 target_units=None,
-                 print_input=False):
+def remove_trend_cli(input_ts='-',
+                     columns=None,
+                     start_date=None,
+                     end_date=None,
+                     dropna='no',
+                     skiprows=None,
+                     index_type='datetime',
+                     names=None,
+                     clean=False,
+                     round_index=None,
+                     source_units=None,
+                     target_units=None,
+                     print_input=False):
     """Remove a 'trend'.
 
     Parameters
@@ -51,6 +51,35 @@ def remove_trend(input_ts='-',
     {print_input}
 
     """
+    tsutils._printiso(remove_trend(input_ts=input_ts,
+                                   columns=columns,
+                                   start_date=start_date,
+                                   end_date=end_date,
+                                   dropna=dropna,
+                                   skiprows=skiprows,
+                                   index_type=index_type,
+                                   names=names,
+                                   clean=clean,
+                                   round_index=round_index,
+                                   source_units=source_units,
+                                   target_units=target_units,
+                                   print_input=print_input))
+
+
+def remove_trend(input_ts='-',
+                 columns=None,
+                 start_date=None,
+                 end_date=None,
+                 dropna='no',
+                 skiprows=None,
+                 index_type='datetime',
+                 names=None,
+                 clean=False,
+                 round_index=None,
+                 source_units=None,
+                 target_units=None,
+                 print_input=False):
+    """Remove a 'trend'."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -70,5 +99,5 @@ def remove_trend(input_ts='-',
         lin = pd.np.polyfit(index, tsd[col], 1)
         ntsd[col] = lin[0] * index + lin[1]
         ntsd[col] = tsd[col] - ntsd[col]
-    return tsutils.print_input(
+    return tsutils.return_input(
         print_input, tsd, ntsd, 'remtrend')

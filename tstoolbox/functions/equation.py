@@ -91,23 +91,23 @@ def _parse_equation(equation_str):
     return tsearch, nsearch, testeval, nequation
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('equation', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def equation(equation_str,
-             input_ts='-',
-             columns=None,
-             start_date=None,
-             end_date=None,
-             dropna='no',
-             skiprows=None,
-             index_type='datetime',
-             names=None,
-             clean=False,
-             print_input='',
-             round_index=None,
-             source_units=None,
-             target_units=None,
-             float_format='%g'):
+def equation_cli(equation_str,
+                 input_ts='-',
+                 columns=None,
+                 start_date=None,
+                 end_date=None,
+                 dropna='no',
+                 skiprows=None,
+                 index_type='datetime',
+                 names=None,
+                 clean=False,
+                 print_input='',
+                 round_index=None,
+                 source_units=None,
+                 target_units=None,
+                 float_format='%g'):
     """Apply <equation_str> to the time series data.
 
     The <equation_str> argument is a string contained in single quotes
@@ -182,6 +182,39 @@ def equation(equation_str,
     {round_index}
 
     """
+    tsutils._printiso(equation(equation_str,
+                               input_ts=input_ts,
+                               columns=columns,
+                               start_date=start_date,
+                               end_date=end_date,
+                               dropna=dropna,
+                               skiprows=skiprows,
+                               index_type=index_type,
+                               names=names,
+                               clean=clean,
+                               print_input=print_input,
+                               round_index=round_index,
+                               source_units=source_units,
+                               target_units=target_units,
+                               float_format=float_format))
+
+
+def equation(equation_str,
+             input_ts='-',
+             columns=None,
+             start_date=None,
+             end_date=None,
+             dropna='no',
+             skiprows=None,
+             index_type='datetime',
+             names=None,
+             clean=False,
+             print_input='',
+             round_index=None,
+             source_units=None,
+             target_units=None,
+             float_format='%g'):
+    """Apply <equation_str> to the time series data."""
     x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                 skiprows=skiprows,
                                                 names=names,
@@ -232,8 +265,8 @@ def equation(equation_str,
 
     y = tsutils.memory_optimize(y)
 
-    return tsutils.print_input(print_input,
-                               x,
-                               y,
-                               'equation',
-                               float_format=float_format)
+    return tsutils.return_input(print_input,
+                                x,
+                                y,
+                                'equation',
+                                float_format=float_format)

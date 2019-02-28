@@ -100,25 +100,25 @@ def _transform(vector, cutoff_period, window_len, lopass=None):
     return np.atleast_1d(rvector)
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('filter', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def filter(filter_type,
-           input_ts='-',
-           columns=None,
-           start_date=None,
-           end_date=None,
-           dropna='no',
-           skiprows=None,
-           index_type='datetime',
-           names=None,
-           clean=False,
-           print_input=False,
-           cutoff_period=None,
-           window_len=5,
-           float_format='%g',
-           source_units=None,
-           target_units=None,
-           round_index=None):
+def filter_cli(filter_type,
+               input_ts='-',
+               columns=None,
+               start_date=None,
+               end_date=None,
+               dropna='no',
+               skiprows=None,
+               index_type='datetime',
+               names=None,
+               clean=False,
+               print_input=False,
+               cutoff_period=None,
+               window_len=5,
+               float_format='%g',
+               source_units=None,
+               target_units=None,
+               round_index=None):
     """Apply different filters to the time-series.
 
     Parameters
@@ -156,6 +156,43 @@ def filter(filter_type,
     {print_input}
 
     """
+    tsutils._printiso(filter(filter_type,
+                             input_ts=input_ts,
+                             columns=columns,
+                             start_date=start_date,
+                             end_date=end_date,
+                             dropna=dropna,
+                             skiprows=skiprows,
+                             index_type=index_type,
+                             names=names,
+                             clean=clean,
+                             print_input=print_input,
+                             cutoff_period=cutoff_period,
+                             window_len=window_len,
+                             float_format=float_format,
+                             source_units=source_units,
+                             target_units=target_units,
+                             round_index=round_index))
+
+
+def filter(filter_type,
+           input_ts='-',
+           columns=None,
+           start_date=None,
+           end_date=None,
+           dropna='no',
+           skiprows=None,
+           index_type='datetime',
+           names=None,
+           clean=False,
+           print_input=False,
+           cutoff_period=None,
+           window_len=5,
+           float_format='%g',
+           source_units=None,
+           target_units=None,
+           round_index=None):
+    """Apply different filters to the time-series."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -221,5 +258,8 @@ def filter(filter_type,
                 w = eval('pd.np.' + filter_type + '(window_len)')
             tsd[col].values[:] = pd.np.convolve(w / w.sum(), s, mode='valid')
 
-    return tsutils.print_input(print_input, otsd, tsd, 'filter',
-                               float_format=float_format)
+    return tsutils.return_input(print_input,
+                                otsd,
+                                tsd,
+                                'filter',
+                                float_format=float_format)

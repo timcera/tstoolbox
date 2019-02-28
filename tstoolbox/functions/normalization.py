@@ -13,26 +13,26 @@ import pandas as pd
 from .. import tsutils
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('normalization', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def normalization(input_ts='-',
-                  columns=None,
-                  start_date=None,
-                  end_date=None,
-                  dropna='no',
-                  skiprows=None,
-                  index_type='datetime',
-                  names=None,
-                  clean=False,
-                  mode='minmax',
-                  min_limit=0,
-                  max_limit=1,
-                  pct_rank_method='average',
-                  print_input=False,
-                  round_index=None,
-                  source_units=None,
-                  target_units=None,
-                  float_format='%g'):
+def normalization_cli(input_ts='-',
+                      columns=None,
+                      start_date=None,
+                      end_date=None,
+                      dropna='no',
+                      skiprows=None,
+                      index_type='datetime',
+                      names=None,
+                      clean=False,
+                      mode='minmax',
+                      min_limit=0,
+                      max_limit=1,
+                      pct_rank_method='average',
+                      print_input=False,
+                      round_index=None,
+                      source_units=None,
+                      target_units=None,
+                      float_format='%g'):
     """Return the normalization of the time series.
 
     Parameters
@@ -78,6 +78,45 @@ def normalization(input_ts='-',
     {round_index}
 
     """
+    tsutils._printiso(normalization(input_ts=input_ts,
+                                    columns=columns,
+                                    start_date=start_date,
+                                    end_date=end_date,
+                                    dropna=dropna,
+                                    skiprows=skiprows,
+                                    index_type=index_type,
+                                    names=names,
+                                    clean=clean,
+                                    mode=mode,
+                                    min_limit=min_limits,
+                                    max_limit=max_limits,
+                                    pct_rank_method=pct_rank_method,
+                                    print_input=print_input,
+                                    round_index=round_index,
+                                    source_units=source_units,
+                                    target_units=target_units,
+                                    float_format=float_format))
+
+
+def normalization(input_ts='-',
+                  columns=None,
+                  start_date=None,
+                  end_date=None,
+                  dropna='no',
+                  skiprows=None,
+                  index_type='datetime',
+                  names=None,
+                  clean=False,
+                  mode='minmax',
+                  min_limit=0,
+                  max_limit=1,
+                  pct_rank_method='average',
+                  print_input=False,
+                  round_index=None,
+                  source_units=None,
+                  target_units=None,
+                  float_format='%g'):
+    """Return the normalization of the time series."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -115,8 +154,8 @@ def normalization(input_ts='-',
 """.format(mode))
 
     tsd = tsutils.memory_optimize(tsd)
-    return tsutils.print_input(print_input,
-                               otsd,
-                               tsd,
-                               '{0}'.format(mode),
-                               float_format=float_format)
+    return tsutils.return_input(print_input,
+                                otsd,
+                                tsd,
+                                '{0}'.format(mode),
+                                float_format=float_format)

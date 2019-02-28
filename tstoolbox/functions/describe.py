@@ -15,18 +15,18 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('describe', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def describe(input_ts='-',
-             columns=None,
-             start_date=None,
-             end_date=None,
-             dropna='no',
-             skiprows=None,
-             index_type='datetime',
-             names=None,
-             clean=False,
-             transpose=False):
+def describe_cli(input_ts='-',
+                 columns=None,
+                 start_date=None,
+                 end_date=None,
+                 dropna='no',
+                 skiprows=None,
+                 index_type='datetime',
+                 names=None,
+                 clean=False,
+                 transpose=False):
     """Print out statistics for the time-series.
 
     Parameters
@@ -46,6 +46,30 @@ def describe(input_ts='-',
     {clean}
 
     """
+    tsutils._printiso(describe(input_ts=input_ts,
+                               columns=columns,
+                               start_date=start_date,
+                               end_date=end_date,
+                               dropna=dropna,
+                               skiprows=skiprows,
+                               index_type=index_type,
+                               names=names,
+                               clean=clean,
+                               transpose=transpose),
+                     showindex='always')
+
+
+def describe(input_ts='-',
+             columns=None,
+             start_date=None,
+             end_date=None,
+             dropna='no',
+             skiprows=None,
+             index_type='datetime',
+             names=None,
+             clean=False,
+             transpose=False):
+    """Print out statistics for the time-series."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -61,5 +85,4 @@ def describe(input_ts='-',
         ntsd = tsd.describe()
 
     ntsd.index.name = 'Statistic'
-    return tsutils.printiso(ntsd,
-                            showindex='always')
+    return ntsd

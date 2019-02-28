@@ -17,20 +17,20 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('calculate_kde', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def calculate_kde(ascending=True,
-                  evaluate=False,
-                  input_ts='-',
-                  columns=None,
-                  start_date=None,
-                  end_date=None,
-                  clean=False,
-                  skiprows=None,
-                  index_type='datetime',
-                  source_units=None,
-                  target_units=None,
-                  names=None):
+def calculate_kde_cli(ascending=True,
+                      evaluate=False,
+                      input_ts='-',
+                      columns=None,
+                      start_date=None,
+                      end_date=None,
+                      clean=False,
+                      skiprows=None,
+                      index_type='datetime',
+                      source_units=None,
+                      target_units=None,
+                      names=None):
     """Return the kernel density estimation (KDE) curve.
 
     Returns a time-series or the KDE curve depending on the `evaluate` keyword.
@@ -54,6 +54,33 @@ def calculate_kde(ascending=True,
     {clean}
 
     """
+    tsutils._printiso(calculate_kde(ascending=ascending,
+                                    evaluate=evaluate,
+                                    input_ts=input_ts,
+                                    columns=columns,
+                                    start_date=start_date,
+                                    end_date=end_date,
+                                    clean=clean,
+                                    skiprows=skiprows,
+                                    index_type=index_type,
+                                    source_units=source_units,
+                                    target_units=target_units,
+                                    names=names))
+
+
+def calculate_kde(ascending=True,
+                  evaluate=False,
+                  input_ts='-',
+                  columns=None,
+                  start_date=None,
+                  end_date=None,
+                  clean=False,
+                  skiprows=None,
+                  index_type='datetime',
+                  source_units=None,
+                  target_units=None,
+                  names=None):
+    """Return the kernel density estimation (KDE) curve."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -86,5 +113,4 @@ def calculate_kde(ascending=True,
         y = gkde.evaluate(ndf.iloc[:, 0])
         ndf = pd.DataFrame(y)
 
-    return tsutils.printiso(ndf,
-                            showindex='always')
+    return ndf

@@ -17,14 +17,14 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('createts', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def createts(freq=None,
-             fillvalue=None,
-             input_ts=None,
-             index_type='datetime',
-             start_date=None,
-             end_date=None):
+def createts_cli(freq=None,
+                 fillvalue=None,
+                 input_ts=None,
+                 index_type='datetime',
+                 start_date=None,
+                 end_date=None):
     """Create empty time series, optionally fill with a value.
 
     Parameters
@@ -46,6 +46,22 @@ def createts(freq=None,
     {index_type}
 
     """
+    tsutils._printiso(createts(freq=freq,
+                               fillvalue=fillvalue,
+                               input_ts=input_ts,
+                               index_type=index_type,
+                               start_date=start_date,
+                               end_date=end_date),
+                     showindex='always')
+
+
+def createts(freq=None,
+             fillvalue=None,
+             input_ts=None,
+             index_type='datetime',
+             start_date=None,
+             end_date=None):
+    """Create empty time series, optionally fill with a value."""
     if input_ts is None:
         if ((start_date is None) or
             (end_date is None) or
@@ -73,5 +89,4 @@ def createts(freq=None,
                                freq=freq)
         tsd = pd.DataFrame([fillvalue] * len(tindex),
                            index=tindex)
-    return tsutils.printiso(tsd,
-                            showindex='always')
+    return tsd

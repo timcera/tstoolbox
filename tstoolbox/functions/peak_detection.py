@@ -790,28 +790,28 @@ def zero_crossings(y_axis, window=11):
 ##############################################################################
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('peak_detection', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def peak_detection(input_ts='-',
-                   columns=None,
-                   start_date=None,
-                   end_date=None,
-                   dropna='no',
-                   skiprows=None,
-                   index_type='datetime',
-                   names=None,
-                   clean=False,
-                   method='rel',
-                   extrema='peak',
-                   window=24,
-                   pad_len=5,
-                   points=9,
-                   lock_frequency=False,
-                   float_format='%g',
-                   round_index=None,
-                   source_units=None,
-                   target_units=None,
-                   print_input=''):
+def peak_detection_cli(input_ts='-',
+                       columns=None,
+                       start_date=None,
+                       end_date=None,
+                       dropna='no',
+                       skiprows=None,
+                       index_type='datetime',
+                       names=None,
+                       clean=False,
+                       method='rel',
+                       extrema='peak',
+                       window=24,
+                       pad_len=5,
+                       points=9,
+                       lock_frequency=False,
+                       float_format='%g',
+                       round_index=None,
+                       source_units=None,
+                       target_units=None,
+                       print_input=''):
     r"""Peak and valley detection.
 
     Parameters
@@ -873,6 +873,49 @@ def peak_detection(input_ts='-',
     {print_input}
 
     """
+    tsutils._printiso(peak_detection(input_ts=input_ts,
+                                     columns=columns,
+                                     start_date=start_date,
+                                     end_date=end_date,
+                                     dropna=dropna,
+                                     skiprows=skiprows,
+                                     index_type=index_type,
+                                     names=names,
+                                     clean=clean,
+                                     method=method,
+                                     extrema=extrema,
+                                     window=window,
+                                     pad_len=pad_len,
+                                     points=points,
+                                     lock_frequency=lock_frequency,
+                                     float_format=float_format,
+                                     round_index=round_index,
+                                     source_units=source_units,
+                                     target_units=target_units,
+                                     print_input=print_input))
+
+
+def peak_detection(input_ts='-',
+                   columns=None,
+                   start_date=None,
+                   end_date=None,
+                   dropna='no',
+                   skiprows=None,
+                   index_type='datetime',
+                   names=None,
+                   clean=False,
+                   method='rel',
+                   extrema='peak',
+                   window=24,
+                   pad_len=5,
+                   points=9,
+                   lock_frequency=False,
+                   float_format='%g',
+                   round_index=None,
+                   source_units=None,
+                   target_units=None,
+                   print_input=''):
+    r"""Peak and valley detection."""
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
 
@@ -965,5 +1008,8 @@ def peak_detection(input_ts='-',
 
     tmptsd.index.name = 'Datetime'
     tsd.index.name = 'Datetime'
-    return tsutils.print_input(print_input, tsd, tmptsd, None,
-                               float_format=float_format)
+    return tsutils.return_input(print_input,
+                                tsd,
+                                tmptsd,
+                                None,
+                                float_format=float_format)

@@ -15,21 +15,21 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('gof', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def gof(input_ts='-',
-        stats='all',
-        columns=None,
-        start_date=None,
-        end_date=None,
-        round_index=None,
-        clean=False,
-        index_type='datetime',
-        names=None,
-        source_units=None,
-        target_units=None,
-        skiprows=None,
-        tablefmt='plain'):
+def gof_cli(input_ts='-',
+            stats='all',
+            columns=None,
+            start_date=None,
+            end_date=None,
+            round_index=None,
+            clean=False,
+            index_type='datetime',
+            names=None,
+            source_units=None,
+            target_units=None,
+            skiprows=None,
+            tablefmt='plain'):
     """Will calculate goodness of fit statistics between two time-series.
 
     The first time series must be the observed, the second the predicted
@@ -92,6 +92,40 @@ def gof(input_ts='-',
     {tablefmt}
 
     """
+    tsutils._printiso(gof(input_ts=input_ts,
+                          stats=stats,
+                          columns=columns,
+                          start_date=start_date,
+                          end_date=end_date,
+                          round_index=round_index,
+                          clean=clean,
+                          index_type=index_type,
+                          names=names,
+                          source_units=source_units,
+                          target_units=target_units,
+                          skiprows=skiprows,
+                          tablefmt=tablefmt),
+                      tablefmt=tablefmt,
+                      headers=['Statistic',
+                               'Comparison',
+                               'Observed',
+                               'Simulated'])
+
+
+def gof(input_ts='-',
+        stats='all',
+        columns=None,
+        start_date=None,
+        end_date=None,
+        round_index=None,
+        clean=False,
+        index_type='datetime',
+        names=None,
+        source_units=None,
+        target_units=None,
+        skiprows=None,
+        tablefmt='plain'):
+    """Will calculate goodness of fit statistics between two time-series."""
     if stats == 'all':
         stats = ['bias',
                  'pc_bias',
@@ -203,6 +237,4 @@ def gof(input_ts='-',
                         ref.std(),
                         pred.std()])
 
-    return tsutils.printiso(statval,
-                            tablefmt=tablefmt,
-                            headers=['Statistic', 'Comparison', 'Observed', 'Simulated'])
+    return statval
