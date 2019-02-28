@@ -18,7 +18,7 @@ warnings.filterwarnings('ignore')
 
 @mando.command('rolling_window', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def rolling_window_cli(statistic=None,
+def rolling_window_cli(statistic,
                        groupby=None,
                        window=None,
                        input_ts='-',
@@ -131,7 +131,7 @@ def rolling_window_cli(statistic=None,
     {print_input}
 
     """
-    tsutils._printiso(rolling_window(statistic=statistic,
+    tsutils._printiso(rolling_window(statistic,
                                      groupby=groupby,
                                      window=window,
                                      input_ts=input_ts,
@@ -154,7 +154,7 @@ def rolling_window_cli(statistic=None,
                                      print_input=print_input))
 
 
-def rolling_window(statistic=None,
+def rolling_window(statistic,
                    groupby=None,
                    window=None,
                    input_ts='-',
@@ -221,7 +221,7 @@ def rolling_window(statistic=None,
                                  on={on},
                                  closed={closed}){statstr}
                                  )'''.format(**locals()))
-        etsd.columns = [tsutils.renamer(i, 'rolling.{0}'.format(statistic))
+        etsd.columns = [tsutils.renamer(i, 'rolling.{win}.{statistic}'.format(**locals()))
                         for i in etsd.columns]
 
         ntsd = ntsd.join(etsd, how='outer')
