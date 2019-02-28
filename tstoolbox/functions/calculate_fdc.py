@@ -74,7 +74,8 @@ def calculate_fdc_cli(input_ts='-',
                                     plotting_position=plotting_position,
                                     source_units=source_units,
                                     target_units=target_units,
-                                    ascending=ascending))
+                                    ascending=ascending),
+                     showindex='always')
 
 
 def calculate_fdc(input_ts='-',
