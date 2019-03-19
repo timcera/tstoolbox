@@ -31,7 +31,8 @@ def calculate_fdc_cli(input_ts='-',
                       plotting_position='weibull',
                       source_units=None,
                       target_units=None,
-                      ascending=True):
+                      sort_values='ascending',
+                      sort_index='ascending'):
     """Return the frequency distribution curve.
 
     DOES NOT return a time-series.
@@ -48,8 +49,15 @@ def calculate_fdc_cli(input_ts='-',
 
         {plotting_position_table}
 
-    ascending : bool
-        Sort order defaults to True.
+    sort_values : str
+        [optional, default is 'ascending']
+
+        Sort order is either 'ascending' or 'descending'.
+
+    sort_index : str
+        [optional, default is 'ascending']
+
+        Sort order is either 'ascending' or 'descending'.
     {input_ts}
     {columns}
     {start_date}
@@ -74,7 +82,8 @@ def calculate_fdc_cli(input_ts='-',
                                     plotting_position=plotting_position,
                                     source_units=source_units,
                                     target_units=target_units,
-                                    ascending=ascending),
+                                    sort_values=sort_values,
+                                    sort_index=sort_index),
                      showindex='always')
 
 
@@ -90,8 +99,28 @@ def calculate_fdc(input_ts='-',
                   plotting_position='weibull',
                   source_units=None,
                   target_units=None,
-                  ascending=True):
+                  sort_values='ascending',
+                  sort_index='ascending'):
     """Return the frequency distribution curve."""
+    if sort_values not in ['ascending', 'descending']:
+        raise ValueError("""
+*
+*   The 'sort_values' option must be either 'ascending' or 'descending'.
+*   You gave {0}.
+*
+""".format(sort_values))
+    if sort_index not in ['ascending', 'descending']:
+        raise ValueError("""
+*
+*   The 'sort_index' option must be either 'ascending' or 'descending'.
+*   You gave {0}.
+*
+""".format(sort_index))
+    if sort_values == 'ascending':
+        sort_values = True
+    else:
+        sort_values = False
+
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -108,10 +137,12 @@ def calculate_fdc(input_ts='-',
     for col in tsd:
         tmptsd = tsd[col].dropna()
         xdat = ppf(tsutils.set_plotting_position(tmptsd.count(),
-                                                  plotting_position)) * 100
-        tmptsd.sort_values(ascending=ascending, inplace=True)
+                                                 plotting_position)) * 100
+        tmptsd.sort_values(ascending=sort_values, inplace=True)
         tmptsd.index = xdat
         newts = newts.join(tmptsd, how='outer')
     newts.index.name = 'Plotting_position'
     newts = newts.groupby(newts.index).first()
+    if sort_index == 'descending':
+        return newts.iloc[::-1]
     return newts

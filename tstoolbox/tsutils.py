@@ -1137,7 +1137,8 @@ def return_input(iftrue,
                  date_format=None,
                  float_format='%g',
                  tablefmt='csv',
-                 showindex='never'):
+                 showindex='never',
+                 reverse_index=False):
     """Print the input time series also."""
 
     output.columns = [renamer(i, suffix) for i in output.columns]
@@ -1146,6 +1147,8 @@ def return_input(iftrue,
                           lsuffix='_1',
                           rsuffix='_2',
                           how='outer')
+    if reverse_index is True:
+        return output.iloc[::-1]
     return output
 
 
