@@ -17,7 +17,9 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command('calculate_kde', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('calculate_kde',
+               formatter_class=RSTHelpFormatter,
+               doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def calculate_kde_cli(ascending=True,
                       evaluate=False,

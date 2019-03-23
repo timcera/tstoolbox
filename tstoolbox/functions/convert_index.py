@@ -21,22 +21,24 @@ def index_str_formatter(x):
     return '{0:.10f}'.format(x)
 
 
-@mando.command('convert_index', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('convert_index',
+               formatter_class=RSTHelpFormatter,
+               doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def convert_index(to,
-                  interval=None,
-                  epoch='julian',
-                  input_ts='-',
-                  columns=None,
-                  start_date=None,
-                  end_date=None,
-                  round_index=None,
-                  dropna='no',
-                  clean=False,
-                  names=None,
-                  source_units=None,
-                  target_units=None,
-                  skiprows=None):
+def convert_index_cli(to,
+                      interval=None,
+                      epoch='julian',
+                      input_ts='-',
+                      columns=None,
+                      start_date=None,
+                      end_date=None,
+                      round_index=None,
+                      dropna='no',
+                      clean=False,
+                      names=None,
+                      source_units=None,
+                      target_units=None,
+                      skiprows=None):
     """Convert datetime to/from Julian dates from different epochs.
 
     Parameters

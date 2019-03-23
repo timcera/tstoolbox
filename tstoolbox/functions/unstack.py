@@ -109,6 +109,7 @@ def unstack(column_names,
                                                   skiprows=skiprows,
                                                   names=names,
                                                   index_type=index_type),
+                              pick=columns,
                               bestfreq=False)
 
     try:

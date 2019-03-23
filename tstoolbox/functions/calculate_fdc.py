@@ -17,7 +17,9 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command('calculate_fdc', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('calculate_fdc',
+               formatter_class=RSTHelpFormatter,
+               doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def calculate_fdc_cli(input_ts='-',
                       columns=None,
@@ -84,7 +86,7 @@ def calculate_fdc_cli(input_ts='-',
                                     target_units=target_units,
                                     sort_values=sort_values,
                                     sort_index=sort_index),
-                     showindex='always')
+                      showindex='always')
 
 
 def calculate_fdc(input_ts='-',
@@ -116,10 +118,7 @@ def calculate_fdc(input_ts='-',
 *   You gave {0}.
 *
 """.format(sort_index))
-    if sort_values == 'ascending':
-        sort_values = True
-    else:
-        sort_values = False
+    sort_values = bool(sort_values == 'ascending')
 
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,

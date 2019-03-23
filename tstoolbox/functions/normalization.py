@@ -13,7 +13,9 @@ import pandas as pd
 from .. import tsutils
 
 
-@mando.command('normalization', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('normalization',
+               formatter_class=RSTHelpFormatter,
+               doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def normalization_cli(input_ts='-',
                       columns=None,
@@ -88,8 +90,8 @@ def normalization_cli(input_ts='-',
                                     names=names,
                                     clean=clean,
                                     mode=mode,
-                                    min_limit=min_limits,
-                                    max_limit=max_limits,
+                                    min_limit=min_limit,
+                                    max_limit=max_limit,
                                     pct_rank_method=pct_rank_method,
                                     print_input=print_input,
                                     round_index=round_index,
@@ -157,5 +159,4 @@ def normalization(input_ts='-',
     return tsutils.return_input(print_input,
                                 otsd,
                                 tsd,
-                                '{0}'.format(mode),
-                                float_format=float_format)
+                                '{0}'.format(mode))

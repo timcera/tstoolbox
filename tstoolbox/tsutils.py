@@ -331,8 +331,7 @@ docstrings = {
         enforce a smaller interval where tstoolbox will insert missing values
         as needed.  WARNING: you may lose data if not careful with this option.
         In general, letting the algorithm determine the frequency should always
-        work, but this option will override.  Use PANDAS offset codes."""
-        }
+        work, but this option will override.  Use PANDAS offset codes."""}
 
 
 def set_ppf(ptype):
@@ -353,12 +352,19 @@ def set_ppf(ptype):
         return ppf
 
 
-def _plotting_position_equation(i, n, a):
+def _plotting_position_equation(
+        i,
+        n,
+        a
+):
     """Parameterized, generic plotting position equation."""
     return (i - a) / float(n + 1 - 2 * a)
 
 
-def set_plotting_position(n, plotting_position='weibull'):
+def set_plotting_position(
+        n,
+        plotting_position='weibull'
+):
     """Create plotting position 1D array using linspace."""
     plotplist = [
         'weibull',
@@ -430,7 +436,10 @@ def b(s):
         return s
 
 
-def doc(fdict, **kwargs):
+def doc(
+        fdict,
+        **kwargs
+):
     """Return a decorator that formats a docstring."""
     def f(fn):
         fn.__doc__ = fn.__doc__.format(**fdict)
@@ -445,9 +454,9 @@ def doc(fdict, **kwargs):
 
 
 def parsedate(
-    dstr,
-    strftime=None,
-    settings=None,
+        dstr,
+        strftime=None,
+        settings=None
 ):
     """Use dateparser to parse a wide variety of dates.
 
@@ -464,8 +473,7 @@ def parsedate(
     if isinstance(dstr, datetime.datetime):
         if strftime is None:
             return dstr
-        else:
-            return dstr.strftime(strftime)
+        return dstr.strftime(strftime)
 
     if dstr is None:
         return dstr
@@ -520,8 +528,8 @@ def about(name):
 
 
 def _round_index(
-    ntsd,
-    round_index=None,
+        ntsd,
+        round_index=None
 ):
     """Round the index, typically time, to the nearest interval."""
     if round_index is None:
@@ -531,8 +539,8 @@ def _round_index(
 
 
 def _pick_column_or_value(
-    tsd,
-    var,
+        tsd,
+        var
 ):
     """Return a keyword value or a time-series."""
     try:
@@ -542,7 +550,10 @@ def _pick_column_or_value(
     return var
 
 
-def make_list(*strorlist, **kwds):
+def make_list(
+        *strorlist,
+        **kwds
+):
     """Normalize strings, converting to numbers or lists.
     """
     try:
@@ -565,8 +576,8 @@ def make_list(*strorlist, **kwds):
         return None
 
     if (isinstance(strorlist, (str, bytes))
-            and (strorlist == 'None'
-            or strorlist.strip() == '')):
+            and (strorlist == 'None' or
+                 strorlist.strip() == '')):
         """ 'None' -> None
             ''     -> None
         """
@@ -636,20 +647,20 @@ def make_list(*strorlist, **kwds):
 
 
 def common_kwds(
-    input_tsd=None,
-    start_date=None,
-    end_date=None,
-    pick=None,
-    force_freq=None,
-    groupby=None,
-    dropna='no',
-    round_index=None,
-    clean=False,
-    variables=None,
-    variables_ts=None,
-    target_units=None,
-    source_units=None,
-    bestfreq=True,
+        input_tsd=None,
+        start_date=None,
+        end_date=None,
+        pick=None,
+        force_freq=None,
+        groupby=None,
+        dropna='no',
+        round_index=None,
+        clean=False,
+        variables=None,
+        variables_ts=None,
+        target_units=None,
+        source_units=None,
+        bestfreq=True
 ):
     """Process all common_kwds across sub-commands into single function.
 
@@ -697,7 +708,7 @@ def common_kwds(
         if variables_ts is None:
             index = [0]
         else:
-            index = [pd.TimeStamp(variables_ts)]
+            index = [pd.Timestamp(variables_ts)]
         for inx, v in enumerate(variables):
             try:
                 # See if 'variable' is a value.
@@ -723,8 +734,8 @@ def common_kwds(
         nv = pd.DataFrame()
         for v in collector:
             nv = nv.join(pd.DataFrame(index=index,
-                                      data=pd.np.broadcast_to(v, [len(index)]),
-                                      how='outer'))
+                                      data=pd.np.broadcast_to(v, [len(index)])),
+                         how='outer')
         ntsd = nv
         ntsd.columns[:] = names
 
@@ -776,8 +787,7 @@ def common_kwds(
     if groupby is not None:
         if groupby == 'months_across_years':
             return ntsd.groupby(lambda x: x.month)
-        else:
-            return ntsd.resample(groupby)
+        return ntsd.resample(groupby)
 
     if dropna not in ['any', 'all', 'no']:
         raise ValueError("""
@@ -824,7 +834,6 @@ def common_kwds(
             words = colname.split(':')
             if len(words) > 1:
                 # convert words[1] to target_units[inx]
-                ureg = UnitRegistry()
                 Q_ = ureg.Quantity
                 try:
                     ntsd[colname] = Q_(ntsd[colname], ureg(words[1])).to(target_units[inx])
@@ -837,8 +846,8 @@ def common_kwds(
 
 
 def _pick(
-    tsd,
-    columns,
+        tsd,
+        columns
 ):
     columns = make_list(columns)
     if not columns:
@@ -903,9 +912,9 @@ def _pick(
 
 
 def _date_slice(
-    input_tsd,
-    start_date=None,
-    end_date=None,
+        input_tsd,
+        start_date=None,
+        end_date=None
 ):
     """Private function to slice time series."""
     if input_tsd.index.is_all_dates:
@@ -929,8 +938,7 @@ def _date_slice(
             accdate.append(tdate)
 
         return input_tsd[slice(*accdate)]
-    else:
-        return input_tsd
+    return input_tsd
 
 
 _ANNUALS = {
@@ -961,8 +969,8 @@ _WEEKLIES = {
 
 
 def asbestfreq(
-    data,
-    force_freq=None,
+        data,
+        force_freq=None,
 ):
     """Test to determine best frequency to represent data.
 
@@ -1087,7 +1095,10 @@ def asbestfreq(
 
 
 # Print the suffix into the third ":" separated field.
-def renamer(xloc, suffix):
+def renamer(
+        xloc,
+        suffix
+):
     if suffix is None:
         suffix = ""
     try:
@@ -1109,36 +1120,34 @@ def renamer(xloc, suffix):
 
 # Utility
 def print_input(
-    iftrue,
-    intds,
-    output,
-    suffix="",
-    date_format=None,
-    float_format='%g',
-    tablefmt='csv',
-    showindex='never',
+        iftrue,
+        intds,
+        output,
+        suffix="",
+        date_format=None,
+        float_format='%g',
+        tablefmt='csv',
+        showindex='never'
 ):
     """Print the input time series also."""
 
     return _printiso(return_input(iftrue,
                                   intds,
                                   output,
-                                  suffix=suffix,
-                                  date_format=date_format,
-                                  float_format=float_format,
-                                  tablefmt=tablefmt,
-                                  showindex=showindex))
+                                  suffix=suffix),
+                     date_format=date_format,
+                     float_format=float_format,
+                     tablefmt=tablefmt,
+                     showindex=showindex)
 
 
-def return_input(iftrue,
-                 intds,
-                 output,
-                 suffix="",
-                 date_format=None,
-                 float_format='%g',
-                 tablefmt='csv',
-                 showindex='never',
-                 reverse_index=False):
+def return_input(
+        iftrue,
+        intds,
+        output,
+        suffix="",
+        reverse_index=False
+):
     """Print the input time series also."""
 
     output.columns = [renamer(i, suffix) for i in output.columns]
@@ -1153,9 +1162,9 @@ def return_input(iftrue,
 
 
 def _apply_across_columns(
-    func,
-    xtsd,
-    **kwds
+        func,
+        xtsd,
+        **kwds
 ):
     """Apply a function to each column in turn."""
     for col in xtsd.columns:
@@ -1164,13 +1173,13 @@ def _apply_across_columns(
 
 
 def _printiso(
-    tsd,
-    date_format=None,
-    sep=',',
-    float_format='%g',
-    showindex='never',
-    headers='keys',
-    tablefmt='csv',
+        tsd,
+        date_format=None,
+        sep=',',
+        float_format='%g',
+        showindex='never',
+        headers='keys',
+        tablefmt='csv',
 ):
     """Separate so can use in tests."""
     sys.tracebacklimit = 1000
@@ -1179,7 +1188,7 @@ def _printiso(
         if isinstance(tsd, pd.Series):
             tsd = pd.DataFrame(tsd)
 
-        if len(tsd.columns) == 0:
+        if tsd.columns.empty:
             tsd = pd.DataFrame(index=tsd.index)
 
         # Not perfectly true, but likely will use showindex for indices
@@ -1266,12 +1275,12 @@ def test_cli():
 
 
 def printiso(
-    tsd,
-    date_format=None,
-    float_format='%g',
-    tablefmt='csv',
-    headers='keys',
-    showindex='never',
+        tsd,
+        date_format=None,
+        float_format='%g',
+        tablefmt='csv',
+        headers='keys',
+        showindex='never'
 ):
     """Print or return default output format.
 
@@ -1329,8 +1338,8 @@ def memory_optimize(tsd):
 
 
 def is_valid_url(
-    url,
-    qualifying=None,
+        url,
+        qualifying=None
 ):
     """Return whether "url" is valid."""
     min_attributes = ('scheme', 'netloc')
@@ -1341,14 +1350,14 @@ def is_valid_url(
 
 
 def read_iso_ts(
-    indat,
-    parse_dates=True,
-    extended_columns=False,
-    dropna=None,
-    force_freq=None,
-    skiprows=None,
-    index_type='datetime',
-    names=None,
+        indat,
+        parse_dates=True,
+        extended_columns=False,
+        dropna=None,
+        force_freq=None,
+        skiprows=None,
+        index_type='datetime',
+        names=None
 ):
     """Read the format printed by 'printiso' and maybe other formats.
 
@@ -1427,7 +1436,7 @@ def read_iso_ts(
             na_values.append(spcs)
             na_values.append(spcs + 'nan')
 
-        if len(result) == 0:
+        if not result:
             if names is not None:
                 header = None
                 names = make_list(names)
@@ -1506,7 +1515,10 @@ def read_iso_ts(
     return result
 
 
-def read_excel_csv(fpi, header=None):
+def read_excel_csv(
+        fpi,
+        header=None
+):
     """Read Excel formatted CSV file."""
     if header is not None:
         header = int(header)

@@ -56,7 +56,7 @@ def describe_cli(input_ts='-',
                                names=names,
                                clean=clean,
                                transpose=transpose),
-                     showindex='always')
+                      showindex='always')
 
 
 def describe(input_ts='-',

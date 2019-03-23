@@ -27,8 +27,7 @@ def expanding_window(input_ts='-',
                      center=False,
                      source_units=None,
                      target_units=None,
-                     print_input=False,
-                     ):
+                     print_input=False):
     """Calculate an expanding window statistic.
 
     Parameters

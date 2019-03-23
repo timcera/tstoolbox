@@ -78,9 +78,9 @@ def pick(columns,
          clean=False):
     """Will pick a column or list of columns from input."""
     return tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                skiprows=skiprows,
-                                                names=names,
-                                                index_type=index_type),
+                                                   skiprows=skiprows,
+                                                   names=names,
+                                                   index_type=index_type),
                                start_date=start_date,
                                end_date=end_date,
                                pick=columns,

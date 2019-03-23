@@ -115,5 +115,4 @@ def convert(input_ts='-',
     return tsutils.return_input(print_input,
                                 tsd,
                                 tmptsd,
-                                'convert',
-                                float_format=float_format)
+                                'convert')

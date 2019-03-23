@@ -103,8 +103,7 @@ def gof_cli(input_ts='-',
                           names=names,
                           source_units=source_units,
                           target_units=target_units,
-                          skiprows=skiprows,
-                          tablefmt=tablefmt),
+                          skiprows=skiprows),
                       tablefmt=tablefmt,
                       headers=['Statistic',
                                'Comparison',
@@ -123,8 +122,7 @@ def gof(input_ts='-',
         names=None,
         source_units=None,
         target_units=None,
-        skiprows=None,
-        tablefmt='plain'):
+        skiprows=None):
     """Will calculate goodness of fit statistics between two time-series."""
     if stats == 'all':
         stats = ['bias',

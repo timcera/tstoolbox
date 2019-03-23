@@ -17,7 +17,7 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command('stack',formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('stack', formatter_class=RSTHelpFormatter, doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def stack_cli(input_ts='-',
               columns=None,

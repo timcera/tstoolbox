@@ -72,7 +72,9 @@ def dtw_cli(input_ts='-',
             index_type='datetime',
             names=None,
             clean=False,
-            window=10000):
+            window=10000,
+            source_units=None,
+            target_units=None):
     """Dynamic Time Warping.
 
     Parameters
@@ -105,7 +107,9 @@ def dtw_cli(input_ts='-',
                           index_type=index_type,
                           names=names,
                           clean=clean,
-                          window=window))
+                          window=window,
+                          source_units=source_units,
+                          target_units=target_units))
 
 
 def dtw(input_ts='-',
@@ -118,7 +122,9 @@ def dtw(input_ts='-',
         index_type='datetime',
         names=None,
         clean=False,
-        window=10000):
+        window=10000,
+        source_units=None,
+        target_units=None):
     """Dynamic Time Warping."""
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,

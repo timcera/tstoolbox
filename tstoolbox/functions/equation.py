@@ -268,5 +268,4 @@ def equation(equation_str,
     return tsutils.return_input(print_input,
                                 x,
                                 y,
-                                'equation',
-                                float_format=float_format)
+                                'equation')

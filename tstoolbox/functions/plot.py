@@ -21,38 +21,36 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 marker_list = [
-               '.',
-               ',',
-               'o',
-               'v',
-               '^',
-               '<',
-               '>',
-               '1',
-               '2',
-               '3',
-               '4',
-               '8',
-               's',
-               'p',
-               '*',
-               'h',
-               'H',
-               '+',
-               'D',
-               'd',
-               '|',
-               '_',
-              ]
+    '.',
+    ',',
+    'o',
+    'v',
+    '^',
+    '<',
+    '>',
+    '1',
+    '2',
+    '3',
+    '4',
+    '8',
+    's',
+    'p',
+    '*',
+    'h',
+    'H',
+    '+',
+    'D',
+    'd',
+    '|',
+    '_']
 
 color_list = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
 
 line_list = [
-             '-',
-             '--',
-             '-.',
-             ':'
-            ]
+    '-',
+    '--',
+    '-.',
+    ':']
 
 
 def _know_your_limits(xylimits, axis='arithmetic'):
@@ -72,7 +70,7 @@ def _know_your_limits(xylimits, axis='arithmetic'):
         if nlim[1] is None:
             nlim[1] = 0.99
         if (nlim[0] < 0 or nlim[0] > 1 or
-            nlim[1] < 0 or nlim[1] > 1):
+                nlim[1] < 0 or nlim[1] > 1):
             raise ValueError("""
 *
 *   Both limits must be between 0 and 1 for the
@@ -97,7 +95,7 @@ def _know_your_limits(xylimits, axis='arithmetic'):
 
     if axis == 'log':
         if ((nlim[0] is not None and nlim[0] <= 0) or
-            (nlim[1] is not None and nlim[1] <= 0)):
+                (nlim[1] is not None and nlim[1] <= 0)):
             raise ValueError("""
 *
 *   If log plot cannot have limits less than or equal to 0.
@@ -1017,7 +1015,7 @@ def plot(input_ts='-',
             n = len(oydata)
             norm_axis = ax.xaxis
             oxdata = ppf(tsutils.set_plotting_position(n,
-                                                        plotting_position))
+                                                       plotting_position))
 
             if type in ['norm_yaxis',
                         'lognorm_yaxis',
@@ -1040,8 +1038,7 @@ def plot(input_ts='-',
                                    pd.np.linspace(0.01, 0.1, 10),
                                    pd.np.linspace(0.1, 0.9, 9),
                                    pd.np.linspace(0.9, 0.99, 10),
-                                   pd.np.linspace(0.99, 0.999, 10),
-                                   ])
+                                   pd.np.linspace(0.99, 0.999, 10)])
         xtmaj = ppf(xtmaj)
         xtmin = ppf(xtmin)
 
@@ -1098,11 +1095,11 @@ def plot(input_ts='-',
             plt.legend(loc='best')
     elif type == 'kde_time':
         from scipy.stats.kde import gaussian_kde
-        fig, (ax0, ax1) = plt.subplots(nrows=1,
-                                       ncols=2,
-                                       sharey=True,
-                                       figsize=figsize,
-                                       gridspec_kw={'width_ratios': [1, 4]})
+        _, (ax0, ax1) = plt.subplots(nrows=1,
+                                     ncols=2,
+                                     sharey=True,
+                                     figsize=figsize,
+                                     gridspec_kw={'width_ratios': [1, 4]})
         tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
                  sharey=sharey, style=None, logx=logx, logy=logy, xlim=xlim,
                  ylim=ylim, secondary_y=secondary_y, mark_right=mark_right,
@@ -1173,7 +1170,6 @@ def plot(input_ts='-',
                 ngroup = pd.np.append(group.values, [pd.np.nan])
             years[name.year] = ngroup
         years = years.T
-        nr, nc = years.shape
         plt.imshow(years,
                    interpolation=None,
                    aspect='auto')
@@ -1193,8 +1189,7 @@ def plot(input_ts='-',
                         'Sep',
                         'Oct',
                         'Nov',
-                        'Dec',
-                        ]
+                        'Dec']
         plt.xticks(mnths, mnths_labels)
         grid = False
     elif (type == 'bar' or

@@ -8,12 +8,12 @@ from __future__ import print_function
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
-import pandas as pd
-
 from .. import tsutils
 
 
-@mando.command('date_offset', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('date_offset',
+               formatter_class=RSTHelpFormatter,
+               doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def date_offset_cli(intervals,
                     offset,
@@ -72,7 +72,7 @@ def date_offset_cli(intervals,
                                   source_units=source_units,
                                   target_units=target_units,
                                   round_index=round_index),
-                     showindex='always')
+                      showindex='always')
 
 
 def date_offset(intervals,
@@ -81,11 +81,11 @@ def date_offset(intervals,
                 dropna='no',
                 clean=False,
                 skiprows=None,
-                index_type='datetime',
-                names=None,
                 input_ts='-',
                 start_date=None,
                 end_date=None,
+                names=None,
+                index_type='datetime',
                 source_units=None,
                 target_units=None,
                 round_index=None):
@@ -98,7 +98,7 @@ def date_offset(intervals,
                               end_date=end_date,
                               pick=columns,
                               round_index=round_index,
-                              dropna='no',
+                              dropna=dropna,
                               source_units=source_units,
                               target_units=target_units,
                               clean=clean)

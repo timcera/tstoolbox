@@ -170,8 +170,8 @@ def aggregate(input_ts='-',
 
         warnings.warn("""
 *
-*   The 'ninterval' option has been deprecated in favor of prefixing the desired
-*   interval in front of the 'groupby' pandas offset code.
+*   The 'ninterval' option has been deprecated in favor of prefixing the
+*   desired interval in front of the 'groupby' pandas offset code.
 *
 *   For example: instead of 'grouby="D"' and 'ninterval=7', you can just
 *   have 'groupby="7D"'.

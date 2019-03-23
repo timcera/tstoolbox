@@ -7,7 +7,6 @@ from __future__ import print_function
 
 import warnings
 from builtins import range
-from builtins import str
 from builtins import zip
 
 import mando
@@ -790,7 +789,9 @@ def zero_crossings(y_axis, window=11):
 ##############################################################################
 
 
-@mando.command('peak_detection', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('peak_detection',
+               formatter_class=RSTHelpFormatter,
+               doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def peak_detection_cli(input_ts='-',
                        columns=None,
@@ -1011,5 +1012,4 @@ def peak_detection(input_ts='-',
     return tsutils.return_input(print_input,
                                 tsd,
                                 tmptsd,
-                                None,
-                                float_format=float_format)
+                                suffix="")

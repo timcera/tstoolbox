@@ -16,7 +16,9 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command('rolling_window', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('rolling_window',
+               formatter_class=RSTHelpFormatter,
+               doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def rolling_window_cli(statistic,
                        groupby=None,

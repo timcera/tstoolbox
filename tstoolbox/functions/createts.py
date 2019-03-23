@@ -52,7 +52,7 @@ def createts_cli(freq=None,
                                index_type=index_type,
                                start_date=start_date,
                                end_date=end_date),
-                     showindex='always')
+                      showindex='always')
 
 
 def createts(freq=None,
@@ -64,8 +64,8 @@ def createts(freq=None,
     """Create empty time series, optionally fill with a value."""
     if input_ts is None:
         if ((start_date is None) or
-            (end_date is None) or
-            (freq is None)):
+                (end_date is None) or
+                (freq is None)):
             raise ValueError("""
 *
 *   If input_ts is None, then start_date, end_date, and freq must be supplied.

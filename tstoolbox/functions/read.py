@@ -17,7 +17,9 @@ from .. import tsutils
 warnings.filterwarnings('ignore')
 
 
-@mando.command('read', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('read',
+               formatter_class=RSTHelpFormatter,
+               doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def read_cli(filenames,
              force_freq=None,
@@ -33,8 +35,7 @@ def read_cli(filenames,
              source_units=None,
              target_units=None,
              float_format='%g',
-             round_index=None,
-             how='outer'):
+             round_index=None):
     """Collect time series from a list of pickle or csv files.
 
     Prints the read in time-series in the tstoolbox standard format.
@@ -44,12 +45,6 @@ def read_cli(filenames,
     filenames : str
         List of comma delimited filenames to read time series
         from.
-    how : str
-        [optional, default is 'outer']
-
-        Use PANDAS concept on how to join the separate DataFrames read
-        from each file.  If how='outer' represents the union of the
-        time-series, 'inner' is the intersection.
     append : str
         [optional, default is 'columns']
 
@@ -88,9 +83,7 @@ def read_cli(filenames,
                            clean=clean,
                            source_units=source_units,
                            target_units=target_units,
-                           float_format=float_format,
-                           round_index=round_index,
-                           how=how),
+                           round_index=round_index),
                       float_format=float_format)
 
 
@@ -107,9 +100,7 @@ def read(filenames,
          clean=False,
          source_units=None,
          target_units=None,
-         float_format='%g',
-         round_index=None,
-         how='outer'):
+         round_index=None):
     """Collect time series from a list of pickle or csv files."""
     if append not in ['combine', 'rows', 'columns']:
         raise ValueError("""
@@ -126,8 +117,7 @@ def read(filenames,
     result = pd.DataFrame()
     result_list = []
     for i in filenames:
-        tsd = tsutils.common_kwds(
-                                  tsutils.read_iso_ts(i,
+        tsd = tsutils.common_kwds(tsutils.read_iso_ts(i,
                                                       skiprows=skiprows,
                                                       names=names,
                                                       index_type=index_type),

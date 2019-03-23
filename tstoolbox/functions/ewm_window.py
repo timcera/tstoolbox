@@ -36,8 +36,7 @@ def ewm_window(input_ts='-',
                ignore_na=False,
                source_units=None,
                target_units=None,
-               print_input=False,
-               ):
+               print_input=False):
     """Calculate exponential weighted functions.
 
     Exactly one of center of mass, span, half-life, and alpha must be provided.
@@ -138,8 +137,7 @@ def ewm_window(input_ts='-',
                    alpha=alpha,
                    min_periods=min_periods,
                    adjust=adjust,
-                   ignore_na=ignore_na,
-                   )
+                   ignore_na=ignore_na)
 
     if statistic:
         ntsd = eval('ntsd.{0}()'.format(statistic))

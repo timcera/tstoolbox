@@ -19,7 +19,6 @@ from .. import tsutils
 @tsutils.doc(tsutils.docstrings)
 def fill_cli(input_ts='-',
              method='ffill',
-             interval='guess',
              print_input=False,
              start_date=None,
              end_date=None,
@@ -33,8 +32,7 @@ def fill_cli(input_ts='-',
     """Fill missing values (NaN) with different methods.
 
     Missing values can occur because of NaN, or because the time series
-    is sparse.  The 'interval' option can insert NaNs to create a dense
-    time series.
+    is sparse.
 
     Parameters
     ----------
@@ -77,10 +75,6 @@ def fill_cli(input_ts='-',
         +-----------+---------------------------+
 
         If a number will fill with that number.
-    interval : str
-        Will try to insert missing intervals.  Can give any
-        of the pandas offset aliases, 'guess' (to try and figure the
-        interval), or None to not insert missing intervals.
     {print_input}
     {input_ts}
     {start_date}
@@ -96,7 +90,6 @@ def fill_cli(input_ts='-',
     """
     tsutils._printiso(fill(input_ts=input_ts,
                            method=method,
-                           interval=interval,
                            print_input=print_input,
                            start_date=start_date,
                            end_date=end_date,
@@ -111,7 +104,6 @@ def fill_cli(input_ts='-',
 
 def fill(input_ts='-',
          method='ffill',
-         interval='guess',
          print_input=False,
          start_date=None,
          end_date=None,
@@ -187,7 +179,6 @@ def fill(input_ts='-',
 # @mando.command(formatter_class=RSTHelpFormatter)
 def fill_by_correlation(method='move2',
                         maximum_lag=0,
-                        interval='guess',
                         transform='log10',
                         choose_best='dtw',
                         print_input=False,
@@ -195,15 +186,11 @@ def fill_by_correlation(method='move2',
     """Fill missing values (NaN) with different methods.
 
     Missing values can occur because of NaN, or because the time series
-    is sparse.  The 'interval' option can insert NaNs to create a dense
-    time series.
+    is sparse.
 
     :param method: String contained in single quotes or a number that
         defines the method to use for filling.  'move2': maintenance of
         variance extension - 2
-    :param interval: Will try to insert missing intervals.  Can give any
-        of the pandas offset aliases, 'guess' (to try and figure the
-        interval), or None to not insert missing intervals.
     :param -p, --print_input: If set to 'True' will include the input
         columns in the output table.  Default is 'False'.
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value'

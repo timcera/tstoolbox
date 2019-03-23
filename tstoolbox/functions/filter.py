@@ -261,5 +261,4 @@ def filter(filter_type,
     return tsutils.return_input(print_input,
                                 otsd,
                                 tsd,
-                                'filter',
-                                float_format=float_format)
+                                'filter')
