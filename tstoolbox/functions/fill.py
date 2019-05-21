@@ -37,6 +37,8 @@ def fill_cli(input_ts='-',
     Parameters
     ----------
     method : str
+        [optional, default is 'ffill']
+
         String contained in single quotes or a number that
         defines the method to use for filling.
 

@@ -67,6 +67,8 @@ def ewm_window(input_ts='-',
     Parameters
     ----------
     statistic : str
+        [optional, defaults to '']
+
         Statistic applied to each window.
 
         +------+--------------------+
@@ -81,28 +83,41 @@ def ewm_window(input_ts='-',
         | var  | variance           |
         +------+--------------------+
 
-    alpha_com : float, optional
+    alpha_com : float
+        [optional, defaults to None]
+
         Specify decay in terms of center of mass, alpha=1/(1+com), for com>=0
 
-    alpha_span : float, optional
+    alpha_span : float
+        [optional, defaults to None]
+
         Specify decay in terms of span, alpha=2/(span+1), for span1
 
-    alpha_halflife : float, optional
+    alpha_halflife : float
+        [optional, defaults to None]
+
         Specify decay in terms of half-life, alpha=1-exp(log(0.5)/halflife),
         for halflife>0
 
-    alpha : float, optional
+    alpha : float
+        [optional, defaults to None]
+
         Specify smoothing factor alpha directly, 0<alpha<=1
 
-    min_periods : int, default 0
+    min_periods : int
+        [optional, default is 0]
+
         Minimum number of observations in window required to have a value
         (otherwise result is NA).
 
-    adjust : boolean, default True
+    adjust : boolean
+        [optional, default is True]
+
         Divide by decaying adjustment factor in beginning periods to account
         for imbalance in relative weightings (viewing EWMA as a moving average)
 
-    ignore_na : boolean, default False
+    ignore_na : boolean
+        [optional, default is False]
         Ignore missing values when calculating weights.
 
     {input_ts}

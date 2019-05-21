@@ -40,8 +40,12 @@ def calculate_kde_cli(ascending=True,
     Parameters
     ----------
     ascending : bool
-        Sort order defaults to True.
+        [optional, defaults to True]
+
+        Sort order.
     evaluate : bool
+        [optional, defaults to False]
+
         Whether or not to return a time-series of KDE density values or the KDE
         curve.  Defaults to False, which would return the KDE curve.
     {input_ts}

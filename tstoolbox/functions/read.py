@@ -141,3 +141,5 @@ def read(filenames,
     result.sort_index(inplace=True)
 
     return result
+
+read.__doc__ = read_cli.__doc__

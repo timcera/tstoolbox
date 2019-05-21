@@ -33,6 +33,7 @@ def expanding_window(input_ts='-',
     Parameters
     ----------
     statistic : str
+        [optional, default is '']
 
         +-----------+----------------------+
         | statistic | Meaning              |
@@ -62,10 +63,14 @@ def expanding_window(input_ts='-',
         | var       | variance             |
         +-----------+----------------------+
 
-    min_periods : int, default 1
+    min_periods : int
+        [optional, default is 1]
+
         Minimum number of observations in window required to have a value
 
-    center : boolean, default False
+    center : boolean
+        [optional, default is False]
+
         Set the labels at the center of the window.
 
     {input_ts}

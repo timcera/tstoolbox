@@ -824,6 +824,7 @@ def peak_detection_cli(input_ts='-',
         returned.
     method : str
         [optional, default is 'rel']
+
         'rel', 'minmax', 'zero_crossing', 'parabola', 'sine' methods are
         available.  The different algorithms have different strengths
         and weaknesses.

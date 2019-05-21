@@ -46,7 +46,6 @@ def rolling_window_cli(statistic,
     Parameters
     ----------
     statistic : str
-        [optional, default is '']
 
         +----------+--------------------+
         | corr     | correlation        |
@@ -87,27 +86,32 @@ def rolling_window_cli(statistic,
         window will be a variable sized based on the observations included in
         the time-period. This is only valid for datetimelike indexes.
 
-    min_periods : int, default None
+    min_periods : int
+        [optional, default is None]
 
         Minimum number of observations in window required to have a value
         (otherwise result is NA). For a window that is specified by an offset,
         this will default to 1.
 
-    center : boolean, default False
+    center : boolean
+        [optional, default is False]
 
         Set the labels at the center of the window.
 
-    win_type : string, default None
+    win_type : str
+        [optional, default is None]
 
         Provide a window type. If None, all points are evenly weighted. See the
         notes below for further information.
 
-    on : string, optional
+    on : str
+        [optional, default is None]
 
         For a DataFrame, column on which to calculate the rolling window,
         rather than the index
 
-    closed : string, default None
+    closed : str 
+        [optional, default is None]
 
         Make the interval closed on the 'right', 'left', 'both' or 'neither'
         endpoints. For offset-based windows, it defaults to 'right'. For fixed
