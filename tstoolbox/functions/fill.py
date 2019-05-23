@@ -242,3 +242,6 @@ def fill_by_correlation(method='move2',
         stdevs = pd.np.std(dna)
         print(means[1] + stdevs[1]/stdevs[0]*means[0])
         print(means, stdevs)
+
+
+fill.__doc__ = fill_cli.__doc__

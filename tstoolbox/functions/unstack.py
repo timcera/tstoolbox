@@ -146,3 +146,6 @@ def unstack(column_names,
                                  round_index=round_index)
 
     return newtsd
+
+
+unstack.__doc__ = unstack_cli.__doc__

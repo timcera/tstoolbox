@@ -53,19 +53,19 @@ def stdtozrxp_cli(input_ts='-',
     {round_index}
 
     """
-    stdtozrxp(input_ts=input_ts,
-              columns=columns,
-              start_date=start_date,
-              end_date=end_date,
-              dropna=dropna,
-              skiprows=skiprows,
-              index_type=index_type,
-              names=names,
-              clean=clean,
-              round_index=round_index,
-              source_units=source_units,
-              target_units=target_units,
-              rexchange=rexchange)
+    tsutils._printiso(stdtozrxp(input_ts=input_ts,
+                                columns=columns,
+                                start_date=start_date,
+                                end_date=end_date,
+                                dropna=dropna,
+                                skiprows=skiprows,
+                                index_type=index_type,
+                                names=names,
+                                clean=clean,
+                                round_index=round_index,
+                                source_units=source_units,
+                                target_units=target_units,
+                                rexchange=rexchange))
 
 
 def stdtozrxp(input_ts='-',
@@ -108,3 +108,6 @@ def stdtozrxp(input_ts='-',
         print(('{0.year:04d}{0.month:02d}{0.day:02d}{0.hour:02d}'
                '{0.minute:02d}{0.second:02d}, {1}').format(
                    tsd.index[i], tsd[tsd.columns[0]][i]))
+
+
+stdtozrxp.__doc__ = stdtozrxp_cli.__doc__

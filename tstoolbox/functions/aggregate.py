@@ -204,3 +204,6 @@ def aggregate(input_ts='-',
                                 tsd,
                                 newts,
                                 '')
+
+
+aggregate.__doc__ = aggregate_cli.__doc__

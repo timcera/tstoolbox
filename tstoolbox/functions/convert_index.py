@@ -322,3 +322,6 @@ def convert_index(to,
                               end_date=nend_date,
                               round_index=nround_index)
     return tsd
+
+
+convert_index.__doc__ = convert_index_cli.__doc__

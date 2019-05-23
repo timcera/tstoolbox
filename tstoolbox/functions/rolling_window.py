@@ -237,3 +237,6 @@ def rolling_window(statistic,
                                 tsd,
                                 ntsd,
                                 None)
+
+
+rolling_window.__doc__ = rolling_window_cli.__doc__

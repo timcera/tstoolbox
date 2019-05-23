@@ -7,10 +7,7 @@ import os
 # certain easy_install versions
 os.environ["MPLCONFIGDIR"] = "."
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
 
 version = open("VERSION").readline().strip()
 

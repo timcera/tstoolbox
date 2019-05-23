@@ -89,3 +89,6 @@ def pick(columns,
                                source_units=source_units,
                                target_units=target_units,
                                clean=clean)
+
+
+pick.__doc__ = pick_cli.__doc__

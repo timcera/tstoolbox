@@ -112,3 +112,6 @@ def converttz(fromtz,
     except TypeError:
         tsd = tsd.tz_convert(totz)
     return tsd
+
+
+converttz.__doc__ = converttz_cli.__doc__

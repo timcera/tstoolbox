@@ -145,3 +145,6 @@ def calculate_fdc(input_ts='-',
     if sort_index == 'descending':
         return newts.iloc[::-1]
     return newts
+
+
+calculate_fdc.__doc__ = calculate_fdc_cli.__doc__

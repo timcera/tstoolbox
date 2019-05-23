@@ -136,3 +136,6 @@ def pct_change(input_ts='-',
                                                freq=freq),
                                 'pctchange',
                                 float_format=float_format)
+
+
+pct_change.__doc__ = pct_change_cli.__doc__

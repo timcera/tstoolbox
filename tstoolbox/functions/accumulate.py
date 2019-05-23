@@ -108,3 +108,6 @@ def accumulate(input_ts='-',
                                 tsd,
                                 ntsd,
                                 statistic)
+
+
+accumulate.__doc__ = accumulate_cli.__doc__

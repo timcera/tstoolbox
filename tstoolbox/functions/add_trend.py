@@ -117,3 +117,6 @@ def add_trend(start_offset,
                                 tsd,
                                 ntsd,
                                 'trend')
+
+
+add_trend.__doc__ = add_trend_cli.__doc__

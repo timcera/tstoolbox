@@ -103,3 +103,6 @@ def remove_trend(input_ts='-',
         ntsd[col] = tsd[col] - ntsd[col]
     return tsutils.return_input(
         print_input, tsd, ntsd, 'remtrend')
+
+
+remove_trend.__doc__ = remove_trend_cli.__doc__

@@ -269,3 +269,6 @@ def equation(equation_str,
                                 x,
                                 y,
                                 'equation')
+
+
+equation.__doc__ = equation_cli.__doc__

@@ -11,23 +11,25 @@ from mando.rst_text_formatter import RSTHelpFormatter
 from .. import tsutils
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command('expanding_window', 
+               formatter_class=RSTHelpFormatter, 
+               doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
-def expanding_window(input_ts='-',
-                     columns=None,
-                     start_date=None,
-                     end_date=None,
-                     dropna='no',
-                     skiprows=None,
-                     index_type='datetime',
-                     names=None,
-                     clean=False,
-                     statistic='',
-                     min_periods=1,
-                     center=False,
-                     source_units=None,
-                     target_units=None,
-                     print_input=False):
+def expanding_window_cli(input_ts='-',
+                         columns=None,
+                         start_date=None,
+                         end_date=None,
+                         dropna='no',
+                         skiprows=None,
+                         index_type='datetime',
+                         names=None,
+                         clean=False,
+                         statistic='',
+                         min_periods=1,
+                         center=False,
+                         source_units=None,
+                         target_units=None,
+                         print_input=False):
     """Calculate an expanding window statistic.
 
     Parameters
@@ -87,6 +89,38 @@ def expanding_window(input_ts='-',
     {print_input}
 
     """
+    tsutils._printiso(expanding_window(input_ts=input_ts,
+                                       columns=columns,
+                                       start_date=start_date,
+                                       end_date=end_date,
+                                       dropna=dropna,
+                                       skiprows=skiprows,
+                                       index_type=index_type,
+                                       names=names,
+                                       clean=clean,
+                                       statistic=statistic,
+                                       min_periods=min_periods,
+                                       center=center,
+                                       source_units=source_units,
+                                       target_units=target_units,
+                                       print_input=print_input))
+
+
+def expanding_window(input_ts='-',
+                     columns=None,
+                     start_date=None,
+                     end_date=None,
+                     dropna='no',
+                     skiprows=None,
+                     index_type='datetime',
+                     names=None,
+                     clean=False,
+                     statistic='',
+                     min_periods=1,
+                     center=False,
+                     source_units=None,
+                     target_units=None,
+                     print_input=False):
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -105,7 +139,10 @@ def expanding_window(input_ts='-',
     if statistic:
         ntsd = eval('ntsd.{0}()'.format(statistic))
 
-    return tsutils.print_input(print_input,
-                               tsd,
-                               ntsd,
-                               'expanding.' + statistic)
+    return tsutils.return_input(print_input,
+                                tsd,
+                                ntsd,
+                                'expanding.' + statistic)
+
+
+expanding_window.__doc__ = expanding_window_cli.__doc__

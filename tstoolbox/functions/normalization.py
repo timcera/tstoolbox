@@ -160,3 +160,6 @@ def normalization(input_ts='-',
                                 otsd,
                                 tsd,
                                 '{0}'.format(mode))
+
+
+normalization.__doc__ = normalization_cli.__doc__

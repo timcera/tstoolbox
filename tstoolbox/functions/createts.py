@@ -90,3 +90,6 @@ def createts(freq=None,
         tsd = pd.DataFrame([fillvalue] * len(tindex),
                            index=tindex)
     return tsd
+
+
+createts.__doc__ = createts_cli.__doc__

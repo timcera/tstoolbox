@@ -120,3 +120,6 @@ def calculate_kde(ascending=True,
         ndf = pd.DataFrame(y)
 
     return ndf
+
+
+calculate_kde.__doc__ = calculate_kde_cli.__doc__

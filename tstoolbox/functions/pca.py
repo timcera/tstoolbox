@@ -92,3 +92,6 @@ def pca(input_ts='-',
     pca = PCA(n_components)
     pca.fit(tsd.dropna(how='any'))
     return pca.components_
+
+
+pca.__doc__ = pca_cli.__doc__

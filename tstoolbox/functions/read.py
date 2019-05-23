@@ -142,4 +142,5 @@ def read(filenames,
 
     return result
 
+
 read.__doc__ = read_cli.__doc__

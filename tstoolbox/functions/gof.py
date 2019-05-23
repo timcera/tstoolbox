@@ -235,3 +235,6 @@ def gof(input_ts='-',
                         pred.std()])
 
     return statval
+
+
+gof.__doc__ = gof_cli.__doc__

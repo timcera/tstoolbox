@@ -1014,3 +1014,6 @@ def peak_detection(input_ts='-',
                                 tsd,
                                 tmptsd,
                                 suffix="")
+
+
+peak_detection.__doc__ = peak_detection_cli.__doc__

@@ -129,3 +129,6 @@ def clip(input_ts='-',
                                 tsd,
                                 tsd.clip(n_min, n_max),
                                 'clip')
+
+
+clip.__doc__ = clip_cli.__doc__

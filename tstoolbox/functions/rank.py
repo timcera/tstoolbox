@@ -180,3 +180,6 @@ def rank(input_ts='-',
                                          pct=pct),
                                 'rank',
                                 float_format=float_format)
+
+
+rank.__doc__ = rank_cli.__doc__

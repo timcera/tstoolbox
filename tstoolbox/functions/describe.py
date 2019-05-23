@@ -86,3 +86,6 @@ def describe(input_ts='-',
 
     ntsd.index.name = 'Statistic'
     return ntsd
+
+
+describe.__doc__ = describe_cli.__doc__

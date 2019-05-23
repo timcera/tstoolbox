@@ -117,3 +117,6 @@ def stack(input_ts='-',
     newtsd = newtsd.groupby('Columns').apply(
         lambda d: d.sort_values('Columns')).reset_index('Columns', drop=True)
     return newtsd
+
+
+stack.__doc__ = stack_cli.__doc__

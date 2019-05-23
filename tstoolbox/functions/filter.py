@@ -262,3 +262,6 @@ def filter(filter_type,
                                 otsd,
                                 tsd,
                                 'filter')
+
+
+filter.__doc__ = filter_cli.__doc__

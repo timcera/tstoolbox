@@ -1272,3 +1272,6 @@ def plot(input_ts='-',
     if ofilename is None:
         return plt
     plt.savefig(ofilename)
+
+
+plot.__doc__ = plot_cli.__doc__

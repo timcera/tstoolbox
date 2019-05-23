@@ -94,3 +94,6 @@ def date_slice(input_ts='-',
                                source_units=source_units,
                                target_units=target_units,
                                clean=clean)
+
+
+date_slice.__doc__ = date_slice_cli.__doc__

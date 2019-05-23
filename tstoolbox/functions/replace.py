@@ -116,3 +116,6 @@ def replace(from_values,
 
     return tsutils.return_input(
         print_input, tsd, ntsd, 'replace')
+
+
+replace.__doc__ = replace_cli.__doc__

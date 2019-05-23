@@ -150,3 +150,6 @@ def dtw(input_ts='-',
     ncols = ['Variables'] + [str(i) + 'DTW_score' for i in ncols[1:]]
     ntsd.columns = ncols
     return ntsd
+
+
+dtw.__doc__ = dtw_cli.__doc__

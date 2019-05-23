@@ -116,3 +116,6 @@ def convert(input_ts='-',
                                 tsd,
                                 tmptsd,
                                 'convert')
+
+
+convert.__doc__ = convert_cli.__doc__
