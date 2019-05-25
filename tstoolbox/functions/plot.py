@@ -1162,7 +1162,7 @@ def plot(input_ts='-',
                            '{0}-12-31'.format(eyear),
                            freq='D')
         ntsd = tsd.reindex(index=dr)
-        groups = ntsd.iloc[:, 0].groupby(pd.TimeGrouper('A'))
+        groups = ntsd.iloc[:, 0].groupby(pd.Grouper(freq='A'))
         years = pd.DataFrame()
         for name, group in groups:
             ngroup = group.values

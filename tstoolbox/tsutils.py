@@ -17,9 +17,9 @@ from io import StringIO
 from urllib.parse import urlparse
 
 try:
-    from fractions import gcd
-except ImportError:
     from math import gcd
+except ImportError:
+    from fractions import gcd
 
 import numpy as np
 
@@ -1384,7 +1384,7 @@ def read_iso_ts(
     if isinstance(indat, (str, bytes, StringIO)):
         if indat == '-' or indat == b'-':
             # if from stdin format must be the tstoolbox standard
-            # pandas read_table supports file like objects
+            # pandas read_csv supports file like objects
             header = 0
             sep = None
             fpi = sys.stdin
@@ -1442,18 +1442,18 @@ def read_iso_ts(
                 names = make_list(names)
             if index_type == 'number':
                 parse_dates = False
-            result = pd.io.parsers.read_table(fpi,
-                                              header=header,
-                                              names=names,
-                                              index_col=index_col,
-                                              infer_datetime_format=True,
-                                              parse_dates=parse_dates,
-                                              na_values=na_values,
-                                              keep_default_na=True,
-                                              sep=sep,
-                                              skipinitialspace=True,
-                                              engine='python',
-                                              skiprows=skiprows)
+            result = pd.io.parsers.read_csv(fpi,
+                                            header=header,
+                                            names=names,
+                                            index_col=index_col,
+                                            infer_datetime_format=True,
+                                            parse_dates=parse_dates,
+                                            na_values=na_values,
+                                            keep_default_na=True,
+                                            sep=sep,
+                                            skipinitialspace=True,
+                                            engine='python',
+                                            skiprows=skiprows)
             result.columns = [fstr.format(fname, str(i).strip())
                               for i in result.columns]
 
@@ -1522,6 +1522,9 @@ def read_excel_csv(
     """Read Excel formatted CSV file."""
     if header is not None:
         header = int(header)
-    tsdata = pd.read_table(fpi, header=header, sep=',', parse_dates=[0],
-                           index_col=[0])
+    tsdata = pd.read_csv(fpi,
+                         header=header,
+                         sep=',',
+                         parse_dates=[0],
+                         index_col=[0])
     return tsdata
