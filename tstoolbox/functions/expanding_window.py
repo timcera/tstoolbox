@@ -11,8 +11,8 @@ from mando.rst_text_formatter import RSTHelpFormatter
 from .. import tsutils
 
 
-@mando.command('expanding_window', 
-               formatter_class=RSTHelpFormatter, 
+@mando.command('expanding_window',
+               formatter_class=RSTHelpFormatter,
                doctype='numpy')
 @tsutils.doc(tsutils.docstrings)
 def expanding_window_cli(input_ts='-',

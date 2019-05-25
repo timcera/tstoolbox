@@ -110,7 +110,7 @@ def rolling_window_cli(statistic,
         For a DataFrame, column on which to calculate the rolling window,
         rather than the index
 
-    closed : str 
+    closed : str
         [optional, default is None]
 
         Make the interval closed on the 'right', 'left', 'both' or 'neither'
