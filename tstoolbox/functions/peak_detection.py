@@ -267,31 +267,31 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
             mnpos = x
 
         # ####look for max####
-        if y < mx-delta and mx != np.Inf:
+        if y < mx - delta and mx != np.Inf:
             # Maxima peak candidate found
             # look ahead in signal to ensure that this is a peak and not jitter
-            if y_axis[index:index+window].max() < mx:
+            if y_axis[index:index + window].max() < mx:
                 max_peaks.append([mxpos, mx])
                 dump.append(True)
                 # set algorithm to only find minima now
                 mx = np.Inf
                 mn = np.Inf
-                if index+window >= length:
+                if index + window >= length:
                     # end is within window no more peaks can be found
                     break
                 continue
 
         # ####look for min####
-        if y > mn+delta and mn != -np.Inf:
+        if y > mn + delta and mn != -np.Inf:
             # Minima peak candidate found
             # look ahead in signal to ensure that this is a peak and not jitter
-            if y_axis[index:index+window].min() > mn:
+            if y_axis[index:index + window].min() > mn:
                 min_peaks.append([mnpos, mn])
                 dump.append(False)
                 # set algorithm to only find maxima now
                 mn = -np.Inf
                 mx = -np.Inf
-                if index+window >= length:
+                if index + window >= length:
                     # end is within window no more peaks can be found
                     break
 

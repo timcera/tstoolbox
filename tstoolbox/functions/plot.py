@@ -977,7 +977,7 @@ def plot(input_ts='-',
         # Boy I do not like matplotlib.
 
         for colindex in range(colcnt):
-            ndf = tsd.iloc[:, colindex*2:colindex*2 + 2]
+            ndf = tsd.iloc[:, colindex * 2:colindex * 2 + 2]
             if type == 'double_mass':
                 ndf = ndf.dropna().cumsum()
             oxdata = pd.np.array(ndf.iloc[:, 0])
@@ -1175,7 +1175,7 @@ def plot(input_ts='-',
                    aspect='auto')
         plt.colorbar()
         yticks = list(range(byear, eyear + 1))
-        skip = len(yticks)//20 + 1
+        skip = len(yticks) // 20 + 1
         plt.yticks(range(0, len(yticks), skip), yticks[::skip])
         mnths = [0, 30, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
         mnths_labels = ['Jan',

@@ -78,19 +78,19 @@ def _transform(vector, cutoff_period, window_len, lopass=None):
     import numpy.fft as F
     result = F.rfft(vector, len(vector))
 
-    freq = F.fftfreq(len(vector))[:len(vector)//2 + 1]
+    freq = F.fftfreq(len(vector))[:len(vector) // 2 + 1]
     factor = np.ones_like(freq)
 
     if lopass is True:
-        factor[freq > 1.0/float(cutoff_period)] = 0.0
+        factor[freq > 1.0 / float(cutoff_period)] = 0.0
         factor = np.pad(factor, window_len + 1, mode='constant',
                         constant_values=(1.0, 0.0))
     else:
-        factor[freq < 1.0/float(cutoff_period)] = 0.0
+        factor[freq < 1.0 / float(cutoff_period)] = 0.0
         factor = np.pad(factor, window_len + 1, mode='constant',
                         constant_values=(0.0, 1.0))
 
-    factor = np.convolve(factor, [1.0/window_len]*window_len, mode=1)
+    factor = np.convolve(factor, [1.0 / window_len] * window_len, mode=1)
     factor = factor[window_len + 1:-(window_len + 1)]
 
     result = result * factor

@@ -278,20 +278,20 @@ def convert_index(to,
         tsd.index = pd.to_datetime(tsd.index)
 
         try:
-            frac = to_offset(maxinterval).nanos/to_offset(interval).nanos
+            frac = to_offset(maxinterval).nanos / to_offset(interval).nanos
         except ValueError:
             frac = 1.0
 
         try:
-            tsd.index = allowed[epoch](tsd.index.to_julian_date())*frac
+            tsd.index = allowed[epoch](tsd.index.to_julian_date()) * frac
         except KeyError:
             epoch_date = tsutils.parsedate(epoch)
             if interval in ['M', 'MS']:
-                tsd.index = ((tsd.index.year - epoch_date.year)*12 +
+                tsd.index = ((tsd.index.year - epoch_date.year) * 12 +
                              tsd.index.month - epoch_date.month)
             elif interval in ['W']:
                 tsd.index = ((tsd.index.to_julian_date() -
-                              epoch_date.to_julian_date())/7.0).astype('i')
+                              epoch_date.to_julian_date()) / 7.0).astype('i')
 
     elif to == 'datetime':
         tsd.index = pd.to_datetime(tsd.index.values,

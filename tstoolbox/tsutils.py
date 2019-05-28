@@ -3,32 +3,29 @@
 from __future__ import division
 from __future__ import print_function
 
+from tabulate import tabulate as tb
+from tabulate import simple_separated_format
+from pint import UnitRegistry
+import pandas as pd
+import numpy as np
+from urllib.parse import urlparse
+from io import StringIO
+from functools import reduce
+from builtins import str
+from builtins import range
+import sys
+import os
+import gzip
+import bz2
 from future import standard_library
 standard_library.install_aliases()
 
-import bz2
-import gzip
-import os
-import sys
-from builtins import range
-from builtins import str
-from functools import reduce
-from io import StringIO
-from urllib.parse import urlparse
 
 try:
     from math import gcd
 except ImportError:
     from fractions import gcd
 
-import numpy as np
-
-import pandas as pd
-
-from pint import UnitRegistry
-
-from tabulate import simple_separated_format
-from tabulate import tabulate as tb
 
 ureg = UnitRegistry()
 
@@ -799,7 +796,7 @@ def common_kwds(
     if dropna in ['any', 'all']:
         ntsd = ntsd.dropna(axis='index',
                            how=dropna,
-                          )
+                           )
     else:
         try:
             ntsd = asbestfreq(ntsd)
@@ -836,7 +833,8 @@ def common_kwds(
                 # convert words[1] to target_units[inx]
                 Q_ = ureg.Quantity
                 try:
-                    ntsd[colname] = Q_(ntsd[colname], ureg(words[1])).to(target_units[inx])
+                    ntsd[colname] = Q_(ntsd[colname], ureg(
+                        words[1])).to(target_units[inx])
                     words[1] = target_units[inx]
                 except AttributeError:
                     pass
