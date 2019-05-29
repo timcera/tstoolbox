@@ -158,6 +158,7 @@ def plot_cli(input_ts='-',
              invert_yaxis=False,
              round_index=None,
              plotting_position='weibull',
+             prob_plot_sort_values='descending',
              source_units=None,
              target_units=None,
              lag_plot_lag=1):
@@ -559,6 +560,13 @@ def plot_cli(input_ts='-',
 
         Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
         lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
+    prob_plot_sort_values : str
+        [optional, default is 'descending']
+
+        How to sort the values for the probability plots.
+
+        Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
+        lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
     {columns}
     {start_date}
     {end_date}
@@ -620,6 +628,7 @@ def plot_cli(input_ts='-',
          invert_yaxis=invert_yaxis,
          round_index=round_index,
          plotting_position=plotting_position,
+         prob_plot_sort_values=prob_plot_sort_values,
          source_units=source_units,
          target_units=target_units,
          lag_plot_lag=lag_plot_lag)
@@ -674,6 +683,7 @@ def plot(input_ts='-',
          invert_yaxis=False,
          round_index=None,
          plotting_position='weibull',
+         prob_plot_sort_values='descending',
          source_units=None,
          target_units=None,
          lag_plot_lag=1):
@@ -1011,12 +1021,21 @@ def plot(input_ts='-',
 
         for colindex in range(colcnt):
             oydata = pd.np.array(ys.iloc[:, colindex].dropna())
-            oydata = pd.np.sort(oydata)[::-1]
+            if prob_plot_sort_values == 'ascending':
+                oydata = pd.np.sort(oydata)
+            elif prob_plot_sort_values == 'descending':
+                oydata = pd.np.sort(oydata)[::-1]
+            else:
+                raise ValueError("""
+*
+*  The 'prob_plot_sort_values' option can only be 'ascending' or
+*  'descending'.  You gave {prob_plot_sort_values}.
+*
+""".format(**locals()))
             n = len(oydata)
             norm_axis = ax.xaxis
             oxdata = ppf(tsutils.set_plotting_position(n,
                                                        plotting_position))
-
             if type in ['norm_yaxis',
                         'lognorm_yaxis',
                         'weibull_yaxis']:
