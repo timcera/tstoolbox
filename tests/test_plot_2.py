@@ -40,11 +40,11 @@ def test_double_mass_marker():
 
 @pytest.mark.mpl_image_compare
 def test_boxplot():
-    ndf = tstoolbox.read(['tests/02234500_65_65.csv',
+    xdf = tstoolbox.read(['tests/02234500_65_65.csv',
                           'tests/02325000_flow.csv'],
-                         clean=True,
-                         append='combine')
-    return tstoolbox.plot(input_ts=ndf,
+                          clean=True,
+                          append='combine')
+    return tstoolbox.plot(input_ts=xdf,
                           clean=True,
                           columns=[2, 3],
                           type='boxplot',
