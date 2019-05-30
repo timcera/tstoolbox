@@ -1,6 +1,7 @@
 import matplotlib
 matplotlib.use('Agg')
 
+import matplotlib.pyplot as plt
 import pytest
 
 from tstoolbox import tstoolbox
@@ -17,6 +18,7 @@ dfa = tstoolbox.aggregate(agg_interval='A',
 
 @pytest.mark.mpl_image_compare
 def test_double_mass():
+    plt.close('all')
     return tstoolbox.plot(type='double_mass',
                           clean=True,
                           input_ts='tests/02234500_65_65.csv',
@@ -24,6 +26,7 @@ def test_double_mass():
 
 @pytest.mark.mpl_image_compare
 def test_double_mass_mult():
+    plt.close('all')
     return tstoolbox.plot(type='double_mass',
                           columns=[2,3,3,2],
                           input_ts='tests/data_daily_sample.csv',
@@ -31,6 +34,7 @@ def test_double_mass_mult():
 
 @pytest.mark.mpl_image_compare
 def test_double_mass_marker():
+    plt.close('all')
     return tstoolbox.plot(type='double_mass',
                           columns=[2, 3, 3, 2],
                           linestyles=' ',
@@ -40,6 +44,7 @@ def test_double_mass_marker():
 
 @pytest.mark.mpl_image_compare
 def test_boxplot():
+    plt.close('all')
     xdf = tstoolbox.read(['tests/02234500_65_65.csv',
                           'tests/02325000_flow.csv'],
                           clean=True,
@@ -52,6 +57,7 @@ def test_boxplot():
 
 @pytest.mark.mpl_image_compare
 def test_scatter_matrix():
+    plt.close('all')
     return tstoolbox.plot(type='scatter_matrix',
                           clean=True,
                           input_ts='tests/02234500_65_65.csv',
@@ -59,6 +65,7 @@ def test_scatter_matrix():
 
 @pytest.mark.mpl_image_compare
 def test_lag_plot():
+    plt.close('all')
     return tstoolbox.plot(columns=1,
                           type='lag_plot',
                           input_ts=df,
@@ -75,6 +82,7 @@ def test_lag_plot():
 
 @pytest.mark.mpl_image_compare
 def test_probability_density():
+    plt.close('all')
     return tstoolbox.plot(type='probability_density',
                           clean=True,
                           input_ts='tests/02234500_65_65.csv',
@@ -82,24 +90,28 @@ def test_probability_density():
 
 @pytest.mark.mpl_image_compare
 def test_bar():
+    plt.close('all')
     return tstoolbox.plot(type='bar',
                           input_ts=dfa,
                           ofilename=None)
 
 @pytest.mark.mpl_image_compare
 def test_barh():
+    plt.close('all')
     return tstoolbox.plot(type='barh',
                           input_ts=dfa,
                           ofilename=None)
 
 @pytest.mark.mpl_image_compare
 def test_bar_stacked():
+    plt.close('all')
     return tstoolbox.plot(type='bar_stacked',
                           input_ts=dfa,
                           ofilename=None)
 
 @pytest.mark.mpl_image_compare
 def test_barh_stacked():
+    plt.close('all')
     return tstoolbox.plot(type='barh_stacked',
                           input_ts=dfa,
                           ofilename=None)

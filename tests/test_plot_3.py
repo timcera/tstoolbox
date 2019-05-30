@@ -1,6 +1,7 @@
 import matplotlib
 matplotlib.use('Agg')
 
+import matplotlib.pyplot as plt
 import pytest
 
 from tstoolbox import tstoolbox
@@ -17,6 +18,7 @@ dfa = tstoolbox.aggregate(agg_interval='A',
 
 @pytest.mark.mpl_image_compare
 def test_histogram():
+    plt.close('all')
     return tstoolbox.plot(type='histogram',
                           clean=True,
                           input_ts='tests/02234500_65_65.csv',
@@ -24,6 +26,7 @@ def test_histogram():
 
 @pytest.mark.mpl_image_compare
 def test_heatmap():
+    plt.close('all')
     return tstoolbox.plot(type='heatmap',
                           columns=2,
                           clean=True,
@@ -32,6 +35,7 @@ def test_heatmap():
 
 @pytest.mark.mpl_image_compare
 def test_norm_xaxis():
+    plt.close('all')
     return tstoolbox.plot(type='norm_xaxis',
                           columns=2,
                           clean=True,
@@ -40,6 +44,7 @@ def test_norm_xaxis():
 
 @pytest.mark.mpl_image_compare
 def test_norm_yaxis():
+    plt.close('all')
     return tstoolbox.plot(type='norm_yaxis',
                           columns=2,
                           clean=True,
@@ -48,6 +53,7 @@ def test_norm_yaxis():
 
 @pytest.mark.mpl_image_compare
 def test_lognorm_xaxis():
+    plt.close('all')
     return tstoolbox.plot(type='lognorm_xaxis',
                           columns=2,
                           clean=True,
@@ -56,6 +62,7 @@ def test_lognorm_xaxis():
 
 @pytest.mark.mpl_image_compare
 def test_lognorm_yaxis():
+    plt.close('all')
     return tstoolbox.plot(type='lognorm_yaxis',
                           columns=2,
                           clean=True,
@@ -64,6 +71,7 @@ def test_lognorm_yaxis():
 
 @pytest.mark.mpl_image_compare
 def test_weibull_xaxis():
+    plt.close('all')
     return tstoolbox.plot(type='weibull_xaxis',
                           columns=2,
                           clean=True,
@@ -72,6 +80,7 @@ def test_weibull_xaxis():
 
 @pytest.mark.mpl_image_compare
 def test_weibull_yaxis():
+    plt.close('all')
     return tstoolbox.plot(type='weibull_yaxis',
                           columns=2,
                           clean=True,
@@ -80,6 +89,7 @@ def test_weibull_yaxis():
 
 @pytest.mark.mpl_image_compare
 def test_kde_time():
+    plt.close('all')
     return tstoolbox.plot(type='kde_time',
                           columns=2,
                           clean=True,
@@ -88,6 +98,7 @@ def test_kde_time():
 
 @pytest.mark.mpl_image_compare
 def test_kde_time_multiple_traces():
+    plt.close('all')
     ndf = tstoolbox.read(['tests/daily.csv',
                           'tests/02325000_flow.csv'])
     return tstoolbox.plot(type='kde_time',
@@ -99,6 +110,7 @@ def test_kde_time_multiple_traces():
 
 @pytest.mark.mpl_image_compare
 def test_autocorrelation():
+    plt.close('all')
     return tstoolbox.plot(type='autocorrelation',
                           columns=2,
                           input_ts=df,
