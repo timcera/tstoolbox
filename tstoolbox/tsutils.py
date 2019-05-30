@@ -11,7 +11,7 @@ import numpy as np
 try:
     from urllib.parse import urlparse
 except ImportError:
-    from urllib import urlparse
+    from urlparse import urlparse
 from io import StringIO
 from functools import reduce
 from builtins import str
