@@ -42,7 +42,7 @@ def test_double_mass_marker():
                           input_ts='tests/data_daily_sample.csv',
                           ofilename=None)
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=5)
 def test_boxplot():
     plt.close('all')
     xdf = tstoolbox.read(['tests/02234500_65_65.csv',
