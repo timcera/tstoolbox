@@ -917,6 +917,7 @@ def plot(input_ts='-',
                   'weibull_yaxis']:
         colcnt = tsd.shape[1]
 
+    _, ax = plt.subplots(figsize=figsize)
     if type in ['xy',
                 'double_mass',
                 'norm_xaxis',
@@ -926,7 +927,6 @@ def plot(input_ts='-',
                 'weibull_xaxis',
                 'weibull_yaxis',
                 'heatmap']:
-        _, ax = plt.subplots(figsize=figsize)
         plotdict = {(False, True): ax.semilogy,
                     (True, False): ax.semilogx,
                     (True, True): ax.loglog,
@@ -1153,12 +1153,14 @@ def plot(input_ts='-',
     elif type == 'lag_plot':
         from pandas.plotting import lag_plot
         lag_plot(tsd,
-                 lag=lag_plot_lag)
+                 lag=lag_plot_lag,
+                 ax=ax)
         xtitle = xtitle or 'y(t)'
         ytitle = ytitle or 'y(t+{0})'.format(short_freq or 1)
     elif type == 'autocorrelation':
         from pandas.plotting import autocorrelation_plot
-        autocorrelation_plot(tsd)
+        autocorrelation_plot(tsd,
+                             ax=ax)
         xtitle = xtitle or 'Time Lag {0}'.format(short_freq)
     elif type == 'bootstrap':
         from pandas.plotting import bootstrap_plot
