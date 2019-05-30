@@ -8,7 +8,10 @@ from tabulate import simple_separated_format
 from pint import UnitRegistry
 import pandas as pd
 import numpy as np
-from urllib.parse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urllib import urlparse
 from io import StringIO
 from functools import reduce
 from builtins import str
