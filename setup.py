@@ -1,13 +1,14 @@
 
-import sys
 import os
+import sys
+
+from setuptools import setup
 
 # temporarily redirect config directory to prevent matplotlib importing
 # testing that for writeable directory which results in sandbox error in
 # certain easy_install versions
 os.environ["MPLCONFIGDIR"] = "."
 
-from setuptools import setup
 
 version = open("VERSION").readline().strip()
 
@@ -34,7 +35,8 @@ install_requires = [
     'pandas',
     'pint',
     "matplotlib < 3 ; python_version < '3.5'",
-    "matplotlib ; python_version >= '3.5'",
+    "matplotlib < 3.1 ; python_version < '3.6'",
+    "matplotlib ; python_version >= '3.6'",
     'xlsxwriter',
 ]
 
