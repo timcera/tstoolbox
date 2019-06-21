@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """Collection of functions for the manipulation of time series."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
+
+import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
@@ -179,6 +179,8 @@ def convert_index(to,
                   target_units=None,
                   skiprows=None):
     """Convert datetime to/from Julian dates from different epochs."""
+
+    # Clip to start_date/end_date if possible.
     if to == 'datetime':
         index_type = 'number'
         nstart_date = None
@@ -189,6 +191,7 @@ def convert_index(to,
         nstart_date = start_date
         nend_date = end_date
         nround_index = round_index
+
     tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
                                                   skiprows=skiprows,
                                                   names=names,
@@ -201,6 +204,7 @@ def convert_index(to,
                               source_units=source_units,
                               target_units=target_units,
                               clean=clean)
+
     allowed = {'julian': lambda x: x,
                'reduced': lambda x: x - 2400000,
                'modified': lambda x: x - 2400000.5,
@@ -237,65 +241,54 @@ def convert_index(to,
                    'lilian': '1582-10-15T00',
                    'rata_die': '0001-01-01T00',
                    'mars_sol': '1873-12-29T12',
-                   'unix': 'unix'}
+                   'unix': '1970-01-01T00'}
 
-    dt = pd.datetime(2000, 1, 1)
-    maxinterval = 'D'
-    if epoch == 'unix':
-        maxinterval = 'S'
-    elif index_type == 'datetime':
-        maxinterval = tsutils.asbestfreq(tsd).index.freqstr
+    words = interval.split('-')
+    if len(words) == 2:
+        warnings.warn("""
+*
+*   The epoch keyword "{0}" overrides the anchoring suffix "{1}".
+*
+""".format(epoch, words[1]))
+
+        interval = words[0]
 
     if interval is not None:
-        if epoch == 'unix':
-            if dt + to_offset(interval) > dt + to_offset('S'):
-                raise ValueError("""
+        if epoch == 'unix' and interval != 'S':
+            warnings.warn("""
 *
-*   The `interval` for the 'unix' epoch must be less than 'S' for seconds.
+*   Typically the unix epoch would has an interval of 'S' (seconds).
+*   Instead you gave {0}.
 *
-""")
-        elif epoch in dailies:
-            if dt + to_offset(interval) > dt + to_offset('D'):
-                raise ValueError("""
+""".format(interval))
+        elif epoch in dailies and interval != 'D':
+            warnings.warn("""
 *
-*   The `interval` for the '{0}' epoch must be less than 'D' for daily.
+*   Typically the {0} epoch would has an interval of 'D' (days).
+*   Instead you gave {1}.
 *
-""".format(epoch))
-        else:
-            if dt + to_offset(interval) > dt + to_offset(maxinterval):
-                raise ValueError("""
-*
-*   The `interval` for the '{0}' epoch must be less than the interval
-*   of the time-series, which is '{1}'.
-*
-""".format(epoch, maxinterval))
-
-    else:
-        interval = maxinterval
+""".format(epoch, interval))
 
     if to == 'number':
         # Index must be datetime - let's make sure
         tsd.index = pd.to_datetime(tsd.index)
 
-        try:
-            frac = to_offset(maxinterval).nanos / to_offset(interval).nanos
-        except ValueError:
-            frac = 1.0
+        frac = to_offset('D').nanos / to_offset(interval).nanos
 
         try:
             tsd.index = allowed[epoch](tsd.index.to_julian_date()) * frac
         except KeyError:
             epoch_date = tsutils.parsedate(epoch)
-            if interval in ['M', 'MS']:
-                tsd.index = ((tsd.index.year - epoch_date.year) * 12 +
-                             tsd.index.month - epoch_date.month)
-            elif interval in ['W']:
-                tsd.index = ((tsd.index.to_julian_date() -
-                              epoch_date.to_julian_date()) / 7.0).astype('i')
+            tsd.index = tsd.index.to_julian_date() * frac - epoch_date.to_julian_date()
+        try:
+            tsd.index = tsd.index.astype('i')
+        except TypeError:
+            pass
 
     elif to == 'datetime':
         tsd.index = pd.to_datetime(tsd.index.values,
-                                   origin=epoch_dates.setdefault(epoch, epoch),
+                                   origin=epoch_dates.setdefault(epoch,
+                                                                 epoch),
                                    unit=interval)
     else:
         raise ValueError("""
