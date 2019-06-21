@@ -1,22 +1,17 @@
 #!/usr/bin/env python
 """Collection of functions for the manipulation of time series."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
 import warnings
-from builtins import range
-from builtins import zip
+from builtins import range, zip
 
 import mando
-from mando.rst_text_formatter import RSTHelpFormatter
-
 import numpy as np
+from mando.rst_text_formatter import RSTHelpFormatter
+from past.utils import old_div
 
 import pandas as pd
-
-from past.utils import old_div
 
 from .. import tsutils
 

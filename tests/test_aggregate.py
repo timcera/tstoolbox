@@ -5,12 +5,11 @@ import shlex
 import subprocess
 from unittest import TestCase
 
-import pandas
-from pandas.util.testing import assert_frame_equal
 import pytest
 
-from tstoolbox import tstoolbox
-from tstoolbox import tsutils
+import pandas
+from pandas.util.testing import assert_frame_equal
+from tstoolbox import tstoolbox, tsutils
 
 
 class TestAggregate(TestCase):

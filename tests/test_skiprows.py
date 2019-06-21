@@ -5,9 +5,7 @@ from unittest import TestCase
 
 import pandas
 from pandas.util.testing import assert_frame_equal
-
-from tstoolbox import tstoolbox
-from tstoolbox import tsutils
+from tstoolbox import tstoolbox, tsutils
 
 
 class TestRead(TestCase):

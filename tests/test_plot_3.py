@@ -1,10 +1,12 @@
 import matplotlib
-matplotlib.use('Agg')
-
 import matplotlib.pyplot as plt
 import pytest
 
 from tstoolbox import tstoolbox
+
+matplotlib.use('Agg')
+
+
 
 # Pull this in once.
 df = tstoolbox.aggregate(agg_interval='D',

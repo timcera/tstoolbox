@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 """Collection of functions for the manipulation of time series."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
 import warnings
-from builtins import map
-from builtins import str
+from builtins import map, str
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter

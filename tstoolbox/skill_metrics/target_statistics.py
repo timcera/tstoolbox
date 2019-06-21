@@ -1,7 +1,6 @@
 import numpy as np
 
-from . import centered_rms_dev
-from . import utils
+from . import centered_rms_dev, utils
 
 
 def target_statistics(predicted, reference, field='', norm=False):

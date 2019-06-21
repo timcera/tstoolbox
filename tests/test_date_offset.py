@@ -6,15 +6,16 @@ from __future__ import print_function
 import os
 from unittest import TestCase
 
+import pandas as pd
+from pandas.util.testing import assert_frame_equal
+from tstoolbox import tstoolbox
+
 try:
     from cStringIO import StringIO
 except:
     from io import StringIO
 
-from pandas.util.testing import assert_frame_equal
-import pandas as pd
 
-from tstoolbox import tstoolbox
 
 test_sinwave = r"""Datetime,Value
 1999-12-31 23:00:00,0

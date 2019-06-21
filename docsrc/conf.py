@@ -295,4 +295,3 @@ epub_copyright = u'2013, Tim Cera, P.E.'
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
-

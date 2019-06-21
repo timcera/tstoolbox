@@ -6,7 +6,6 @@ import tempfile
 from unittest import TestCase
 
 import pandas as pd
-
 from tstoolbox import tstoolbox
 
 pandacodes = ['A', 'AS', 'BA', 'BAS',    # Annual

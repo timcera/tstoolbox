@@ -1,7 +1,6 @@
 import numpy as np
 
-from . import rmsd
-from . import utils
+from . import rmsd, utils
 
 
 def skill_score_murphy(predicted, reference):

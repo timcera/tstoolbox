@@ -2,15 +2,10 @@ from array import array
 
 import numpy as np
 
-from . import check_taylor_stats
-from . import get_taylor_diagram_axes
-from . import get_taylor_diagram_options
-from . import overlay_taylor_diagram_circles
-from . import overlay_taylor_diagram_lines
-from . import plot_pattern_diagram_colorbar
-from . import plot_pattern_diagram_markers
-from . import plot_taylor_axes
-from . import plot_taylor_obs
+from . import (check_taylor_stats, get_taylor_diagram_axes,
+               get_taylor_diagram_options, overlay_taylor_diagram_circles,
+               overlay_taylor_diagram_lines, plot_pattern_diagram_colorbar,
+               plot_pattern_diagram_markers, plot_taylor_axes, plot_taylor_obs)
 
 
 def taylor_diagram(*args, **kwargs):

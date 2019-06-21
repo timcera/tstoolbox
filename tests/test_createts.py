@@ -9,9 +9,7 @@ import pytest
 
 import pandas as pd
 from pandas.util.testing import assert_index_equal
-
-from tstoolbox import tstoolbox
-from tstoolbox import tsutils
+from tstoolbox import tstoolbox, tsutils
 
 
 class TestRead(TestCase):

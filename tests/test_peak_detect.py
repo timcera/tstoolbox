@@ -5,12 +5,11 @@ import shlex
 import subprocess
 from unittest import TestCase
 
-import pandas as pd
-from pandas.util.testing import assert_frame_equal
 import pytest
 
-from tstoolbox import tstoolbox
-from tstoolbox import tsutils
+import pandas as pd
+from pandas.util.testing import assert_frame_equal
+from tstoolbox import tstoolbox, tsutils
 
 output_peak_detection = b"""Datetime,0,0::peak,0::valley
 2000-01-01 00:00:00,0,,

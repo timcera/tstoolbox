@@ -1,5 +1,4 @@
-from . import brier_score
-from . import utils
+from . import brier_score, utils
 
 
 def skill_score_brier(forecast, reference, observed):

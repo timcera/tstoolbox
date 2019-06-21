@@ -1,11 +1,9 @@
 #!/sjr/beodata/local/python_linux/bin/python
 """A collection of filling routines."""
 
-from __future__ import absolute_import
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 
-from builtins import range
-from builtins import zip
+from builtins import range, zip
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter

@@ -3,9 +3,8 @@ import sys
 from unittest import TestCase
 
 import pandas as pd
-from pandas.util.testing import assert_frame_equal
-
 import tstoolbox.tsutils as tsutils
+from pandas.util.testing import assert_frame_equal
 from tstoolbox import tstoolbox
 
 from . import capture
