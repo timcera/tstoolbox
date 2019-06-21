@@ -1,26 +1,27 @@
 """A collection of functions used by tstoolbox, wdmtoolbox, ...etc."""
 
-from __future__ import division
-from __future__ import print_function
+from __future__ import division, print_function
 
-from tabulate import tabulate as tb
-from tabulate import simple_separated_format
-from pint import UnitRegistry
-import pandas as pd
+import bz2
+import gzip
+import os
+import sys
+from builtins import range, str
+from functools import reduce
+from io import StringIO
+
 import numpy as np
+from future import standard_library
+from pint import UnitRegistry
+
+import pandas as pd
+from tabulate import simple_separated_format
+from tabulate import tabulate as tb
+
 try:
     from urllib.parse import urlparse
 except ImportError:
     from urlparse import urlparse
-from io import StringIO
-from functools import reduce
-from builtins import str
-from builtins import range
-import sys
-import os
-import gzip
-import bz2
-from future import standard_library
 standard_library.install_aliases()
 
 
@@ -332,6 +333,18 @@ docstrings = {
         as needed.  WARNING: you may lose data if not careful with this option.
         In general, letting the algorithm determine the frequency should always
         work, but this option will override.  Use PANDAS offset codes."""}
+
+
+def stride_and_unit(sunit):
+    """Split a stride/unit combination into component parts."""
+    if sunit is None:
+        return sunit
+    unit = sunit.lstrip('1234567890')
+    try:
+        stride = int(sunit.rstrip(unit))
+    except ValueError:
+        stride = 1
+    return unit, stride
 
 
 def set_ppf(ptype):
