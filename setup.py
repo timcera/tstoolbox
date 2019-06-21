@@ -1,6 +1,7 @@
 
 import os
 import sys
+import shutil
 
 from setuptools import setup
 
@@ -9,17 +10,28 @@ from setuptools import setup
 # certain easy_install versions
 os.environ["MPLCONFIGDIR"] = "."
 
+pkg_name = 'tstoolbox'
 
 version = open("VERSION").readline().strip()
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist')
-    os.system('twine upload dist/tstoolbox-{0}*'.format(version))
+
+    # The following block of code is to set the timestamp on files to
+    # 'now', otherwise ChromeOS/google drive sets to 1970-01-01 and then
+    # no one can install it because zip doesn't support dates before
+    # 1980.
+    os.chdir('dist')
+    os.system('tar xvzf {pkg_name}-{version}.tar.gz'.format(**locals()))
+    os.system('find {pkg_name}-{version}* -exec touch {{}} \\;'.format(**locals()))
+    os.system('tar czf {pkg_name}-{version}.tar.gz {pkg_name}-{version}'.format(**locals()))
+    shutil.rmtree('{pkg_name}-{version}'.format(**locals()))
+    os.chdir('..')
+
+    os.system('twine upload dist/{pkg_name}-{version}.tar.gz'.format(**locals()))
     sys.exit()
 
 README = open("./README.rst").read()
-
-version = open("./VERSION").readline().strip()
 
 install_requires = [
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
@@ -42,7 +54,7 @@ install_requires = [
 
 setup_requires = []
 
-setup(name='tstoolbox',
+setup(name=pkg_name,
       version=version,
       description="Command line script to manipulate time series files.",
       long_description=README,
@@ -66,17 +78,17 @@ setup(name='tstoolbox',
       keywords='time_series',
       author='Tim Cera, P.E.',
       author_email='tim@cerazone.net',
-      url='http://timcera.bitbucket.io/tstoolbox/docsrc/index.html',
-      packages=['tstoolbox',
-                'tstoolbox.functions',
-                'tstoolbox.skill_metrics'],
+      url='http://timcera.bitbucket.io/{pkg_name}/docsrc/index.html'.format(**locals()),
+      packages=['{pkg_name}'.format(**locals()),
+                '{pkg_name}.functions'.format(**locals()),
+                '{pkg_name}.skill_metrics'.format(**locals())],
       include_package_data=True,
       zip_safe=False,
       setup_requires=setup_requires,
       install_requires=install_requires,
       entry_points={
           'console_scripts':
-              ['tstoolbox=tstoolbox.tstoolbox:main']
+              ['{pkg_name}={pkg_name}.{pkg_name}:main'.format(**locals())]
       },
       test_suite='tests',
       python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*',
