@@ -3,7 +3,6 @@
 program=tstoolbox
 
 pkgs="\
-     future \
      setuptools \
      mando \
      numpy \
@@ -19,8 +18,7 @@ pkgs="\
 
 # pandas no longer supports 2.6
 #~/python_ves/python-3.5.2 \
-envs=(~/python_ves/python-3.6.8 \
-      ~/python_ves/python-3.7.3)
+envs=(~/python_ves/python-3.6.8  ~/python_ves/python-3.7.3)
 
 pytest_opts='--doctest-modules --ignore docsrc --mpl'
 

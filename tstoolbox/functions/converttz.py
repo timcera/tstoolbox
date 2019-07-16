@@ -9,22 +9,24 @@ from mando.rst_text_formatter import RSTHelpFormatter
 from .. import tsutils
 
 
-@mando.command('converttz', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command("converttz", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def converttz_cli(fromtz,
-                  totz,
-                  input_ts='-',
-                  columns=None,
-                  start_date=None,
-                  end_date=None,
-                  round_index=None,
-                  dropna='no',
-                  clean=False,
-                  index_type='datetime',
-                  names=None,
-                  source_units=None,
-                  target_units=None,
-                  skiprows=None):
+def converttz_cli(
+    fromtz,
+    totz,
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    round_index=None,
+    dropna="no",
+    clean=False,
+    index_type="datetime",
+    names=None,
+    source_units=None,
+    target_units=None,
+    skiprows=None,
+):
     """Convert the time zone of the index.
 
     Parameters
@@ -57,50 +59,57 @@ def converttz_cli(fromtz,
     {round_index}
 
     """
-    tsutils._printiso(converttz(fromtz,
-                                totz,
-                                input_ts=input_ts,
-                                columns=columns,
-                                start_date=start_date,
-                                end_date=end_date,
-                                round_index=round_index,
-                                dropna=dropna,
-                                clean=clean,
-                                index_type=index_type,
-                                names=names,
-                                source_units=source_units,
-                                target_units=target_units,
-                                skiprows=skiprows),
-                      showindex='always')
+    tsutils._printiso(
+        converttz(
+            fromtz,
+            totz,
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            round_index=round_index,
+            dropna=dropna,
+            clean=clean,
+            index_type=index_type,
+            names=names,
+            source_units=source_units,
+            target_units=target_units,
+            skiprows=skiprows,
+        ),
+        showindex="always",
+    )
 
 
-def converttz(fromtz,
-              totz,
-              input_ts='-',
-              columns=None,
-              start_date=None,
-              end_date=None,
-              round_index=None,
-              dropna='no',
-              clean=False,
-              index_type='datetime',
-              names=None,
-              source_units=None,
-              target_units=None,
-              skiprows=None):
+def converttz(
+    fromtz,
+    totz,
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    round_index=None,
+    dropna="no",
+    clean=False,
+    index_type="datetime",
+    names=None,
+    source_units=None,
+    target_units=None,
+    skiprows=None,
+):
     """Convert the time zone of the index."""
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              round_index=round_index,
-                              dropna=dropna,
-                              source_units=source_units,
-                              target_units=target_units,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        round_index=round_index,
+        dropna=dropna,
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
 
     # TODO Should test that 'fromtz' matches time zone that might be already
     # set in tsd.

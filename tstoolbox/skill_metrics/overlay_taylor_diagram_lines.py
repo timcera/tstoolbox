@@ -31,21 +31,30 @@ def overlay_taylor_diagram_lines(axes, cax, option):
     Created on Dec 3, 2016
     """
     # DRAW CORRELATION LINES EMANATING FROM THE ORIGIN:
-    npanels = option['numberpanels']
-    corr = option['tickcor'][npanels - 1]
+    npanels = option["numberpanels"]
+    corr = option["tickcor"][npanels - 1]
     th = np.arccos(corr)
     cst = np.cos(th)
     snt = np.sin(th)
     cs = np.append(-1.0 * cst, cst)
     sn = np.append(-1.0 * snt, snt)
     for i, val in enumerate(cs):
-        plt.plot([0, axes['rmax'] * cs[i]], [0, axes['rmax'] * sn[i]],
-                 linestyle=option['stylecor'],
-                 color=option['colcor'], linewidth=option['widthcor'])
+        plt.plot(
+            [0, axes["rmax"] * cs[i]],
+            [0, axes["rmax"] * sn[i]],
+            linestyle=option["stylecor"],
+            color=option["colcor"],
+            linewidth=option["widthcor"],
+        )
 
     # annotate the lines by correlation coefficient
-    if option['showlabelscor'] == 'on':
-        rt = 1.05 * axes['rmax']
+    if option["showlabelscor"] == "on":
+        rt = 1.05 * axes["rmax"]
         for i, cc in enumerate(corr):
-            plt.text(rt * cst[i], rt * snt[i], str(round(cc, 2)),
-                     horizontalalignment='center', color=option['colcor'])
+            plt.text(
+                rt * cst[i],
+                rt * snt[i],
+                str(round(cc, 2)),
+                horizontalalignment="center",
+                color=option["colcor"],
+            )

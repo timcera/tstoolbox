@@ -41,132 +41,156 @@ def plot_taylor_axes(axes, cax, option):
         prochford@thesymplectic.com
     """
     ax = []
-    axlabweight = 'bold'
-    if option['numberpanels'] == 1:
+    axlabweight = "bold"
+    if option["numberpanels"] == 1:
         # Single panel
 
-        if option['titlestd'] == 'on':
-            ttt = plt.ylabel('test', fontsize=14)
-            x = -0.15 * axes['rmax']
-            y = 0.8 * axes['rmax']
-            handle = plt.text(x, y, 'Standard Deviation', rotation=90,
-                              color=option['colstd'],
-                              fontweight=axlabweight,
-                              fontsize=plt.get(ttt, 'fontsize'),
-                              horizontalalignment='center')
+        if option["titlestd"] == "on":
+            ttt = plt.ylabel("test", fontsize=14)
+            x = -0.15 * axes["rmax"]
+            y = 0.8 * axes["rmax"]
+            handle = plt.text(
+                x,
+                y,
+                "Standard Deviation",
+                rotation=90,
+                color=option["colstd"],
+                fontweight=axlabweight,
+                fontsize=plt.get(ttt, "fontsize"),
+                horizontalalignment="center",
+            )
             ax.append(handle)
 
-        if option['titlecor'] == 'on':
+        if option["titlecor"] == "on":
             pos1 = 45
             DA = 15
-            lab = 'Correlation Coefficient'
+            lab = "Correlation Coefficient"
             c = np.fliplr([np.linspace(pos1 - DA, pos1 + DA, len(lab))])[0]
-            dd = 1.1 * axes['rmax']
+            dd = 1.1 * axes["rmax"]
             for ii, ith in enumerate(c):
-                handle = plt.text(dd * np.cos(ith * np.pi / 180),
-                                  dd * np.sin(ith * np.pi / 180),
-                                  lab[ii])
-                handle.set(rotation=ith - 90, color=option['colcor'],
-                           horizontalalignment='center',
-                           verticalalignment='bottom',
-                           fontsize=plt.get(ax[0], 'fontsize'),
-                           fontweight=axlabweight)
+                handle = plt.text(
+                    dd * np.cos(ith * np.pi / 180),
+                    dd * np.sin(ith * np.pi / 180),
+                    lab[ii],
+                )
+                handle.set(
+                    rotation=ith - 90,
+                    color=option["colcor"],
+                    horizontalalignment="center",
+                    verticalalignment="bottom",
+                    fontsize=plt.get(ax[0], "fontsize"),
+                    fontweight=axlabweight,
+                )
                 ax.append(handle)
 
-        if option['titlerms'] == 'on':
-            pos1 = option['tickrmsangle'] + (180 - option['tickrmsangle']) / 2
+        if option["titlerms"] == "on":
+            pos1 = option["tickrmsangle"] + (180 - option["tickrmsangle"]) / 2
             DA = 15
             pos1 = 160
-            lab = 'RMSD'
+            lab = "RMSD"
             c = np.fliplr([np.linspace(pos1 - DA, pos1 + DA, len(lab))])[0]
 
             # Find optimal placement of label
             itick = -1
             ratio = 1.0
-            while (ratio > 0.7):
+            while ratio > 0.7:
                 itick += 1
-                ratio = (option['axismax'] - option['tickrms']
-                         [itick]) / option['axismax']
-            dd = 0.7 * option['tickrms'][itick] + \
-                0.3 * option['tickrms'][itick + 1]
+                ratio = (option["axismax"] - option["tickrms"][itick]) / option[
+                    "axismax"
+                ]
+            dd = 0.7 * option["tickrms"][itick] + 0.3 * option["tickrms"][itick + 1]
 
             # Write label in a circular arc
             for ii, ith in enumerate(c):
-                xtextpos = axes['dx'] + dd * np.cos(ith * np.pi / 180)
+                xtextpos = axes["dx"] + dd * np.cos(ith * np.pi / 180)
                 ytextpos = dd * np.sin(ith * np.pi / 180)
                 handle = plt.text(xtextpos, ytextpos, lab[ii])
-                handle.set(rotation=ith - 90, color=option['colrms'],
-                           horizontalalignment='center',
-                           verticalalignment='top',
-                           fontsize=plt.get(ax[0], 'fontsize'),
-                           fontweight=axlabweight)
+                handle.set(
+                    rotation=ith - 90,
+                    color=option["colrms"],
+                    horizontalalignment="center",
+                    verticalalignment="top",
+                    fontsize=plt.get(ax[0], "fontsize"),
+                    fontweight=axlabweight,
+                )
                 ax.append(handle)
 
     else:
         # Double panel
 
-        if option['titlestd'] == 'on':
-            ttt = plt.ylabel('test', fontsize=14)
+        if option["titlestd"] == "on":
+            ttt = plt.ylabel("test", fontsize=14)
             x = 0
-            y = -0.15 * axes['rmax']
-            handle = plt.text(x, y, 'Standard Deviation', rotation=0,
-                              color=option['colstd'],
-                              fontweight=axlabweight,
-                              fontsize=plt.get(ttt, 'fontsize'),
-                              horizontalalignment='center')
+            y = -0.15 * axes["rmax"]
+            handle = plt.text(
+                x,
+                y,
+                "Standard Deviation",
+                rotation=0,
+                color=option["colstd"],
+                fontweight=axlabweight,
+                fontsize=plt.get(ttt, "fontsize"),
+                horizontalalignment="center",
+            )
             ax.append(handle)
 
-        if option['titlecor'] == 'on':
+        if option["titlecor"] == "on":
             pos1 = 90
             DA = 25
-            lab = 'Correlation Coefficient'
+            lab = "Correlation Coefficient"
             c = np.fliplr([np.linspace(pos1 - DA, pos1 + DA, len(lab))])[0]
-            dd = 1.1 * axes['rmax']
+            dd = 1.1 * axes["rmax"]
             for ii, ith in enumerate(c):
-                handle = plt.text(dd * np.cos(ith * np.pi / 180),
-                                  dd * np.sin(ith * np.pi / 180), lab[ii])
-                handle.set(rotation=ith - 90, color=option['colcor'],
-                           horizontalalignment='center',
-                           verticalalignment='bottom',
-                           fontsize=plt.get(ax[0], 'fontsize'),
-                           fontweight=axlabweight)
+                handle = plt.text(
+                    dd * np.cos(ith * np.pi / 180),
+                    dd * np.sin(ith * np.pi / 180),
+                    lab[ii],
+                )
+                handle.set(
+                    rotation=ith - 90,
+                    color=option["colcor"],
+                    horizontalalignment="center",
+                    verticalalignment="bottom",
+                    fontsize=plt.get(ax[0], "fontsize"),
+                    fontweight=axlabweight,
+                )
                 ax.append(handle)
 
-        if option['titlerms'] == 'on':
+        if option["titlerms"] == "on":
             pos1 = 160
             DA = 10
-            lab = 'RMSD'
+            lab = "RMSD"
             c = np.fliplr([np.linspace(pos1 - DA, pos1 + DA, len(lab))])[0]
-            dd = 1.05 * option['tickrms'][0]
+            dd = 1.05 * option["tickrms"][0]
             for ii, ith in enumerate(c):
-                xtextpos = axes['dx'] + dd * np.cos(ith * np.pi / 180)
+                xtextpos = axes["dx"] + dd * np.cos(ith * np.pi / 180)
                 ytextpos = dd * np.sin(ith * np.pi / 180)
                 handle = plt.text(xtextpos, ytextpos, lab[ii])
-                handle.set(rotation=ith - 90, color=option['colrms'],
-                           horizontalalignment='center',
-                           verticalalignment='bottom',
-                           fontsize=plt.get(ax[0], 'fontsize'),
-                           fontweight=axlabweight)
+                handle.set(
+                    rotation=ith - 90,
+                    color=option["colrms"],
+                    horizontalalignment="center",
+                    verticalalignment="bottom",
+                    fontsize=plt.get(ax[0], "fontsize"),
+                    fontweight=axlabweight,
+                )
                 ax.append(handle)
 
     # VARIOUS ADJUSTMENTS TO THE PLOT:
-    cax.set_aspect('equal')
-    plt.axis('off')
-    plt.gcf().patch.set_facecolor('w')
+    cax.set_aspect("equal")
+    plt.axis("off")
+    plt.gcf().patch.set_facecolor("w")
 
     # set axis limits
-    if option['numberpanels'] == 2:
-        axislim = [axes['rmax'] * x for x in [-1.15, 1.15, 0, 1.15]]
+    if option["numberpanels"] == 2:
+        axislim = [axes["rmax"] * x for x in [-1.15, 1.15, 0, 1.15]]
         plt.axis(axislim)
-        plt.plot([-axes['rmax'], axes['rmax']], [0, 0],
-                 color=axes['tc'], linewidth=2)
-        plt.plot([0, 0], [0, axes['rmax']], color=axes['tc'])
+        plt.plot([-axes["rmax"], axes["rmax"]], [0, 0], color=axes["tc"], linewidth=2)
+        plt.plot([0, 0], [0, axes["rmax"]], color=axes["tc"])
     else:
-        axislim = [axes['rmax'] * x for x in [0, 1.15, 0, 1.15]]
+        axislim = [axes["rmax"] * x for x in [0, 1.15, 0, 1.15]]
         plt.axis(axislim)
-        plt.plot([0, axes['rmax']], [0, 0], color=axes['tc'],
-                 linewidth=2)
-        plt.plot([0, 0], [0, axes['rmax']], color=axes['tc'],
-                 linewidth=2)
+        plt.plot([0, axes["rmax"]], [0, 0], color=axes["tc"], linewidth=2)
+        plt.plot([0, 0], [0, axes["rmax"]], color=axes["tc"], linewidth=2)
 
     return ax

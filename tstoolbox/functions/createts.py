@@ -12,17 +12,19 @@ import pandas as pd
 
 from .. import tsutils
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
-@mando.command('createts', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command("createts", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def createts_cli(freq=None,
-                 fillvalue=None,
-                 input_ts=None,
-                 index_type='datetime',
-                 start_date=None,
-                 end_date=None):
+def createts_cli(
+    freq=None,
+    fillvalue=None,
+    input_ts=None,
+    index_type="datetime",
+    start_date=None,
+    end_date=None,
+):
     """Create empty time series, optionally fill with a value.
 
     Parameters
@@ -44,27 +46,32 @@ def createts_cli(freq=None,
     {index_type}
 
     """
-    tsutils._printiso(createts(freq=freq,
-                               fillvalue=fillvalue,
-                               input_ts=input_ts,
-                               index_type=index_type,
-                               start_date=start_date,
-                               end_date=end_date),
-                      showindex='always')
+    tsutils._printiso(
+        createts(
+            freq=freq,
+            fillvalue=fillvalue,
+            input_ts=input_ts,
+            index_type=index_type,
+            start_date=start_date,
+            end_date=end_date,
+        ),
+        showindex="always",
+    )
 
 
-def createts(freq=None,
-             fillvalue=None,
-             input_ts=None,
-             index_type='datetime',
-             start_date=None,
-             end_date=None):
+def createts(
+    freq=None,
+    fillvalue=None,
+    input_ts=None,
+    index_type="datetime",
+    start_date=None,
+    end_date=None,
+):
     """Create empty time series, optionally fill with a value."""
     if input_ts is None:
-        if ((start_date is None) or
-                (end_date is None) or
-                (freq is None)):
-            raise ValueError("""
+        if (start_date is None) or (end_date is None) or (freq is None):
+            raise ValueError(
+                """
 *
 *   If input_ts is None, then start_date, end_date, and freq must be supplied.
 *   Instead you have:
@@ -72,21 +79,21 @@ def createts(freq=None,
 *   end_date = {1},
 *   freq = {2}
 *
-""".format(start_date, end_date, freq))
+""".format(
+                    start_date, end_date, freq
+                )
+            )
 
     if input_ts is not None:
-        tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                      index_type=index_type),
-                                  start_date=start_date,
-                                  end_date=end_date)
-        tsd = pd.DataFrame([fillvalue] * len(tsd.index),
-                           index=tsd.index)
+        tsd = tsutils.common_kwds(
+            tsutils.read_iso_ts(input_ts, index_type=index_type),
+            start_date=start_date,
+            end_date=end_date,
+        )
+        tsd = pd.DataFrame([fillvalue] * len(tsd.index), index=tsd.index)
     else:
-        tindex = pd.date_range(start=start_date,
-                               end=end_date,
-                               freq=freq)
-        tsd = pd.DataFrame([fillvalue] * len(tindex),
-                           index=tindex)
+        tindex = pd.date_range(start=start_date, end=end_date, freq=freq)
+        tsd = pd.DataFrame([fillvalue] * len(tindex), index=tindex)
     return tsd
 
 

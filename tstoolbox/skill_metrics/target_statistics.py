@@ -3,7 +3,7 @@ import numpy as np
 from . import centered_rms_dev, utils
 
 
-def target_statistics(predicted, reference, field='', norm=False):
+def target_statistics(predicted, reference, field="", norm=False):
     """
     Calculate the statistics needed to create a target diagram.
 
@@ -52,32 +52,32 @@ def target_statistics(predicted, reference, field='', norm=False):
     """
     # Check for valid arguments
     if isinstance(predicted, dict):
-        if field == '':
-            raise ValueError('FIELD argument not supplied.')
+        if field == "":
+            raise ValueError("FIELD argument not supplied.")
         if field in predicted:
             p = predicted[field]
         else:
-            raise ValueError('Field is not in PREDICTED dictionary: ' + field)
+            raise ValueError("Field is not in PREDICTED dictionary: " + field)
     elif isinstance(predicted, list):
         p = np.array(predicted)
     elif isinstance(predicted, np.ndarray):
         p = predicted
     else:
-        raise ValueError('PREDICTED argument must be a dictionary.')
+        raise ValueError("PREDICTED argument must be a dictionary.")
 
     if isinstance(reference, dict):
-        if field == '':
-            raise ValueError('FIELD argument not supplied.')
+        if field == "":
+            raise ValueError("FIELD argument not supplied.")
         if field in reference:
             r = reference[field]
         else:
-            raise ValueError('Field is not in REFERENCE dictionary: ' + field)
+            raise ValueError("Field is not in REFERENCE dictionary: " + field)
     elif isinstance(reference, list):
         r = np.array(reference)
     elif isinstance(reference, np.ndarray):
         r = reference
     else:
-        raise ValueError('REFERENCE argument must be a dictionary.')
+        raise ValueError("REFERENCE argument must be a dictionary.")
 
     # Check that dimensions of predicted and reference fields match
     utils.check_arrays(p, r)
@@ -99,10 +99,10 @@ def target_statistics(predicted, reference, field='', norm=False):
         rmsd = rmsd / sigma_ref
 
     # Store statistics in a dictionary
-    stats = {'bias': bias, 'crmsd': crmsd, 'rmsd': rmsd}
+    stats = {"bias": bias, "crmsd": crmsd, "rmsd": rmsd}
     if norm is True:
-        stats['type'] = 'normalized'
+        stats["type"] = "normalized"
     else:
-        stats['type'] = 'unnormalized'
+        stats["type"] = "unnormalized"
 
     return stats

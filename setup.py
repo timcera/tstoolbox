@@ -35,7 +35,6 @@ README = open("./README.rst").read()
 
 install_requires = [
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
-    'future',
     'dateparser',
     'tabulate',
     'docutils',

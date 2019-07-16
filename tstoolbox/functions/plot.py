@@ -5,7 +5,6 @@ from __future__ import absolute_import, division, print_function
 
 import itertools
 import warnings
-from builtins import range, str, zip
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
@@ -14,42 +13,39 @@ import pandas as pd
 
 from .. import tsutils
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 marker_list = [
-    '.',
-    ',',
-    'o',
-    'v',
-    '^',
-    '<',
-    '>',
-    '1',
-    '2',
-    '3',
-    '4',
-    '8',
-    's',
-    'p',
-    '*',
-    'h',
-    'H',
-    '+',
-    'D',
-    'd',
-    '|',
-    '_']
+    ".",
+    ",",
+    "o",
+    "v",
+    "^",
+    "<",
+    ">",
+    "1",
+    "2",
+    "3",
+    "4",
+    "8",
+    "s",
+    "p",
+    "*",
+    "h",
+    "H",
+    "+",
+    "D",
+    "d",
+    "|",
+    "_",
+]
 
-color_list = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
+color_list = ["b", "g", "r", "c", "m", "y", "k"]
 
-line_list = [
-    '-',
-    '--',
-    '-.',
-    ':']
+line_list = ["-", "--", "-.", ":"]
 
 
-def _know_your_limits(xylimits, axis='arithmetic'):
+def _know_your_limits(xylimits, axis="arithmetic"):
     """Establish axis limits.
 
     This defines the xlim and ylim as lists rather than strings.
@@ -58,106 +54,120 @@ def _know_your_limits(xylimits, axis='arithmetic'):
     """
     nlim = tsutils.make_list(xylimits)
 
-    if axis == 'normal':
+    if axis == "normal":
         if nlim is None:
             nlim = [None, None]
         if nlim[0] is None:
             nlim[0] = 0.01
         if nlim[1] is None:
             nlim[1] = 0.99
-        if (nlim[0] < 0 or nlim[0] > 1 or
-                nlim[1] < 0 or nlim[1] > 1):
-            raise ValueError("""
+        if nlim[0] < 0 or nlim[0] > 1 or nlim[1] < 0 or nlim[1] > 1:
+            raise ValueError(
+                """
 *
 *   Both limits must be between 0 and 1 for the
 *   'normal', 'lognormal', or 'weibull' axis.
 *
 *   Instead you have {0}.
 *
-""".format(nlim))
+""".format(
+                    nlim
+                )
+            )
 
     if nlim is None:
         return nlim
 
     if nlim[0] is not None and nlim[1] is not None:
         if nlim[0] >= nlim[1]:
-            raise ValueError("""
+            raise ValueError(
+                """
 *
 *   The second limit must be greater than the first.
 *
 *   You gave {0}.
 *
-""".format(nlim))
+""".format(
+                    nlim
+                )
+            )
 
-    if axis == 'log':
-        if ((nlim[0] is not None and nlim[0] <= 0) or
-                (nlim[1] is not None and nlim[1] <= 0)):
-            raise ValueError("""
+    if axis == "log":
+        if (nlim[0] is not None and nlim[0] <= 0) or (
+            nlim[1] is not None and nlim[1] <= 0
+        ):
+            raise ValueError(
+                """
 *
 *   If log plot cannot have limits less than or equal to 0.
 *
 *   You have {0}.
 *
-""".format(nlim))
+""".format(
+                    nlim
+                )
+            )
 
     return nlim
 
 
-@mando.command('plot', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command("plot", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def plot_cli(input_ts='-',
-             columns=None,
-             start_date=None,
-             end_date=None,
-             clean=False,
-             skiprows=None,
-             index_type='datetime',
-             names=None,
-             ofilename='plot.png',
-             type='time',
-             xtitle='',
-             ytitle='',
-             title='',
-             figsize='10,6.0',
-             legend=None,
-             legend_names=None,
-             subplots=False,
-             sharex=True,
-             sharey=False,
-             colors='auto',
-             linestyles='auto',
-             markerstyles=' ',
-             style='auto',
-             logx=False,
-             logy=False,
-             xaxis='arithmetic',
-             yaxis='arithmetic',
-             xlim=None,
-             ylim=None,
-             secondary_y=False,
-             mark_right=True,
-             scatter_matrix_diagonal='kde',
-             bootstrap_size=50,
-             bootstrap_samples=500,
-             norm_xaxis=False,
-             norm_yaxis=False,
-             lognorm_xaxis=False,
-             lognorm_yaxis=False,
-             xy_match_line='',
-             grid=False,
-             label_rotation=None,
-             label_skip=1,
-             force_freq=None,
-             drawstyle='default',
-             por=False,
-             invert_xaxis=False,
-             invert_yaxis=False,
-             round_index=None,
-             plotting_position='weibull',
-             prob_plot_sort_values='descending',
-             source_units=None,
-             target_units=None,
-             lag_plot_lag=1):
+def plot_cli(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    clean=False,
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    ofilename="plot.png",
+    type="time",
+    xtitle="",
+    ytitle="",
+    title="",
+    figsize="10,6.0",
+    legend=None,
+    legend_names=None,
+    subplots=False,
+    sharex=True,
+    sharey=False,
+    colors="auto",
+    linestyles="auto",
+    markerstyles=" ",
+    style="auto",
+    logx=False,
+    logy=False,
+    xaxis="arithmetic",
+    yaxis="arithmetic",
+    xlim=None,
+    ylim=None,
+    secondary_y=False,
+    mark_right=True,
+    scatter_matrix_diagonal="kde",
+    bootstrap_size=50,
+    bootstrap_samples=500,
+    norm_xaxis=False,
+    norm_yaxis=False,
+    lognorm_xaxis=False,
+    lognorm_yaxis=False,
+    xy_match_line="",
+    grid=False,
+    label_rotation=None,
+    label_skip=1,
+    force_freq=None,
+    drawstyle="default",
+    por=False,
+    invert_xaxis=False,
+    invert_yaxis=False,
+    round_index=None,
+    plotting_position="weibull",
+    prob_plot_sort_values="descending",
+    source_units=None,
+    target_units=None,
+    lag_plot_lag=1,
+):
     r"""Plot data.
 
     Parameters
@@ -575,189 +585,201 @@ def plot_cli(input_ts='-',
     {round_index}
 
     """
-    plot(input_ts=input_ts,
-         columns=columns,
-         start_date=start_date,
-         end_date=end_date,
-         clean=clean,
-         skiprows=skiprows,
-         index_type=index_type,
-         names=names,
-         ofilename=ofilename,
-         type=type,
-         xtitle=xtitle,
-         ytitle=ytitle,
-         title=title,
-         figsize=figsize,
-         legend=legend,
-         legend_names=legend_names,
-         subplots=subplots,
-         sharex=sharex,
-         sharey=sharey,
-         colors=colors,
-         linestyles=linestyles,
-         markerstyles=markerstyles,
-         style=style,
-         logx=logx,
-         logy=logy,
-         xaxis=xaxis,
-         yaxis=yaxis,
-         xlim=xlim,
-         ylim=ylim,
-         secondary_y=secondary_y,
-         mark_right=mark_right,
-         scatter_matrix_diagonal=scatter_matrix_diagonal,
-         bootstrap_size=bootstrap_size,
-         bootstrap_samples=bootstrap_samples,
-         norm_xaxis=norm_xaxis,
-         norm_yaxis=norm_yaxis,
-         lognorm_xaxis=lognorm_xaxis,
-         lognorm_yaxis=lognorm_yaxis,
-         xy_match_line=xy_match_line,
-         grid=grid,
-         label_rotation=label_rotation,
-         label_skip=label_skip,
-         force_freq=force_freq,
-         drawstyle=drawstyle,
-         por=por,
-         invert_xaxis=invert_xaxis,
-         invert_yaxis=invert_yaxis,
-         round_index=round_index,
-         plotting_position=plotting_position,
-         prob_plot_sort_values=prob_plot_sort_values,
-         source_units=source_units,
-         target_units=target_units,
-         lag_plot_lag=lag_plot_lag)
+    plot(
+        input_ts=input_ts,
+        columns=columns,
+        start_date=start_date,
+        end_date=end_date,
+        clean=clean,
+        skiprows=skiprows,
+        index_type=index_type,
+        names=names,
+        ofilename=ofilename,
+        type=type,
+        xtitle=xtitle,
+        ytitle=ytitle,
+        title=title,
+        figsize=figsize,
+        legend=legend,
+        legend_names=legend_names,
+        subplots=subplots,
+        sharex=sharex,
+        sharey=sharey,
+        colors=colors,
+        linestyles=linestyles,
+        markerstyles=markerstyles,
+        style=style,
+        logx=logx,
+        logy=logy,
+        xaxis=xaxis,
+        yaxis=yaxis,
+        xlim=xlim,
+        ylim=ylim,
+        secondary_y=secondary_y,
+        mark_right=mark_right,
+        scatter_matrix_diagonal=scatter_matrix_diagonal,
+        bootstrap_size=bootstrap_size,
+        bootstrap_samples=bootstrap_samples,
+        norm_xaxis=norm_xaxis,
+        norm_yaxis=norm_yaxis,
+        lognorm_xaxis=lognorm_xaxis,
+        lognorm_yaxis=lognorm_yaxis,
+        xy_match_line=xy_match_line,
+        grid=grid,
+        label_rotation=label_rotation,
+        label_skip=label_skip,
+        force_freq=force_freq,
+        drawstyle=drawstyle,
+        por=por,
+        invert_xaxis=invert_xaxis,
+        invert_yaxis=invert_yaxis,
+        round_index=round_index,
+        plotting_position=plotting_position,
+        prob_plot_sort_values=prob_plot_sort_values,
+        source_units=source_units,
+        target_units=target_units,
+        lag_plot_lag=lag_plot_lag,
+    )
 
 
-def plot(input_ts='-',
-         columns=None,
-         start_date=None,
-         end_date=None,
-         clean=False,
-         skiprows=None,
-         index_type='datetime',
-         names=None,
-         ofilename='plot.png',
-         type='time',
-         xtitle='',
-         ytitle='',
-         title='',
-         figsize='10,6.0',
-         legend=None,
-         legend_names=None,
-         subplots=False,
-         sharex=True,
-         sharey=False,
-         colors='auto',
-         linestyles='auto',
-         markerstyles=' ',
-         style='auto',
-         logx=False,
-         logy=False,
-         xaxis='arithmetic',
-         yaxis='arithmetic',
-         xlim=None,
-         ylim=None,
-         secondary_y=False,
-         mark_right=True,
-         scatter_matrix_diagonal='kde',
-         bootstrap_size=50,
-         bootstrap_samples=500,
-         norm_xaxis=False,
-         norm_yaxis=False,
-         lognorm_xaxis=False,
-         lognorm_yaxis=False,
-         xy_match_line='',
-         grid=False,
-         label_rotation=None,
-         label_skip=1,
-         force_freq=None,
-         drawstyle='default',
-         por=False,
-         invert_xaxis=False,
-         invert_yaxis=False,
-         round_index=None,
-         plotting_position='weibull',
-         prob_plot_sort_values='descending',
-         source_units=None,
-         target_units=None,
-         lag_plot_lag=1):
+def plot(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    clean=False,
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    ofilename="plot.png",
+    type="time",
+    xtitle="",
+    ytitle="",
+    title="",
+    figsize="10,6.0",
+    legend=None,
+    legend_names=None,
+    subplots=False,
+    sharex=True,
+    sharey=False,
+    colors="auto",
+    linestyles="auto",
+    markerstyles=" ",
+    style="auto",
+    logx=False,
+    logy=False,
+    xaxis="arithmetic",
+    yaxis="arithmetic",
+    xlim=None,
+    ylim=None,
+    secondary_y=False,
+    mark_right=True,
+    scatter_matrix_diagonal="kde",
+    bootstrap_size=50,
+    bootstrap_samples=500,
+    norm_xaxis=False,
+    norm_yaxis=False,
+    lognorm_xaxis=False,
+    lognorm_yaxis=False,
+    xy_match_line="",
+    grid=False,
+    label_rotation=None,
+    label_skip=1,
+    force_freq=None,
+    drawstyle="default",
+    por=False,
+    invert_xaxis=False,
+    invert_yaxis=False,
+    round_index=None,
+    plotting_position="weibull",
+    prob_plot_sort_values="descending",
+    source_units=None,
+    target_units=None,
+    lag_plot_lag=1,
+):
     r"""Plot data."""
     # Need to work around some old option defaults with the implementation of
     # mando
-    legend = bool(legend == '' or legend == 'True' or legend is None)
+    legend = bool(legend == "" or legend == "True" or legend is None)
 
     import matplotlib
-    matplotlib.use('Agg')
+
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     from matplotlib.ticker import FixedLocator
 
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              round_index=round_index,
-                              dropna='all',
-                              source_units=source_units,
-                              target_units=target_units,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        round_index=round_index,
+        dropna="all",
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
 
-    if type in ['bootstrap',
-                'heatmap',
-                'autocorrelation',
-                'lag_plot']:
+    if type in ["bootstrap", "heatmap", "autocorrelation", "lag_plot"]:
         if len(tsd.columns) != 1:
-            raise ValueError("""
+            raise ValueError(
+                """
 *
 *   The '{1}' plot can only work with 1 time-series in the DataFrame.
 *   The DataFrame that you supplied has {0} time-series.
 *
-""".format(len(tsd.columns), type))
+""".format(
+                    len(tsd.columns), type
+                )
+            )
 
     if por is True:
-        tsd = tsutils.common_kwds(tsutils.read_iso_ts(tsd),
-                                  start_date=start_date,
-                                  end_date=end_date,
-                                  round_index=round_index,
-                                  dropna='no')
+        tsd = tsutils.common_kwds(
+            tsutils.read_iso_ts(tsd),
+            start_date=start_date,
+            end_date=end_date,
+            round_index=round_index,
+            dropna="no",
+        )
 
     # This is to help pretty print the frequency
     try:
         try:
-            pltfreq = str(tsd.index.freq, 'utf-8').lower()
+            pltfreq = str(tsd.index.freq, "utf-8").lower()
         except TypeError:
             pltfreq = str(tsd.index.freq).lower()
-        if pltfreq.split(' ')[0][1:] == '1':
+        if pltfreq.split(" ")[0][1:] == "1":
             beginstr = 3
         else:
             beginstr = 1
-        if pltfreq == 'none':
-            short_freq = ''
+        if pltfreq == "none":
+            short_freq = ""
         else:
             # short freq string (day) OR (2 day)
-            short_freq = '({0})'.format(pltfreq[beginstr:-1])
+            short_freq = "({0})".format(pltfreq[beginstr:-1])
     except AttributeError:
-        short_freq = ''
+        short_freq = ""
 
     if legend_names:
         lnames = tsutils.make_list(legend_names)
         if len(lnames) != len(set(lnames)):
-            raise ValueError("""
+            raise ValueError(
+                """
 *
 *   Each name in legend_names must be unique.
 *
-""")
+"""
+            )
         if len(tsd.columns) == len(lnames):
             renamedict = dict(list(zip(tsd.columns, lnames)))
-        elif type == 'xy' and len(tsd.columns) // 2 == len(lnames):
+        elif type == "xy" and len(tsd.columns) // 2 == len(lnames):
             renamedict = dict(list(zip(tsd.columns[2::2], lnames[1:])))
             renamedict[tsd.columns[1]] = lnames[0]
         else:
-            raise ValueError("""
+            raise ValueError(
+                """
 *
 *   For 'legend_names' you must have the same number of comma
 *   separated names as columns in the input data.  The input
@@ -765,84 +787,94 @@ def plot(input_ts='-',
 *
 *   If 'xy' type you need to have legend names as x,y1,y2,y3,...
 *
-""".format(len(tsd.columns), len(lnames)))
+""".format(
+                    len(tsd.columns), len(lnames)
+                )
+            )
         tsd.rename(columns=renamedict, inplace=True)
     else:
         lnames = tsd.columns
 
-    if colors == 'auto':
+    if colors == "auto":
         colors = color_list
     else:
         colors = tsutils.make_list(colors)
 
-    if linestyles == 'auto':
+    if linestyles == "auto":
         linestyles = line_list
     else:
         linestyles = tsutils.make_list(linestyles)
 
-    if markerstyles == 'auto':
+    if markerstyles == "auto":
         markerstyles = marker_list
     else:
         markerstyles = tsutils.make_list(markerstyles)
         if markerstyles is None:
-            markerstyles = ' '
+            markerstyles = " "
 
-    if style != 'auto':
+    if style != "auto":
 
         nstyle = tsutils.make_list(style)
         if len(nstyle) != len(tsd.columns):
-            raise ValueError("""
+            raise ValueError(
+                """
 *
 *   You have to have the same number of style strings as time-series to plot.
 *   You supplied '{0}' for style which has {1} style strings,
 *   but you have {2} time-series.
 *
-""".format(style, len(nstyle), len(tsd.columns)))
+""".format(
+                    style, len(nstyle), len(tsd.columns)
+                )
+            )
         colors = []
         markerstyles = []
         linestyles = []
         for st in nstyle:
             colors.append(st[0])
             if len(st) == 1:
-                markerstyles.append(' ')
-                linestyles.append('-')
+                markerstyles.append(" ")
+                linestyles.append("-")
                 continue
             if st[1] in marker_list:
                 markerstyles.append(st[1])
                 try:
                     linestyles.append(st[2:])
                 except IndexError:
-                    linestyles.append(' ')
+                    linestyles.append(" ")
             else:
-                markerstyles.append(' ')
+                markerstyles.append(" ")
                 linestyles.append(st[1:])
     if linestyles is None:
-        linestyles = [' ']
+        linestyles = [" "]
     else:
-        linestyles = [' ' if i == '  ' else i for i in linestyles]
-    markerstyles = [' ' if i is None else i for i in markerstyles]
+        linestyles = [" " if i == "  " else i for i in linestyles]
+    markerstyles = [" " if i is None else i for i in markerstyles]
 
     icolors = itertools.cycle(colors)
     imarkerstyles = itertools.cycle(markerstyles)
     ilinestyles = itertools.cycle(linestyles)
 
-    style = ['{0}{1}{2}'.format(next(icolors),
-                                next(imarkerstyles),
-                                next(ilinestyles))
-             for i in list(range(len(tsd.columns)))]
+    style = [
+        "{0}{1}{2}".format(next(icolors), next(imarkerstyles), next(ilinestyles))
+        for i in list(range(len(tsd.columns)))
+    ]
 
     # reset to beginning of iterator
     icolors = itertools.cycle(colors)
     imarkerstyles = itertools.cycle(markerstyles)
     ilinestyles = itertools.cycle(linestyles)
 
-    if (logx is True or
-            logy is True or
-            norm_xaxis is True or
-            norm_yaxis is True or
-            lognorm_xaxis is True or
-            lognorm_yaxis is True):
-        warnings.warn("""
+    if (
+        logx is True
+        or logy is True
+        or norm_xaxis is True
+        or norm_yaxis is True
+        or lognorm_xaxis is True
+        or lognorm_yaxis is True
+    ):
+        warnings.warn(
+            """
 *
 *   The --logx, --logy, --norm_xaxis, --norm_yaxis, --lognorm_xaxis, and
 *   --lognorm_yaxis options are deprecated.
@@ -854,38 +886,43 @@ def plot(input_ts='-',
 *   For --lognorm_xaxis use --type="lognorm_xaxis"
 *   For --lognorm_yaxis use --type="lognorm_yaxis"
 *
-""")
+"""
+        )
 
-    if xaxis == 'log':
+    if xaxis == "log":
         logx = True
-    if yaxis == 'log':
+    if yaxis == "log":
         logy = True
 
-    if type in ['norm_xaxis',
-                'lognorm_xaxis',
-                'weibull_xaxis']:
-        xaxis = 'normal'
+    if type in ["norm_xaxis", "lognorm_xaxis", "weibull_xaxis"]:
+        xaxis = "normal"
         if logx is True:
             logx = False
-            warnings.warn("""
+            warnings.warn(
+                """
 *
 *   The --type={1} cannot also have the xaxis set to {0}.
 *   The {0} setting for xaxis is ignored.
 *
-""".format(xaxis, type))
+""".format(
+                    xaxis, type
+                )
+            )
 
-    if type in ['norm_yaxis',
-                'lognorm_yaxis',
-                'weibull_yaxis']:
-        yaxis = 'normal'
+    if type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
+        yaxis = "normal"
         if logy is True:
             logy = False
-            warnings.warn("""
+            warnings.warn(
+                """
 *
 *   The --type={1} cannot also have the yaxis set to {0}.
 *   The {0} setting for yaxis is ignored.
 *
-""".format(yaxis, type))
+""".format(
+                    yaxis, type
+                )
+            )
 
     xlim = _know_your_limits(xlim, axis=xaxis)
     ylim = _know_your_limits(ylim, axis=yaxis)
@@ -895,291 +932,331 @@ def plot(input_ts='-',
     if not isinstance(tsd.index, pd.DatetimeIndex):
         tsd.insert(0, tsd.index.name, tsd.index)
 
-    if type in ['xy',
-                'double_mass']:
+    if type in ["xy", "double_mass"]:
         if tsd.shape[1] % 2 != 0:
-            raise AttributeError("""
+            raise AttributeError(
+                """
 *
 *   The 'xy' and 'double_mass' types must have an even number of columns
 *   arranged as x,y pairs.  You supplied {0} columns.
 *
-""".format(tsd.shape[1]))
+""".format(
+                    tsd.shape[1]
+                )
+            )
         colcnt = tsd.shape[1] // 2
-    elif type in ['norm_xaxis',
-                  'norm_yaxis',
-                  'lognorm_xaxis',
-                  'lognorm_yaxis',
-                  'weibull_xaxis',
-                  'weibull_yaxis']:
+    elif type in [
+        "norm_xaxis",
+        "norm_yaxis",
+        "lognorm_xaxis",
+        "lognorm_yaxis",
+        "weibull_xaxis",
+        "weibull_yaxis",
+    ]:
         colcnt = tsd.shape[1]
 
     _, ax = plt.subplots(figsize=figsize)
-    if type in ['xy',
-                'double_mass',
-                'norm_xaxis',
-                'norm_yaxis',
-                'lognorm_xaxis',
-                'lognorm_yaxis',
-                'weibull_xaxis',
-                'weibull_yaxis',
-                'heatmap']:
-        plotdict = {(False, True): ax.semilogy,
-                    (True, False): ax.semilogx,
-                    (True, True): ax.loglog,
-                    (False, False): ax.plot}
+    if type in [
+        "xy",
+        "double_mass",
+        "norm_xaxis",
+        "norm_yaxis",
+        "lognorm_xaxis",
+        "lognorm_yaxis",
+        "weibull_xaxis",
+        "weibull_yaxis",
+        "heatmap",
+    ]:
+        plotdict = {
+            (False, True): ax.semilogy,
+            (True, False): ax.semilogx,
+            (True, True): ax.loglog,
+            (False, False): ax.plot,
+        }
 
-    if type == 'time':
-        ax = tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
-                      sharey=sharey, style=None, logx=logx, logy=logy,
-                      xlim=xlim, ylim=ylim, secondary_y=secondary_y,
-                      mark_right=mark_right, figsize=figsize,
-                      drawstyle=drawstyle)
+    if type == "time":
+        ax = tsd.plot(
+            legend=legend,
+            subplots=subplots,
+            sharex=sharex,
+            sharey=sharey,
+            style=None,
+            logx=logx,
+            logy=logy,
+            xlim=xlim,
+            ylim=ylim,
+            secondary_y=secondary_y,
+            mark_right=mark_right,
+            figsize=figsize,
+            drawstyle=drawstyle,
+        )
         for index, line in enumerate(ax.lines):
             plt.setp(line, color=style[index][0])
             plt.setp(line, marker=style[index][1])
             plt.setp(line, linestyle=style[index][2:])
-        xtitle = xtitle or 'Time'
+        xtitle = xtitle or "Time"
         if legend is True:
-            plt.legend(loc='best')
-    elif type in ['taylor']:
-        from .. skill_metrics import centered_rms_dev
-        from .. skill_metrics import taylor_diagram
+            plt.legend(loc="best")
+    elif type in ["taylor"]:
+        from skill_metrics import centered_rms_dev
+        from skill_metrics import taylor_diagram
+
         ref = tsd.iloc[:, 0]
         std = [pd.np.std(ref)]
         ccoef = [1.0]
         crmsd = [0.0]
         for col in range(1, len(tsd.columns)):
             std.append(pd.np.std(tsd.iloc[:, col]))
-            ccoef.append(pd.np.corrcoef(tsd.iloc[:, col],
-                                        ref)[0][1])
-            crmsd.append(centered_rms_dev(tsd.iloc[:, col].values,
-                                          ref.values))
-        taylor_diagram(pd.np.array(std),
-                       pd.np.array(crmsd),
-                       pd.np.array(ccoef))
-    elif type in ['target']:
-        from .. skill_metrics import centered_rms_dev
-        from .. skill_metrics import rmsd
-        from .. skill_metrics import bias
-        from .. skill_metrics import target_diagram
+            ccoef.append(pd.np.corrcoef(tsd.iloc[:, col], ref)[0][1])
+            crmsd.append(centered_rms_dev(tsd.iloc[:, col].values, ref.values))
+        taylor_diagram(pd.np.array(std), pd.np.array(crmsd), pd.np.array(ccoef))
+    elif type in ["target"]:
+        from skill_metrics import centered_rms_dev
+        from skill_metrics import rmsd
+        from skill_metrics import bias
+        from skill_metrics import target_diagram
+
         biases = []
         rmsds = []
         crmsds = []
         ref = tsd.iloc[:, 0].values
         for col in range(1, len(tsd.columns)):
             biases.append(bias(tsd.iloc[:, col].values, ref))
-            crmsds.append(centered_rms_dev(tsd.iloc[:, col].values,
-                                           ref))
-            rmsds.append(rmsd(tsd.iloc[:, col].values,
-                              ref))
-        target_diagram(pd.np.array(biases),
-                       pd.np.array(crmsds),
-                       pd.np.array(rmsds))
-    elif type in ['xy',
-                  'double_mass']:
+            crmsds.append(centered_rms_dev(tsd.iloc[:, col].values, ref))
+            rmsds.append(rmsd(tsd.iloc[:, col].values, ref))
+        target_diagram(pd.np.array(biases), pd.np.array(crmsds), pd.np.array(rmsds))
+    elif type in ["xy", "double_mass"]:
         # PANDAS was not doing the right thing with xy plots
         # if you wanted lines between markers.
         # Fell back to using raw matplotlib.
         # Boy I do not like matplotlib.
 
         for colindex in range(colcnt):
-            ndf = tsd.iloc[:, colindex * 2:colindex * 2 + 2]
-            if type == 'double_mass':
+            ndf = tsd.iloc[:, colindex * 2 : colindex * 2 + 2]
+            if type == "double_mass":
                 ndf = ndf.dropna().cumsum()
             oxdata = pd.np.array(ndf.iloc[:, 0])
             oydata = pd.np.array(ndf.iloc[:, 1])
 
-            plotdict[(logx, logy)](oxdata,
-                                   oydata,
-                                   linestyle=next(ilinestyles),
-                                   color=next(icolors),
-                                   marker=next(imarkerstyles),
-                                   label=lnames[colindex],
-                                   drawstyle=drawstyle)
+            plotdict[(logx, logy)](
+                oxdata,
+                oydata,
+                linestyle=next(ilinestyles),
+                color=next(icolors),
+                marker=next(imarkerstyles),
+                label=lnames[colindex],
+                drawstyle=drawstyle,
+            )
 
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
         if legend is True:
-            ax.legend(loc='best')
+            ax.legend(loc="best")
 
-        if type == 'double_mass':
-            xtitle = xtitle or 'Cumulative {0}'.format(tsd.columns[0])
-            ytitle = ytitle or 'Cumulative {0}'.format(tsd.columns[1])
+        if type == "double_mass":
+            xtitle = xtitle or "Cumulative {0}".format(tsd.columns[0])
+            ytitle = ytitle or "Cumulative {0}".format(tsd.columns[1])
 
-    elif type in ['norm_xaxis',
-                  'norm_yaxis',
-                  'lognorm_xaxis',
-                  'lognorm_yaxis',
-                  'weibull_xaxis',
-                  'weibull_yaxis']:
-        ppf = tsutils.set_ppf(type.split('_')[0])
+    elif type in [
+        "norm_xaxis",
+        "norm_yaxis",
+        "lognorm_xaxis",
+        "lognorm_yaxis",
+        "weibull_xaxis",
+        "weibull_yaxis",
+    ]:
+        ppf = tsutils.set_ppf(type.split("_")[0])
         ys = tsd.iloc[:, :]
 
         for colindex in range(colcnt):
             oydata = pd.np.array(ys.iloc[:, colindex].dropna())
-            if prob_plot_sort_values == 'ascending':
+            if prob_plot_sort_values == "ascending":
                 oydata = pd.np.sort(oydata)
-            elif prob_plot_sort_values == 'descending':
+            elif prob_plot_sort_values == "descending":
                 oydata = pd.np.sort(oydata)[::-1]
             else:
-                raise ValueError("""
+                raise ValueError(
+                    """
 *
 *  The 'prob_plot_sort_values' option can only be 'ascending' or
 *  'descending'.  You gave {prob_plot_sort_values}.
 *
-""".format(**locals()))
+""".format(
+                        **locals()
+                    )
+                )
             n = len(oydata)
             norm_axis = ax.xaxis
-            oxdata = ppf(tsutils.set_plotting_position(n,
-                                                       plotting_position))
-            if type in ['norm_yaxis',
-                        'lognorm_yaxis',
-                        'weibull_yaxis']:
+            oxdata = ppf(tsutils.set_plotting_position(n, plotting_position))
+            if type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
                 oxdata, oydata = oydata, oxdata
                 norm_axis = ax.yaxis
 
-            plotdict[(logx, logy)](oxdata,
-                                   oydata,
-                                   linestyle=next(ilinestyles),
-                                   color=next(icolors),
-                                   marker=next(imarkerstyles),
-                                   label=lnames[colindex],
-                                   drawstyle=drawstyle)
+            plotdict[(logx, logy)](
+                oxdata,
+                oydata,
+                linestyle=next(ilinestyles),
+                color=next(icolors),
+                marker=next(imarkerstyles),
+                label=lnames[colindex],
+                drawstyle=drawstyle,
+            )
 
         # Make it pretty
         xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
-        xtmaj_str = ['1', '10', '50', '90', '99']
-        xtmin = pd.np.concatenate([pd.np.linspace(0.001, 0.01, 10),
-                                   pd.np.linspace(0.01, 0.1, 10),
-                                   pd.np.linspace(0.1, 0.9, 9),
-                                   pd.np.linspace(0.9, 0.99, 10),
-                                   pd.np.linspace(0.99, 0.999, 10)])
+        xtmaj_str = ["1", "10", "50", "90", "99"]
+        xtmin = pd.np.concatenate(
+            [
+                pd.np.linspace(0.001, 0.01, 10),
+                pd.np.linspace(0.01, 0.1, 10),
+                pd.np.linspace(0.1, 0.9, 9),
+                pd.np.linspace(0.9, 0.99, 10),
+                pd.np.linspace(0.99, 0.999, 10),
+            ]
+        )
         xtmaj = ppf(xtmaj)
         xtmin = ppf(xtmin)
 
         norm_axis.set_major_locator(FixedLocator(xtmaj))
         norm_axis.set_minor_locator(FixedLocator(xtmin))
 
-        if type in ['norm_xaxis',
-                    'lognorm_xaxis',
-                    'weibull_xaxis']:
+        if type in ["norm_xaxis", "lognorm_xaxis", "weibull_xaxis"]:
             ax.set_xticklabels(xtmaj_str)
             ax.set_ylim(ylim)
             ax.set_xlim(ppf(xlim))
 
-        elif type in ['norm_yaxis',
-                      'lognorm_yaxis',
-                      'weibull_yaxis']:
+        elif type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
             ax.set_yticklabels(xtmaj_str)
             ax.set_xlim(xlim)
             ax.set_ylim(ppf(ylim))
 
-        if type in ['norm_xaxis',
-                    'norm_yaxis']:
-            xtitle = xtitle or 'Normal Distribution'
+        if type in ["norm_xaxis", "norm_yaxis"]:
+            xtitle = xtitle or "Normal Distribution"
             ytitle = ytitle or tsd.columns[0]
-        elif type in ['lognorm_xaxis',
-                      'lognorm_yaxis']:
-            xtitle = xtitle or 'Log Normal Distribution'
+        elif type in ["lognorm_xaxis", "lognorm_yaxis"]:
+            xtitle = xtitle or "Log Normal Distribution"
             ytitle = ytitle or tsd.columns[0]
-        elif type in ['weibull_xaxis',
-                      'weibull_yaxis']:
-            xtitle = xtitle or 'Weibull Distribution'
+        elif type in ["weibull_xaxis", "weibull_yaxis"]:
+            xtitle = xtitle or "Weibull Distribution"
             ytitle = ytitle or tsd.columns[0]
 
-        if type in ['norm_yaxis',
-                    'lognorm_yaxis',
-                    'weibull_yaxis']:
+        if type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
             xtitle, ytitle = ytitle, xtitle
 
         if legend is True:
-            ax.legend(loc='best')
+            ax.legend(loc="best")
 
-    elif type in ['kde',
-                  'probability_density']:
-        ax = tsd.plot(kind='kde', legend=legend, subplots=subplots,
-                      sharex=sharex, sharey=sharey, style=None, logx=logx,
-                      logy=logy, xlim=xlim, ylim=ylim, secondary_y=secondary_y,
-                      figsize=figsize)
+    elif type in ["kde", "probability_density"]:
+        ax = tsd.plot(
+            kind="kde",
+            legend=legend,
+            subplots=subplots,
+            sharex=sharex,
+            sharey=sharey,
+            style=None,
+            logx=logx,
+            logy=logy,
+            xlim=xlim,
+            ylim=ylim,
+            secondary_y=secondary_y,
+            figsize=figsize,
+        )
         for index, line in enumerate(ax.lines):
             plt.setp(line, color=style[index][0])
             plt.setp(line, marker=style[index][1])
             plt.setp(line, linestyle=style[index][2:])
-        ytitle = ytitle or 'Density'
+        ytitle = ytitle or "Density"
         if legend is True:
-            plt.legend(loc='best')
-    elif type == 'kde_time':
+            plt.legend(loc="best")
+    elif type == "kde_time":
         from scipy.stats.kde import gaussian_kde
-        _, (ax0, ax1) = plt.subplots(nrows=1,
-                                     ncols=2,
-                                     sharey=True,
-                                     figsize=figsize,
-                                     gridspec_kw={'width_ratios': [1, 4]})
-        tsd.plot(legend=legend, subplots=subplots, sharex=sharex,
-                 sharey=sharey, style=None, logx=logx, logy=logy, xlim=xlim,
-                 ylim=ylim, secondary_y=secondary_y, mark_right=mark_right,
-                 figsize=figsize, drawstyle=drawstyle, ax=ax1)
+
+        _, (ax0, ax1) = plt.subplots(
+            nrows=1,
+            ncols=2,
+            sharey=True,
+            figsize=figsize,
+            gridspec_kw={"width_ratios": [1, 4]},
+        )
+        tsd.plot(
+            legend=legend,
+            subplots=subplots,
+            sharex=sharex,
+            sharey=sharey,
+            style=None,
+            logx=logx,
+            logy=logy,
+            xlim=xlim,
+            ylim=ylim,
+            secondary_y=secondary_y,
+            mark_right=mark_right,
+            figsize=figsize,
+            drawstyle=drawstyle,
+            ax=ax1,
+        )
         for index, line in enumerate(ax1.lines):
             plt.setp(line, color=style[index][0])
             plt.setp(line, marker=style[index][1])
             plt.setp(line, linestyle=style[index][2:])
-        xtitle = xtitle or 'Time'
+        xtitle = xtitle or "Time"
         ylimits = ax1.get_ylim()
         ny = pd.np.linspace(ylimits[0], ylimits[1], 1000)
         for col in range(len(tsd.columns)):
             xvals = tsd.iloc[:, col].dropna().values
             pdf = gaussian_kde(xvals)
-            ax0.plot(pdf(ny),
-                     ny,
-                     linestyle=style[col][2:],
-                     color=style[col][0],
-                     marker=style[col][1],
-                     label=tsd.columns[col],
-                     drawstyle=drawstyle)
-        ax0.set(xlabel='Probability Density', ylabel=ytitle)
-    elif type == 'boxplot':
+            ax0.plot(
+                pdf(ny),
+                ny,
+                linestyle=style[col][2:],
+                color=style[col][0],
+                marker=style[col][1],
+                label=tsd.columns[col],
+                drawstyle=drawstyle,
+            )
+        ax0.set(xlabel="Probability Density", ylabel=ytitle)
+    elif type == "boxplot":
         tsd.boxplot(figsize=figsize)
-    elif type == 'scatter_matrix':
+    elif type == "scatter_matrix":
         from pandas.plotting import scatter_matrix
-        if scatter_matrix_diagonal == 'probablity_density':
-            scatter_matrix_diagonal = 'kde'
-        scatter_matrix(tsd,
-                       diagonal=scatter_matrix_diagonal,
-                       figsize=figsize)
-    elif type == 'lag_plot':
+
+        if scatter_matrix_diagonal == "probablity_density":
+            scatter_matrix_diagonal = "kde"
+        scatter_matrix(tsd, diagonal=scatter_matrix_diagonal, figsize=figsize)
+    elif type == "lag_plot":
         from pandas.plotting import lag_plot
-        lag_plot(tsd,
-                 lag=lag_plot_lag,
-                 ax=ax)
-        xtitle = xtitle or 'y(t)'
-        ytitle = ytitle or 'y(t+{0})'.format(short_freq or 1)
-    elif type == 'autocorrelation':
+
+        lag_plot(tsd, lag=lag_plot_lag, ax=ax)
+        xtitle = xtitle or "y(t)"
+        ytitle = ytitle or "y(t+{0})".format(short_freq or 1)
+    elif type == "autocorrelation":
         from pandas.plotting import autocorrelation_plot
-        autocorrelation_plot(tsd,
-                             ax=ax)
-        xtitle = xtitle or 'Time Lag {0}'.format(short_freq)
-    elif type == 'bootstrap':
+
+        autocorrelation_plot(tsd, ax=ax)
+        xtitle = xtitle or "Time Lag {0}".format(short_freq)
+    elif type == "bootstrap":
         from pandas.plotting import bootstrap_plot
-        bootstrap_plot(tsd,
-                       size=bootstrap_size,
-                       samples=bootstrap_samples,
-                       color='gray')
-    elif type == 'heatmap':
+
+        bootstrap_plot(
+            tsd, size=bootstrap_size, samples=bootstrap_samples, color="gray"
+        )
+    elif type == "heatmap":
         # Find beginning and end years
         byear = tsd.index[0].year
         eyear = tsd.index[-1].year
         tsd = tsutils.asbestfreq(tsd)
-        if tsd.index.freqstr != 'D':
-            raise ValueError("""
+        if tsd.index.freqstr != "D":
+            raise ValueError(
+                """
 *
 *  The "heatmap" plot type can only work with daily time series.
 *
-""")
-        dr = pd.date_range('{0}-01-01'.format(byear),
-                           '{0}-12-31'.format(eyear),
-                           freq='D')
+"""
+            )
+        dr = pd.date_range(
+            "{0}-01-01".format(byear), "{0}-12-31".format(eyear), freq="D"
+        )
         ntsd = tsd.reindex(index=dr)
-        groups = ntsd.iloc[:, 0].groupby(pd.Grouper(freq='A'))
+        groups = ntsd.iloc[:, 0].groupby(pd.Grouper(freq="A"))
         years = pd.DataFrame()
         for name, group in groups:
             ngroup = group.values
@@ -1187,85 +1264,99 @@ def plot(input_ts='-',
                 ngroup = pd.np.append(group.values, [pd.np.nan])
             years[name.year] = ngroup
         years = years.T
-        plt.imshow(years,
-                   interpolation=None,
-                   aspect='auto')
+        plt.imshow(years, interpolation=None, aspect="auto")
         plt.colorbar()
         yticks = list(range(byear, eyear + 1))
         skip = len(yticks) // 20 + 1
         plt.yticks(range(0, len(yticks), skip), yticks[::skip])
         mnths = [0, 30, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
-        mnths_labels = ['Jan',
-                        'Feb',
-                        'Mar',
-                        'Apr',
-                        'May',
-                        'Jun',
-                        'Jul',
-                        'Aug',
-                        'Sep',
-                        'Oct',
-                        'Nov',
-                        'Dec']
+        mnths_labels = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ]
         plt.xticks(mnths, mnths_labels)
         grid = False
-    elif (type == 'bar' or
-          type == 'bar_stacked' or
-          type == 'barh' or
-          type == 'barh_stacked'):
+    elif (
+        type == "bar"
+        or type == "bar_stacked"
+        or type == "barh"
+        or type == "barh_stacked"
+    ):
         stacked = False
-        if type[-7:] == 'stacked':
+        if type[-7:] == "stacked":
             stacked = True
-        kind = 'bar'
-        if type[:4] == 'barh':
-            kind = 'barh'
-        ax = tsd.plot(kind=kind, legend=legend, stacked=stacked,
-                      style=style, logx=logx, logy=logy, xlim=xlim,
-                      ylim=ylim, figsize=figsize)
+        kind = "bar"
+        if type[:4] == "barh":
+            kind = "barh"
+        ax = tsd.plot(
+            kind=kind,
+            legend=legend,
+            stacked=stacked,
+            style=style,
+            logx=logx,
+            logy=logy,
+            xlim=xlim,
+            ylim=ylim,
+            figsize=figsize,
+        )
         for index, line in enumerate(ax.lines):
             plt.setp(line, color=style[index][0])
             plt.setp(line, marker=style[index][1])
             plt.setp(line, linestyle=style[index][2:])
         freq = tsutils.asbestfreq(tsd, force_freq=force_freq).index.freqstr
         if freq is not None:
-            if 'A' in freq:
+            if "A" in freq:
                 endchar = 4
-            elif 'M' in freq:
+            elif "M" in freq:
                 endchar = 7
-            elif 'D' in freq:
+            elif "D" in freq:
                 endchar = 10
-            elif 'H' in freq:
+            elif "H" in freq:
                 endchar = 13
             else:
                 endchar = None
             nticklabels = []
-            if kind == 'bar':
+            if kind == "bar":
                 taxis = ax.xaxis
             else:
                 taxis = ax.yaxis
             for index, i in enumerate(taxis.get_majorticklabels()):
                 if index % label_skip:
-                    nticklabels.append(' ')
+                    nticklabels.append(" ")
                 else:
                     nticklabels.append(i.get_text()[:endchar])
             taxis.set_ticklabels(nticklabels)
             plt.setp(taxis.get_majorticklabels(), rotation=label_rotation)
         if legend is True:
-            plt.legend(loc='best')
-    elif type == 'histogram':
+            plt.legend(loc="best")
+    elif type == "histogram":
         tsd.hist(figsize=figsize)
     else:
-        raise ValueError("""
+        raise ValueError(
+            """
 *
 *   Plot 'type' {0} is not supported.
 *
-""".format(type))
+""".format(
+                type
+            )
+        )
 
     if xy_match_line:
         if isinstance(xy_match_line, str):
             xymsty = xy_match_line
         else:
-            xymsty = 'g--'
+            xymsty = "g--"
         nxlim = ax.get_xlim()
         nylim = ax.get_ylim()
         maxt = max(nxlim[1], nylim[1])

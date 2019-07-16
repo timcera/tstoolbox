@@ -11,28 +11,30 @@ import pandas as pd
 from .. import tsutils
 
 
-@mando.command('rank', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command("rank", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def rank_cli(input_ts='-',
-             columns=None,
-             start_date=None,
-             end_date=None,
-             dropna='no',
-             skiprows=None,
-             index_type='datetime',
-             names=None,
-             clean=False,
-             axis=0,
-             method='average',
-             numeric_only=None,
-             na_option='keep',
-             ascending=True,
-             pct=False,
-             print_input=False,
-             float_format='%g',
-             source_units=None,
-             target_units=None,
-             round_index=None):
+def rank_cli(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    axis=0,
+    method="average",
+    numeric_only=None,
+    na_option="keep",
+    ascending=True,
+    pct=False,
+    print_input=False,
+    float_format="%g",
+    source_units=None,
+    target_units=None,
+    round_index=None,
+):
     """Compute numerical data ranks (1 through n) along axis.
 
     Equal values are assigned a rank that is the average of the ranks of those
@@ -106,61 +108,68 @@ def rank_cli(input_ts='-',
     {round_index}
 
     """
-    tsutils._printiso(rank(input_ts=input_ts,
-                           columns=columns,
-                           start_date=start_date,
-                           end_date=end_date,
-                           dropna=dropna,
-                           skiprows=skiprows,
-                           index_type=index_type,
-                           names=names,
-                           clean=clean,
-                           axis=axis,
-                           method=method,
-                           numeric_only=numeric_only,
-                           na_option=na_option,
-                           ascending=ascending,
-                           pct=pct,
-                           print_input=print_input,
-                           float_format=float_format,
-                           source_units=source_units,
-                           target_units=target_units,
-                           round_index=round_index))
+    tsutils._printiso(
+        rank(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            dropna=dropna,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            clean=clean,
+            axis=axis,
+            method=method,
+            numeric_only=numeric_only,
+            na_option=na_option,
+            ascending=ascending,
+            pct=pct,
+            print_input=print_input,
+            float_format=float_format,
+            source_units=source_units,
+            target_units=target_units,
+            round_index=round_index,
+        )
+    )
 
 
-def rank(input_ts='-',
-         columns=None,
-         start_date=None,
-         end_date=None,
-         dropna='no',
-         skiprows=None,
-         index_type='datetime',
-         names=None,
-         clean=False,
-         axis=0,
-         method='average',
-         numeric_only=None,
-         na_option='keep',
-         ascending=True,
-         pct=False,
-         print_input=False,
-         float_format='%g',
-         source_units=None,
-         target_units=None,
-         round_index=None):
+def rank(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    axis=0,
+    method="average",
+    numeric_only=None,
+    na_option="keep",
+    ascending=True,
+    pct=False,
+    print_input=False,
+    float_format="%g",
+    source_units=None,
+    target_units=None,
+    round_index=None,
+):
     """Compute numerical data ranks (1 through n) along axis."""
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              round_index=round_index,
-                              dropna=dropna,
-                              source_units=source_units,
-                              target_units=target_units,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        round_index=round_index,
+        dropna=dropna,
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
 
     # Trying to save some memory
     if print_input:
@@ -168,16 +177,20 @@ def rank(input_ts='-',
     else:
         otsd = pd.DataFrame()
 
-    return tsutils.return_input(print_input,
-                                otsd,
-                                tsd.rank(axis=axis,
-                                         method=method,
-                                         numeric_only=numeric_only,
-                                         na_option=na_option,
-                                         ascending=ascending,
-                                         pct=pct),
-                                'rank',
-                                float_format=float_format)
+    return tsutils.return_input(
+        print_input,
+        otsd,
+        tsd.rank(
+            axis=axis,
+            method=method,
+            numeric_only=numeric_only,
+            na_option=na_option,
+            ascending=ascending,
+            pct=pct,
+        ),
+        "rank",
+        float_format=float_format,
+    )
 
 
 rank.__doc__ = rank_cli.__doc__

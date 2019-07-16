@@ -4,7 +4,6 @@
 from __future__ import absolute_import, division, print_function
 
 import warnings
-from builtins import range
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
@@ -14,20 +13,21 @@ import pandas as pd
 
 from .. import tsutils
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
 def _parse_equation(equation_str):
     """Private function to parse the equation used in the calculations."""
     import re
+
     # Get rid of spaces
-    nequation = equation_str.replace(' ', '')
+    nequation = equation_str.replace(" ", "")
 
     # Does the equation contain any x[t]?
-    tsearch = re.search(r'\[.*?t.*?\]', nequation)
+    tsearch = re.search(r"\[.*?t.*?\]", nequation)
 
     # Does the equation contain any x1, x2, ...etc.?
-    nsearch = re.search(r'x[1-9][0-9]*', nequation)
+    nsearch = re.search(r"x[1-9][0-9]*", nequation)
 
     # This beasty is so users can use 't' in their equations
     # Indices of 'x' are a function of 't' and can possibly be negative or
@@ -45,64 +45,54 @@ def _parse_equation(equation_str):
     testeval = set()
     # If there is both function of t and column terms x1, x2, ...etc.
     if tsearch and nsearch:
-        testeval.update(re.findall(r'x[1-9][0-9]*\[(.*?t.*?)\]',
-                                   nequation))
+        testeval.update(re.findall(r"x[1-9][0-9]*\[(.*?t.*?)\]", nequation))
         # replace 'x1[t+1]' with 'x.iloc[t+1,1-1]'
         # replace 'x2[t+7]' with 'x.iloc[t+7,2-1]'
         # ...etc
-        nequation = re.sub(r'x([1-9][0-9]*)\[(.*?t.*?)\]',
-                           r'x.iloc[\2,\1-1]',
-                           nequation)
+        nequation = re.sub(
+            r"x([1-9][0-9]*)\[(.*?t.*?)\]", r"x.iloc[\2,\1-1]", nequation
+        )
         # replace 'x1' with 'x.iloc[t,1-1]'
         # replace 'x4' with 'x.iloc[t,4-1]'
-        nequation = re.sub(r'x([1-9][0-9]*)',
-                           r'x.iloc[t,\1-1]',
-                           nequation)
+        nequation = re.sub(r"x([1-9][0-9]*)", r"x.iloc[t,\1-1]", nequation)
     # If there is only a function of t, i.e. x[t]
     elif tsearch:
-        testeval.update(re.findall(r'x\[(.*?t.*?)\]',
-                                   nequation))
-        nequation = re.sub(r'x\[(.*?t.*?)\]',
-                           r'xxiloc[\1,:]',
-                           nequation)
+        testeval.update(re.findall(r"x\[(.*?t.*?)\]", nequation))
+        nequation = re.sub(r"x\[(.*?t.*?)\]", r"xxiloc[\1,:]", nequation)
         # Replace 'x' with underlying equation, but not the 'x' in a word,
         # like 'maximum'.
-        nequation = re.sub(r'(?<![a-zA-Z])x(?![a-zA-Z\[])',
-                           r'xxiloc[t,:]',
-                           nequation)
-        nequation = re.sub(r'xxiloc',
-                           r'x.iloc',
-                           nequation)
+        nequation = re.sub(r"(?<![a-zA-Z])x(?![a-zA-Z\[])", r"xxiloc[t,:]", nequation)
+        nequation = re.sub(r"xxiloc", r"x.iloc", nequation)
 
     elif nsearch:
-        nequation = re.sub(r'x([1-9][0-9]*)',
-                           r'x.iloc[:,\1-1]',
-                           nequation)
+        nequation = re.sub(r"x([1-9][0-9]*)", r"x.iloc[:,\1-1]", nequation)
 
     try:
-        testeval.remove('t')
+        testeval.remove("t")
     except KeyError:
         pass
     return tsearch, nsearch, testeval, nequation
 
 
-@mando.command('equation', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command("equation", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def equation_cli(equation_str,
-                 input_ts='-',
-                 columns=None,
-                 start_date=None,
-                 end_date=None,
-                 dropna='no',
-                 skiprows=None,
-                 index_type='datetime',
-                 names=None,
-                 clean=False,
-                 print_input='',
-                 round_index=None,
-                 source_units=None,
-                 target_units=None,
-                 float_format='%g'):
+def equation_cli(
+    equation_str,
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    print_input="",
+    round_index=None,
+    source_units=None,
+    target_units=None,
+    float_format="%g",
+):
     """Apply <equation_str> to the time series data.
 
     The <equation_str> argument is a string contained in single quotes
@@ -177,51 +167,58 @@ def equation_cli(equation_str,
     {round_index}
 
     """
-    tsutils._printiso(equation(equation_str,
-                               input_ts=input_ts,
-                               columns=columns,
-                               start_date=start_date,
-                               end_date=end_date,
-                               dropna=dropna,
-                               skiprows=skiprows,
-                               index_type=index_type,
-                               names=names,
-                               clean=clean,
-                               print_input=print_input,
-                               round_index=round_index,
-                               source_units=source_units,
-                               target_units=target_units,
-                               float_format=float_format))
+    tsutils._printiso(
+        equation(
+            equation_str,
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            dropna=dropna,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            clean=clean,
+            print_input=print_input,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            float_format=float_format,
+        )
+    )
 
 
-def equation(equation_str,
-             input_ts='-',
-             columns=None,
-             start_date=None,
-             end_date=None,
-             dropna='no',
-             skiprows=None,
-             index_type='datetime',
-             names=None,
-             clean=False,
-             print_input='',
-             round_index=None,
-             source_units=None,
-             target_units=None,
-             float_format='%g'):
+def equation(
+    equation_str,
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    print_input="",
+    round_index=None,
+    source_units=None,
+    target_units=None,
+    float_format="%g",
+):
     """Apply <equation_str> to the time series data."""
-    x = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                skiprows=skiprows,
-                                                names=names,
-                                                index_type=index_type),
-                            start_date=start_date,
-                            end_date=end_date,
-                            pick=columns,
-                            round_index=round_index,
-                            dropna=dropna,
-                            source_units=source_units,
-                            target_units=target_units,
-                            clean=clean)
+    x = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        round_index=round_index,
+        dropna=dropna,
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
 
     def returnval(t, x, testeval, nequation):
         for tst in testeval:
@@ -232,9 +229,7 @@ def equation(equation_str,
 
     tsearch, nsearch, testeval, nequation = _parse_equation(equation_str)
     if tsearch and nsearch:
-        y = pd.DataFrame(pd.Series(index=x.index),
-                         columns=['_'],
-                         dtype='float64')
+        y = pd.DataFrame(pd.Series(index=x.index), columns=["_"], dtype="float64")
         for t in range(len(x)):
             y.iloc[t, 0] = returnval(t, x, testeval, nequation)
     elif tsearch:
@@ -242,28 +237,27 @@ def equation(equation_str,
         for t in range(len(x)):
             y.iloc[t, :] = returnval(t, x, testeval, nequation)
     elif nsearch:
-        y = pd.DataFrame(pd.Series(index=x.index),
-                         columns=['_'],
-                         dtype='float64')
+        y = pd.DataFrame(pd.Series(index=x.index), columns=["_"], dtype="float64")
         try:
             y.iloc[:, 0] = eval(nequation)
         except IndexError:
-            raise IndexError("""
+            raise IndexError(
+                """
 *
 *   There are {0} columns, but the equation you are trying to apply is trying
 *   to access a column greater than that.
 *
-""".format(y.shape[1]))
+""".format(
+                    y.shape[1]
+                )
+            )
 
     else:
         y = eval(equation_str)
 
     y = tsutils.memory_optimize(y)
 
-    return tsutils.return_input(print_input,
-                                x,
-                                y,
-                                'equation')
+    return tsutils.return_input(print_input, x, y, "equation")
 
 
 equation.__doc__ = equation_cli.__doc__

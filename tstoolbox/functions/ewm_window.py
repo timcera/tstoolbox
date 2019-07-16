@@ -10,31 +10,33 @@ from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
-@mando.command('ewm_window', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command("ewm_window", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def ewm_window_cli(input_ts='-',
-                   columns=None,
-                   start_date=None,
-                   end_date=None,
-                   dropna='no',
-                   skiprows=None,
-                   index_type='datetime',
-                   names=None,
-                   clean=False,
-                   statistic='',
-                   alpha_com=None,
-                   alpha_span=None,
-                   alpha_halflife=None,
-                   alpha=None,
-                   min_periods=0,
-                   adjust=True,
-                   ignore_na=False,
-                   source_units=None,
-                   target_units=None,
-                   print_input=False):
+def ewm_window_cli(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    statistic="",
+    alpha_com=None,
+    alpha_span=None,
+    alpha_halflife=None,
+    alpha=None,
+    min_periods=0,
+    adjust=True,
+    ignore_na=False,
+    source_units=None,
+    target_units=None,
+    print_input=False,
+):
     """Calculate exponential weighted functions.
 
     Exactly one of center of mass, span, half-life, and alpha must be provided.
@@ -132,76 +134,82 @@ def ewm_window_cli(input_ts='-',
     {print_input}
 
     """
-    tsutils._printiso(ewm_window(input_ts=input_ts,
-                                 columns=columns,
-                                 start_date=start_date,
-                                 end_date=end_date,
-                                 dropna=dropna,
-                                 skiprows=skiprows,
-                                 index_type=index_type,
-                                 names=names,
-                                 clean=clean,
-                                 statistic=statistic,
-                                 alpha_com=alpha_com,
-                                 alpha_span=alpha_span,
-                                 alpha_halflife=alpha_halflife,
-                                 alpha=alpha,
-                                 min_periods=min_periods,
-                                 adjust=adjust,
-                                 ignore_na=ignore_na,
-                                 source_units=source_units,
-                                 target_units=target_units,
-                                 print_input=print_input))
+    tsutils._printiso(
+        ewm_window(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            dropna=dropna,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            clean=clean,
+            statistic=statistic,
+            alpha_com=alpha_com,
+            alpha_span=alpha_span,
+            alpha_halflife=alpha_halflife,
+            alpha=alpha,
+            min_periods=min_periods,
+            adjust=adjust,
+            ignore_na=ignore_na,
+            source_units=source_units,
+            target_units=target_units,
+            print_input=print_input,
+        )
+    )
 
 
-def ewm_window(input_ts='-',
-               columns=None,
-               start_date=None,
-               end_date=None,
-               dropna='no',
-               skiprows=None,
-               index_type='datetime',
-               names=None,
-               clean=False,
-               statistic='',
-               alpha_com=None,
-               alpha_span=None,
-               alpha_halflife=None,
-               alpha=None,
-               min_periods=0,
-               adjust=True,
-               ignore_na=False,
-               source_units=None,
-               target_units=None,
-               print_input=False):
+def ewm_window(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    statistic="",
+    alpha_com=None,
+    alpha_span=None,
+    alpha_halflife=None,
+    alpha=None,
+    min_periods=0,
+    adjust=True,
+    ignore_na=False,
+    source_units=None,
+    target_units=None,
+    print_input=False,
+):
     """Calculate exponential weighted functions."""
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              dropna=dropna,
-                              source_units=source_units,
-                              target_units=target_units,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        dropna=dropna,
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
 
-    ntsd = tsd.ewm(alpha_com=alpha_com,
-                   alpha_span=alpha_span,
-                   alpha_halflife=alpha_halflife,
-                   alpha=alpha,
-                   min_periods=min_periods,
-                   adjust=adjust,
-                   ignore_na=ignore_na)
+    ntsd = tsd.ewm(
+        alpha_com=alpha_com,
+        alpha_span=alpha_span,
+        alpha_halflife=alpha_halflife,
+        alpha=alpha,
+        min_periods=min_periods,
+        adjust=adjust,
+        ignore_na=ignore_na,
+    )
 
     if statistic:
-        ntsd = eval('ntsd.{0}()'.format(statistic))
+        ntsd = eval("ntsd.{0}()".format(statistic))
 
-    return tsutils.return_input(print_input,
-                                tsd,
-                                ntsd,
-                                'ewm.' + statistic)
+    return tsutils.return_input(print_input, tsd, ntsd, "ewm." + statistic)
 
 
 ewm_window.__doc__ = ewm_window_cli.__doc__

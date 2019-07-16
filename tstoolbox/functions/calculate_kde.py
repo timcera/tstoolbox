@@ -12,25 +12,25 @@ import pandas as pd
 
 from .. import tsutils
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
-@mando.command('calculate_kde',
-               formatter_class=RSTHelpFormatter,
-               doctype='numpy')
+@mando.command("calculate_kde", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def calculate_kde_cli(ascending=True,
-                      evaluate=False,
-                      input_ts='-',
-                      columns=None,
-                      start_date=None,
-                      end_date=None,
-                      clean=False,
-                      skiprows=None,
-                      index_type='datetime',
-                      source_units=None,
-                      target_units=None,
-                      names=None):
+def calculate_kde_cli(
+    ascending=True,
+    evaluate=False,
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    clean=False,
+    skiprows=None,
+    index_type="datetime",
+    source_units=None,
+    target_units=None,
+    names=None,
+):
     """Return the kernel density estimation (KDE) curve.
 
     Returns a time-series or the KDE curve depending on the `evaluate` keyword.
@@ -58,51 +58,62 @@ def calculate_kde_cli(ascending=True,
     {clean}
 
     """
-    tsutils._printiso(calculate_kde(ascending=ascending,
-                                    evaluate=evaluate,
-                                    input_ts=input_ts,
-                                    columns=columns,
-                                    start_date=start_date,
-                                    end_date=end_date,
-                                    clean=clean,
-                                    skiprows=skiprows,
-                                    index_type=index_type,
-                                    source_units=source_units,
-                                    target_units=target_units,
-                                    names=names))
+    tsutils._printiso(
+        calculate_kde(
+            ascending=ascending,
+            evaluate=evaluate,
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            source_units=source_units,
+            target_units=target_units,
+            names=names,
+        )
+    )
 
 
-def calculate_kde(ascending=True,
-                  evaluate=False,
-                  input_ts='-',
-                  columns=None,
-                  start_date=None,
-                  end_date=None,
-                  clean=False,
-                  skiprows=None,
-                  index_type='datetime',
-                  source_units=None,
-                  target_units=None,
-                  names=None):
+def calculate_kde(
+    ascending=True,
+    evaluate=False,
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    clean=False,
+    skiprows=None,
+    index_type="datetime",
+    source_units=None,
+    target_units=None,
+    names=None,
+):
     """Return the kernel density estimation (KDE) curve."""
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              source_units=source_units,
-                              target_units=target_units,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
 
     if len(tsd.columns) > 1:
-        raise ValueError("""
+        raise ValueError(
+            """
 *
 *   Right now "calculate_kde" only support one time-series at a time.
 *   You gave {0}.
 *
-""".format(tsd.columns))
+""".format(
+                tsd.columns
+            )
+        )
 
     from scipy.stats import gaussian_kde
 

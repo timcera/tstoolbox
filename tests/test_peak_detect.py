@@ -116,11 +116,6 @@ class TestPeakDetect(TestCase):
                                        print_input=True,
                                        extrema='both')
         self.maxDiff = None
-        fp = open('/tmp/tslog3.txt', 'w')
-        fp.write('{0}'.format(out))
-        fp.write('\n')
-        fp.write('{0}'.format(self.compare))
-        fp.close()
         assert_frame_equal(out, self.compare)
 
 #    def test_peak_parabola_direct(self):

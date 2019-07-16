@@ -4,7 +4,6 @@
 from __future__ import absolute_import, division, print_function
 
 import sys
-from builtins import range, str
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
@@ -48,8 +47,7 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x - y), window=10000):
 
     # Populate rest of cost matrix within window
     for i in range(1, M):
-        for j in range(max(1, i - window),
-                       min(N, i + window)):
+        for j in range(max(1, i - window), min(N, i + window)):
             choices = cost[i - 1, j - 1], cost[i, j - 1], cost[i - 1, j]
             cost[i, j] = min(choices) + d(ts_a[i], ts_b[j])
 
@@ -57,21 +55,23 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x - y), window=10000):
     return cost[-1, -1]
 
 
-@mando.command('dtw', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command("dtw", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def dtw_cli(input_ts='-',
-            columns=None,
-            start_date=None,
-            end_date=None,
-            round_index=None,
-            dropna='no',
-            skiprows=None,
-            index_type='datetime',
-            names=None,
-            clean=False,
-            window=10000,
-            source_units=None,
-            target_units=None):
+def dtw_cli(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    round_index=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    window=10000,
+    source_units=None,
+    target_units=None,
+):
     """Dynamic Time Warping.
 
     Parameters
@@ -94,47 +94,54 @@ def dtw_cli(input_ts='-',
     {clean}
 
     """
-    tsutils._printiso(dtw(input_ts=input_ts,
-                          columns=columns,
-                          start_date=start_date,
-                          end_date=end_date,
-                          round_index=round_index,
-                          dropna=dropna,
-                          skiprows=skiprows,
-                          index_type=index_type,
-                          names=names,
-                          clean=clean,
-                          window=window,
-                          source_units=source_units,
-                          target_units=target_units))
+    tsutils._printiso(
+        dtw(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            round_index=round_index,
+            dropna=dropna,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            clean=clean,
+            window=window,
+            source_units=source_units,
+            target_units=target_units,
+        )
+    )
 
 
-def dtw(input_ts='-',
-        columns=None,
-        start_date=None,
-        end_date=None,
-        round_index=None,
-        dropna='no',
-        skiprows=None,
-        index_type='datetime',
-        names=None,
-        clean=False,
-        window=10000,
-        source_units=None,
-        target_units=None):
+def dtw(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    round_index=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    window=10000,
+    source_units=None,
+    target_units=None,
+):
     """Dynamic Time Warping."""
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              round_index=round_index,
-                              dropna='no',
-                              source_units=source_units,
-                              target_units=target_units,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        round_index=round_index,
+        dropna="no",
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
 
     process = {}
     for i in tsd.columns:
@@ -144,7 +151,7 @@ def dtw(input_ts='-',
 
     ntsd = pd.DataFrame(list(process.items()))
     ncols = ntsd.columns
-    ncols = ['Variables'] + [str(i) + 'DTW_score' for i in ncols[1:]]
+    ncols = ["Variables"] + [str(i) + "DTW_score" for i in ncols[1:]]
     ntsd.columns = ncols
     return ntsd
 

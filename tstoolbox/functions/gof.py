@@ -10,24 +10,26 @@ from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
-@mando.command('gof', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command("gof", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def gof_cli(input_ts='-',
-            stats='all',
-            columns=None,
-            start_date=None,
-            end_date=None,
-            round_index=None,
-            clean=False,
-            index_type='datetime',
-            names=None,
-            source_units=None,
-            target_units=None,
-            skiprows=None,
-            tablefmt='plain'):
+def gof_cli(
+    input_ts="-",
+    stats="all",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    round_index=None,
+    clean=False,
+    index_type="datetime",
+    names=None,
+    source_units=None,
+    target_units=None,
+    skiprows=None,
+    tablefmt="plain",
+):
     """Will calculate goodness of fit statistics between two time-series.
 
     The first time series must be the observed, the second the predicted
@@ -89,52 +91,57 @@ def gof_cli(input_ts='-',
     {tablefmt}
 
     """
-    tsutils._printiso(gof(input_ts=input_ts,
-                          stats=stats,
-                          columns=columns,
-                          start_date=start_date,
-                          end_date=end_date,
-                          round_index=round_index,
-                          clean=clean,
-                          index_type=index_type,
-                          names=names,
-                          source_units=source_units,
-                          target_units=target_units,
-                          skiprows=skiprows),
-                      tablefmt=tablefmt,
-                      headers=['Statistic',
-                               'Comparison',
-                               'Observed',
-                               'Simulated'])
+    tsutils._printiso(
+        gof(
+            input_ts=input_ts,
+            stats=stats,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            round_index=round_index,
+            clean=clean,
+            index_type=index_type,
+            names=names,
+            source_units=source_units,
+            target_units=target_units,
+            skiprows=skiprows,
+        ),
+        tablefmt=tablefmt,
+        headers=["Statistic", "Comparison", "Observed", "Simulated"],
+    )
 
 
-def gof(input_ts='-',
-        stats='all',
-        columns=None,
-        start_date=None,
-        end_date=None,
-        round_index=None,
-        clean=False,
-        index_type='datetime',
-        names=None,
-        source_units=None,
-        target_units=None,
-        skiprows=None):
+def gof(
+    input_ts="-",
+    stats="all",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    round_index=None,
+    clean=False,
+    index_type="datetime",
+    names=None,
+    source_units=None,
+    target_units=None,
+    skiprows=None,
+):
     """Will calculate goodness of fit statistics between two time-series."""
-    if stats == 'all':
-        stats = ['bias',
-                 'pc_bias',
-                 'apc_bias',
-                 'rmsd',
-                 'crmsd',
-                 'corrcoef',
-                 'murphyss',
-                 'nse',
-                 'kge',
-                 'index_agreement',
-                 'brierss',
-                 'mean',
-                 'stdev']
+    if stats == "all":
+        stats = [
+            "bias",
+            "pc_bias",
+            "apc_bias",
+            "rmsd",
+            "crmsd",
+            "corrcoef",
+            "murphyss",
+            "nse",
+            "kge",
+            "index_agreement",
+            "brierss",
+            "mean",
+            "stdev",
+        ]
     else:
         try:
             stats = tsutils.make_list(stats)
@@ -142,29 +149,34 @@ def gof(input_ts='-',
             pass
 
     # Use dropna='no' to get the lengths of both time-series.
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              round_index=round_index,
-                              dropna='no',
-                              source_units=source_units,
-                              target_units=target_units,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        round_index=round_index,
+        dropna="no",
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
     if len(tsd.columns) != 2:
-        raise ValueError("""
+        raise ValueError(
+            """
 *
 *   The gof algorithms work with two time-series only.  You gave {0}.
 *
-""".format(len(tsd.columns)))
+""".format(
+                len(tsd.columns)
+            )
+        )
     lennao, lennas = tsd.isna().sum()
 
-    tsd = tsd.dropna(how='any')
+    tsd = tsd.dropna(how="any")
 
-    from .. import skill_metrics as sm
+    import skill_metrics as sm
     import pandas as pd
 
     statval = []
@@ -172,65 +184,45 @@ def gof(input_ts='-',
     ref = tsd.iloc[:, 0].values
     pred = tsd.iloc[:, 1].values
 
-    if 'bias' in stats:
-        statval.append(['Bias',
-                        sm.bias(pred, ref)])
+    if "bias" in stats:
+        statval.append(["Bias", sm.bias(pred, ref)])
 
-    if 'pc_bias' in stats:
-        statval.append(['Percent bias',
-                        sm.pc_bias(pred, ref)])
+    if "pc_bias" in stats:
+        statval.append(["Percent bias", sm.pc_bias(pred, ref)])
 
-    if 'apc_bias' in stats:
-        statval.append(['Absolute percent bias',
-                        sm.apc_bias(pred, ref)])
+    if "apc_bias" in stats:
+        statval.append(["Absolute percent bias", sm.apc_bias(pred, ref)])
 
-    if 'rmsd' in stats:
-        statval.append(['Root-mean-square Deviation (RMSD)',
-                        sm.rmsd(pred, ref)])
+    if "rmsd" in stats:
+        statval.append(["Root-mean-square Deviation (RMSD)", sm.rmsd(pred, ref)])
 
-    if 'crmsd' in stats:
-        statval.append(['Centered RMSD (CRMSD)',
-                        sm.centered_rms_dev(pred, ref)])
+    if "crmsd" in stats:
+        statval.append(["Centered RMSD (CRMSD)", sm.centered_rms_dev(pred, ref)])
 
-    if 'corrcoef' in stats:
-        statval.append(['Correlation coefficient (r)',
-                        pd.np.corrcoef(pred, ref)[0, 1]])
+    if "corrcoef" in stats:
+        statval.append(["Correlation coefficient (r)", pd.np.corrcoef(pred, ref)[0, 1]])
 
-    if 'murphyss' in stats:
-        statval.append(['Skill score (Murphy)',
-                        sm.skill_score_murphy(pred, ref)])
+    if "murphyss" in stats:
+        statval.append(["Skill score (Murphy)", sm.skill_score_murphy(pred, ref)])
 
-    if 'nse' in stats:
-        statval.append(['Nash-Sutcliffe Efficiency',
-                        sm.nse(pred, ref)])
+    if "nse" in stats:
+        statval.append(["Nash-Sutcliffe Efficiency", sm.nse(pred, ref)])
 
-    if 'kge' in stats:
-        statval.append(['Kling-Gupta Efficiency',
-                        sm.kge(pred, ref)])
+    if "kge" in stats:
+        statval.append(["Kling-Gupta Efficiency", sm.kge(pred, ref)])
 
-    if 'index_agreement' in stats:
-        statval.append(['Index of agreement',
-                        sm.index_agreement(pred, ref)])
+    if "index_agreement" in stats:
+        statval.append(["Index of agreement", sm.index_agreement(pred, ref)])
 
-    statval.append(['Common count observed and simulated',
-                    len(tsd.index)])
+    statval.append(["Common count observed and simulated", len(tsd.index)])
 
-    statval.append(['Count of NaNs',
-                    '',
-                    lennao,
-                    lennas])
+    statval.append(["Count of NaNs", "", lennao, lennas])
 
-    if 'mean' in stats:
-        statval.append(['Mean',
-                        '',
-                        ref.mean(),
-                        pred.mean()])
+    if "mean" in stats:
+        statval.append(["Mean", "", ref.mean(), pred.mean()])
 
-    if 'stdev' in stats:
-        statval.append(['Standard deviation',
-                        '',
-                        ref.std(),
-                        pred.std()])
+    if "stdev" in stats:
+        statval.append(["Standard deviation", "", ref.std(), pred.std()])
 
     return statval
 

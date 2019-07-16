@@ -33,34 +33,33 @@ def overlay_target_diagram_circles(option):
     theta = np.arange(0, 2 * np.pi, 0.01)
     unit = np.ones(len(theta))
     # 1 - reference circle if normalized
-    if option['normalized'] == 'on':
+    if option["normalized"] == "on":
         rho = unit
         X, Y = pol2cart(theta, rho)
-        plt.plot(X, Y, 'k', 'LineWidth', option['circleLineWidth'])
+        plt.plot(X, Y, "k", "LineWidth", option["circleLineWidth"])
 
     # Set range for target circles
-    if option['normalized'] == 'on':
-        circles = [.5, 1]
+    if option["normalized"] == "on":
+        circles = [0.5, 1]
     else:
-        if len(option['circles']) > 0:
-            circles = np.asarray(option['circles'])
-            index = np.where(circles <= option['axismax'])
-            circles = [option['circles'][i] for i in index[0]]
+        if len(option["circles"]) > 0:
+            circles = np.asarray(option["circles"])
+            index = np.where(circles <= option["axismax"])
+            circles = [option["circles"][i] for i in index[0]]
         else:
-            circles = [option['axismax'] * x for x in [.7, 1]]
+            circles = [option["axismax"] * x for x in [0.7, 1]]
 
     # 2 - secondary circles
     for c in circles:
         rho = c * unit
         X, Y = pol2cart(theta, rho)
-        plt.plot(X, Y, option['circlelinespec'],
-                 linewidth=option['circlelinewidth'])
+        plt.plot(X, Y, option["circlelinespec"], linewidth=option["circlelinewidth"])
 
     # 3 - Observational Uncertainty threshold
-    if option['obsuncertainty'] > 0:
-        rho = option['obsuncertainty'] * unit
+    if option["obsuncertainty"] > 0:
+        rho = option["obsuncertainty"] * unit
         X, Y = pol2cart(theta, rho)
-        plt.plot(X, Y, '--b')
+        plt.plot(X, Y, "--b")
 
 
 def pol2cart(phi, rho):

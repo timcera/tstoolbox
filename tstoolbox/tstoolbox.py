@@ -47,7 +47,7 @@ from .functions.stdtozrxp import stdtozrxp
 from .functions.tstopickle import tstopickle
 from .functions.unstack import unstack
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
 @mando.command()
@@ -58,10 +58,10 @@ def about():
 
 def main():
     """Set debug and run mando.main function."""
-    if not os.path.exists('debug_tstoolbox'):
+    if not os.path.exists("debug_tstoolbox"):
         sys.tracebacklimit = 0
     mando.main()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

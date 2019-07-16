@@ -41,27 +41,27 @@ def write_stats(filename, data, **kwargs):
 
     # Check for existence of file
     if os.path.isfile(filename):
-        if option['overwrite']:
+        if option["overwrite"]:
             os.remove(filename)
         else:
-            ValueError('File already exists: ' + filename)
+            ValueError("File already exists: " + filename)
 
     # Write title information to file
     workbook = xlsxwriter.Workbook(filename)
     worksheet = workbook.add_worksheet()
 
     # Write descriptive title
-    if len(option['title']) > 0:
-        worksheet.write(1, 0, option['title'])
+    if len(option["title"]) > 0:
+        worksheet.write(1, 0, option["title"])
     else:
-        worksheet.write(1, 0, 'Skill Metrics')
+        worksheet.write(1, 0, "Skill Metrics")
 
     # Determine number of elements in the dictionary lists and write
     # appropriate header
-    worksheet.write(3, 0, 'Skill Metric')
+    worksheet.write(3, 0, "Skill Metric")
     ncell = len(list(data.items())[0]) - 1
     for i in range(ncell):
-        worksheet.write(3, i + 1, 'Case ' + str(i + 1))
+        worksheet.write(3, i + 1, "Case " + str(i + 1))
 
     # Write data of all the fields
     row = 4
@@ -115,8 +115,8 @@ def get_write_stats_options(**kwargs):
 
     #  Set default parameters
     option = {}
-    option['title'] = ''
-    option['overwrite'] = False
+    option["title"] = ""
+    option["overwrite"] = False
     if nargin == 0:
         # No options requested, so return with only defaults
         return option
@@ -127,13 +127,13 @@ def get_write_stats_options(**kwargs):
     for optname, optvalue in kwargs.items():
         optname = optname.lower()
         if optname not in option:
-            raise ValueError('Unrecognized option: ' + optname)
+            raise ValueError("Unrecognized option: " + optname)
         else:
             # Replace option value with that from arguments
             option[optname] = optvalue
 
             # Check values for specific options
-            if optname == 'overwrite':
-                option['overwrite'] = check_on_off(option['overwrite'])
+            if optname == "overwrite":
+                option["overwrite"] = check_on_off(option["overwrite"])
 
     return option

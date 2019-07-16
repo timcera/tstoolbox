@@ -41,18 +41,15 @@ def brier_score(forecast, observed):
     Created on Dec 15, 2016
     """
     # Check that dimensions of forecast and observed fields match
-    utils.check_arrays(forecast,
-                       observed,
-                       pname='forecast',
-                       rname='observed')
+    utils.check_arrays(forecast, observed, pname="forecast", rname="observed")
 
     # Check for valid values
     index = np.where(np.logical_or(forecast < 0, forecast > 1))
     if np.sum(index) > 0:
-        raise ValueError('Forecast has values outside interval [0,1].')
+        raise ValueError("Forecast has values outside interval [0,1].")
     index = np.where(np.logical_and(observed != 0, observed != 1))
     if np.sum(index) > 0:
-        raise ValueError('Observed has values not equal to 0 or 1.')
+        raise ValueError("Observed has values not equal to 0 or 1.")
 
     # Calculate score
     bs = np.sum(np.square(forecast - observed)) / len(forecast)

@@ -34,44 +34,45 @@ def get_taylor_diagram_axes(rho, option):
     Created on Dec 3, 2016
     """
     axes = {}
-    axes['dx'] = rho[0]
+    axes["dx"] = rho[0]
 
     cax = plt.gca()
-    axes['tc'] = cax.xaxis.label.get_color()
-    axes['next'] = 'replace'  # needed?
+    axes["tc"] = cax.xaxis.label.get_color()
+    axes["next"] = "replace"  # needed?
 
     # make a radial grid
-    if option['axismax'] == 0.0:
+    if option["axismax"] == 0.0:
         maxrho = max(abs(rho))
     else:
-        maxrho = option['axismax']
+        maxrho = option["axismax"]
 
     # Determine default number of tick marks
     yticks = ticker.AutoLocator().tick_values(-1.0 * maxrho, maxrho)
     ticks = np.sum(yticks >= 0)
 
     # Check radial limits and ticks
-    axes['rmin'] = 0
-    if option['axismax'] == 0.0:
-        axes['rmax'] = yticks[-1]
-        option['axismax'] = axes['rmax']
+    axes["rmin"] = 0
+    if option["axismax"] == 0.0:
+        axes["rmax"] = yticks[-1]
+        option["axismax"] = axes["rmax"]
     else:
-        axes['rmax'] = option['axismax']
+        axes["rmax"] = option["axismax"]
     rticks = np.amax(ticks - 1, axis=0)
     if rticks > 5:  # see if we can reduce the number
         if rticks % 2 == 0:
             rticks = rticks / 2
         elif rticks % 3 == 0:
             rticks = rticks / 3
-    axes['rinc'] = (axes['rmax'] - axes['rmin']) / rticks
-    tick = np.arange(axes['rmin'] + axes['rinc'],
-                     axes['rmax'] + axes['rinc'], axes['rinc'])
+    axes["rinc"] = (axes["rmax"] - axes["rmin"]) / rticks
+    tick = np.arange(
+        axes["rmin"] + axes["rinc"], axes["rmax"] + axes["rinc"], axes["rinc"]
+    )
 
-    if len(option['tickrms']) == 0:
-        option['tickrms'] = tick
-        option['rincrms'] = axes['rinc']
-    if len(option['tickstd']) == 0:
-        option['tickstd'] = tick
-        option['rincstd'] = axes['rinc']
+    if len(option["tickrms"]) == 0:
+        option["tickrms"] = tick
+        option["rincrms"] = axes["rinc"]
+    if len(option["tickstd"]) == 0:
+        option["tickstd"] = tick
+        option["rincstd"] = axes["rinc"]
 
     return axes, cax

@@ -46,42 +46,40 @@ def plot_pattern_diagram_colorbar(X, Y, Z, option):
     # Keyword s defines marker size in points^2
     #         c defines the sequence of numbers to be mapped to colors
     #           using the cmap and norm
-    _ = plt.scatter(X, Y, s=50, c=Z, marker='d', edgecolors='none')
+    _ = plt.scatter(X, Y, s=50, c=Z, marker="d", edgecolors="none")
 
     # Add color bar to plot
-    if option['colormap'] == 'on':
-        hc = plt.colorbar(orientation='horizontal', aspect=6,
-                          fraction=0.04, pad=0.04)
+    if option["colormap"] == "on":
+        hc = plt.colorbar(orientation="horizontal", aspect=6, fraction=0.04, pad=0.04)
 
-    elif option['colormap'] == 'off':
+    elif option["colormap"] == "off":
         if len(Z) > 1:
             plt.clim(min(Z), max(Z))
-            hc = plt.colorbar(orientation='horizontal', aspect=6,
-                              fraction=0.04, pad=0.04)
-#                 hc.set_ticks([min(Z), max(Z)])
-            hc.set_ticklabels('Min. RMSD', 'Max. RMSD')
+            hc = plt.colorbar(
+                orientation="horizontal", aspect=6, fraction=0.04, pad=0.04
+            )
+            #                 hc.set_ticks([min(Z), max(Z)])
+            hc.set_ticklabels("Min. RMSD", "Max. RMSD")
     else:
-        raise ValueError('Invalid option for option.colormap: ' +
-                         option['colormap'])
+        raise ValueError("Invalid option for option.colormap: " + option["colormap"])
 
     # Set desired properties of color bar
-    location = _getColorBarLocation(hc, option, xscale=0.75,
-                                    yscale=7.5, cxscale=1.0)
+    location = _getColorBarLocation(hc, option, xscale=0.75, yscale=7.5, cxscale=1.0)
     hc.ax.set_position(location)  # set new position
-    hc.ax.tick_params(labelsize='medium')  # set tick labels to medium
+    hc.ax.tick_params(labelsize="medium")  # set tick labels to medium
 
     # Limit number of ticks on colar bar to 4
     hc.locator = ticker.MaxNLocator(nbins=5)
     hc.update_ticks()
 
-    hc.ax.xaxis.set_ticks_position('top')
-    hc.ax.xaxis.set_label_position('top')
+    hc.ax.xaxis.set_ticks_position("top")
+    hc.ax.xaxis.set_label_position("top")
 
     # Title the color bar
-    if option['titlecolorbar']:
-        hc.set_label(option['titlecolorbar'])
+    if option["titlecolorbar"]:
+        hc.set_label(option["titlecolorbar"])
     else:
-        hc.set_label(hc, 'Color Scale')
+        hc.set_label(hc, "Color Scale")
 
 
 def _getColorBarLocation(hc, option, **kwargs):
@@ -108,16 +106,16 @@ def _getColorBarLocation(hc, option, **kwargs):
     cxscale : scale factor to adjust thickness of color bar
     """
     # Check for optional arguments and set defaults if required
-    if 'xscale' in kwargs:
-        xscale = kwargs['xscale']
+    if "xscale" in kwargs:
+        xscale = kwargs["xscale"]
     else:
         xscale = 1.0
-    if 'yscale' in kwargs:
-        yscale = kwargs['yscale']
+    if "yscale" in kwargs:
+        yscale = kwargs["yscale"]
     else:
         yscale = 1.0
-    if 'cxscale' in kwargs:
-        cxscale = kwargs['cxscale']
+    if "cxscale" in kwargs:
+        cxscale = kwargs["cxscale"]
     else:
         cxscale = 1.0
 
@@ -126,13 +124,21 @@ def _getColorBarLocation(hc, option, **kwargs):
 
     # ToDo: Find better way of determining location
     # Calculate location
-    if 'checkSTATS' in option:
+    if "checkSTATS" in option:
         # Taylor diagram
-        location = [cp.x0 + xscale * 0.8 * cp.width, yscale * cp.y0,
-                    cxscale * cp.width / 6, cp.height]
+        location = [
+            cp.x0 + xscale * 0.8 * cp.width,
+            yscale * cp.y0,
+            cxscale * cp.width / 6,
+            cp.height,
+        ]
     else:
         # target diagram
-        location = [cp.x0 + xscale * cp.width, yscale * cp.y0,
-                    cxscale * cp.width / 6, cp.height]
+        location = [
+            cp.x0 + xscale * cp.width,
+            yscale * cp.y0,
+            cxscale * cp.width / 6,
+            cp.height,
+        ]
 
     return location

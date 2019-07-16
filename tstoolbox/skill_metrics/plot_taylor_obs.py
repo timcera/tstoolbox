@@ -37,28 +37,46 @@ def plot_taylor_obs(ax, obsSTD, axes, option):
         www.thesymplectic.com
         prochford@thesymplectic.com
     """
-    if option['markerobs'] != 'none':
+    if option["markerobs"] != "none":
         # Display marker on x-axis indicating observed STD
-        yobsSTD = 0.001 * axes['rmax'] - axes['rmin']
-        plt.plot(obsSTD, yobsSTD, option['markerobs'], color=option['colobs'],
-                 markersize=6, markerfacecolor=option['colobs'],
-                 markeredgecolor=option['colobs'],
-                 linewidth=1.0, clip_on=False)
+        yobsSTD = 0.001 * axes["rmax"] - axes["rmin"]
+        plt.plot(
+            obsSTD,
+            yobsSTD,
+            option["markerobs"],
+            color=option["colobs"],
+            markersize=6,
+            markerfacecolor=option["colobs"],
+            markeredgecolor=option["colobs"],
+            linewidth=1.0,
+            clip_on=False,
+        )
 
-    if option['titleobs'] != '':
+    if option["titleobs"] != "":
         # Put label below the marker
-        labelweight = 'bold'
+        labelweight = "bold"
         labelsize = ax[0].get_fontsize() - 2
         x = obsSTD
-        y = -0.05 * axes['rmax']
-        plt.text(x, y, option['titleobs'], color=option['colobs'],
-                 horizontalalignment='center',
-                 fontweight=labelweight, fontsize=labelsize)
+        y = -0.05 * axes["rmax"]
+        plt.text(
+            x,
+            y,
+            option["titleobs"],
+            color=option["colobs"],
+            horizontalalignment="center",
+            fontweight=labelweight,
+            fontsize=labelsize,
+        )
 
-    if option['styleobs'] != '':
+    if option["styleobs"] != "":
         # Draw circle for observation STD
         theta = np.arange(0, 2 * np.pi, np.pi / 150)
         xunit = obsSTD * np.cos(theta)
         yunit = obsSTD * np.sin(theta)
-        plt.plot(xunit, yunit, linestyle=option['styleobs'],
-                 color=option['colobs'], linewidth=option['widthobs'])
+        plt.plot(
+            xunit,
+            yunit,
+            linestyle=option["styleobs"],
+            color=option["colobs"],
+            linewidth=option["widthobs"],
+        )

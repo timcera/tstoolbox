@@ -3,7 +3,7 @@ import numpy as np
 from . import centered_rms_dev, utils
 
 
-def taylor_statistics(predicted, reference, field=''):
+def taylor_statistics(predicted, reference, field=""):
     """
     Calculate the statistics needed to create a Taylor diagram.
 
@@ -55,32 +55,32 @@ def taylor_statistics(predicted, reference, field=''):
     """
     # Check for valid arguments
     if isinstance(predicted, dict):
-        if field == '':
-            raise ValueError('FIELD argument not supplied.')
+        if field == "":
+            raise ValueError("FIELD argument not supplied.")
         if field in predicted:
             p = predicted[field]
         else:
-            raise ValueError('Field is not in PREDICTED dictionary: ' + field)
+            raise ValueError("Field is not in PREDICTED dictionary: " + field)
     elif isinstance(predicted, list):
         p = np.array(predicted)
     elif isinstance(predicted, np.ndarray):
         p = predicted
     else:
-        raise ValueError('PREDICTED argument must be a dictionary.')
+        raise ValueError("PREDICTED argument must be a dictionary.")
 
     if isinstance(reference, dict):
-        if field == '':
-            raise ValueError('FIELD argument not supplied.')
+        if field == "":
+            raise ValueError("FIELD argument not supplied.")
         if field in reference:
             r = reference[field]
         else:
-            raise ValueError('Field is not in REFERENCE dictionary: ' + field)
+            raise ValueError("Field is not in REFERENCE dictionary: " + field)
     elif isinstance(reference, list):
         r = np.array(reference)
     elif isinstance(reference, np.ndarray):
         r = reference
     else:
-        raise ValueError('REFERENCE argument must be a dictionary.')
+        raise ValueError("REFERENCE argument must be a dictionary.")
 
     # Check that dimensions of predicted and reference fields match
     utils.check_arrays(predicted, reference)
@@ -100,5 +100,5 @@ def taylor_statistics(predicted, reference, field=''):
     sdev = [sdevr, sdevp]
 
     # Store statistics in a dictionary
-    stats = {'ccoef': ccoef, 'crmsd': crmsd, 'sdev': sdev}
+    stats = {"ccoef": ccoef, "crmsd": crmsd, "sdev": sdev}
     return stats

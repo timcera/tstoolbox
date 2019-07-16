@@ -12,26 +12,28 @@ import pandas as pd
 
 from .. import tsutils
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
-@mando.command('clip', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command("clip", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def clip_cli(input_ts='-',
-             start_date=None,
-             end_date=None,
-             columns=None,
-             dropna='no',
-             clean=False,
-             skiprows=None,
-             index_type='datetime',
-             names=None,
-             a_min=None,
-             a_max=None,
-             round_index=None,
-             source_units=None,
-             target_units=None,
-             print_input=False):
+def clip_cli(
+    input_ts="-",
+    start_date=None,
+    end_date=None,
+    columns=None,
+    dropna="no",
+    clean=False,
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    a_min=None,
+    a_max=None,
+    round_index=None,
+    source_units=None,
+    target_units=None,
+    print_input=False,
+):
     """Return a time-series with values limited to [a_min, a_max].
 
     Parameters
@@ -61,51 +63,58 @@ def clip_cli(input_ts='-',
     {round_index}
 
     """
-    tsutils._printiso(clip(input_ts=input_ts,
-                           start_date=start_date,
-                           end_date=end_date,
-                           columns=columns,
-                           dropna=dropna,
-                           clean=clean,
-                           skiprows=skiprows,
-                           index_type=index_type,
-                           names=names,
-                           a_min=a_min,
-                           a_max=a_max,
-                           round_index=round_index,
-                           source_units=source_units,
-                           target_units=target_units,
-                           print_input=print_input))
+    tsutils._printiso(
+        clip(
+            input_ts=input_ts,
+            start_date=start_date,
+            end_date=end_date,
+            columns=columns,
+            dropna=dropna,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            a_min=a_min,
+            a_max=a_max,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            print_input=print_input,
+        )
+    )
 
 
-def clip(input_ts='-',
-         start_date=None,
-         end_date=None,
-         columns=None,
-         dropna='no',
-         clean=False,
-         skiprows=None,
-         index_type='datetime',
-         names=None,
-         a_min=None,
-         a_max=None,
-         round_index=None,
-         source_units=None,
-         target_units=None,
-         print_input=False):
+def clip(
+    input_ts="-",
+    start_date=None,
+    end_date=None,
+    columns=None,
+    dropna="no",
+    clean=False,
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    a_min=None,
+    a_max=None,
+    round_index=None,
+    source_units=None,
+    target_units=None,
+    print_input=False,
+):
     """Return a time-series with values limited to [a_min, a_max]."""
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              round_index=round_index,
-                              dropna=dropna,
-                              source_units=source_units,
-                              target_units=target_units,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        round_index=round_index,
+        dropna=dropna,
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
     for col in tsd.columns:
         if a_min is None:
             try:
@@ -123,10 +132,7 @@ def clip(input_ts='-',
         else:
             n_max = float(a_max)
 
-    return tsutils.return_input(print_input,
-                                tsd,
-                                tsd.clip(n_min, n_max),
-                                'clip')
+    return tsutils.return_input(print_input, tsd, tsd.clip(n_min, n_max), "clip")
 
 
 clip.__doc__ = clip_cli.__doc__

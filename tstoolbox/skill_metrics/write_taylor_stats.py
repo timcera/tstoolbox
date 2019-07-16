@@ -44,10 +44,10 @@ def write_taylor_stats(filename, data, **kwargs):
 
     # Check for existence of file
     if os.path.isfile(filename):
-        if option['overwrite']:
+        if option["overwrite"]:
             os.remove(filename)
         else:
-            ValueError('File already exists: ' + filename)
+            ValueError("File already exists: " + filename)
 
     # Convert data to list if necessary
     if not isinstance(data, list):
@@ -58,21 +58,18 @@ def write_taylor_stats(filename, data, **kwargs):
     worksheet = workbook.add_worksheet()
 
     # Write title information to file
-    worksheet.write(1, 0, 'Taylor Statistics')
+    worksheet.write(1, 0, "Taylor Statistics")
 
     # Determine number of dictionaries in data variable
     ncell = len(data)
 
     # Write data for each dictionary
     row = 2
-    headers = ['Description',
-               'Standard Deviation',
-               'CRMSD',
-               'Correlation Coeff.']
+    headers = ["Description", "Standard Deviation", "CRMSD", "Correlation Coeff."]
     for i in range(ncell):
         row += 1
-        if len(option['title']) > 0:
-            worksheet.write(row, 0, option['title'][i])
+        if len(option["title"]) > 0:
+            worksheet.write(row, 0, option["title"][i])
 
         # Write column headers
         row += 1
@@ -81,22 +78,22 @@ def write_taylor_stats(filename, data, **kwargs):
 
         # Retrieve input values as list
         try:
-            iter(data[i]['sdev'])
+            iter(data[i]["sdev"])
         except TypeError:
-            sdev = [data[i]['sdev']]
-            crmsd = [data[i]['crmsd']]
-            ccoef = [data[i]['ccoef']]
+            sdev = [data[i]["sdev"]]
+            crmsd = [data[i]["crmsd"]]
+            ccoef = [data[i]["ccoef"]]
         else:
-            sdev = data[i]['sdev']
-            crmsd = data[i]['crmsd']
-            ccoef = data[i]['ccoef']
+            sdev = data[i]["sdev"]
+            crmsd = data[i]["crmsd"]
+            ccoef = data[i]["ccoef"]
         ndata = len(sdev)
 
         # Write each row of data
         row += 1
         for j in range(ndata):
-            if len(option['label']) > 0:
-                worksheet.write(row, 0, option['label'][j])
+            if len(option["label"]) > 0:
+                worksheet.write(row, 0, option["label"][j])
 
             worksheet.write(row, 1, sdev[j])
             worksheet.write(row, 2, crmsd[j])
@@ -149,9 +146,9 @@ def get_write_taylor_stats_options(**kwargs):
 
     #  Set default parameters
     option = {}
-    option['overwrite'] = False
-    option['label'] = []
-    option['title'] = ''
+    option["overwrite"] = False
+    option["label"] = []
+    option["title"] = ""
     if nargin == 0:
         # No options requested, so return with only defaults
         return option
@@ -162,13 +159,13 @@ def get_write_taylor_stats_options(**kwargs):
     for optname, optvalue in kwargs.items():
         optname = optname.lower()
         if optname not in option:
-            raise ValueError('Unrecognized option: ' + optname)
+            raise ValueError("Unrecognized option: " + optname)
         else:
             # Replace option value with that from arguments
             option[optname] = optvalue
 
             # Check values for specific options
-            if optname == 'overwrite':
-                option['overwrite'] = check_on_off(option['overwrite'])
+            if optname == "overwrite":
+                option["overwrite"] = check_on_off(option["overwrite"])
 
     return option

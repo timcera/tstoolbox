@@ -9,24 +9,24 @@ from mando.rst_text_formatter import RSTHelpFormatter
 from .. import tsutils
 
 
-@mando.command('date_offset',
-               formatter_class=RSTHelpFormatter,
-               doctype='numpy')
+@mando.command("date_offset", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def date_offset_cli(intervals,
-                    offset,
-                    columns=None,
-                    dropna='no',
-                    clean=False,
-                    skiprows=None,
-                    index_type='datetime',
-                    names=None,
-                    input_ts='-',
-                    start_date=None,
-                    end_date=None,
-                    source_units=None,
-                    target_units=None,
-                    round_index=None):
+def date_offset_cli(
+    intervals,
+    offset,
+    columns=None,
+    dropna="no",
+    clean=False,
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    input_ts="-",
+    start_date=None,
+    end_date=None,
+    source_units=None,
+    target_units=None,
+    round_index=None,
+):
     """Apply an offset to a time-series.
 
     Parameters
@@ -56,50 +56,57 @@ def date_offset_cli(intervals,
     {names}
 
     """
-    tsutils._printiso(date_offset(intervals,
-                                  offset,
-                                  columns=columns,
-                                  dropna=dropna,
-                                  clean=clean,
-                                  skiprows=skiprows,
-                                  index_type=index_type,
-                                  names=names,
-                                  input_ts=input_ts,
-                                  start_date=start_date,
-                                  end_date=end_date,
-                                  source_units=source_units,
-                                  target_units=target_units,
-                                  round_index=round_index),
-                      showindex='always')
+    tsutils._printiso(
+        date_offset(
+            intervals,
+            offset,
+            columns=columns,
+            dropna=dropna,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            input_ts=input_ts,
+            start_date=start_date,
+            end_date=end_date,
+            source_units=source_units,
+            target_units=target_units,
+            round_index=round_index,
+        ),
+        showindex="always",
+    )
 
 
-def date_offset(intervals,
-                offset,
-                columns=None,
-                dropna='no',
-                clean=False,
-                skiprows=None,
-                input_ts='-',
-                start_date=None,
-                end_date=None,
-                names=None,
-                index_type='datetime',
-                source_units=None,
-                target_units=None,
-                round_index=None):
+def date_offset(
+    intervals,
+    offset,
+    columns=None,
+    dropna="no",
+    clean=False,
+    skiprows=None,
+    input_ts="-",
+    start_date=None,
+    end_date=None,
+    names=None,
+    index_type="datetime",
+    source_units=None,
+    target_units=None,
+    round_index=None,
+):
     """Apply an offset to a time-series."""
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              round_index=round_index,
-                              dropna=dropna,
-                              source_units=source_units,
-                              target_units=target_units,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        round_index=round_index,
+        dropna=dropna,
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
 
     return tsd.tshift(intervals, offset)
 

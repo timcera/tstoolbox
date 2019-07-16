@@ -11,26 +11,28 @@ import pandas as pd
 from .. import tsutils
 
 
-@mando.command('pct_change', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command("pct_change", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def pct_change_cli(input_ts='-',
-                   columns=None,
-                   start_date=None,
-                   end_date=None,
-                   dropna='no',
-                   skiprows=None,
-                   index_type='datetime',
-                   names=None,
-                   clean=False,
-                   periods=1,
-                   fill_method='pad',
-                   limit=None,
-                   freq=None,
-                   print_input=False,
-                   round_index=None,
-                   source_units=None,
-                   target_units=None,
-                   float_format='%g'):
+def pct_change_cli(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    periods=1,
+    fill_method="pad",
+    limit=None,
+    freq=None,
+    print_input=False,
+    round_index=None,
+    source_units=None,
+    target_units=None,
+    float_format="%g",
+):
     """Return the percent change between times.
 
     Parameters
@@ -68,57 +70,64 @@ def pct_change_cli(input_ts='-',
     {round_index}
 
     """
-    tsutils._printiso(pct_change(input_ts=input_ts,
-                                 columns=columns,
-                                 start_date=start_date,
-                                 end_date=end_date,
-                                 dropna=dropna,
-                                 skiprows=skiprows,
-                                 index_type=index_type,
-                                 names=names,
-                                 clean=clean,
-                                 periods=periods,
-                                 fill_method=fill_method,
-                                 limit=limit,
-                                 freq=freq,
-                                 print_input=print_input,
-                                 round_index=round_index,
-                                 source_units=source_units,
-                                 target_units=target_units,
-                                 float_format=float_format))
+    tsutils._printiso(
+        pct_change(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            dropna=dropna,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            clean=clean,
+            periods=periods,
+            fill_method=fill_method,
+            limit=limit,
+            freq=freq,
+            print_input=print_input,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            float_format=float_format,
+        )
+    )
 
 
-def pct_change(input_ts='-',
-               columns=None,
-               start_date=None,
-               end_date=None,
-               dropna='no',
-               skiprows=None,
-               index_type='datetime',
-               names=None,
-               clean=False,
-               periods=1,
-               fill_method='pad',
-               limit=None,
-               freq=None,
-               print_input=False,
-               round_index=None,
-               source_units=None,
-               target_units=None,
-               float_format='%g'):
+def pct_change(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    periods=1,
+    fill_method="pad",
+    limit=None,
+    freq=None,
+    print_input=False,
+    round_index=None,
+    source_units=None,
+    target_units=None,
+    float_format="%g",
+):
     """Return the percent change between times."""
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              round_index=round_index,
-                              dropna=dropna,
-                              source_units=source_units,
-                              target_units=target_units,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        round_index=round_index,
+        dropna=dropna,
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
 
     # Trying to save some memory
     if print_input:
@@ -126,14 +135,15 @@ def pct_change(input_ts='-',
     else:
         otsd = pd.DataFrame()
 
-    return tsutils.return_input(print_input,
-                                otsd,
-                                tsd.pct_change(periods=periods,
-                                               fill_method=fill_method,
-                                               limit=limit,
-                                               freq=freq),
-                                'pctchange',
-                                float_format=float_format)
+    return tsutils.return_input(
+        print_input,
+        otsd,
+        tsd.pct_change(
+            periods=periods, fill_method=fill_method, limit=limit, freq=freq
+        ),
+        "pctchange",
+        float_format=float_format,
+    )
 
 
 pct_change.__doc__ = pct_change_cli.__doc__

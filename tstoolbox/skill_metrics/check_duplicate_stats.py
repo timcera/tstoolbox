@@ -22,22 +22,26 @@ def check_duplicate_stats(stats1, stats2, threshold=0.01):
     Created on Apr 23, 2017
     """
     if threshold < 1e-7:
-        ValueError('threshold value must be positive: ' + str(threshold))
+        ValueError("threshold value must be positive: " + str(threshold))
 
     # Check for non-empty lists
     if len(stats1) == 0:
-        ValueError('Argument stats1 is empty list!')
+        ValueError("Argument stats1 is empty list!")
     elif len(stats2) == 0:
-        ValueError('Argument stats2 is empty list!')
+        ValueError("Argument stats2 is empty list!")
 
     # Check for matching list lengths
     if len(stats1) != len(stats2):
-        ValueError("""
+        ValueError(
+            """
 *
 *   Arguments stats1 and stats2 have different list lengths.
 *   len(stats1) = {0} != len(stats2) = {1}
 *
-*""".format(len(stats1), len(stats2)))
+*""".format(
+                len(stats1), len(stats2)
+            )
+        )
 
     # Search for duplicate pairs of statistics
     duplicates = []
@@ -48,6 +52,7 @@ def check_duplicate_stats(stats1, stats2, threshold=0.01):
             diff2 = abs((stats2[i] - stats2[j]) / stats2[i])
             if diff1 < threshold and diff2 < threshold:
                 duplicates.append(
-                    (i, j, (stats1[i], stats2[i]), (stats1[j], stats2[j])))
+                    (i, j, (stats1[i], stats2[i]), (stats1[j], stats2[j]))
+                )
 
     return duplicates

@@ -4,22 +4,19 @@
 from __future__ import absolute_import, division, print_function
 
 import warnings
-from builtins import range, zip
 
 import mando
 import numpy as np
 from mando.rst_text_formatter import RSTHelpFormatter
-from past.utils import old_div
 
 import pandas as pd
 
 from .. import tsutils
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
-def _boolrelextrema(data, comparator,
-                    axis=0, order=1, mode='clip'):
+def _boolrelextrema(data, comparator, axis=0, order=1, mode="clip"):
     """Calculate the relative extrema of `data`.
 
     Relative extrema are calculated by finding locations where
@@ -61,7 +58,7 @@ def _boolrelextrema(data, comparator,
 
     """
     if (int(order) != order) or (order < 1):
-        raise ValueError('Order must be an int >= 1')
+        raise ValueError("Order must be an int >= 1")
 
     datalen = data.shape[axis]
     locs = np.arange(0, datalen)
@@ -82,13 +79,13 @@ def _argrel(data, axis=0, window=1):
     """Private function to find relative min and max of data."""
     tmpmin = _argrelmin(data, axis=axis, order=window)
     tmpmax = _argrelmax(data, axis=axis, order=window)
-    return (list(zip(tmpmax[0],
-                     data[tmpmax[0]])),
-            list(zip(tmpmin[0],
-                     data[tmpmin[0]])))
+    return (
+        list(zip(tmpmax[0], data[tmpmax[0]])),
+        list(zip(tmpmin[0], data[tmpmin[0]])),
+    )
 
 
-def _argrelmin(data, axis=0, order=1, mode='clip'):
+def _argrelmin(data, axis=0, order=1, mode="clip"):
     """Calculate the relative minima of `data`.
 
     See also
@@ -99,7 +96,7 @@ def _argrelmin(data, axis=0, order=1, mode='clip'):
     return _argrelextrema(data, np.less, axis, order, mode)
 
 
-def _argrelmax(data, axis=0, order=1, mode='clip'):
+def _argrelmax(data, axis=0, order=1, mode="clip"):
     """Calculate the relative maxima of `data`.
 
     See also
@@ -110,8 +107,7 @@ def _argrelmax(data, axis=0, order=1, mode='clip'):
     return _argrelextrema(data, np.greater, axis, order, mode)
 
 
-def _argrelextrema(data, comparator,
-                   axis=0, order=1, mode='clip'):
+def _argrelextrema(data, comparator, axis=0, order=1, mode="clip"):
     """Calculate the relative extrema of `data`.
 
     Returns
@@ -125,8 +121,7 @@ def _argrelextrema(data, comparator,
     argrelmin, argrelmax
 
     """
-    results = _boolrelextrema(data, comparator,
-                              axis, order, mode)
+    results = _boolrelextrema(data, comparator, axis, order, mode)
     if ~results.any():
         return (np.array([]),) * 2
     else:
@@ -139,12 +134,16 @@ def _datacheck_peakdetect(x_axis, y_axis):
         x_axis = list(range(len(y_axis)))
 
     if len(y_axis) != len(x_axis):
-        raise ValueError("""
+        raise ValueError(
+            """
 *
 *   The length of y values must equal the length of x values.  Instead the
 *   length of y values is {0} and the length of x values is {1}.
 *
-""".format(len(y_axis), len(x_axis)))
+""".format(
+                len(y_axis), len(x_axis)
+            )
+        )
 
     # needs to be a numpy array
     y_axis = np.array(y_axis)
@@ -175,8 +174,8 @@ def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
     fitted_peaks = []
     for peak in raw_peaks:
         index = peak[0]
-        x_data = x_axis[index - points // 2: index + points // 2 + 1]
-        y_data = y_axis[index - points // 2: index + points // 2 + 1]
+        x_data = x_axis[index - points // 2 : index + points // 2 + 1]
+        y_data = y_axis[index - points // 2 : index + points // 2 + 1]
         # get a first approximation of tau (peak position in time)
         tau = x_axis[index]
         # get a first approximation of peak amplitude
@@ -245,15 +244,14 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
     if window < 1:
         raise ValueError('window must be "1" or above in value')
     if not (np.isscalar(delta) and delta >= 0):
-        raise ValueError('delta must be a positive number')
+        raise ValueError("delta must be a positive number")
 
     # maxima and minima candidates are temporarily stored in
     # mx and mn respectively
     mn, mx = np.Inf, -np.Inf
 
     # Only detect peak if there is 'window' amount of points after it
-    for index, (x, y) in enumerate(zip(x_axis[:-window],
-                                       y_axis[:-window])):
+    for index, (x, y) in enumerate(zip(x_axis[:-window], y_axis[:-window])):
         if y > mx:
             mx = y
             mxpos = x
@@ -265,7 +263,7 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
         if y < mx - delta and mx != np.Inf:
             # Maxima peak candidate found
             # look ahead in signal to ensure that this is a peak and not jitter
-            if y_axis[index:index + window].max() < mx:
+            if y_axis[index : index + window].max() < mx:
                 max_peaks.append([mxpos, mx])
                 dump.append(True)
                 # set algorithm to only find minima now
@@ -280,7 +278,7 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
         if y > mn + delta and mn != -np.Inf:
             # Minima peak candidate found
             # look ahead in signal to ensure that this is a peak and not jitter
-            if y_axis[index:index + window].min() > mn:
+            if y_axis[index : index + window].min() > mn:
                 min_peaks.append([mnpos, mn])
                 dump.append(False)
                 # set algorithm to only find maxima now
@@ -347,11 +345,12 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
 
     """
     from scipy import fft, ifft
+
     # check input data
     x_axis, y_axis = _datacheck_peakdetect(x_axis, y_axis)
     zero_indices = zero_crossings(y_axis, window=11)
     # select a n amount of periods
-    last_indice = - 1 - (1 - len(zero_indices) & 1)
+    last_indice = -1 - (1 - len(zero_indices) & 1)
     # Calculate the fft between the first and last zero crossing
     # this method could be ignored if the beginning and the end of the signal
     # are discarded as any errors induced from not using whole periods
@@ -360,29 +359,29 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
     if len(zero_indices) < 2:
         fft_data = fft(y_axis)
     else:
-        fft_data = fft(y_axis[zero_indices[0]:zero_indices[last_indice]])
+        fft_data = fft(y_axis[zero_indices[0] : zero_indices[last_indice]])
 
     def padd(x, c):
-        return x[:len(x) // 2] + [0] * c + x[len(x) // 2:]
+        return x[: len(x) // 2] + [0] * c + x[len(x) // 2 :]
 
     def n(x):
-        return (old_div(np.log(x), np.log(2))).astype('i') + 1
+        return (np.log(x) // np.log(2)).astype("i") + 1
 
     # pads to 2**n amount of samples
-    fft_padded = padd(list(fft_data), 2 **
-                      n(len(fft_data) * pad_len) - len(fft_data))
+    fft_padded = padd(list(fft_data), 2 ** n(len(fft_data) * pad_len) - len(fft_data))
 
     # There is amplitude decrease directly proportional to the sample increase
-    sf = old_div(len(fft_padded), float(len(fft_data)))
+    sf = len(fft_padded) // float(len(fft_data))
     # There might be a leakage giving the result an imaginary component
     # Return only the real component
     y_axis_ifft = ifft(fft_padded).real * sf  # (pad_len + 1)
     x_axis_ifft = np.linspace(
-        x_axis[zero_indices[0]], x_axis[zero_indices[last_indice]],
-        len(y_axis_ifft))
+        x_axis[zero_indices[0]], x_axis[zero_indices[last_indice]], len(y_axis_ifft)
+    )
     # get the peaks to the interpolated waveform
-    max_peaks, min_peaks = _peakdetect(y_axis_ifft, x_axis_ifft, 500,
-                                       delta=abs(np.diff(y_axis).max() * 2))
+    max_peaks, min_peaks = _peakdetect(
+        y_axis_ifft, x_axis_ifft, 500, delta=abs(np.diff(y_axis).max() * 2)
+    )
     # max_peaks, min_peaks = _peakdetect_zero_crossing(y_axis_ifft,
     # x_axis_ifft)
 
@@ -480,6 +479,7 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
 
     """
     from scipy.optimize import curve_fit
+
     # check input data
     x_axis, y_axis = _datacheck_peakdetect(x_axis, y_axis)
     # make the points argument odd
@@ -504,7 +504,7 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         if len(raw) > 1:
             peak_pos = [x_axis[index] for index in zip(*raw)[0]]
             hz.append(np.mean(np.diff(peak_pos)))
-    hz = old_div(1, np.mean(hz))
+    hz = 1 // np.mean(hz)
 
     # model function
     # if cosine is used then tau could equal the x position of the peak
@@ -514,11 +514,13 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         # definitions is the "hz" argument
 
         def func(x, a, tau):
-            return a * np.sin(2 * np.pi * hz * (x - tau) + old_div(np.pi, 2))
+            return a * np.sin(2 * np.pi * hz * (x - tau) + (np.pi // 2))
+
     else:
 
         def func(x, a, hz, tau):
-            return a * np.sin(2 * np.pi * hz * (x - tau) + old_div(np.pi, 2))
+            return a * np.sin(2 * np.pi * hz * (x - tau) + (np.pi // 2))
+
     # func = lambda x, a, hz, tau: a * np.cos(2 * np.pi * hz * (x - tau))
 
     # get peaks
@@ -527,8 +529,8 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         peak_data = []
         for peak in raw_peaks:
             index = peak[0]
-            x_data = x_axis[index - points // 2: index + points // 2 + 1]
-            y_data = y_axis[index - points // 2: index + points // 2 + 1]
+            x_data = x_axis[index - points // 2 : index + points // 2 + 1]
+            y_data = y_axis[index - points // 2 : index + points // 2 + 1]
             # get a first approximation of tau (peak position in time)
             tau = x_axis[index]
             # get a first approximation of peak amplitude
@@ -628,10 +630,14 @@ def _peakdetect_zero_crossing(y_axis, x_axis=None, window=5):
 
     period_lengths = np.diff(zero_indices)
 
-    bins_y = [y_axis[index:index + diff] for index, diff in
-              zip(zero_indices, period_lengths)]
-    bins_x = [x_axis[index:index + diff] for index, diff in
-              zip(zero_indices, period_lengths)]
+    bins_y = [
+        y_axis[index : index + diff]
+        for index, diff in zip(zero_indices, period_lengths)
+    ]
+    bins_x = [
+        x_axis[index : index + diff]
+        for index, diff in zip(zero_indices, period_lengths)
+    ]
 
     even_bins_y = bins_y[::2]
     odd_bins_y = bins_y[1::2]
@@ -665,7 +671,7 @@ def _peakdetect_zero_crossing(y_axis, x_axis=None, window=5):
     return [max_peaks, min_peaks]
 
 
-def _smooth(x, window_len=11, window='hanning'):
+def _smooth(x, window_len=11, window="hanning"):
     """Smooth the data using a window of the requested size.
 
     This method is based on the convolution of a scaled window on the signal.
@@ -702,25 +708,25 @@ def _smooth(x, window_len=11, window='hanning'):
 
     """
     if x.ndim != 1:
-        raise ValueError('smooth only accepts 1 dimension arrays.')
+        raise ValueError("smooth only accepts 1 dimension arrays.")
 
     if x.size < window_len:
-        raise ValueError('Input vector needs to be bigger than window size.')
+        raise ValueError("Input vector needs to be bigger than window size.")
 
     if window_len < 3:
         return x
 
-    if window not in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
+    if window not in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
         raise ValueError
 
-    s = np.r_[x[window_len - 1:0:-1], x, x[-1:-window_len:-1]]
+    s = np.r_[x[window_len - 1 : 0 : -1], x, x[-1:-window_len:-1]]
     # print(len(s))
-    if window == 'flat':  # moving average
-        w = np.ones(window_len, 'd')
+    if window == "flat":  # moving average
+        w = np.ones(window_len, "d")
     else:
-        w = eval('np.' + window + '(window_len)')
+        w = eval("np." + window + "(window_len)")
 
-    y = np.convolve(old_div(w, w.sum()), s, mode='valid')
+    y = np.convolve((w / w.sum()), s, mode="valid")
     return y
 
 
@@ -752,12 +758,12 @@ def zero_crossings(y_axis, window=11):
 
     # check if zero-crossings are valid
     # diff = np.diff(indices)
-#    if diff.std() / diff.mean() > 0.2:
-#        print diff.std() / diff.mean()
-#        print np.diff(indices)
-#        raise(ValueError,
-#            "False zero-crossings found, indicates problem {0} or {1}".format(
-#            "with smoothing window", "problem with offset"))
+    #    if diff.std() / diff.mean() > 0.2:
+    #        print diff.std() / diff.mean()
+    #        print np.diff(indices)
+    #        raise(ValueError,
+    #            "False zero-crossings found, indicates problem {0} or {1}".format(
+    #            "with smoothing window", "problem with offset"))
     # check if any zero crossings were found
     if len(zero_crossings) < 1:
         raise ValueError
@@ -770,6 +776,7 @@ def zero_crossings(y_axis, window=11):
     return indices
     # used this to test the fft function's sensitivity to spectral leakage
     # return indices + np.asarray(30 * np.random.randn(len(indices)), int)
+
 
 # Frequency calculation#############################
 #    diff = np.diff(indices)
@@ -784,30 +791,30 @@ def zero_crossings(y_axis, window=11):
 ##############################################################################
 
 
-@mando.command('peak_detection',
-               formatter_class=RSTHelpFormatter,
-               doctype='numpy')
+@mando.command("peak_detection", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def peak_detection_cli(input_ts='-',
-                       columns=None,
-                       start_date=None,
-                       end_date=None,
-                       dropna='no',
-                       skiprows=None,
-                       index_type='datetime',
-                       names=None,
-                       clean=False,
-                       method='rel',
-                       extrema='peak',
-                       window=24,
-                       pad_len=5,
-                       points=9,
-                       lock_frequency=False,
-                       float_format='%g',
-                       round_index=None,
-                       source_units=None,
-                       target_units=None,
-                       print_input=''):
+def peak_detection_cli(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    method="rel",
+    extrema="peak",
+    window=24,
+    pad_len=5,
+    points=9,
+    lock_frequency=False,
+    float_format="%g",
+    round_index=None,
+    source_units=None,
+    target_units=None,
+    print_input="",
+):
     r"""Peak and valley detection.
 
     Parameters
@@ -870,145 +877,154 @@ def peak_detection_cli(input_ts='-',
     {print_input}
 
     """
-    tsutils._printiso(peak_detection(input_ts=input_ts,
-                                     columns=columns,
-                                     start_date=start_date,
-                                     end_date=end_date,
-                                     dropna=dropna,
-                                     skiprows=skiprows,
-                                     index_type=index_type,
-                                     names=names,
-                                     clean=clean,
-                                     method=method,
-                                     extrema=extrema,
-                                     window=window,
-                                     pad_len=pad_len,
-                                     points=points,
-                                     lock_frequency=lock_frequency,
-                                     float_format=float_format,
-                                     round_index=round_index,
-                                     source_units=source_units,
-                                     target_units=target_units,
-                                     print_input=print_input))
+    tsutils._printiso(
+        peak_detection(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            dropna=dropna,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            clean=clean,
+            method=method,
+            extrema=extrema,
+            window=window,
+            pad_len=pad_len,
+            points=points,
+            lock_frequency=lock_frequency,
+            float_format=float_format,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            print_input=print_input,
+        )
+    )
 
 
-def peak_detection(input_ts='-',
-                   columns=None,
-                   start_date=None,
-                   end_date=None,
-                   dropna='no',
-                   skiprows=None,
-                   index_type='datetime',
-                   names=None,
-                   clean=False,
-                   method='rel',
-                   extrema='peak',
-                   window=24,
-                   pad_len=5,
-                   points=9,
-                   lock_frequency=False,
-                   float_format='%g',
-                   round_index=None,
-                   source_units=None,
-                   target_units=None,
-                   print_input=''):
+def peak_detection(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    method="rel",
+    extrema="peak",
+    window=24,
+    pad_len=5,
+    points=9,
+    lock_frequency=False,
+    float_format="%g",
+    round_index=None,
+    source_units=None,
+    target_units=None,
+    print_input="",
+):
     r"""Peak and valley detection."""
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
 
-    if extrema not in ['peak', 'valley', 'both']:
-        raise ValueError("""
+    if extrema not in ["peak", "valley", "both"]:
+        raise ValueError(
+            """
 *
 *   The `extrema` argument must be one of 'peak',
 *   'valley', or 'both'.  You supplied {0}.
 *
-""".format(extrema))
+""".format(
+                extrema
+            )
+        )
 
-    if method not in ['rel',
-                      'minmax',
-                      'zero_crossing',
-                      'parabola',
-                      'sine']:
-        raise ValueError("""
+    if method not in ["rel", "minmax", "zero_crossing", "parabola", "sine"]:
+        raise ValueError(
+            """
 *
 *   The `method` argument must be one of 'rel', 'minmax',
 *   'zero_crossing', 'parabola', or 'sine'.  You supplied {0}.
 *
-""".format(method))
+""".format(
+                method
+            )
+        )
 
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              round_index=round_index,
-                              dropna=dropna,
-                              source_units=source_units,
-                              target_units=target_units,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        round_index=round_index,
+        dropna=dropna,
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
 
     window = int(window)
     kwds = {}
-    if method == 'rel':
+    if method == "rel":
         func = _argrel
         window = window / 2
         if window == 0:
             window = 1
-        kwds['window'] = int(window)
-    elif method == 'minmax':
+        kwds["window"] = int(window)
+    elif method == "minmax":
         func = _peakdetect
         window = int(window / 2)
         if window == 0:
             window = 1
-        kwds['window'] = int(window)
-    elif method == 'zero_crossing':
+        kwds["window"] = int(window)
+    elif method == "zero_crossing":
         func = _peakdetect_zero_crossing
         if not window % 2:
             window = window + 1
-        kwds['window'] = int(window)
-    elif method == 'parabola':
+        kwds["window"] = int(window)
+    elif method == "parabola":
         func = _peakdetect_parabola
-        kwds['points'] = int(points)
-    elif method == 'sine':
+        kwds["points"] = int(points)
+    elif method == "sine":
         func = _peakdetect_sine
-        kwds['points'] = int(points)
-        kwds['lock_frequency'] = lock_frequency
-    elif method == 'fft':  # currently would never be used.
+        kwds["points"] = int(points)
+        kwds["lock_frequency"] = lock_frequency
+    elif method == "fft":  # currently would never be used.
         func = _peakdetect_fft
-        kwds['pad_len'] = int(pad_len)
+        kwds["pad_len"] = int(pad_len)
 
     tmptsd = tsd.copy()
-    if extrema == 'both':
-        tmptsd.columns = [tsutils.renamer(i, 'peak') for i in tsd.columns]
+    if extrema == "both":
+        tmptsd.columns = [tsutils.renamer(i, "peak") for i in tsd.columns]
         atmpst = tsd.copy()
-        atmpst.columns = [tsutils.renamer(i, 'valley') for i in tsd.columns]
-        tmptsd = tmptsd.join(atmpst, how='outer')
+        atmpst.columns = [tsutils.renamer(i, "valley") for i in tsd.columns]
+        tmptsd = tmptsd.join(atmpst, how="outer")
     else:
         tmptsd.columns = [tsutils.renamer(i, extrema) for i in tsd.columns]
 
     for cols in tmptsd.columns:
-        if method in ['fft', 'parabola', 'sine']:
+        if method in ["fft", "parabola", "sine"]:
             maxpeak, minpeak = func(
-                tmptsd[cols].values, list(range(len(tmptsd[cols]))), **kwds)
+                tmptsd[cols].values, list(range(len(tmptsd[cols]))), **kwds
+            )
         else:
             maxpeak, minpeak = func(tmptsd[cols].values, **kwds)
-        if cols[-4:] == 'peak':
+        if cols[-4:] == "peak":
             datavals = maxpeak
-        if cols[-6:] == 'valley':
+        if cols[-6:] == "valley":
             datavals = minpeak
         maxx, _ = list(zip(*datavals))
-        hold = tmptsd[cols][pd.np.array(maxx).astype('i')]
+        hold = tmptsd[cols][pd.np.array(maxx).astype("i")]
         tmptsd[cols][:] = pd.np.nan
-        tmptsd[cols][pd.np.array(maxx).astype('i')] = hold
+        tmptsd[cols][pd.np.array(maxx).astype("i")] = hold
 
-    tmptsd.index.name = 'Datetime'
-    tsd.index.name = 'Datetime'
-    return tsutils.return_input(print_input,
-                                tsd,
-                                tmptsd,
-                                suffix="")
+    tmptsd.index.name = "Datetime"
+    tsd.index.name = "Datetime"
+    return tsutils.return_input(print_input, tsd, tmptsd, suffix="")
 
 
 peak_detection.__doc__ = peak_detection_cli.__doc__

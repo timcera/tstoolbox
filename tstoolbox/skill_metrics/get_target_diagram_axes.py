@@ -34,15 +34,15 @@ def get_target_diagram_axes(x, y, option):
     @author: rochfordp
     """
     # Specify max/min for axes
-    foundmax = 1 if option['axismax'] != 0.0 else 0
+    foundmax = 1 if option["axismax"] != 0.0 else 0
     if foundmax == 0:
         # Axis limit not specified
         maxx = np.amax(np.absolute(x))
         maxy = np.amax(np.absolute(y))
     else:
         # Axis limit is specified
-        maxx = option['axismax']
-        maxy = option['axismax']
+        maxx = option["axismax"]
+        maxy = option["axismax"]
 
     # Determine default number of tick marks
     xtickvals = ticker.AutoLocator().tick_values(-1.0 * maxx, maxx)
@@ -58,21 +58,22 @@ def get_target_diagram_axes(x, y, option):
         get_target_diagram_axes.nyticks = nyticks
     else:
         # Use function attributes for nxticks and nyticks
-        if hasattr(get_target_diagram_axes, 'nxticks') and \
-                hasattr(get_target_diagram_axes, 'nxticks'):
+        if hasattr(get_target_diagram_axes, "nxticks") and hasattr(
+            get_target_diagram_axes, "nxticks"
+        ):
             nxticks = get_target_diagram_axes.nxticks
             nyticks = get_target_diagram_axes.nyticks
         else:
-            raise ValueError('No saved values for nxticks & nyticks.')
+            raise ValueError("No saved values for nxticks & nyticks.")
 
     # Set default tick increment and maximum axis values
     if foundmax == 0:
         maxx = xtickvals[-1]
         maxy = ytickvals[-1]
-        option['axismax'] = max(maxx, maxy)
+        option["axismax"] = max(maxx, maxy)
 
     # Check if equal axes requested
-    if option['equalaxes'] == 'on':
+    if option["equalaxes"] == "on":
         if maxx > maxy:
             maxy = maxx
             nyticks = nxticks
@@ -89,9 +90,9 @@ def get_target_diagram_axes(x, y, option):
     miny = -maxy
 
     # Determine tick values
-    if len(option['ticks']) > 0:
-        xtick = option['ticks']
-        ytick = option['ticks']
+    if len(option["ticks"]) > 0:
+        xtick = option["ticks"]
+        ytick = option["ticks"]
     else:
         tincx = maxx / nxticks
         tincy = maxy / nyticks
@@ -99,10 +100,10 @@ def get_target_diagram_axes(x, y, option):
         ytick = np.arange(miny, maxy + tincy, tincy)
 
     # Assign tick label positions
-    if len(option['xticklabelpos']) == 0:
-        option['xticklabelpos'] = xtick
-    if len(option['yticklabelpos']) == 0:
-        option['yticklabelpos'] = ytick
+    if len(option["xticklabelpos"]) == 0:
+        option["xticklabelpos"] = xtick
+    if len(option["yticklabelpos"]) == 0:
+        option["yticklabelpos"] = ytick
 
     # Set tick labels using provided tick label positions
     xlabel = []
@@ -110,35 +111,35 @@ def get_target_diagram_axes(x, y, option):
 
     # Set x tick labels
     for i in range(len(xtick)):
-        index = np.where(option['xticklabelpos'] == xtick[i])
+        index = np.where(option["xticklabelpos"] == xtick[i])
         if len(index) > 0:
             xlabel.append(str(xtick[i]))
         else:
-            xlabel.append('')
+            xlabel.append("")
 
     # Set tick labels at 0 to blank
-    index = np.where(abs(xtick) < 1.e-7)
+    index = np.where(abs(xtick) < 1.0e-7)
     index = np.asscalar(index[0])
-    xlabel[index] = ''
+    xlabel[index] = ""
 
     # Set y tick labels
     for i in range(len(ytick)):
-        index = np.where(option['xticklabelpos'] == xtick[i])
+        index = np.where(option["xticklabelpos"] == xtick[i])
         if len(index) > 0:
             ylabel.append(str(ytick[i]))
         else:
-            ylabel.append('')
+            ylabel.append("")
 
     # Set tick labels at 0 to blank
-    index = np.where(abs(ytick) < 1.e-7)
+    index = np.where(abs(ytick) < 1.0e-7)
     index = np.asscalar(index[0])
-    ylabel[index] = ''
+    ylabel[index] = ""
 
     # Store output variables in data structure
     axes = {}
-    axes['xtick'] = xtick
-    axes['ytick'] = ytick
-    axes['xlabel'] = xlabel
-    axes['ylabel'] = ylabel
+    axes["xtick"] = xtick
+    axes["ytick"] = ytick
+    axes["xlabel"] = xlabel
+    axes["ylabel"] = ylabel
 
     return axes

@@ -2,10 +2,17 @@ from array import array
 
 import numpy as np
 
-from . import (check_taylor_stats, get_taylor_diagram_axes,
-               get_taylor_diagram_options, overlay_taylor_diagram_circles,
-               overlay_taylor_diagram_lines, plot_pattern_diagram_colorbar,
-               plot_pattern_diagram_markers, plot_taylor_axes, plot_taylor_obs)
+from . import (
+    check_taylor_stats,
+    get_taylor_diagram_axes,
+    get_taylor_diagram_options,
+    overlay_taylor_diagram_circles,
+    overlay_taylor_diagram_lines,
+    plot_pattern_diagram_colorbar,
+    plot_pattern_diagram_markers,
+    plot_taylor_axes,
+    plot_taylor_obs,
+)
 
 
 def taylor_diagram(*args, **kwargs):
@@ -74,7 +81,7 @@ def taylor_diagram(*args, **kwargs):
     option = get_taylor_diagram_options(cors, **kwargs)
 
     # Check the input statistics if requested.
-    if option['checkstats'] == 'on':
+    if option["checkstats"] == "on":
         check_taylor_stats(stds[1:], rmss[1:], cors[1:], 0.01)
 
     # Express statistics in polar coordinates.
@@ -85,7 +92,7 @@ def taylor_diagram(*args, **kwargs):
     axes, cax = get_taylor_diagram_axes(rho, option)
 
     # Plot axes for target diagram
-    if option['overlay'] == 'off':
+    if option["overlay"] == "off":
         # Draw circles about origin
         overlay_taylor_diagram_circles(axes, cax, option)
 
@@ -103,10 +110,10 @@ def taylor_diagram(*args, **kwargs):
     x = np.multiply(rho[1:], np.cos(theta[1:]))
     y = np.multiply(rho[1:], np.sin(theta[1:]))
 
-    lowcase = option['markerdisplayed'].lower()
-    if lowcase == 'marker':
+    lowcase = option["markerdisplayed"].lower()
+    if lowcase == "marker":
         plot_pattern_diagram_markers(x, y, option)
-    elif lowcase == 'colorbar':
+    elif lowcase == "colorbar":
         plot_pattern_diagram_colorbar(x, y, rmss[1:], option)
     else:
         raise ValueError("Unrecognized option: option['markerdisplayed']")
@@ -141,7 +148,7 @@ def _get_taylor_diagram_arguments(*args, **kwargs):
         _display_taylor_diagram_options()
         return stds, rmss, cors
     elif nargin != 3:
-        raise ValueError('Must supply 3 arguments.')
+        raise ValueError("Must supply 3 arguments.")
 
     stds = args[0]
     rmss = args[1]
@@ -153,189 +160,142 @@ def _get_taylor_diagram_arguments(*args, **kwargs):
     if isinstance(stds, numbers.Number):
         stds = np.array(stds, ndmin=1)
     if not isinstance(stds, np.ndarray):
-        raise ValueError('Argument stds is not a numeric array')
+        raise ValueError("Argument stds is not a numeric array")
 
     if isinstance(rmss, array):
         rmss = np.array(rmss)
     if isinstance(rmss, numbers.Number):
         rmss = np.array(rmss, ndmin=1)
     if not isinstance(rmss, np.ndarray):
-        raise ValueError('Argument rmss is not a numeric array')
+        raise ValueError("Argument rmss is not a numeric array")
 
     if isinstance(cors, array):
         cors = np.array(cors)
     if isinstance(cors, numbers.Number):
         cors = np.array(cors, ndmin=1)
     if not isinstance(cors, (np.ndarray, array)):
-        raise ValueError('Argument cors is not a numeric array')
+        raise ValueError("Argument cors is not a numeric array")
 
     return stds, rmss, cors
 
 
 def _display_taylor_diagram_options():
     """Display available options for TAYLOR_DIAGRAM function."""
-    _disp('General options:')
+    _disp("General options:")
     _dispopt(
         "'numberPanels'",
         """1 or 2: Panels to display
 (1 for positive correlations, 2 for positive and negative correlations).
-    Default value depends on correlations (cors)""")
+    Default value depends on correlations (cors)""",
+    )
     _dispopt(
         "'overlay'",
         """'on' / 'off' (default):
         Switch to overlay current statistics on Taylor diagram.
-        Only markers will be displayed.""")
+        Only markers will be displayed.""",
+    )
     _dispopt(
         "'alpha'",
-"""Blending of symbol face color (0.0 transparent through 1.0 opaque)
-(Default: 1.0)""")
-    _dispopt(
-        "'axismax'",
-        'Maximum for the radial contours')
+        """Blending of symbol face color (0.0 transparent through 1.0 opaque)
+(Default: 1.0)""",
+    )
+    _dispopt("'axismax'", "Maximum for the radial contours")
     _dispopt(
         "'colormap'",
         """'on'/ 'off' (default):
         Switch to map color shading of markers to colormap ('on')
         or min to max range of RMSDz values ('off').
-        Set to same value as option['nonRMSDz'].""")
-    _disp('')
+        Set to same value as option['nonRMSDz'].""",
+    )
+    _disp("")
 
-    _disp('Marker options:')
+    _disp("Marker options:")
     _dispopt(
         "'MarkerDisplayed'",
         """'marker' (default):
         Experiments are represented by individual symbols
         "'colorBar':
-             Experiments are represented by a color described in a colorbar""")
+             Experiments are represented by a color described in a colorbar""",
+    )
     _disp("OPTIONS when 'MarkerDisplayed' == 'marker'")
-    _dispopt(
-        "'markerLabel'",
-        'Labels for markers')
-    _dispopt(
-        "'markerLabelColor'",
-        'Marker label color (Default: black)')
-    _dispopt(
-        "'markerColor'",
-        'Single color to use for all markers (Default: red)')
-    _dispopt(
-        "'markerLegend'",
-        "'on' / 'off' (default): Use legend for markers")
-    _dispopt(
-        "'markerSize'",
-        'Marker size (Default: 10)')
+    _dispopt("'markerLabel'", "Labels for markers")
+    _dispopt("'markerLabelColor'", "Marker label color (Default: black)")
+    _dispopt("'markerColor'", "Single color to use for all markers (Default: red)")
+    _dispopt("'markerLegend'", "'on' / 'off' (default): Use legend for markers")
+    _dispopt("'markerSize'", "Marker size (Default: 10)")
 
     _disp("OPTIONS when MarkerDisplayed' == 'colorbar'")
     _dispopt(
         "'nonRMSDz'",
         """'on'/ 'off' (default):
         Values in RMSDz do not correspond to total RMS Differences.
-        (Used to make range of RMSDz values appear above color bar.)""")
-    _dispopt(
-        "'titleColorBar'",
-        'Title of the colorbar.')
-    _disp('')
+        (Used to make range of RMSDz values appear above color bar.)""",
+    )
+    _dispopt("'titleColorBar'", "Title of the colorbar.")
+    _disp("")
 
-    _disp('RMS axis options:')
-    _dispopt(
-        "'tickRMS'",
-        'RMS values to plot grid circles from observation point')
-    _dispopt(
-        "'rincRMS'",
-        'axis tick increment for RMS values')
-    _dispopt(
-        "'colRMS'",
-        'RMS grid and tick labels color. (Default: green)')
-    _dispopt(
-        "'showlabelsRMS'",
-        "'on' (default) / 'off': Show the RMS tick labels")
+    _disp("RMS axis options:")
+    _dispopt("'tickRMS'", "RMS values to plot grid circles from observation point")
+    _dispopt("'rincRMS'", "axis tick increment for RMS values")
+    _dispopt("'colRMS'", "RMS grid and tick labels color. (Default: green)")
+    _dispopt("'showlabelsRMS'", "'on' (default) / 'off': Show the RMS tick labels")
     _dispopt(
         "'tickRMSangle'",
-        'Angle for RMS tick labels with the observation point. Default: 135 deg.')
+        "Angle for RMS tick labels with the observation point. Default: 135 deg.",
+    )
     _dispopt(
         "'rmsLabelFormat'",
         """String format for RMS contour labels, e.g. '0:.2f'.
-        (Default '0', format as specified by str function.)""")
-    _dispopt(
-        "'styleRMS'",
-        'Line style of the RMS grid')
-    _dispopt(
-        "'widthRMS'",
-        'Line width of the RMS grid')
-    _dispopt(
-        "'titleRMS'",
-        "'on' (default) / 'off': Show RMSD axis title")
-    _disp('')
+        (Default '0', format as specified by str function.)""",
+    )
+    _dispopt("'styleRMS'", "Line style of the RMS grid")
+    _dispopt("'widthRMS'", "Line width of the RMS grid")
+    _dispopt("'titleRMS'", "'on' (default) / 'off': Show RMSD axis title")
+    _disp("")
 
-    _disp('STD axis options:')
-    _dispopt(
-        "'tickSTD'",
-        'STD values to plot gridding circles from origin')
-    _dispopt(
-        "'rincSTD'",
-        'axis tick increment for STD values')
-    _dispopt(
-        "'colSTD'",
-        'STD grid and tick labels color. (Default: black)')
-    _dispopt(
-        "'showlabelsSTD'",
-        "'on' (default) / 'off': Show the STD tick labels")
-    _dispopt(
-        "'styleSTD'",
-        'Line style of the STD grid')
-    _dispopt(
-        "'widthSTD'",
-        'Line width of the STD grid')
-    _dispopt(
-        "'titleSTD'",
-        "'on' (default) / 'off': Show STD axis title")
-    _disp('')
+    _disp("STD axis options:")
+    _dispopt("'tickSTD'", "STD values to plot gridding circles from origin")
+    _dispopt("'rincSTD'", "axis tick increment for STD values")
+    _dispopt("'colSTD'", "STD grid and tick labels color. (Default: black)")
+    _dispopt("'showlabelsSTD'", "'on' (default) / 'off': Show the STD tick labels")
+    _dispopt("'styleSTD'", "Line style of the STD grid")
+    _dispopt("'widthSTD'", "Line width of the STD grid")
+    _dispopt("'titleSTD'", "'on' (default) / 'off': Show STD axis title")
+    _disp("")
 
-    _disp('CORRELATION axis options:')
+    _disp("CORRELATION axis options:")
+    _dispopt("'tickCOR'", "CORRELATON grid values")
+    _dispopt("'colCOR'", "CORRELATION grid color. Default: blue")
     _dispopt(
-        "'tickCOR'",
-        'CORRELATON grid values')
-    _dispopt(
-        "'colCOR'",
-        'CORRELATION grid color. Default: blue')
-    _dispopt(
-        "'showlabelsCOR'",
-        "'on' (default) / 'off': Show the CORRELATION tick labels")
-    _dispopt(
-        "'styleCOR'",
-        'Line style of the COR grid')
-    _dispopt(
-        "'widthCOR'",
-        'Line width of the COR grid')
-    _dispopt(
-        "'titleCOR'",
-        "'on' (default) / 'off': Show CORRELATION axis title")
-    _disp('')
+        "'showlabelsCOR'", "'on' (default) / 'off': Show the CORRELATION tick labels"
+    )
+    _dispopt("'styleCOR'", "Line style of the COR grid")
+    _dispopt("'widthCOR'", "Line width of the COR grid")
+    _dispopt("'titleCOR'", "'on' (default) / 'off': Show CORRELATION axis title")
+    _disp("")
 
-    _disp('Observation Point options:')
-    _dispopt(
-        "'colObs'",
-        'Observation STD color. (Default: magenta)')
+    _disp("Observation Point options:")
+    _dispopt("'colObs'", "Observation STD color. (Default: magenta)")
     _dispopt(
         "'markerObs'",
         """Marker to use for x-axis indicating observed STD.
-        A choice of 'none' will suppress appearance of marker. (Default 'none')""")
+        A choice of 'none' will suppress appearance of marker. (Default 'none')""",
+    )
     _dispopt(
         "'styleObs'",
         """Line style for observation grid line. A choice of empty string ('')
-        will suppress appearance of the grid line. (Default: '')""")
-    _dispopt(
-        "'titleOBS'",
-        "Label for observation point (Default: '')")
-    _dispopt(
-        "'widthOBS'",
-        'Line width for observation grid line')
-    _disp('')
+        will suppress appearance of the grid line. (Default: '')""",
+    )
+    _dispopt("'titleOBS'", "Label for observation point (Default: '')")
+    _dispopt("'widthOBS'", "Line width for observation grid line")
+    _disp("")
 
-    _disp('CONTROL options:')
+    _disp("CONTROL options:")
     _dispopt(
         "'checkStats'",
         """'on' / 'off' (default):
-        Check input statistics satisfy Taylor relationship""")
+        Check input statistics satisfy Taylor relationship""",
+    )
 
 
 def _disp(text):
@@ -350,5 +310,5 @@ def _dispopt(optname, optval):
     It displays the option name OPTNAME on a line by itself followed by its
     value OPTVAL on the following line.
     """
-    _disp('\t{0}'.format(optname))
-    _disp('\t\t{0}'.format(optval))
+    _disp("\t{0}".format(optname))
+    _disp("\t\t{0}".format(optval))

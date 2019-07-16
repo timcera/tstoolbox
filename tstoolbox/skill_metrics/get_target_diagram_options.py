@@ -69,29 +69,29 @@ def get_target_diagram_options(**kwargs):
 
     # Set default parameters for all options
     option = {}
-    option['alpha'] = 1.0
-    option['axismax'] = 0.0
-    option['circlelinespec'] = 'k--'
-    option['circlelinewidth'] = 1.5
-    option['circles'] = []
-    option['colormap'] = 'off'
-    option['equalaxes'] = 'on'
+    option["alpha"] = 1.0
+    option["axismax"] = 0.0
+    option["circlelinespec"] = "k--"
+    option["circlelinewidth"] = 1.5
+    option["circles"] = []
+    option["colormap"] = "off"
+    option["equalaxes"] = "on"
 
-    option['markercolor'] = 'r'
-    option['markerdisplayed'] = 'marker'
-    option['markerlabel'] = ''
-    option['markerlabelcolor'] = 'k'
-    option['markerlegend'] = 'off'
-    option['markersize'] = 10
+    option["markercolor"] = "r"
+    option["markerdisplayed"] = "marker"
+    option["markerlabel"] = ""
+    option["markerlabelcolor"] = "k"
+    option["markerlegend"] = "off"
+    option["markersize"] = 10
 
-    option['nonrmsdz'] = 'off'
-    option['normalized'] = 'off'
-    option['obsuncertainty'] = 0.0
-    option['overlay'] = 'off'
-    option['ticks'] = []
-    option['titlecolorbar'] = ''
-    option['xticklabelpos'] = []
-    option['yticklabelpos'] = []
+    option["nonrmsdz"] = "off"
+    option["normalized"] = "off"
+    option["obsuncertainty"] = 0.0
+    option["overlay"] = "off"
+    option["ticks"] = []
+    option["titlecolorbar"] = ""
+    option["xticklabelpos"] = []
+    option["yticklabelpos"] = []
     if nargin == 0:
         # No options requested, so return with only defaults
         return option
@@ -100,23 +100,23 @@ def get_target_diagram_options(**kwargs):
     for optname, optvalue in kwargs.items():
         optname = optname.lower()
         if optname not in option:
-            raise ValueError('Unrecognized option: ' + optname)
+            raise ValueError("Unrecognized option: " + optname)
         else:
             # Replace option value with that from arguments
             option[optname] = optvalue
 
             # Check values for specific options
-            if optname == 'equalaxes':
-                option['equalaxes'] = check_on_off(option['equalaxes'])
-            elif optname == 'markerlegend':
-                option['markerlegend'] = check_on_off(option['markerlegend'])
-            elif optname == 'nonrmsdz':
-                option['nonrmsdz'] = check_on_off(option['nonrmsdz'])
-            elif optname == 'normalized':
-                option['normalized'] = check_on_off(option['normalized'])
-            elif optname == 'overlay':
-                option['overlay'] = check_on_off(option['overlay'])
+            if optname == "equalaxes":
+                option["equalaxes"] = check_on_off(option["equalaxes"])
+            elif optname == "markerlegend":
+                option["markerlegend"] = check_on_off(option["markerlegend"])
+            elif optname == "nonrmsdz":
+                option["nonrmsdz"] = check_on_off(option["nonrmsdz"])
+            elif optname == "normalized":
+                option["normalized"] = check_on_off(option["normalized"])
+            elif optname == "overlay":
+                option["overlay"] = check_on_off(option["overlay"])
 
-    option['colormap'] = option['nonrmsdz']
+    option["colormap"] = option["nonrmsdz"]
 
     return option

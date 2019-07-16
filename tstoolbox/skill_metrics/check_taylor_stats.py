@@ -31,33 +31,40 @@ def check_taylor_stats(stds, crmsds, cors, threshold=0.01):
     Created on Dec 3, 2016
     """
     if threshold < 1e-7:
-        ValueError('threshold value must be positive: ' + str(threshold))
+        ValueError("threshold value must be positive: " + str(threshold))
 
-    diff = (np.square(crmsds[1:]) -
-            (np.square(stds[1:]) +
-             np.square(stds[0]) -
-             2.0 * stds[0] * np.multiply(stds[1:], cors[1:])))
+    diff = np.square(crmsds[1:]) - (
+        np.square(stds[1:])
+        + np.square(stds[0])
+        - 2.0 * stds[0] * np.multiply(stds[1:], cors[1:])
+    )
     diff = np.abs(np.divide(diff, np.square(crmsds[1:])))
     index = np.where(diff > threshold)
     if len(index) > 0:
         ii = np.where(diff != 0)
         if len(ii) == len(diff):
-            ValueError("""
+            ValueError(
+                """
 *
 *   Incompatible data
 *
 *   You must have:
 *       crmsds - sqrt(stds.^2 + stds(1)^2 - 2*stds*stds(1).*cors) = 0
 *
-""")
+"""
+            )
         else:
-            ValueError("""
+            ValueError(
+                """
 *
 *   Incompatible data indices: {0}
 *
 *   You must have:
 *       crmsds - sqrt(stds.^2 + stds(1)^2 - 2*stds*stds(1).*cors) = 0
 *
-""".format(ii))
+""".format(
+                    ii
+                )
+            )
 
     return diff

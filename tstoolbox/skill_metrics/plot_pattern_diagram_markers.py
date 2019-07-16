@@ -36,28 +36,27 @@ def plot_pattern_diagram_markers(X, Y, option):
         prochford@thesymplectic.com
     """
     # Set face color transparency
-    alpha = option['alpha']
+    alpha = option["alpha"]
 
     # Set marker size
-    markerSize = option['markersize']
+    markerSize = option["markersize"]
 
-    if option['markerlegend'] == 'on':
+    if option["markerlegend"] == "on":
         # Check that marker labels have been provided
-        if option['markerlabel'] == '':
-            raise ValueError('No marker labels provided.')
+        if option["markerlabel"] == "":
+            raise ValueError("No marker labels provided.")
 
         # Plot markers of different color and shapes with labels
         # displayed in a legend
 
         # Define markers
-        kind = ['+', 'o', 'x', 's', 'd', '^', 'v', 'p', 'h', '*']
-        colorm = ['b', 'r', 'g', 'c', 'm', 'y', 'k']
+        kind = ["+", "o", "x", "s", "d", "^", "v", "p", "h", "*"]
+        colorm = ["b", "r", "g", "c", "m", "y", "k"]
         if len(X) > 70:
-            _disp('You must introduce new markers to plot more than 70 cases.')
+            _disp("You must introduce new markers to plot more than 70 cases.")
             _disp(
-                'The '
-                'marker'
-                ' character array need to be extended inside the code.')
+                "The " "marker" " character array need to be extended inside the code."
+            )
 
         if len(X) <= len(kind):
             # Define markers with specified color
@@ -65,8 +64,8 @@ def plot_pattern_diagram_markers(X, Y, option):
             markercolor = []
             for color in colorm:
                 for symbol in kind:
-                    marker.append(symbol + option['markercolor'])
-                    rgba = clr.to_rgb(option['markercolor']) + (alpha,)
+                    marker.append(symbol + option["markercolor"])
+                    rgba = clr.to_rgb(option["markercolor"]) + (alpha,)
                     markercolor.append(rgba)
         else:
             # Define markers and colors using predefined list
@@ -78,50 +77,65 @@ def plot_pattern_diagram_markers(X, Y, option):
                     markercolor.append(rgba)
 
         # Plot markers at data points
-        limit = option['axismax']
+        limit = option["axismax"]
         hp = ()
         markerlabel = []
         for i, xval in enumerate(X):
             if abs(X[i]) <= limit and abs(Y[i]) <= limit:
-                h = plt.plot(X[i], Y[i], marker[i], markersize=markerSize,
-                             markerfacecolor=markercolor[i],
-                             markeredgecolor=marker[i][1],
-                             markeredgewidth=2)
+                h = plt.plot(
+                    X[i],
+                    Y[i],
+                    marker[i],
+                    markersize=markerSize,
+                    markerfacecolor=markercolor[i],
+                    markeredgecolor=marker[i][1],
+                    markeredgewidth=2,
+                )
                 hp += tuple(h)
-                markerlabel.append(option['markerlabel'][i])
+                markerlabel.append(option["markerlabel"][i])
 
         # Add legend
         if len(markerlabel) > 0:
             markerlabel = tuple(markerlabel)
-            plt.legend(hp, markerlabel, loc='upper right',
-                       fontsize='medium', numpoints=1)
+            plt.legend(
+                hp, markerlabel, loc="upper right", fontsize="medium", numpoints=1
+            )
         else:
-            warnings.warn('No markers within axis limit ranges.')
+            warnings.warn("No markers within axis limit ranges.")
 
     else:
         # Plot markers as dots of a single color with accompanying labels
         # and no legend
 
         # Plot markers at data points
-        limit = option['axismax']
-        rgba = clr.to_rgb(option['markercolor']) + (alpha,)
+        limit = option["axismax"]
+        rgba = clr.to_rgb(option["markercolor"]) + (alpha,)
         for i, xval in enumerate(X):
             if abs(X[i]) <= limit and abs(Y[i]) <= limit:
                 # Plot marker
-                plt.plot(X[i], Y[i], '.', markersize=markerSize,
-                         markerfacecolor=rgba,
-                         markeredgecolor=option['markercolor'])
+                plt.plot(
+                    X[i],
+                    Y[i],
+                    ".",
+                    markersize=markerSize,
+                    markerfacecolor=rgba,
+                    markeredgecolor=option["markercolor"],
+                )
 
                 # Check if marker labels provided
-                if len(option['markerlabel']) > 0:
+                if len(option["markerlabel"]) > 0:
                     # Label marker
                     xtextpos = X[i]  # ToDo: convert to double?
                     ytextpos = Y[i]
-                    plt.text(xtextpos, ytextpos, option['markerlabel'][i],
-                             color=option['markerlabelcolor'],
-                             verticalalignment='bottom',
-                             horizontalalignment='right',
-                             fontsize='medium')
+                    plt.text(
+                        xtextpos,
+                        ytextpos,
+                        option["markerlabel"][i],
+                        color=option["markerlabelcolor"],
+                        verticalalignment="bottom",
+                        horizontalalignment="right",
+                        fontsize="medium",
+                    )
 
 
 def _disp(text):

@@ -17,28 +17,28 @@ from .. import tsutils
 def index_str_formatter(x):
     """Format index string depending on type of 'x'."""
     if int(x) == x:
-        return '{0:d}'.format(int(x))
-    return '{0:.10f}'.format(x)
+        return "{0:d}".format(int(x))
+    return "{0:.10f}".format(x)
 
 
-@mando.command('convert_index',
-               formatter_class=RSTHelpFormatter,
-               doctype='numpy')
+@mando.command("convert_index", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def convert_index_cli(to,
-                      interval=None,
-                      epoch='julian',
-                      input_ts='-',
-                      columns=None,
-                      start_date=None,
-                      end_date=None,
-                      round_index=None,
-                      dropna='no',
-                      clean=False,
-                      names=None,
-                      source_units=None,
-                      target_units=None,
-                      skiprows=None):
+def convert_index_cli(
+    to,
+    interval=None,
+    epoch="julian",
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    round_index=None,
+    dropna="no",
+    clean=False,
+    names=None,
+    source_units=None,
+    target_units=None,
+    skiprows=None,
+):
     """Convert datetime to/from Julian dates from different epochs.
 
     Parameters
@@ -146,174 +146,200 @@ def convert_index_cli(to,
     {target_units}
 
     """
-    tsd = convert_index(to,
-                        interval=interval,
-                        epoch=epoch,
-                        input_ts=input_ts,
-                        columns=columns,
-                        start_date=start_date,
-                        end_date=end_date,
-                        round_index=round_index,
-                        dropna=dropna,
-                        clean=clean,
-                        names=names,
-                        source_units=source_units,
-                        target_units=target_units,
-                        skiprows=skiprows)
+    tsd = convert_index(
+        to,
+        interval=interval,
+        epoch=epoch,
+        input_ts=input_ts,
+        columns=columns,
+        start_date=start_date,
+        end_date=end_date,
+        round_index=round_index,
+        dropna=dropna,
+        clean=clean,
+        names=names,
+        source_units=source_units,
+        target_units=target_units,
+        skiprows=skiprows,
+    )
     tsd.index = tsd.index.format(formatter=index_str_formatter)
     tsutils._printiso(tsd)
 
 
-def convert_index(to,
-                  interval=None,
-                  epoch='julian',
-                  input_ts='-',
-                  columns=None,
-                  start_date=None,
-                  end_date=None,
-                  round_index=None,
-                  dropna='no',
-                  clean=False,
-                  names=None,
-                  source_units=None,
-                  target_units=None,
-                  skiprows=None):
+def convert_index(
+    to,
+    interval=None,
+    epoch="julian",
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    round_index=None,
+    dropna="no",
+    clean=False,
+    names=None,
+    source_units=None,
+    target_units=None,
+    skiprows=None,
+):
     """Convert datetime to/from Julian dates from different epochs."""
 
     # Clip to start_date/end_date if possible.
-    if to == 'datetime':
-        index_type = 'number'
+    if to == "datetime":
+        index_type = "number"
         nstart_date = None
         nend_date = None
         nround_index = None
-    elif to == 'number':
-        index_type = 'datetime'
+    elif to == "number":
+        index_type = "datetime"
         nstart_date = start_date
         nend_date = end_date
         nround_index = round_index
+    else:
+        raise ValueError(
+            """
+*
+*   The 'to' argument must be 'number' or 'datetime'.  You gave {0}.
+*
+""".format(
+                to
+            )
+        )
 
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=nstart_date,
-                              end_date=nend_date,
-                              pick=columns,
-                              round_index=nround_index,
-                              dropna=dropna,
-                              source_units=source_units,
-                              target_units=target_units,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=nstart_date,
+        end_date=nend_date,
+        pick=columns,
+        round_index=nround_index,
+        dropna=dropna,
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
 
-    allowed = {'julian': lambda x: x,
-               'reduced': lambda x: x - 2400000,
-               'modified': lambda x: x - 2400000.5,
-               'truncated': lambda x: pd.np.floor(x - 2440000.5),
-               'dublin': lambda x: x - 2415020,
-               'cnes': lambda x: x - 2433282.5,
-               'ccsds': lambda x: x - 2436204.5,
-               'lop': lambda x: x - 2448622.5,
-               'lilian': lambda x: pd.np.floor(x - 2299159.5),
-               'rata_die': lambda x: pd.np.floor(x - 1721424.5),
-               'mars_sol': lambda x: (x - 2405522) / 1.02749,
-               'unix': lambda x: (x - 2440587.5)}
+    allowed = {
+        "julian": lambda x: x,
+        "reduced": lambda x: x - 2400000,
+        "modified": lambda x: x - 2400000.5,
+        "truncated": lambda x: pd.np.floor(x - 2440000.5),
+        "dublin": lambda x: x - 2415020,
+        "cnes": lambda x: x - 2433282.5,
+        "ccsds": lambda x: x - 2436204.5,
+        "lop": lambda x: x - 2448622.5,
+        "lilian": lambda x: pd.np.floor(x - 2299159.5),
+        "rata_die": lambda x: pd.np.floor(x - 1721424.5),
+        "mars_sol": lambda x: (x - 2405522) / 1.02749,
+        "unix": lambda x: (x - 2440587.5),
+    }
 
-    dailies = ['julian',
-               'reduced',
-               'modified',
-               'truncated',
-               'dublin',
-               'cnes',
-               'ccsds',
-               'lop',
-               'lilian',
-               'rata_die',
-               'mars_sol']
+    dailies = [
+        "julian",
+        "reduced",
+        "modified",
+        "truncated",
+        "dublin",
+        "cnes",
+        "ccsds",
+        "lop",
+        "lilian",
+        "rata_die",
+        "mars_sol",
+    ]
 
-    epoch_dates = {'julian': 'julian',
-                   'reduced': '1858-11-16T12',
-                   'modified': '1858-11-17T00',
-                   'truncated': '1968-05-24T00',
-                   'dublin': '1899-12-31T12',
-                   'cnes': '1950-01-01T00',
-                   'ccsds': '1958-01-01T00',
-                   'lop': '1992-01-01T00',
-                   'lilian': '1582-10-15T00',
-                   'rata_die': '0001-01-01T00',
-                   'mars_sol': '1873-12-29T12',
-                   'unix': '1970-01-01T00'}
+    epoch_dates = {
+        "julian": "julian",
+        "reduced": "1858-11-16T12",
+        "modified": "1858-11-17T00",
+        "truncated": "1968-05-24T00",
+        "dublin": "1899-12-31T12",
+        "cnes": "1950-01-01T00",
+        "ccsds": "1958-01-01T00",
+        "lop": "1992-01-01T00",
+        "lilian": "1582-10-15T00",
+        "rata_die": "0001-01-01T00",
+        "mars_sol": "1873-12-29T12",
+        "unix": "1970-01-01T00",
+    }
 
-    words = interval.split('-')
+    words = interval.split("-")
     if len(words) == 2:
-        warnings.warn("""
+        warnings.warn(
+            """
 *
 *   The epoch keyword "{0}" overrides the anchoring suffix "{1}".
 *
-""".format(epoch, words[1]))
+""".format(
+                epoch, words[1]
+            )
+        )
 
         interval = words[0]
 
     if interval is not None:
-        if epoch == 'unix' and interval != 'S':
-            warnings.warn("""
+        if epoch == "unix" and interval not in ["S", "s"]:
+            warnings.warn(
+                """
 *
 *   Typically the unix epoch would has an interval of 'S' (seconds).
 *   Instead you gave {0}.
 *
-""".format(interval))
-        elif epoch in dailies and interval != 'D':
-            warnings.warn("""
+""".format(
+                    interval
+                )
+            )
+        elif epoch in dailies and interval != "D":
+            warnings.warn(
+                """
 *
 *   Typically the {0} epoch would has an interval of 'D' (days).
 *   Instead you gave {1}.
 *
-""".format(epoch, interval))
+""".format(
+                    epoch, interval
+                )
+            )
 
-    if to == 'number':
+    if to == "number":
         # Index must be datetime - let's make sure
         tsd.index = pd.to_datetime(tsd.index)
 
-        frac = to_offset('D').nanos / to_offset(interval).nanos
+        frac = to_offset("D").nanos / to_offset(interval).nanos
 
         try:
             tsd.index = allowed[epoch](tsd.index.to_julian_date()) * frac
         except KeyError:
             epoch_date = tsutils.parsedate(epoch)
-            tsd.index = tsd.index.to_julian_date() * frac - epoch_date.to_julian_date()
-        try:
-            tsd.index = tsd.index.astype('i')
-        except TypeError:
-            pass
+            tsd.index = (
+                tsd.index.to_julian_date() - epoch_date.to_julian_date()
+            ) * frac
 
-    elif to == 'datetime':
-        tsd.index = pd.to_datetime(tsd.index.values,
-                                   origin=epoch_dates.setdefault(epoch,
-                                                                 epoch),
-                                   unit=interval)
-    else:
-        raise ValueError("""
-*
-*   The 'to' argument must be 'number' or 'datetime'.  You gave {0}.
-*
-""".format(to))
+        if any(tsd.index != tsd.index.astype("int64")) is False:
+            tsd.index = tsd.index.astype("int64")
+
+    elif to == "datetime":
+        tsd.index = pd.to_datetime(
+            tsd.index.values, origin=epoch_dates.setdefault(epoch, epoch), unit=interval
+        )
 
     if names is None:
-        tsd.index.name = '{0}_date'.format(epoch)
+        tsd.index.name = "{0}_date".format(epoch)
 
-    if to == 'datetime':
-        index_type = 'number'
+    if to == "datetime":
+        index_type = "number"
         nstart_date = start_date
         nend_date = end_date
         nround_index = round_index
-    elif to == 'number':
-        index_type = 'datetime'
+    elif to == "number":
+        index_type = "datetime"
         nstart_date = None
         nend_date = None
         nround_index = None
-    tsd = tsutils.common_kwds(tsd,
-                              start_date=nstart_date,
-                              end_date=nend_date,
-                              round_index=nround_index)
+    tsd = tsutils.common_kwds(
+        tsd, start_date=nstart_date, end_date=nend_date, round_index=nround_index
+    )
     return tsd
 
 

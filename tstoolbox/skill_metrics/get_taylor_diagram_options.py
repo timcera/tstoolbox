@@ -114,45 +114,45 @@ def get_taylor_diagram_options(*args, **kwargs):
 
     # Set default parameters for all options
     option = {}
-    option['alpha'] = 1.0
-    option['axismax'] = 0.0
-    option['checkstats'] = 'off'
+    option["alpha"] = 1.0
+    option["axismax"] = 0.0
+    option["checkstats"] = "off"
 
-    option['colcor'] = (0, 0, 1)  # blue
-    option['colobs'] = 'm'  # magenta
-    option['colrms'] = (0, .6, 0)  # medium green
-    option['colstd'] = (0, 0, 0)  # black
+    option["colcor"] = (0, 0, 1)  # blue
+    option["colobs"] = "m"  # magenta
+    option["colrms"] = (0, 0.6, 0)  # medium green
+    option["colstd"] = (0, 0, 0)  # black
 
-    option['colormap'] = 'off'
+    option["colormap"] = "off"
 
-    option['markercolor'] = 'r'
-    option['markerdisplayed'] = 'marker'
-    option['markerlabel'] = ''
-    option['markerlabelcolor'] = 'k'
-    option['markerlegend'] = 'off'
-    option['markerobs'] = 'none'
-    option['markersize'] = 10
+    option["markercolor"] = "r"
+    option["markerdisplayed"] = "marker"
+    option["markerlabel"] = ""
+    option["markerlabelcolor"] = "k"
+    option["markerlegend"] = "off"
+    option["markerobs"] = "none"
+    option["markersize"] = 10
 
-    option['nonrmsdz'] = 'off'
+    option["nonrmsdz"] = "off"
     negative = cors[np.where(cors < 0.0)]
     if len(negative) > 0:
-        option['numberpanels'] = 2  # double panel
+        option["numberpanels"] = 2  # double panel
     else:
-        option['numberpanels'] = 1  # single panel
+        option["numberpanels"] = 1  # single panel
 
-    option['overlay'] = 'off'
-    option['rincrms'] = []
-    option['rincstd'] = []
-    option['rmslabelformat'] = '0'
+    option["overlay"] = "off"
+    option["rincrms"] = []
+    option["rincstd"] = []
+    option["rmslabelformat"] = "0"
 
-    option['showlabelscor'] = 'on'
-    option['showlabelsrms'] = 'on'
-    option['showlabelsstd'] = 'on'
+    option["showlabelscor"] = "on"
+    option["showlabelsrms"] = "on"
+    option["showlabelsstd"] = "on"
 
-    option['stylecor'] = '-.'
-    option['styleobs'] = ''
-    option['stylerms'] = '--'
-    option['stylestd'] = ':'
+    option["stylecor"] = "-."
+    option["styleobs"] = ""
+    option["stylerms"] = "--"
+    option["stylestd"] = ":"
 
     # Note that "0" must be explicitly given or a scientific number is
     # stored
@@ -163,21 +163,21 @@ def get_taylor_diagram_options(*args, **kwargs):
     values = np.linspace(-0.1, -0.9, 9)
     tickval2.extend(values)
     tickval2.extend([-0.95, -0.99, -1])
-    option['tickcor'] = (tickval1, tickval2)  # store as tuple
+    option["tickcor"] = (tickval1, tickval2)  # store as tuple
 
-    option['tickrms'] = []
-    option['tickstd'] = []
-    option['tickrmsangle'] = -1
-    option['titlecolorbar'] = ''
-    option['titlecor'] = 'on'
-    option['titleobs'] = ''
-    option['titlerms'] = 'on'
-    option['titlestd'] = 'on'
+    option["tickrms"] = []
+    option["tickstd"] = []
+    option["tickrmsangle"] = -1
+    option["titlecolorbar"] = ""
+    option["titlecor"] = "on"
+    option["titleobs"] = ""
+    option["titlerms"] = "on"
+    option["titlestd"] = "on"
 
-    option['widthcor'] = 1.0
-    option['widthobs'] = 1.0
-    option['widthrms'] = 1.0
-    option['widthstd'] = 1.0
+    option["widthcor"] = 1.0
+    option["widthobs"] = 1.0
+    option["widthrms"] = 1.0
+    option["widthstd"] = 1.0
 
     if nargin == 0:
         # No options requested, so return with only defaults
@@ -187,66 +187,69 @@ def get_taylor_diagram_options(*args, **kwargs):
     for optname, optvalue in kwargs.items():
         optname = optname.lower()
         if optname not in option:
-            raise ValueError('Unrecognized option: ' + optname)
+            raise ValueError("Unrecognized option: " + optname)
         else:
             # Replace option value with that from arguments
-            if optname == 'tickcor':
-                list1 = option['tickcor'][0]
-                list2 = option['tickcor'][1]
-                if option['numberpanels'] == 1:
+            if optname == "tickcor":
+                list1 = option["tickcor"][0]
+                list2 = option["tickcor"][1]
+                if option["numberpanels"] == 1:
                     list1 = optvalue
                 else:
                     list2 = optvalue
-                option['tickcor'] = (list1, list2)
+                option["tickcor"] = (list1, list2)
             else:
                 option[optname] = optvalue
 
             # Check values for specific options
-            if optname == 'checkstats':
-                option['checkstats'] = check_on_off(option['checkstats'])
-            elif optname == 'markerlabel':
+            if optname == "checkstats":
+                option["checkstats"] = check_on_off(option["checkstats"])
+            elif optname == "markerlabel":
                 if not isinstance(optvalue, list):
-                    raise ValueError('Option value is not a list: ' +
-                                     str(optvalue))
-                option['markerlabel'] = optvalue[1:]
-            elif optname == 'markerlegend':
-                option['markerlegend'] = check_on_off(option['markerlegend'])
-            elif optname == 'overlay':
-                option['overlay'] = check_on_off(option['overlay'])
-            elif optname == 'rmslabelformat':
+                    raise ValueError("Option value is not a list: " + str(optvalue))
+                option["markerlabel"] = optvalue[1:]
+            elif optname == "markerlegend":
+                option["markerlegend"] = check_on_off(option["markerlegend"])
+            elif optname == "overlay":
+                option["overlay"] = check_on_off(option["overlay"])
+            elif optname == "rmslabelformat":
                 # Check for valid string format
-                labelformat = '{' + optvalue + '}'
+                labelformat = "{" + optvalue + "}"
                 try:
                     labelformat.format(99.0)
                 except ValueError:
-                    raise ValueError("""
+                    raise ValueError(
+                        """
 *
 *   Invalid string format for rmslabelformat: {0}
 *
-""".format(optvalue))
-            elif optname == 'showlabelscor':
-                option['showlabelscor'] = check_on_off(option['showlabelscor'])
-            elif optname == 'showlabelsrms':
-                option['showlabelsrms'] = check_on_off(option['showlabelsrms'])
-            elif optname == 'showlabelsstd':
-                option['showlabelsstd'] = check_on_off(option['showlabelsstd'])
-            elif optname == 'tickrms':
-                option['tickrms'] = np.sort(optvalue)
-                option['rincrms'] = (max(option['tickrms']) -
-                                     min(option['tickrms'])) / \
-                    len(option['tickrms'])
-            elif optname == 'tickstd':
-                option['tickstd'] = np.sort(optvalue)
-                option['rincstd'] = (max(option['tickstd']) -
-                                     min(option['tickstd'])) / \
-                    len(option['tickstd'])
-            elif optname == 'titlecor':
-                option['titlecor'] = check_on_off(option['titlecor'])
-            elif optname == 'titlerms':
-                option['titlerms'] = check_on_off(option['titlerms'])
-            elif optname == 'titlestd':
-                option['titlestd'] = check_on_off(option['titlestd'])
+""".format(
+                            optvalue
+                        )
+                    )
+            elif optname == "showlabelscor":
+                option["showlabelscor"] = check_on_off(option["showlabelscor"])
+            elif optname == "showlabelsrms":
+                option["showlabelsrms"] = check_on_off(option["showlabelsrms"])
+            elif optname == "showlabelsstd":
+                option["showlabelsstd"] = check_on_off(option["showlabelsstd"])
+            elif optname == "tickrms":
+                option["tickrms"] = np.sort(optvalue)
+                option["rincrms"] = (
+                    max(option["tickrms"]) - min(option["tickrms"])
+                ) / len(option["tickrms"])
+            elif optname == "tickstd":
+                option["tickstd"] = np.sort(optvalue)
+                option["rincstd"] = (
+                    max(option["tickstd"]) - min(option["tickstd"])
+                ) / len(option["tickstd"])
+            elif optname == "titlecor":
+                option["titlecor"] = check_on_off(option["titlecor"])
+            elif optname == "titlerms":
+                option["titlerms"] = check_on_off(option["titlerms"])
+            elif optname == "titlestd":
+                option["titlestd"] = check_on_off(option["titlestd"])
 
-    option['colormap'] = option['nonrmsdz']
+    option["colormap"] = option["nonrmsdz"]
 
     return option

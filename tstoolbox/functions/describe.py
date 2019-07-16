@@ -10,21 +10,23 @@ from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
-@mando.command('describe', formatter_class=RSTHelpFormatter, doctype='numpy')
+@mando.command("describe", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
-def describe_cli(input_ts='-',
-                 columns=None,
-                 start_date=None,
-                 end_date=None,
-                 dropna='no',
-                 skiprows=None,
-                 index_type='datetime',
-                 names=None,
-                 clean=False,
-                 transpose=False):
+def describe_cli(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    transpose=False,
+):
     """Print out statistics for the time-series.
 
     Parameters
@@ -44,45 +46,52 @@ def describe_cli(input_ts='-',
     {clean}
 
     """
-    tsutils._printiso(describe(input_ts=input_ts,
-                               columns=columns,
-                               start_date=start_date,
-                               end_date=end_date,
-                               dropna=dropna,
-                               skiprows=skiprows,
-                               index_type=index_type,
-                               names=names,
-                               clean=clean,
-                               transpose=transpose),
-                      showindex='always')
+    tsutils._printiso(
+        describe(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            dropna=dropna,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            clean=clean,
+            transpose=transpose,
+        ),
+        showindex="always",
+    )
 
 
-def describe(input_ts='-',
-             columns=None,
-             start_date=None,
-             end_date=None,
-             dropna='no',
-             skiprows=None,
-             index_type='datetime',
-             names=None,
-             clean=False,
-             transpose=False):
+def describe(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    transpose=False,
+):
     """Print out statistics for the time-series."""
-    tsd = tsutils.common_kwds(tsutils.read_iso_ts(input_ts,
-                                                  skiprows=skiprows,
-                                                  names=names,
-                                                  index_type=index_type),
-                              start_date=start_date,
-                              end_date=end_date,
-                              pick=columns,
-                              dropna=dropna,
-                              clean=clean)
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        dropna=dropna,
+        clean=clean,
+    )
     if transpose is True:
         ntsd = tsd.describe().transpose()
     else:
         ntsd = tsd.describe()
 
-    ntsd.index.name = 'Statistic'
+    ntsd.index.name = "Statistic"
     return ntsd
 
 

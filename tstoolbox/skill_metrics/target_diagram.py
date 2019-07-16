@@ -2,9 +2,14 @@ from array import array
 
 import numpy as np
 
-from . import (get_target_diagram_axes, get_target_diagram_options,
-               overlay_target_diagram_circles, plot_pattern_diagram_colorbar,
-               plot_pattern_diagram_markers, plot_target_axes)
+from . import (
+    get_target_diagram_axes,
+    get_target_diagram_options,
+    overlay_target_diagram_circles,
+    plot_pattern_diagram_colorbar,
+    plot_pattern_diagram_markers,
+    plot_target_axes,
+)
 
 
 def target_diagram(*args, **kwargs):
@@ -65,21 +70,20 @@ def target_diagram(*args, **kwargs):
     axes = get_target_diagram_axes(rmsds, bs, option)
 
     # Plot axes for target diagram
-    if option['overlay'] == 'off':
+    if option["overlay"] == "off":
         plot_target_axes(axes)
 
     # __ Overlay circles
     overlay_target_diagram_circles(option)
 
     # Plot data points
-    lowcase = option['markerdisplayed'].lower()
-    if lowcase == 'marker':
+    lowcase = option["markerdisplayed"].lower()
+    if lowcase == "marker":
         plot_pattern_diagram_markers(rmsds, bs, option)
-    elif lowcase == 'colorbar':
+    elif lowcase == "colorbar":
         plot_pattern_diagram_colorbar(rmsds, bs, rmsdxz, option)
     else:
-        raise ValueError('Unrecognized option: ' +
-                         option['markerdisplayed'])
+        raise ValueError("Unrecognized option: " + option["markerdisplayed"])
 
 
 def _get_target_diagram_arguments(*args):
@@ -114,7 +118,7 @@ def _get_target_diagram_arguments(*args):
         _display_target_diagram_options()
         return bs, rmsds, rmsdxz
     elif nargin != 3:
-        raise ValueError('Must supply 3 arguments.')
+        raise ValueError("Must supply 3 arguments.")
 
     bs = args[0]
     rmsds = args[1]
@@ -126,84 +130,102 @@ def _get_target_diagram_arguments(*args):
     if isinstance(bs, numbers.Number):
         bs = np.array(bs, ndmin=1)
     if not isinstance(bs, np.ndarray):
-        raise ValueError('Argument bs is not a numeric array')
+        raise ValueError("Argument bs is not a numeric array")
 
     if isinstance(rmsds, array):
         rmsds = np.array(rmsds)
     if isinstance(rmsds, numbers.Number):
         rmsds = np.array(rmsds, ndmin=1)
     if not isinstance(rmsds, np.ndarray):
-        raise ValueError('Argument rmsds is not a numeric array')
+        raise ValueError("Argument rmsds is not a numeric array")
 
     if isinstance(rmsdxz, array):
         rmsdxz = np.array(rmsdxz)
     if isinstance(rmsdxz, numbers.Number):
         rmsdxz = np.array(rmsdxz, ndmin=1)
     if not isinstance(rmsdxz, np.ndarray):
-        raise ValueError('Argument rmsdxz is not a numeric array')
+        raise ValueError("Argument rmsdxz is not a numeric array")
 
     return bs, rmsds, rmsdxz
 
 
 def _display_target_diagram_options():
     """Display available options for TARGET_DIAGRAM function."""
-    _disp('General options:')
-    _dispopt("'overlay'", "'on' / 'off' (default): " +
-             'Switch to overlay current statistics on target diagram. ' +
-             '\n\t\tOnly markers will be displayed.')
-    _dispopt("'colormap'", "'on'/ 'off' (default): " +
-             "Switch to map color shading of markers to colormap ('on')\n\t\t" +
-             "or min to max range of rmsdxz values ('off').\n\t\t" +
-             "Set to same value as option['nonrmsdxz'].")
-    _disp('')
-
-    _disp('Marker options:')
-    _dispopt("'MarkerDisplayed'",
-             "'marker' (default): Experiments are represented by individual symbols\n\t\t" +
-             "'colorBar': Experiments are represented by a color described " +
-             'in a colorbar')
-    _disp("OPTIONS when 'MarkerDisplayed' == 'marker'")
-    _dispopt("'markerLabel'", 'Labels for markers')
-    _dispopt("'markerLabelColor'", 'Marker label color (Default: black)')
-    _dispopt("'markerColor'", 'Marker color')
+    _disp("General options:")
     _dispopt(
-        "'markerLegend'",
-        "'on' / 'off' (default): Use legend for markers'")
-    _dispopt("'markerSize'", 'Marker size (Default: 10)')
+        "'overlay'",
+        "'on' / 'off' (default): "
+        + "Switch to overlay current statistics on target diagram. "
+        + "\n\t\tOnly markers will be displayed.",
+    )
+    _dispopt(
+        "'colormap'",
+        "'on'/ 'off' (default): "
+        + "Switch to map color shading of markers to colormap ('on')\n\t\t"
+        + "or min to max range of rmsdxz values ('off').\n\t\t"
+        + "Set to same value as option['nonrmsdxz'].",
+    )
+    _disp("")
+
+    _disp("Marker options:")
+    _dispopt(
+        "'MarkerDisplayed'",
+        "'marker' (default): Experiments are represented by individual symbols\n\t\t"
+        + "'colorBar': Experiments are represented by a color described "
+        + "in a colorbar",
+    )
+    _disp("OPTIONS when 'MarkerDisplayed' == 'marker'")
+    _dispopt("'markerLabel'", "Labels for markers")
+    _dispopt("'markerLabelColor'", "Marker label color (Default: black)")
+    _dispopt("'markerColor'", "Marker color")
+    _dispopt("'markerLegend'", "'on' / 'off' (default): Use legend for markers'")
+    _dispopt("'markerSize'", "Marker size (Default: 10)")
     _disp("OPTIONS when 'MarkerDisplayed' == 'colorbar'")
-    _dispopt("'nonrmsdxz'", "'on'/ 'off' (default): " +
-             'Values in rmsds do not correspond to total RMS Differences.\n\t\t' +
-             '(Used to make range of rmsds values appear above color bar.)')
-    _dispopt("'titleColorBar'", 'Title of the colorbar.')
-    _disp('')
+    _dispopt(
+        "'nonrmsdxz'",
+        "'on'/ 'off' (default): "
+        + "Values in rmsds do not correspond to total RMS Differences.\n\t\t"
+        + "(Used to make range of rmsds values appear above color bar.)",
+    )
+    _dispopt("'titleColorBar'", "Title of the colorbar.")
+    _disp("")
 
-    _disp('Axes options:')
-    _dispopt("'ticks'", 'define tick positions ' +
-             '(default is that used by axis function)')
-    _dispopt("'xtickLabelPos'", 'position of the tick labels ' +
-             'along the x-axis (empty by default)')
-    _dispopt("'ytickLabelPos'", 'position of the tick labels ' +
-             'along the y-axis (empty by default)')
+    _disp("Axes options:")
+    _dispopt(
+        "'ticks'", "define tick positions " + "(default is that used by axis function)"
+    )
+    _dispopt(
+        "'xtickLabelPos'",
+        "position of the tick labels " + "along the x-axis (empty by default)",
+    )
+    _dispopt(
+        "'ytickLabelPos'",
+        "position of the tick labels " + "along the y-axis (empty by default)",
+    )
     _dispopt("'equalAxes'", "'on' (default) / 'off': Set axes to be equal")
-    _dispopt("'limitAxis'", 'Max for the Bias & uRMSD axis')
-    _disp('')
+    _dispopt("'limitAxis'", "Max for the Bias & uRMSD axis")
+    _disp("")
 
-    _disp('Diagram options:')
+    _disp("Diagram options:")
     _dispopt(
         "'alpha'",
-        'Blending of symbol face color (0.0 transparent through 1.0 opaque)' +
-        '\n\t\t' +
-        '(Default: 1.0)')
-    _dispopt("'axismax'", 'Maximum for the Bias & uRMSD axis')
-    _dispopt("'circles'", 'define the radii of circles to draw ' +
-             '(default of (maximum rmsds)*[.7 1], [.7 1] when normalized diagram)')
-    _dispopt("'circleLineSpec'", 'Circle line specification (default ' +
-             "dashed black, '--k')")
-    _dispopt("'circleLineWidth'", 'Circle line width')
-    _dispopt("'obsUncertainty'", 'Observational Uncertainty (default of 0)')
+        "Blending of symbol face color (0.0 transparent through 1.0 opaque)"
+        + "\n\t\t"
+        + "(Default: 1.0)",
+    )
+    _dispopt("'axismax'", "Maximum for the Bias & uRMSD axis")
     _dispopt(
-        "'normalized'",
-        "'on' / 'off' (default): normalized target diagram")
+        "'circles'",
+        "define the radii of circles to draw "
+        + "(default of (maximum rmsds)*[.7 1], [.7 1] when normalized diagram)",
+    )
+    _dispopt(
+        "'circleLineSpec'",
+        "Circle line specification (default " + "dashed black, '--k')",
+    )
+    _dispopt("'circleLineWidth'", "Circle line width")
+    _dispopt("'obsUncertainty'", "Observational Uncertainty (default of 0)")
+    _dispopt("'normalized'", "'on' / 'off' (default): normalized target diagram")
 
 
 def _disp(text):
@@ -218,5 +240,5 @@ def _dispopt(optname, optval):
     It displays the option name OPTNAME on a line by itself followed by its
     value OPTVAL on the following line.
     """
-    _disp('\t%s' % optname)
-    _disp('\t\t%s' % optval)
+    _disp("\t%s" % optname)
+    _disp("\t\t%s" % optval)

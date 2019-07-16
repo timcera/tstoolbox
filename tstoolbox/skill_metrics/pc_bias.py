@@ -23,6 +23,6 @@ def pc_bias(simulated, observed):
     utils.check_arrays(simulated, observed)
 
     # Calculate bias in means
-    b = 100.0*np.sum(simulated-observed)/np.sum(observed)
+    b = 100.0 * np.sum(simulated - observed) / np.sum(observed)
 
     return b
