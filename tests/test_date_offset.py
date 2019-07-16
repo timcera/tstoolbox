@@ -16,7 +16,6 @@ except:
     from io import StringIO
 
 
-
 test_sinwave = r"""Datetime,Value
 1999-12-31 23:00:00,0
 2000-01-01 00:00:00,0.258819
@@ -45,18 +44,10 @@ test_sinwave = r"""Datetime,Value
 """
 
 
-
 class TestDateOffset(TestCase):
     def setUp(self):
-        self.ats = pd.read_csv(StringIO(test_sinwave),
-                               parse_dates=True,
-                               index_col=[0])
-
+        self.ats = pd.read_csv(StringIO(test_sinwave), parse_dates=True, index_col=[0])
 
     def test_data_offset(self):
-        out = tstoolbox.date_offset(-1,
-                                    'H',
-                                    input_ts='tests/data_sine.csv')
-        assert_frame_equal(out,
-                           self.ats,
-                           check_dtype=False)
+        out = tstoolbox.date_offset(-1, "H", input_ts="tests/data_sine.csv")
+        assert_frame_equal(out, self.ats, check_dtype=False)

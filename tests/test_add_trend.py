@@ -61,14 +61,13 @@ class TestAddTrend(TestCase):
 2011-01-02 22:00:00,2.95745
 2011-01-02 23:00:00,3
 """
-        self.add_trend_direct = tstoolbox.date_slice(
-            input_ts=self.add_trend_cli)
-        self.add_trend_direct.index.name = 'Datetime'
+        self.add_trend_direct = tstoolbox.date_slice(input_ts=self.add_trend_cli)
+        self.add_trend_direct.index.name = "Datetime"
         self.add_trend_direct = tsutils.memory_optimize(self.add_trend_direct)
 
     def test_add_trend_direct(self):
         """Add trend using API."""
-        out = tstoolbox.add_trend(-1.0, 1.0, input_ts='tests/data_flat.csv')
+        out = tstoolbox.add_trend(-1.0, 1.0, input_ts="tests/data_flat.csv")
         assert_frame_equal(out, self.add_trend_direct)
 
     def test_add_trend_cli(self):

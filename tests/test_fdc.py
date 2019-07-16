@@ -9,16 +9,15 @@ from . import capture
 
 
 class TestFDC(TestCase):
-
     def linebyline(self, out, teststr):
-        for test1, test2 in zip(out.decode().split('\n'), teststr.split('\n')):
+        for test1, test2 in zip(out.decode().split("\n"), teststr.split("\n")):
             if not test1:
                 continue
-            if 'Exceed' in test1:
+            if "Exceed" in test1:
                 self.assertEqual(test1, test2)
                 continue
-            test1_words = test1.split(',')
-            test2_words = test2.split(',')
+            test1_words = test1.split(",")
+            test2_words = test2.split(",")
             test1_words = [float(i) for i in test1_words]
             test2_words = [float(i) for i in test2_words]
             for t1, t2 in zip(test1_words, test2_words):
@@ -26,8 +25,9 @@ class TestFDC(TestCase):
 
     def test_flat_norm(self):
         """Test linear ramp CLI calculation of the FDC."""
-        out = capture.capture(tstoolbox.calculate_fdc,
-                              input_ts='tests/data_flat_01.csv')
+        out = capture.capture(
+            tstoolbox.calculate_fdc, input_ts="tests/data_flat_01.csv"
+        )
         teststr = """Exceedance, Value, Exceedance_Label
 -1.78615556126, 2, 0.037037037037
 -1.44610359292, 2, 0.0740740740741
@@ -60,9 +60,11 @@ class TestFDC(TestCase):
 
     def test_flat_linear(self):
         """Test FDC API with linear plotting position."""
-        out = capture.capture(tstoolbox.calculate_fdc,
-                              plotting_position='california',
-                              input_ts='tests/data_flat_01.csv')
+        out = capture.capture(
+            tstoolbox.calculate_fdc,
+            plotting_position="california",
+            input_ts="tests/data_flat_01.csv",
+        )
         teststr = """Exceedance, Value, Exceedance_Label
 0.037037037037, 2, 0.037037037037
 0.0740740740741, 2, 0.0740740740741
@@ -95,9 +97,11 @@ class TestFDC(TestCase):
 
     def test_sunspot(self):
         """Test normal plotting position FDC API."""
-        out = capture.capture(tstoolbox.calculate_fdc,
-                              plotting_position='weibull',
-                              input_ts='tests/data_sunspot.csv')
-        fp = open('tests/sunspot_area_fdc_compare.txt', 'r')
-        teststr = ''.join(fp.readlines())
+        out = capture.capture(
+            tstoolbox.calculate_fdc,
+            plotting_position="weibull",
+            input_ts="tests/data_sunspot.csv",
+        )
+        fp = open("tests/sunspot_area_fdc_compare.txt", "r")
+        teststr = "".join(fp.readlines())
         self.linebyline(out, teststr)

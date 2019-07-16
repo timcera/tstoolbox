@@ -39,12 +39,11 @@ test_sinwave = """Datetime,0::,0::peak,0::valley
 
 class TestClean(TestCase):
     def setUp(self):
-        self.ats = tstoolbox.read(os.path.join('tests', 'data_sine.csv'))
-        self.ats.index.name = 'Datetime'
-        self.ats.columns = ['Value']
+        self.ats = tstoolbox.read(os.path.join("tests", "data_sine.csv"))
+        self.ats.index.name = "Datetime"
+        self.ats.columns = ["Value"]
 
     def test_clean(self):
-        out = tstoolbox.read('tests/data_dirty_index.csv',
-                             clean=True)
+        out = tstoolbox.read("tests/data_dirty_index.csv", clean=True)
         self.maxDiff = None
         assert_frame_equal(out, self.ats)

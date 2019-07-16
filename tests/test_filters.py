@@ -41,69 +41,70 @@ test_sinwave = """Datetime,0::,0::peak,0::valley
 
 class TestFilter(TestCase):
     def setUp(self):
-        self.ats = tstoolbox.read(os.path.join('tests', 'data_sine.csv'))
-        self.ats.index.name = 'Datetime'
-        self.ats.columns = ['Value']
+        self.ats = tstoolbox.read(os.path.join("tests", "data_sine.csv"))
+        self.ats.index.name = "Datetime"
+        self.ats.columns = ["Value"]
 
-        self.flat_3 = self.ats.join(tstoolbox.read(os.path.join('tests',
-                                                                'data_filter_flat.csv')))
-        self.flat_3.columns = ['Value', 'Value::filter']
+        self.flat_3 = self.ats.join(
+            tstoolbox.read(os.path.join("tests", "data_filter_flat.csv"))
+        )
+        self.flat_3.columns = ["Value", "Value::filter"]
 
-        self.hanning = self.ats.join(tstoolbox.read(os.path.join('tests',
-                                                                 'data_filter_hanning.csv')))
-        self.hanning.columns = ['Value', 'Value::filter']
+        self.hanning = self.ats.join(
+            tstoolbox.read(os.path.join("tests", "data_filter_hanning.csv"))
+        )
+        self.hanning.columns = ["Value", "Value::filter"]
 
-        self.fft_lowpass = self.ats.join(tstoolbox.read(os.path.join('tests',
-                                                                     'data_filter_fft_lowpass.csv')))
-        self.fft_lowpass.columns = ['Value', 'Value::filter']
+        self.fft_lowpass = self.ats.join(
+            tstoolbox.read(os.path.join("tests", "data_filter_fft_lowpass.csv"))
+        )
+        self.fft_lowpass.columns = ["Value", "Value::filter"]
 
         self.fft_highpass = self.ats.copy()
-        self.fft_highpass.columns = ['Value::filter']
+        self.fft_highpass.columns = ["Value::filter"]
         self.fft_highpass = self.ats.join(self.fft_highpass)
 
     def test_filter_flat(self):
-        out = tstoolbox.filter('flat',
-                               input_ts='tests/data_sine.csv',
-                               print_input=True)
+        out = tstoolbox.filter("flat", input_ts="tests/data_sine.csv", print_input=True)
         self.maxDiff = None
         assert_frame_equal(out, self.flat_3, check_column_type=False)
 
     def test_filter_hanning(self):
-        out = tstoolbox.filter('hanning',
-                               input_ts='tests/data_sine.csv',
-                               print_input=True)
+        out = tstoolbox.filter(
+            "hanning", input_ts="tests/data_sine.csv", print_input=True
+        )
         self.maxDiff = None
         assert_frame_equal(out, self.hanning, check_column_type=False)
 
     def test_filter_fft_lowpass(self):
-        out = tstoolbox.filter('fft_lowpass',
-                               input_ts='tests/data_sine.csv',
-                               print_input=True,
-                               cutoff_period=50)
+        out = tstoolbox.filter(
+            "fft_lowpass",
+            input_ts="tests/data_sine.csv",
+            print_input=True,
+            cutoff_period=50,
+        )
         self.maxDiff = None
         assert_frame_equal(out, self.fft_lowpass, check_column_type=False)
 
     def test_small_window_len(self):
-        out = tstoolbox.filter('flat',
-                               input_ts='tests/data_sine.csv',
-                               window_len=2)
-        out1 = tstoolbox.read('tests/data_sine.csv')
-        out1.columns = ['Value::filter']
+        out = tstoolbox.filter("flat", input_ts="tests/data_sine.csv", window_len=2)
+        out1 = tstoolbox.read("tests/data_sine.csv")
+        out1.columns = ["Value::filter"]
         # NOp
         assert_frame_equal(out, out1)
 
     def test_large_window_len(self):
         with pytest.raises(ValueError) as e_info:
-            _ = tstoolbox.filter('flat',
-                                 input_ts='tests/data_sine.csv',
-                                 window_len=1000)
-        assert r'Input vector (length=' in str(e_info.value)
+            _ = tstoolbox.filter(
+                "flat", input_ts="tests/data_sine.csv", window_len=1000
+            )
+        assert r"Input vector (length=" in str(e_info.value)
 
     def test_filter_type(self):
         with pytest.raises(ValueError) as e_info:
-            _ = tstoolbox.filter('flatter',
-                                 input_ts='tests/data_sine.csv')
-        assert r'Filter type ' in str(e_info.value)
+            _ = tstoolbox.filter("flatter", input_ts="tests/data_sine.csv")
+        assert r"Filter type " in str(e_info.value)
+
 
 #    def test_filter_fft_highpass(self):
 #        out = tstoolbox.filter('fft_highpass',
