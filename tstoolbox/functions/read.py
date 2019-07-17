@@ -34,7 +34,8 @@ def read_cli(
     float_format="%g",
     round_index=None,
 ):
-    """Collect time series from a list of pickle or csv files.
+    """
+    Collect time series from a list of pickle or csv files.
 
     Prints the read in time-series in the tstoolbox standard format.
 
@@ -66,7 +67,6 @@ def read_cli(
     {target_units}
     {float_format}
     {round_index}
-
     """
     tsutils._printiso(
         read(
