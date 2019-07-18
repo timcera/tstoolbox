@@ -176,7 +176,7 @@ def gof(
 
     tsd = tsd.dropna(how="any")
 
-    import skill_metrics as sm
+    from .. import skill_metrics as sm
     import pandas as pd
 
     statval = []

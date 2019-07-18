@@ -998,8 +998,8 @@ def plot(
         if legend is True:
             plt.legend(loc="best")
     elif type in ["taylor"]:
-        from skill_metrics import centered_rms_dev
-        from skill_metrics import taylor_diagram
+        from .. skill_metrics import centered_rms_dev
+        from .. skill_metrics import taylor_diagram
 
         ref = tsd.iloc[:, 0]
         std = [pd.np.std(ref)]
@@ -1011,10 +1011,10 @@ def plot(
             crmsd.append(centered_rms_dev(tsd.iloc[:, col].values, ref.values))
         taylor_diagram(pd.np.array(std), pd.np.array(crmsd), pd.np.array(ccoef))
     elif type in ["target"]:
-        from skill_metrics import centered_rms_dev
-        from skill_metrics import rmsd
-        from skill_metrics import bias
-        from skill_metrics import target_diagram
+        from .. skill_metrics import centered_rms_dev
+        from .. skill_metrics import rmsd
+        from .. skill_metrics import bias
+        from .. skill_metrics import target_diagram
 
         biases = []
         rmsds = []
