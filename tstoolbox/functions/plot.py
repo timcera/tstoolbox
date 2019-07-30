@@ -52,7 +52,7 @@ def _know_your_limits(xylimits, axis="arithmetic"):
     Might prove useful in the future in a more generic spot.  It
     normalizes the different representations.
     """
-    nlim = tsutils.make_list(xylimits)
+    nlim = tsutils.make_list(xylimits, n=2)
 
     if axis == "normal":
         if nlim is None:
@@ -927,7 +927,7 @@ def plot(
     xlim = _know_your_limits(xlim, axis=xaxis)
     ylim = _know_your_limits(ylim, axis=yaxis)
 
-    figsize = tsutils.make_list(figsize)
+    figsize = tsutils.make_list(figsize, n=2)
 
     if not isinstance(tsd.index, pd.DatetimeIndex):
         tsd.insert(0, tsd.index.name, tsd.index)

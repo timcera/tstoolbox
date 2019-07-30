@@ -326,10 +326,11 @@ def stride_and_unit(sunit):
     """Split a stride/unit combination into component parts."""
     if sunit is None:
         return sunit
-    unit = sunit.lstrip("1234567890")
-    try:
-        stride = int(sunit.rstrip(unit))
-    except ValueError:
+    unit = sunit.lstrip("+-. 1234567890")
+    stride = freqstr[:freqstr.index(unit)]
+    if len(stride):
+        stride = int(stride)
+    else:
         stride = 1
     return unit, stride
 
@@ -545,48 +546,51 @@ def make_list(*strorlist, **kwds):
     try:
         n = kwds.pop("n")
     except KeyError:
-        n = 0
-
-    if (
-        isinstance(strorlist, (list, tuple))
-        and len(strorlist) == 1
-        and strorlist[0] is None
-    ):
-        return None
+        n = 1
 
     if isinstance(strorlist, (list, tuple)) and len(strorlist) == 1:
+        """ Normalize lists and tuples of length 1 to scalar.
+        """
         strorlist = strorlist[0]
+
+    try:
+        strorlist = strorlist.strip()
+    except AttributeError:
+        pass
 
     if strorlist is None or isinstance(strorlist, (type(None))):
         """ None -> None
         """
         return None
 
-    if isinstance(strorlist, (str, bytes)) and (
-        strorlist == "None" or strorlist.strip() == ""
-    ):
-        """ 'None' -> None
-            ''     -> None
-        """
-        return None
+    if n == 1:
+        if isinstance(strorlist, (int, float)):
+            """ 1      -> [1]
+                1.2    -> [1.2]
+            """
+            return [strorlist]
 
-    if isinstance(strorlist, (int, float)):
-        """ 1      -> [1]
-            1.2    -> [1.2]
-        """
-        return [strorlist]
+        if isinstance(strorlist, (str, bytes)) and (
+            strorlist == "None" or strorlist == ""
+        ):
+            """ 'None' -> None
+                ''     -> None
+            """
+            return None
 
-    if isinstance(strorlist, (str, bytes)):
-        """ '1'   -> [1]
-            '5.7' -> [5.7]
-        """
-        try:
-            return [int(strorlist)]
-        except ValueError:
+        if isinstance(strorlist, (str, bytes)):
+            """ '1'   -> [1]
+                '5.7' -> [5.7]
+
+                Anything other than a scalar int or float continues.
+            """
             try:
-                return [float(strorlist)]
+                return [int(strorlist)]
             except ValueError:
-                pass
+                try:
+                    return [float(strorlist)]
+                except ValueError:
+                    pass
 
     try:
         strorlist = strorlist.split(",")
@@ -594,7 +598,7 @@ def make_list(*strorlist, **kwds):
         pass
 
     # At this point 'strorlist' variable should be a list or tuple.
-    if n > 0:
+    if n > 1:
         if len(strorlist) != n:
             raise ValueError(
                 """
@@ -606,22 +610,22 @@ def make_list(*strorlist, **kwds):
                 )
             )
 
-    # '1, 2, 3'  -> ['1', '2', '3']
-    # '1,rt,5.7' -> ['1', 'rt', '5.7']
+    # [1, 2, 3]          -> [1, 2, 3]
+    # ['1', '2']         -> [1, 2]
 
-    # [1, 2, 3]  -> [1, 2, 3]
-    # ['1', '2'] -> [1, 2]
+    # [1, 'er', 5.6]     -> [1, 'er', 5.6]
+    # [1,'er',5.6]       -> [1, 'er', 5.6]
+    # ['1','er','5.6']   -> [1, 'er', 5.6]
 
-    # [1, 'er', 5.6]   -> [1, 'er', 5.6]
-    # [1,'er',5.6]     -> [1, 'er', 5.6]
-    # ['1','er','5.6'] -> [1, 'er', 5.6]
+    # ['1','','5.6']     -> [1, None, 5.6]
+    # ['1','None','5.6'] -> [1, None, 5.6]
 
     ret = []
     for each in strorlist:
         if isinstance(each, (type(None), int, float)):
             ret.append(each)
             continue
-        if each is None:
+        if each is None or each.strip() == "" or each == "None":
             ret.append(None)
             continue
         try:
@@ -630,9 +634,6 @@ def make_list(*strorlist, **kwds):
             try:
                 ret.append(float(each))
             except ValueError:
-                if each.strip() == "" or each == "None":
-                    ret.append(None)
-                    continue
                 ret.append(each)
     return ret
 
@@ -681,8 +682,8 @@ def common_kwds(
 """
         )
 
-    target_units = make_list(target_units)
-    source_units = make_list(source_units)
+    target_units = make_list(target_units, n=len(ntsd.columns))
+    source_units = make_list(source_units, n=len(ntsd.columns))
 
     ntsd = _pick(ntsd, pick)
 
@@ -1503,7 +1504,10 @@ def read_iso_ts(
         except AttributeError:
             words = ""
         if len(words) > 1:
-            result.index = result.index.dt.localize(words[1])
+            try:
+                result.index = result.index.tz_localize(words[1])
+            except TypeError:
+                pass
             result.index.name = "Datetime:{0}".format(words[1])
         else:
             result.index.name = "Datetime"
