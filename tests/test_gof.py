@@ -24,14 +24,6 @@ class Testgof(TestCase):
         """Test of gof API."""
         out = tstoolbox.gof(
             input_ts=self.df,
-            stats=[
-                "bias",
-                "rmsd",
-                "crmsd",
-                "corrcoef",
-                "murphyss",
-                "nse",
-                "brierss",
-            ],
+            stats=["bias", "rmsd", "crmsd", "corrcoef", "murphyss", "nse", "brierss"],
         )
         assert out == self.gof

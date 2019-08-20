@@ -327,7 +327,7 @@ def stride_and_unit(sunit):
     if sunit is None:
         return sunit
     unit = sunit.lstrip("+-. 1234567890")
-    stride = freqstr[:freqstr.index(unit)]
+    stride = freqstr[: freqstr.index(unit)]
     if len(stride):
         stride = int(stride)
     else:
@@ -1174,7 +1174,6 @@ def _printiso(
     tablefmt="csv",
 ):
     """Separate so can use in tests."""
-    sys.tracebacklimit = 1000
 
     if isinstance(tsd, (pd.DataFrame, pd.Series)):
         if isinstance(tsd, pd.Series):
@@ -1242,59 +1241,6 @@ def _printiso(
         )
     else:
         print(tb(tsd, tablefmt=fmt, showindex=showindex, headers=headers))
-
-
-def test_cli():
-    """The structure to test the cli."""
-    import traceback
-
-    try:
-        oldtracebacklimit = sys.tracebacklimit
-    except AttributeError:
-        oldtracebacklimit = 1000
-    sys.tracebacklimit = 1000
-    cli = False
-    for i in traceback.extract_stack():
-        if os.path.sep + "mando" + os.path.sep in i[0] or "baker" in i[0]:
-            cli = True
-            break
-    sys.tracebacklimit = oldtracebacklimit
-    return cli
-
-
-def printiso(
-    tsd,
-    date_format=None,
-    float_format="%g",
-    tablefmt="csv",
-    headers="keys",
-    showindex="never",
-):
-    """Print or return default output format.
-
-    Used for tstoolbox, wdmtoolbox, swmmtoolbox, and hspfbintoolbox.
-
-    """
-    if test_cli():
-        _printiso(
-            tsd,
-            float_format=float_format,
-            date_format=date_format,
-            tablefmt=tablefmt,
-            headers=headers,
-            showindex=showindex,
-        )
-    else:
-        if isinstance(tsd, pd.DataFrame):
-
-            def rename_map(x):
-                try:
-                    return x.replace(",", "_").replace(" ", "_")
-                except AttributeError:
-                    return x
-
-            tsd.rename(columns=rename_map, inplace=True)
-        return tsd
 
 
 def open_local(filein):
@@ -1521,11 +1467,3 @@ def read_iso_ts(
         result.dropna(how=dropna, inplace=True)
 
     return result
-
-
-def read_excel_csv(fpi, header=None):
-    """Read Excel formatted CSV file."""
-    if header is not None:
-        header = int(header)
-    tsdata = pd.read_csv(fpi, header=header, sep=",", parse_dates=[0], index_col=[0])
-    return tsdata
