@@ -28,12 +28,12 @@ def test_histogram():
     )
 
 
-@pytest.mark.mpl_image_compare
-def test_heatmap():
-    plt.close("all")
-    return tstoolbox.plot(
-        type="heatmap", columns=2, clean=True, input_ts=df, ofilename=None
-    )
+# @pytest.mark.mpl_image_compare
+# def test_heatmap():
+#     plt.close("all")
+#     return tstoolbox.plot(
+#         type="heatmap", columns=2, clean=True, input_ts=df, ofilename=None
+#     )
 
 
 @pytest.mark.mpl_image_compare
