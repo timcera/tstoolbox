@@ -26,6 +26,8 @@ def fill_cli(
     source_units=None,
     target_units=None,
     skiprows=None,
+    from_columns=None,
+    to_columns=None,
 ):
     """Fill missing values (NaN) with different methods.
 
@@ -40,41 +42,38 @@ def fill_cli(
         String contained in single quotes or a number that
         defines the method to use for filling.
 
-        +-----------+---------------------------+
-        | ffill     | assigns NaN values to     |
-        |           | the last good value       |
-        +-----------+---------------------------+
-        | bfill     | assigns NaN values to     |
-        |           | the next good value       |
-        +-----------+---------------------------+
-        | 2.3       | any number: fills all NaN |
-        |           | with this number          |
-        +-----------+---------------------------+
-        | linear    | will linearly interpolate |
-        |           | missing values            |
-        +-----------+---------------------------+
-        | spline    | spline interpolation      |
-        +-----------+---------------------------+
-        | nearest   | nearest good value        |
-        +-----------+---------------------------+
-        | zero      |                           |
-        +-----------+---------------------------+
-        | slinear   |                           |
-        +-----------+---------------------------+
-        | quadratic |                           |
-        +-----------+---------------------------+
-        | cubic     |                           |
-        +-----------+---------------------------+
-        | mean      | fill with mean            |
-        +-----------+---------------------------+
-        | median    | fill with median          |
-        +-----------+---------------------------+
-        | max       | fill with maximum         |
-        +-----------+---------------------------+
-        | min       | fill with minimum         |
-        +-----------+---------------------------+
+        +-----------+----------------------------------------+
+        | method=   | fill missing values with...            |
+        +===========+========================================+
+        | ffill     | ...the last good value                 |
+        +-----------+----------------------------------------+
+        | bfill     | ...the next good value                 |
+        +-----------+----------------------------------------+
+        | 2.3       | ...with this number                    |
+        +-----------+----------------------------------------+
+        | linear    | ...with linearly interpolated values   |
+        +-----------+----------------------------------------+
+        | nearest   | ...nearest good value                  |
+        +-----------+----------------------------------------+
+        | zero      | ...zeroth order spline                 |
+        +-----------+----------------------------------------+
+        | slinear   | ...first order spline                  |
+        +-----------+----------------------------------------+
+        | quadratic | ...second order spline                 |
+        +-----------+----------------------------------------+
+        | cubic     | ...third order spline                  |
+        +-----------+----------------------------------------+
+        | mean      | ...with mean                           |
+        +-----------+----------------------------------------+
+        | median    | ...with median                         |
+        +-----------+----------------------------------------+
+        | max       | ...with maximum                        |
+        +-----------+----------------------------------------+
+        | min       | ...with minimum                        |
+        +-----------+----------------------------------------+
+        | from      | ...with good values from other columns |
+        +-----------+----------------------------------------+
 
-        If a number will fill with that number.
     {print_input}
     {input_ts}
     {start_date}
@@ -86,6 +85,16 @@ def fill_cli(
     {source_units}
     {target_units}
     {columns}
+    from_columns : str or list
+        [required if method='from', otherwise not used]
+
+        List of column names/numbers from which good values will be
+        taken to fill missing values in the `to_columns` keyword.
+    to_columns : str or list
+        [required if method='from', otherwise not used]
+
+        List of column names/numbers that missing values will be
+        replaced in from good values in the `from_columns` keyword.
 
     """
     tsutils._printiso(
@@ -102,6 +111,8 @@ def fill_cli(
             source_units=source_units,
             target_units=target_units,
             skiprows=skiprows,
+            from_columns=from_columns,
+            to_columns=to_columns,
         )
     )
 
@@ -119,6 +130,8 @@ def fill(
     source_units=None,
     target_units=None,
     skiprows=None,
+    from_columns=None,
+    to_columns=None,
 ):
     """Fill missing values (NaN) with different methods."""
     tsd = tsutils.common_kwds(
@@ -169,6 +182,15 @@ def fill(
         ntsd = ntsd.fillna(ntsd.max())
     elif method in ["min"]:
         ntsd = ntsd.fillna(ntsd.min())
+    elif method == "from":
+        from_columns = tsutils.common_kwds(ntsd, pick=from_columns)
+        to_columns = tsutils.common_kwds(ntsd, pick=to_columns)
+        for to in to_columns:
+            for fro in from_columns:
+                mask = ntsd.loc[:, to].isna()
+                if len(mask) == 0:
+                    break
+                ntsd.loc[mask, to] = ntsd.loc[mask, fro]
     else:
         try:
             ntsd = ntsd.fillna(value=float(method))
