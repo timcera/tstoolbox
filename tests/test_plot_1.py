@@ -41,16 +41,16 @@ def test_time_multiple_traces_plot():
     )
 
 
-@pytest.mark.mpl_image_compare
-def test_time_multiple_traces_style_plot():
-    plt.close("all")
-    return tstoolbox.plot(
-        type="time",
-        columns=[2, 3],
-        style="b-,r  ",
-        input_ts="tests/data_daily_sample.csv",
-        ofilename=None,
-    )
+# @pytest.mark.mpl_image_compare
+# def test_time_multiple_traces_style_plot():
+#     plt.close("all")
+#     return tstoolbox.plot(
+#         type="time",
+#         columns=[2, 3],
+#         style="b-,r  ",
+#         input_ts="tests/data_daily_sample.csv",
+#         ofilename=None,
+#     )
 
 
 @pytest.mark.mpl_image_compare
