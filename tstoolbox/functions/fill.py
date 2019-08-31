@@ -11,6 +11,25 @@ import pandas as pd
 from .. import tsutils
 
 
+def _validate_columns(ntsd, from_columns, to_columns):
+    from_columns = tsutils.common_kwds(ntsd, pick=from_columns)
+    to_columns = tsutils.common_kwds(ntsd, pick=to_columns)
+    for to in to_columns:
+        for fro in from_columns:
+            if to == fro:
+                raise ValueError(
+                    """
+*
+*   You can't have columns in both "from_columns", and "to_columns"
+*   keywords.  Instead you have "{to}" in both.
+*
+""".format(
+                        **locals()
+                    )
+                )
+    return from_columns, to_columns
+
+
 @mando.command("fill", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def fill_cli(
@@ -164,7 +183,7 @@ def fill(
     ntsd = pd.concat([predf, ntsd, postf])
     if method in ["ffill", "bfill"]:
         ntsd = ntsd.fillna(method=method)
-    elif method in ["linear"]:
+    elif method == "linear":
         ntsd = ntsd.apply(pd.Series.interpolate, method="values")
     elif method in ["nearest", "zero", "slinear", "quadratic", "cubic"]:
         from scipy.interpolate import interp1d
@@ -174,17 +193,16 @@ def fill(
             f = interp1d(df2.index.values.astype("d"), df2.values, kind=method)
             slices = pd.isnull(ntsd[c])
             ntsd[c][slices] = f(ntsd[c][slices].index.values.astype("d"))
-    elif method in ["mean"]:
+    elif method == "mean":
         ntsd = ntsd.fillna(ntsd.mean())
-    elif method in ["median"]:
+    elif method == "median":
         ntsd = ntsd.fillna(ntsd.median())
-    elif method in ["max"]:
+    elif method == "max":
         ntsd = ntsd.fillna(ntsd.max())
-    elif method in ["min"]:
+    elif method == "min":
         ntsd = ntsd.fillna(ntsd.min())
     elif method == "from":
-        from_columns = tsutils.common_kwds(ntsd, pick=from_columns)
-        to_columns = tsutils.common_kwds(ntsd, pick=to_columns)
+        from_columns, to_columns = _validate_columns(ntsd, from_columns, to_columns)
         for to in to_columns:
             for fro in from_columns:
                 mask = ntsd.loc[:, to].isna()
