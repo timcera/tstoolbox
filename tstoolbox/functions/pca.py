@@ -34,7 +34,8 @@ def pca_cli(
     n_components : int
         [optional, default is None]
 
-        The number of groups to separate the time series into.
+        The columns in the input_ts will be grouped into `n_components`
+        groups.
     {input_ts}
     {columns}
     {start_date}

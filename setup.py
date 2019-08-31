@@ -49,6 +49,7 @@ install_requires = [
     "matplotlib < 3.1 ; python_version < '3.6'",
     "matplotlib ; python_version >= '3.6'",
     "xlsxwriter",
+    "sklearn",
 ]
 
 setup_requires = []
