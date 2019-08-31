@@ -31,6 +31,7 @@ from .functions.expanding_window import expanding_window
 from .functions.fill import fill
 from .functions.filter import filter
 from .functions.gof import gof
+from .functions.lag import lag
 from .functions.normalization import normalization
 from .functions.pca import pca
 from .functions.pct_change import pct_change
