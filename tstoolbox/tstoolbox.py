@@ -20,6 +20,7 @@ from .functions.convert import convert
 from .functions.convert_index import convert_index
 from .functions.convert_index_to_julian import convert_index_to_julian
 from .functions.converttz import converttz
+from .functions.correlation import correlation
 from .functions.createts import createts
 from .functions.date_offset import date_offset
 from .functions.date_slice import date_slice
