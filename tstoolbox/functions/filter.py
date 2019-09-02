@@ -97,7 +97,7 @@ def _transform(vector, cutoff_period, window_len, lopass=None):
         )
 
     factor = np.convolve(factor, [1.0 / window_len] * window_len, mode=1)
-    factor = factor[window_len + 1: -(window_len + 1)]
+    factor = factor[window_len + 1 : -(window_len + 1)]
 
     result = result * factor
 

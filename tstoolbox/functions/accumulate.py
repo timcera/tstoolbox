@@ -73,7 +73,7 @@ def accumulate_cli(
             target_units=target_units,
             print_input=print_input,
         ),
-        tablefmt=tablefmt
+        tablefmt=tablefmt,
     )
 
 

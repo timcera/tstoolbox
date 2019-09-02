@@ -26,7 +26,7 @@ def lag_cli(
     source_units=None,
     target_units=None,
     skiprows=None,
-    tablefmt='csv',
+    tablefmt="csv",
 ):
     """Create a series of lagged time-series.
 
@@ -66,7 +66,7 @@ def lag_cli(
             target_units=target_units,
             skiprows=skiprows,
         ),
-        tablefmt=tablefmt
+        tablefmt=tablefmt,
     )
 
 

@@ -32,7 +32,7 @@ def convert_cli(
     source_units=None,
     target_units=None,
     float_format="%g",
-    tablefmt="csv"
+    tablefmt="csv",
 ):
     """Convert values of a time series by applying a factor and offset.
 
@@ -85,7 +85,7 @@ def convert_cli(
             target_units=target_units,
             float_format=float_format,
         ),
-        tablefmt=tablefmt
+        tablefmt=tablefmt,
     )
 
 

@@ -75,7 +75,7 @@ def calculate_kde_cli(
             target_units=target_units,
             names=names,
         ),
-        tablefmt=tablefmt
+        tablefmt=tablefmt,
     )
 
 
