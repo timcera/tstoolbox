@@ -21,7 +21,7 @@ ureg = UnitRegistry()
 
 docstrings = {
     "target_units": r"""target_units
-        [optional, default is None]
+        [optional, default is None, transformation]
 
         The main purpose of this option is to convert units from those
         specified in the header line of the input into 'target_units'.
@@ -35,7 +35,7 @@ docstrings = {
         This option will also add the 'target_units' string to the column
         names.""",
     "source_units": r"""source_units
-        [optional, default is None]
+        [optional, default is None, transformation]
 
         If unit is specified for the column as the second field of a ':'
         delimited column name, then the specified units and the 'source_units'
@@ -43,12 +43,12 @@ docstrings = {
 
         Any unit string compatible with the 'pint' library can be used.""",
     "names": r"""names
-        [optional, default is None.]
+        [optional, default is None, input filter]
 
         If None, the column names are taken from the first row after
         'skiprows' from the input dataset.""",
     "index_type": r"""index_type : str
-        [optional, default is 'datetime']
+        [optional, default is 'datetime', output format]
 
         Can be either 'number' or 'datetime'.  Use 'number' with index
         values that are Julian dates, or other epoch reference.""",
@@ -100,7 +100,7 @@ docstrings = {
 
             If result is a time series, returns a pandas DataFrame.""",
     "columns": r"""columns
-        [optional, defaults to all columns]
+        [optional, defaults to all columns, input filter]
 
         Columns to select out of input.  Can use column names from the
         first line header or column numbers.  If using numbers, column
@@ -112,29 +112,30 @@ docstrings = {
         with a certain order, you can rearrange columns when data is read
         in.""",
     "start_date": r"""start_date : str
-        [optional, defaults to first date in time-series.]
+        [optional, defaults to first date in time-series, input filter]
 
         The start_date of the series in ISOdatetime format, or 'None'
         for beginning.""",
     "end_date": r"""end_date : str
-        [optional, defaults to last date in time-series.]
+        [optional, defaults to last date in time-series, input filter]
 
         The end_date of the series in ISOdatetime format, or 'None' for
         end.""",
     "dropna": r"""dropna : str
-        [optional, defauls it 'no']
+        [optional, defauls it 'no', input filter]
 
         Set `dropna` to 'any' to have records dropped that have NA value
         in any column, or 'all' to have records dropped that have NA in
         all columns.  Set to 'no' to not drop any records.  The default
         is 'no'.""",
     "print_input": r"""print_input
-        [optional, default is False]
+        [optional, default is False, output format]
 
         If set to 'True' will include the input columns in the output
         table.""",
     "round_index": r"""round_index
-        [optional, default is None which will do nothing to the index]
+        [optional, default is None which will do nothing to the index,
+        output format]
 
         Round the index to the nearest time point.  Can significantly
         improve the performance since can cut down on memory and
@@ -142,17 +143,17 @@ docstrings = {
         a very course interval from a small one.  This could lead to
         duplicate values in the index.""",
     "float_format": r"""float_format
-        [optional]
+        [optional, output format]
 
         Format for float numbers.""",
     "tablefmt": r"""tablefmt : str
-        [optional, default is 'simple']
+        [optional, default is 'csv', output format]
 
         The table format.  Can be one of 'csv', 'tsv', 'plain',
         'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki', 'latex',
         'latex_raw' and 'latex_booktabs'.""",
     "header": r"""header : str
-        [optional, default is 'default']
+        [optional, default is 'default', output format]
 
         This is if you want a different header than is the default for this
         output table.  Pass a list of strings for each column in the table.""",
@@ -290,12 +291,13 @@ docstrings = {
         Where 'i' is the sorted rank of the y value, and 'n' is the
         total number of values to be plotted.""",
     "clean": r"""clean
-        [optional, default is False]
+        [optional, default is False, input filter]
 
         The 'clean' command will repair an index, removing duplicate index
         values and sorting.""",
     "skiprows": r"""skiprows: list-like or integer or callable
-        [optional, default is None which will infer header from first line]
+        [optional, default is None which will infer header from first
+        line, input filter]
 
         Line numbers to skip (0-indexed) or number of lines to skip (int)
         at the start of the file.
@@ -306,13 +308,13 @@ docstrings = {
 
         ``lambda x: x in [0, 2]``.""",
     "groupby": r"""groupby: str
-        [optional, default is None]
+        [optional, default is None, transformation]
 
         The pandas offset code to group the time-series data into.  A special
         code is also available to group 'months_across_years' that will group
         into twelve categories for each month.""",
     "force_freq": r"""force_freq: str
-        [optional]
+        [optional, output format]
 
         Force this frequency for the files.  Typically you will only want to
         enforce a smaller interval where tstoolbox will insert missing values
