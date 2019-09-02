@@ -35,6 +35,7 @@ def aggregate_cli(
     source_units=None,
     target_units=None,
     print_input=False,
+    tablefmt="csv",
 ):
     """Take a time series and aggregate to specified frequency.
 
@@ -59,6 +60,7 @@ def aggregate_cli(
     {source_units}
     {target_units}
     {print_input}
+    {tablefmt}
     agg_interval :
         DEPRECATED:
         Use the 'groupby' option instead.
@@ -85,7 +87,8 @@ def aggregate_cli(
             source_units=source_units,
             target_units=target_units,
             print_input=print_input,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 

@@ -26,6 +26,7 @@ def date_offset_cli(
     source_units=None,
     target_units=None,
     round_index=None,
+    tablefmt="csv",
 ):
     """Apply an offset to a time-series.
 
@@ -54,6 +55,7 @@ def date_offset_cli(
     {source_units}
     {target_units}
     {names}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -74,6 +76,7 @@ def date_offset_cli(
             round_index=round_index,
         ),
         showindex="always",
+        tablefmt=tablefmt,
     )
 
 

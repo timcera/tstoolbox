@@ -32,6 +32,7 @@ def pct_change_cli(
     source_units=None,
     target_units=None,
     float_format="%g",
+    tablefmt="csv",
 ):
     """Return the percent change between times.
 
@@ -68,6 +69,7 @@ def pct_change_cli(
     {print_input}
     {float_format}
     {round_index}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -90,7 +92,8 @@ def pct_change_cli(
             source_units=source_units,
             target_units=target_units,
             float_format=float_format,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 

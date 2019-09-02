@@ -38,6 +38,7 @@ def convert_index_cli(
     source_units=None,
     target_units=None,
     skiprows=None,
+    tablefmt="csv",
 ):
     """Convert datetime to/from Julian dates from different epochs.
 
@@ -144,6 +145,7 @@ def convert_index_cli(
     {names}
     {source_units}
     {target_units}
+    {tablefmt}
 
     """
     tsd = convert_index(
@@ -163,7 +165,7 @@ def convert_index_cli(
         skiprows=skiprows,
     )
     tsd.index = tsd.index.format(formatter=index_str_formatter)
-    tsutils._printiso(tsd)
+    tsutils._printiso(tsd, tablefmt=tablefmt)
 
 
 def convert_index(

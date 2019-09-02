@@ -30,6 +30,7 @@ def calculate_kde_cli(
     source_units=None,
     target_units=None,
     names=None,
+    tablefmt="csv",
 ):
     """Return the kernel density estimation (KDE) curve.
 
@@ -56,6 +57,7 @@ def calculate_kde_cli(
     {source_units}
     {target_units}
     {clean}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -72,7 +74,8 @@ def calculate_kde_cli(
             source_units=source_units,
             target_units=target_units,
             names=names,
-        )
+        ),
+        tablefmt=tablefmt
     )
 
 

@@ -33,6 +33,7 @@ def clip_cli(
     source_units=None,
     target_units=None,
     print_input=False,
+    tablefmt="csv",
 ):
     """Return a time-series with values limited to [a_min, a_max].
 
@@ -61,6 +62,7 @@ def clip_cli(
     {source_units}
     {target_units}
     {round_index}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -80,7 +82,8 @@ def clip_cli(
             source_units=source_units,
             target_units=target_units,
             print_input=print_input,
-        )
+        ),
+        tablefmt=tablefmt
     )
 
 

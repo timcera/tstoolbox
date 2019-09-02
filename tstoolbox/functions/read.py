@@ -33,6 +33,7 @@ def read_cli(
     target_units=None,
     float_format="%g",
     round_index=None,
+    tablefmt="csv",
 ):
     """
     Collect time series from a list of pickle or csv files.
@@ -67,6 +68,8 @@ def read_cli(
     {target_units}
     {float_format}
     {round_index}
+    {tablefmt}
+
     """
     tsutils._printiso(
         read(
@@ -86,6 +89,7 @@ def read_cli(
             round_index=round_index,
         ),
         float_format=float_format,
+        tablefmt=tablefmt,
     )
 
 

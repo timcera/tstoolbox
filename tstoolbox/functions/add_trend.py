@@ -21,18 +21,19 @@ def add_trend_cli(
     start_offset,
     end_offset,
     input_ts="-",
-    columns=None,
-    clean=False,
     start_date=None,
     end_date=None,
-    dropna="no",
-    round_index=None,
     skiprows=None,
-    index_type="datetime",
+    columns=None,
+    clean=False,
+    dropna="no",
     names=None,
     source_units=None,
     target_units=None,
+    round_index=None,
+    index_type="datetime",
     print_input=False,
+    tablefmt="csv",
 ):
     """Add a trend.
 
@@ -55,6 +56,7 @@ def add_trend_cli(
     {source_units}
     {target_units}
     {print_input}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -74,7 +76,8 @@ def add_trend_cli(
             source_units=source_units,
             target_units=target_units,
             print_input=print_input,
-        )
+        ),
+        tablefmt=tablefmt
     )
 
 

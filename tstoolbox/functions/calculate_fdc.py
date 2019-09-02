@@ -32,6 +32,7 @@ def calculate_fdc_cli(
     target_units=None,
     sort_values="ascending",
     sort_index="ascending",
+    tablefmt="csv",
 ):
     """Return the frequency distribution curve.
 
@@ -68,6 +69,7 @@ def calculate_fdc_cli(
     {source_units}
     {target_units}
     {clean}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -88,6 +90,7 @@ def calculate_fdc_cli(
             sort_index=sort_index,
         ),
         showindex="always",
+        tablefmt=tablefmt,
     )
 
 

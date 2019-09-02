@@ -24,6 +24,7 @@ def pca_cli(
     source_units=None,
     target_units=None,
     round_index=None,
+    tablefmt="csv",
 ):
     """Return the principal components analysis of the time series.
 
@@ -47,6 +48,7 @@ def pca_cli(
     {source_units}
     {target_units}
     {round_index}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -63,7 +65,8 @@ def pca_cli(
             source_units=source_units,
             target_units=target_units,
             round_index=round_index,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 

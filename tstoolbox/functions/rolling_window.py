@@ -39,6 +39,7 @@ def rolling_window_cli(
     source_units=None,
     target_units=None,
     print_input=False,
+    tablefmt="csv",
 ):
     """Calculate a rolling window statistic.
 
@@ -134,6 +135,7 @@ def rolling_window_cli(
     {source_units}
     {target_units}
     {print_input}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -159,7 +161,8 @@ def rolling_window_cli(
             source_units=source_units,
             target_units=target_units,
             print_input=print_input,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 

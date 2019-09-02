@@ -47,6 +47,7 @@ def fill_cli(
     skiprows=None,
     from_columns=None,
     to_columns=None,
+    tablefmt="csv",
 ):
     """Fill missing values (NaN) with different methods.
 
@@ -114,6 +115,7 @@ def fill_cli(
 
         List of column names/numbers that missing values will be
         replaced in from good values in the `from_columns` keyword.
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -132,7 +134,8 @@ def fill_cli(
             skiprows=skiprows,
             from_columns=from_columns,
             to_columns=to_columns,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 

@@ -71,6 +71,7 @@ def dtw_cli(
     window=10000,
     source_units=None,
     target_units=None,
+    tablefmt="csv",
 ):
     """Dynamic Time Warping.
 
@@ -92,6 +93,7 @@ def dtw_cli(
     {target_units}
     {names}
     {clean}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -109,7 +111,8 @@ def dtw_cli(
             window=window,
             source_units=source_units,
             target_units=target_units,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 

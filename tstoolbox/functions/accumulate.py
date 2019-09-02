@@ -30,32 +30,36 @@ def accumulate_cli(
     source_units=None,
     target_units=None,
     print_input=False,
+    tablefmt="csv",
 ):
     """Calculate accumulating statistics.
 
     Parameters
     ----------
     statistic : str
-        [optional, default is 'sum']
+        [optional, default is 'sum', transformation]
+
         'sum', 'max', 'min', 'prod'
     {input_ts}
-    {columns}
     {start_date}
     {end_date}
+    {skiprows}
+    {names}
+    {columns}
     {dropna}
     {clean}
-    {round_index}
-    {skiprows}
-    {index_type}
-    {names}
-    {print_input}
     {source_units}
     {target_units}
+    {round_index}
+    {index_type}
+    {print_input}
+    {tablefmt}
 
     """
     tsutils._printiso(
         accumulate(
             input_ts=input_ts,
+            skiprows=skiprows,
             columns=columns,
             start_date=start_date,
             end_date=end_date,
@@ -63,13 +67,13 @@ def accumulate_cli(
             clean=clean,
             statistic=statistic,
             round_index=round_index,
-            skiprows=skiprows,
             index_type=index_type,
             names=names,
             source_units=source_units,
             target_units=target_units,
             print_input=print_input,
-        )
+        ),
+        tablefmt=tablefmt
     )
 
 

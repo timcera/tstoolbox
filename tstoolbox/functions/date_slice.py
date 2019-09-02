@@ -29,6 +29,7 @@ def date_slice_cli(
     source_units=None,
     target_units=None,
     float_format="%g",
+    tablefmt="csv",
 ):
     """Print out data to the screen between start_date and end_date.
 
@@ -50,6 +51,7 @@ def date_slice_cli(
     {source_units}
     {target_units}
     {round_index}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -69,6 +71,7 @@ def date_slice_cli(
             float_format=float_format,
         ),
         float_format=float_format,
+        tablefmt=tablefmt,
     )
 
 

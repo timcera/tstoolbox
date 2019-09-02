@@ -36,6 +36,7 @@ def ewm_window_cli(
     source_units=None,
     target_units=None,
     print_input=False,
+    tablefmt="csv",
 ):
     """Calculate exponential weighted functions.
 
@@ -132,6 +133,7 @@ def ewm_window_cli(
     {source_units}
     {target_units}
     {print_input}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -156,7 +158,8 @@ def ewm_window_cli(
             source_units=source_units,
             target_units=target_units,
             print_input=print_input,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 

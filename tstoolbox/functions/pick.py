@@ -28,6 +28,7 @@ def pick_cli(
     source_units=None,
     target_units=None,
     clean=False,
+    tablefmt="csv",
 ):
     """Will pick a column or list of columns from input.
 
@@ -48,6 +49,7 @@ def pick_cli(
     {source_units}
     {target_units}
     {round_index}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -64,7 +66,8 @@ def pick_cli(
             source_units=source_units,
             target_units=target_units,
             clean=clean,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 

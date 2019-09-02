@@ -32,6 +32,7 @@ def normalization_cli(
     source_units=None,
     target_units=None,
     float_format="%g",
+    tablefmt="csv",
 ):
     """Return the normalization of the time series.
 
@@ -76,6 +77,7 @@ def normalization_cli(
     {source_units}
     {target_units}
     {round_index}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -98,7 +100,8 @@ def normalization_cli(
             source_units=source_units,
             target_units=target_units,
             float_format=float_format,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 

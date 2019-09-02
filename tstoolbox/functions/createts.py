@@ -24,6 +24,7 @@ def createts_cli(
     index_type="datetime",
     start_date=None,
     end_date=None,
+    tablefmt="csv",
 ):
     """Create empty time series, optionally fill with a value.
 
@@ -44,6 +45,7 @@ def createts_cli(
     {start_date}
     {end_date}
     {index_type}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -56,6 +58,7 @@ def createts_cli(
             end_date=end_date,
         ),
         showindex="always",
+        tablefmt=tablefmt,
     )
 
 

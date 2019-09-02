@@ -26,6 +26,7 @@ def describe_cli(
     names=None,
     clean=False,
     transpose=False,
+    tablefmt="csv",
 ):
     """Print out statistics for the time-series.
 
@@ -44,6 +45,7 @@ def describe_cli(
     {index_type}
     {names}
     {clean}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -60,6 +62,7 @@ def describe_cli(
             transpose=transpose,
         ),
         showindex="always",
+        tablefmt=tablefmt,
     )
 
 

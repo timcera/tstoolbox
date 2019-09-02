@@ -30,6 +30,7 @@ def stack_cli(
     source_units=None,
     target_units=None,
     clean=False,
+    tablefmt="csv",
 ):
     """Return the stack of the input table.
 
@@ -70,6 +71,7 @@ def stack_cli(
     {source_units}
     {target_units}
     {round_index}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -86,7 +88,8 @@ def stack_cli(
             source_units=source_units,
             target_units=target_units,
             clean=clean,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 

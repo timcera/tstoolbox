@@ -31,6 +31,7 @@ def replace_cli(
     source_units=None,
     target_units=None,
     print_input=False,
+    tablefmt="csv",
 ):
     """Return a time-series replacing values with others.
 
@@ -60,6 +61,7 @@ def replace_cli(
     {source_units}
     {target_units}
     {print_input}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -79,7 +81,8 @@ def replace_cli(
             source_units=source_units,
             target_units=target_units,
             print_input=print_input,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 

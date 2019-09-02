@@ -92,6 +92,7 @@ def equation_cli(
     source_units=None,
     target_units=None,
     float_format="%g",
+    tablefmt="csv",
 ):
     """Apply <equation_str> to the time series data.
 
@@ -165,6 +166,7 @@ def equation_cli(
     {source_units}
     {target_units}
     {round_index}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -184,7 +186,8 @@ def equation_cli(
             source_units=source_units,
             target_units=target_units,
             float_format=float_format,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 

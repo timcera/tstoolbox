@@ -26,6 +26,7 @@ def converttz_cli(
     source_units=None,
     target_units=None,
     skiprows=None,
+    tablefmt="csv",
 ):
     """Convert the time zone of the index.
 
@@ -57,6 +58,7 @@ def converttz_cli(
     {source_units}
     {target_units}
     {round_index}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -77,6 +79,7 @@ def converttz_cli(
             skiprows=skiprows,
         ),
         showindex="always",
+        tablefmt=tablefmt,
     )
 
 

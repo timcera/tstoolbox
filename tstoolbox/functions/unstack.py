@@ -29,6 +29,7 @@ def unstack_cli(
     source_units=None,
     target_units=None,
     clean=False,
+    tablefmt="csv",
 ):
     """Return the unstack of the input table.
 
@@ -72,6 +73,7 @@ def unstack_cli(
     {source_units}
     {target_units}
     {round_index}
+    {tablefmt}
 
     """
     tsutils._printiso(
@@ -89,7 +91,8 @@ def unstack_cli(
             source_units=source_units,
             target_units=target_units,
             clean=clean,
-        )
+        ),
+        tablefmt=tablefmt,
     )
 
 
