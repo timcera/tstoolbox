@@ -177,9 +177,11 @@ def plot_cli(
         [optional, defaults to 'plot.png']
 
         Output filename for the plot.  Extension defines
-        the type, ('.png').
+        the type, for example 'filename.png' will create a PNG file.
 
-        Within the Python API, if None will return the figure.
+        If used within the Python API, if `ofilename` is None will
+        return the Matplotlib figure that can then be changed or added
+        to as needed.
     type : str
         [optional, defaults to 'time']
 
@@ -200,10 +202,11 @@ def plot_cli(
             Box extends from lower to upper quartile, with line at the
             median.  Depending on the statistics, the wiskers represent
             the range of the data or 1.5 times the inter-quartile range
-            (Q3 - Q1)
+            (Q3 - Q1).  Data should be organized as y1,y2,y3,....
         scatter_matrix
             Plots all columns against each other in a matrix, with the diagonal
-            plots either histogram or KDE probability distribution.
+            plots either histogram or KDE probability distribution
+            depending on `scatter_matrix_diagonal` keyword.
         lag_plot
             Indicates structure in the data.  Only available for a single
             time-series.
@@ -211,7 +214,7 @@ def plot_cli(
             Plot autocorrelation.  Only available for a single time-series.
         bootstrap
             Visually assess aspects of a data set by plotting random
-            selections of values.  Only available for single time-series.
+            selections of values.  Only available for a single time-series.
         histogram
             Calculate and create a histogram plot.  See 'kde' for a smooth
             representation of a histogram.
@@ -229,28 +232,28 @@ def plot_cli(
         bar_stacked
             A stacked column plot.
         barh_stacked
-            A horizontal stacked bar plot
+            A horizontal stacked bar plot.
         heatmap
             Create a 2D heatmap of daily data, day of year x-axis, and year for
             y-axis.  Only available for a single, daily time-series.
         norm_xaxis
             Sort, calculate probabilities, and plot data against an
-            x axis normal distribution
+            x axis normal distribution.
         norm_yaxis
             Sort, calculate probabilities, and plot data against an
-            y axis normal distribution
+            y axis normal distribution.
         lognorm_xaxis
             Sort, calculate probabilities, and plot data against an
-            x axis lognormal distribution
+            x axis lognormal distribution.
         lognorm_yaxis
             Sort, calculate probabilities, and plot data against an
-            y axis lognormal distribution
+            y axis lognormal distribution.
         weibull_xaxis
             Sort, calculate and plot data against an x axis weibull
-            distribution
+            distribution.
         weibull_yaxis
             Sort, calculate and plot data against an y axis weibull
-            distribution
+            distribution.
         taylor
             Creates a taylor diagram that compares three goodness of fit
             statistics on one plot.  The three goodness of fit statistics
@@ -267,7 +270,7 @@ def plot_cli(
     lag_plot_lag
         [optional, default to 1]
 
-        The lag used if type lag_plot is chosen.
+        The lag used if ``type`` "lag_plot" is chosen.
     xtitle : str
         [optional, default depends on ``type``]
 
@@ -283,17 +286,17 @@ def plot_cli(
     figsize : str
         [optional, defaults to '10,6.5']
 
-        The 'width,height' of plot as inches.
+        The 'width,height' of plot in inches.
     legend
         [optional, defaults to True]
 
-        Whether to display the legend
+        Whether to display the legend.
     legend_names : str
         [optional, defaults to None]
 
-        Legend would normally use the time-series names
-        associated with the input data.  The 'legend_names' option allows you
-        to override the names in the data set.  You must supply a comma
+        Legend would normally use the time-series names associated with
+        the input data.  The 'legend_names' option allows you to
+        override the names in the data set.  You must supply a comma
         separated list of strings for each time-series in the data set.
     subplots
         [optional, defaults to False]
@@ -302,11 +305,11 @@ def plot_cli(
     sharex
         [optional, default to True]
 
-        In case subplots=True, share x axis
+        In case subplots=True, share x axis.
     sharey
         [optional, default to False]
 
-        In case subplots=True, share y axis
+        In case subplots=True, share y axis.
     colors
         [optional, default is 'auto']
 
@@ -452,8 +455,6 @@ def plot_cli(
         +------+----------------+
 
         Marker reference:
-
-        Marker reference:
         http://matplotlib.org/api/markers_api.html
     style
         [optional, default is None]
@@ -462,9 +463,9 @@ def plot_cli(
         'markerstyles' options.  Currently the 'style' option will override the
         others.
 
-        Comma separated matplotlib style strings matplotlib line style per
-        time-series.  Just combine codes in 'ColorMarkerLine' order, for
-        example r*-- is a red dashed line with star marker.
+        Comma separated matplotlib style strings per time-series.  Just
+        combine codes in 'ColorMarkerLine' order, for example 'r*--' is
+        a red dashed line with star marker.
     logx
         DEPRECATED: use '--xaxis="log"' instead.
     logy
@@ -472,13 +473,15 @@ def plot_cli(
     xlim
         [optional, default is based on range of x values]
 
-        Comma separated lower and upper limits (--xlim 1,1000) Limits
-        for the x-axis.
+        Comma separated lower and upper limits for the x-axis of the
+        plot.  For example, '--xlim 1,1000' would limit the plot from
+        1 to 1000, where '--xlim ,1000' would base the lower limit on
+        the data and set the upper limit to 1000.
     ylim
         [optional, default is based on range of y values]
 
-        Comma separated lower and upper limits (--ylim 1,1000) Limits
-        for the y-axis.
+        Comma separated lower and upper limits for the y-axis of the
+        plot.  See `xlim` for examples.
     xaxis : str
         [optional, default is 'arithmetic']
 
@@ -501,7 +504,8 @@ def plot_cli(
         [optional, defaults to 'kde']
 
         If plot type is 'scatter_matrix', this specifies the plot along the
-        diagonal.
+        diagonal.  One of 'kde' for Kernel Density Estimation or 'hist'
+        for a histogram.
     bootstrap_size : int
         [optional, defaults to 50]
 

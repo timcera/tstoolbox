@@ -32,6 +32,11 @@ calculate_fdc
 .. program-output:: tstoolbox calculate_fdc --help
    :prompt:
 
+calculate_kde
+~~~~~~~~~~~~~
+.. program-output:: tstoolbox calculate_kde --help
+   :prompt:
+
 clip
 ~~~~
 .. program-output:: tstoolbox clip --help
@@ -42,6 +47,11 @@ convert
 .. program-output:: tstoolbox convert --help
    :prompt:
 
+convert_index
+~~~~~~~~~~~~~~~~~~~~~~~
+.. program-output:: tstoolbox convert_index --help
+   :prompt:
+
 convert_index_to_julian
 ~~~~~~~~~~~~~~~~~~~~~~~
 .. program-output:: tstoolbox convert_index_to_julian --help
@@ -50,6 +60,11 @@ convert_index_to_julian
 converttz
 ~~~~~~~~~
 .. program-output:: tstoolbox converttz --help
+   :prompt:
+
+correlation
+~~~~~~~~~~~
+.. program-output:: tstoolbox correlation --help
    :prompt:
 
 createts
@@ -105,6 +120,11 @@ filter
 gof
 ~~~
 .. program-output:: tstoolbox gof --help
+   :prompt:
+
+lag
+~~~
+.. program-output:: tstoolbox lag --help
    :prompt:
 
 normalization

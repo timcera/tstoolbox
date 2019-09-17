@@ -11,10 +11,13 @@ Python API Function Summary
     tstoolbox.tstoolbox.add_trend
     tstoolbox.tstoolbox.aggregate
     tstoolbox.tstoolbox.calculate_fdc
+    tstoolbox.tstoolbox.calculate_kde
     tstoolbox.tstoolbox.clip
     tstoolbox.tstoolbox.convert
+    tstoolbox.tstoolbox.convert_index
     tstoolbox.tstoolbox.convert_index_to_julian
     tstoolbox.tstoolbox.converttz
+    tstoolbox.tstoolbox.correlation
     tstoolbox.tstoolbox.createts
     tstoolbox.tstoolbox.date_offset
     tstoolbox.tstoolbox.date_slice
@@ -26,6 +29,7 @@ Python API Function Summary
     tstoolbox.tstoolbox.fill
     tstoolbox.tstoolbox.filter
     tstoolbox.tstoolbox.gof
+    tstoolbox.tstoolbox.lag
     tstoolbox.tstoolbox.normalization
     tstoolbox.tstoolbox.pca
     tstoolbox.tstoolbox.pct_change
