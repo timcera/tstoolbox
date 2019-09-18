@@ -14,13 +14,6 @@ from pandas.tseries.frequencies import to_offset
 from .. import tsutils
 
 
-def index_str_formatter(x):
-    """Format index string depending on type of 'x'."""
-    if int(x) == x:
-        return "{0:d}".format(int(x))
-    return "{0:.10f}".format(x)
-
-
 @mando.command("convert_index", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def convert_index_cli(
@@ -164,7 +157,6 @@ def convert_index_cli(
         target_units=target_units,
         skiprows=skiprows,
     )
-    tsd.index = tsd.index.format(formatter=index_str_formatter)
     tsutils._printiso(tsd, tablefmt=tablefmt)
 
 
@@ -266,35 +258,38 @@ def convert_index(
         "unix": "1970-01-01T00",
     }
 
-    words = interval.split("-")
-    if len(words) == 2:
-        warnings.warn(
-            """
+    if interval is None:
+        interval = "D"
+    else:
+        words = interval.split("-")
+        if len(words) == 2:
+            warnings.warn(
+                """
 *
 *   The epoch keyword "{0}" overrides the anchoring suffix "{1}".
 *
 """.format(
-                epoch, words[1]
+                    epoch, words[1]
+                )
             )
-        )
 
-        interval = words[0]
+            interval = words[0]
 
-    if interval is not None:
-        if epoch == "unix" and interval not in ["S", "s"]:
-            warnings.warn(
-                """
+    if epoch == "unix" and interval not in ["S", "s"]:
+        warnings.warn(
+            """
 *
 *   Typically the unix epoch would has an interval of 'S' (seconds).
 *   Instead you gave {0}.
 *
 """.format(
-                    interval
-                )
+                interval
             )
-        elif epoch in dailies and interval != "D":
-            warnings.warn(
-                """
+        )
+
+    if epoch in dailies and interval != "D":
+        warnings.warn(
+            """
 *
 *   Typically the {0} epoch would has an interval of 'D' (days).
 *   Instead you gave {1}.
