@@ -36,107 +36,108 @@ distribution then you shouldn't have a problem.
 
 Usage - Command Line
 --------------------
-Just run 'tstoolbox --help' to get a list of subcommands
+Just run 'tstoolbox --help' to get a list of subcommands::
 
-usage: tstoolbox [-h]
-                 {fill,about,createts,filter,read,date_slice,describe,peak_detection,convert,equation,pick,stdtozrxp,tstopickle,accumulate,rolling_window,aggregate,replace,clip,add_trend,remove_trend,calculate_fdc,stack,unstack,plot,dtw,pca,normalization,converttz,convert_index_to_julian,pct_change,rank,date_offset}
-                 ...
 
-    about               
-        Display version number and system information.
+    usage: tstoolbox [-h]
+                     {accumulate, add_trend, aggregate, calculate_fdc,
+                     calculate_kde, clip, convert, convert_index,
+                     convert_index_to_julian, converttz, lag, correlation,
+                     createts, date_offset, date_slice, describe, dtw,
+                     equation, ewm_window, expanding_window, fill, filter, gof,
+                     normalization, pca, pct_change, peak_detection, pick,
+                     plot, rank, read, remove_trend, replace, rolling_window,
+                     stack, stdtozrxp, tstopickle, unstack, about} ...
+    
+    positional arguments:
+      {accumulate, add_trend, aggregate, calculate_fdc, calculate_kde, clip,
+      convert, convert_index, convert_index_to_julian, converttz, lag,
+      correlation, createts, date_offset, date_slice, describe, dtw, equation,
+      ewm_window, expanding_window, fill, filter, gof, normalization, pca,
+      pct_change, peak_detection, pick, plot, rank, read, remove_trend,
+      replace, rolling_window, stack, stdtozrxp, tstopickle, unstack, about}
 
     accumulate          
         Calculate accumulating statistics.
-
     add_trend           
         Add a trend.
-
     aggregate           
         Take a time series and aggregate to specified frequency.
-
     calculate_fdc       
         Return the frequency distribution curve.
-
+    calculate_kde       
+        Return the kernel density estimation (KDE) curve.
     clip                
         Return a time-series with values limited to [a_min, a_max].
-
     convert             
         Convert values of a time series by applying a factor and offset.
-
-    convert_index_to_julian 
-        Convert date/time index to Julian dates from different epochs.
-
+    convert_index       
+        Convert datetime to/from Julian dates from different epochs.
+    convert_index_to_julian
+        DEPRECATED: Use convert_index instead.
     converttz           
         Convert the time zone of the index.
-
+    lag                 
+        Create a series of lagged time-series.
+    correlation         
+        Develop a correlation between time-series and potentially lags.
     createts            
         Create empty time series, optionally fill with a value.
-
     date_offset         
         Apply an offset to a time-series.
-
     date_slice          
         Print out data to the screen between start_date and end_date.
-
     describe            
         Print out statistics for the time-series.
-
     dtw                 
         Dynamic Time Warping.
-
     equation            
         Apply <equation_str> to the time series data.
-
+    ewm_window          
+        Calculate exponential weighted functions.
+    expanding_window    
+        Calculate an expanding window statistic.
     fill                
         Fill missing values (NaN) with different methods.
-
     filter              
         Apply different filters to the time-series.
-
+    gof                 
+        Will calculate goodness of fit statistics between two time-series.
     normalization       
         Return the normalization of the time series.
-
     pca                 
         Return the principal components analysis of the time series.
-
     pct_change          
         Return the percent change between times.
-
     peak_detection      
         Peak and valley detection.
-
     pick                
         Will pick a column or list of columns from input.
-
     plot                
         Plot data.
-
     rank                
         Compute numerical data ranks (1 through n) along axis.
-
     read                
         Collect time series from a list of pickle or csv files.
-
     remove_trend        
         Remove a 'trend'.
-
     replace             
         Return a time-series replacing values with others.
-
     rolling_window      
         Calculate a rolling window statistic.
-
     stack               
         Return the stack of the input table.
-
     stdtozrxp           
         Print out data to the screen in a WISKI ZRXP format.
-
     tstopickle          
         Pickle the data into a Python pickled file.
-
     unstack             
         Return the unstack of the input table.
+    about               
+        Display version number and system information.
+
+    optional arguments:
+        -h, --help            show this help message and exit
 
 The default for all of the subcommands is to accept data from stdin (typically
 a pipe).  If a subcommand accepts an input file for an argument, you can use
