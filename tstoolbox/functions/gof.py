@@ -38,7 +38,7 @@ def gof_cli(
     Parameters
     ----------
     {input_ts}
-    stats, str
+    stats : str
         [optional,  API: list, CLI: comma separated string, default is 'all']
 
         The statistics that will be presented.
@@ -52,26 +52,30 @@ def gof_cli(
         +-----------------+--------------------------------------------------+
         | apc_bias        | 100.0*sum(abs(s-o))/sum(o)                       |
         +-----------------+--------------------------------------------------+
-        | rmsd            | sum[(s - o)^2]/N                                 |
+        | rmsd            | sum[(s - o)**2]/N                                |
         +-----------------+--------------------------------------------------+
-        | crmsd           | sum[(s - mean(s))(o - mean(o))]^2/N              |
+        | crmsd           | sum[(s - mean(s))(o - mean(o))]**2/N             |
         +-----------------+--------------------------------------------------+
         | corrcoef        | Correlation coefficient                          |
         +-----------------+--------------------------------------------------+
-        | murphyss        | 1 - RMSE^2/SDEV^2                                |
+        | murphyss        | 1 - RMSE**2/SDEV**2                              |
         +-----------------+--------------------------------------------------+
-        | nse             | 1 - sum(s - o)^2 / sum (o - mean(r))^2           |
+        | nse             | 1 - sum(s - o)**2 / sum (o - mean(r))**2         |
         +-----------------+--------------------------------------------------+
         | kge             | 1 - sqrt((cc-1)**2 + (alpha-1)**2 + (beta-1)**2) |
-        |                 |     cc = correlation coefficient                 |
-        |                 |     alpha = std(simulated) / std(observed)       |
-        |                 |     beta = sum(simulated) / sum(observed)        |
+        +-----------------+--------------------------------------------------+
+        |                 |                     cc = correlation coefficient |
+        +-----------------+--------------------------------------------------+
+        |                 |           alpha = std(simulated) / std(observed) |
+        +-----------------+--------------------------------------------------+
+        |                 |            beta = sum(simulated) / sum(observed) |
         +-----------------+--------------------------------------------------+
         | index_agreement | 1.0 - sum((o - s)**2) /                          |
-        |                 |   sum((abs(s - mean(o)) + abs(o - mean(o)))**2)  |
+        |                 | sum((abs(s - mean(o)) + abs(o - mean(o)))**2)    |
         +-----------------+--------------------------------------------------+
-        | brierss         | sum(f - o)^2/N                                   |
-        |                 |     f = forecast probabilities                   |
+        | brierss         | sum(f - o)**2/N                                  |
+        +-----------------+--------------------------------------------------+
+        |                 |                       f = forecast probabilities |
         +-----------------+--------------------------------------------------+
         | mean            | observed mean, simulated mean                    |
         +-----------------+--------------------------------------------------+
@@ -81,13 +85,13 @@ def gof_cli(
     {columns}
     {start_date}
     {end_date}
+    {round_index}
     {clean}
-    {skiprows}
     {index_type}
     {names}
     {source_units}
     {target_units}
-    {round_index}
+    {skiprows}
     {tablefmt}
 
     """
