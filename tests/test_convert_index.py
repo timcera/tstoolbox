@@ -47,7 +47,7 @@ class Testconvert_index(TestCase):
         ("lilian", "D", pd.np.floor(2444240.5 - 2299159.5)),
         ("rata_die", "D", pd.np.floor(2444240.5 - 1721424.5)),
         ("mars_sol", "D", (2444240.5 - 2405522) / 1.02749),
-        ("julian", None, (2444240.5 - 2405522) / 1.02749),
+        ("julian", None, 2444240.5),
     ],
 )
 def test_epoch_interval(epoch, interval, expected):
