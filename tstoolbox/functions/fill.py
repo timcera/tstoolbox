@@ -221,7 +221,7 @@ def fill(
 *
 *   The allowable values for 'method' are 'ffill', 'bfill', 'linear',
 *   'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'mean', 'median',
-*   'max', 'min' or a number.  Instead you have {0}.
+*   'max', 'min', 'from', or a number.  Instead you have {0}.
 *
 """.format(
                     method

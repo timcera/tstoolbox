@@ -202,14 +202,16 @@ class TestFill(TestCase):
 
     def test_fill_from(self):
         """Test fill with from API."""
-        out = tstoolbox.fill(method="from",
-                             input_ts="tests/data_fill_from.csv",
-                             from_columns=[2, 3],
-                             to_columns=1)
+        out = tstoolbox.fill(
+            method="from",
+            input_ts="tests/data_fill_from.csv",
+            from_columns=[2, 3],
+            to_columns=1,
+        )
         compare = tstoolbox.read("tests/data_fill_from.csv")
-        compare.columns = ['Value::fill', 'Value1::fill', 'Value2::fill']
-        compare.loc['2000-01-02', 'Value::fill'] = 2.5
-        compare.loc['2000-01-04', 'Value::fill'] = 23.1
+        compare.columns = ["Value::fill", "Value1::fill", "Value2::fill"]
+        compare.loc["2000-01-02", "Value::fill"] = 2.5
+        compare.loc["2000-01-04", "Value::fill"] = 23.1
         self.conDiff = None
         assert_frame_equal(out, compare)
 

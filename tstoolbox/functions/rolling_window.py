@@ -47,6 +47,9 @@ def rolling_window_cli(
     ----------
     statistic : str
 
+        The statistic that will be applied to each
+        window.
+
         +----------+--------------------+
         | corr     | correlation        |
         +----------+--------------------+
@@ -76,13 +79,13 @@ def rolling_window_cli(
         +----------+--------------------+
 
     {groupby}
-    window :
+    window
         [optional, default = 2]
 
         Size of the moving window. This is the number of observations used for
         calculating the statistic. Each window will be a fixed size.
 
-        If its an offset then this will be the time period of each window. Each
+        If it is an offset then this will be the time period of each window. Each
         window will be a variable sized based on the observations included in
         the time-period. This is only valid for datetimelike indexes.
 

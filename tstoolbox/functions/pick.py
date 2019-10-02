@@ -30,7 +30,12 @@ def pick_cli(
     clean=False,
     tablefmt="csv",
 ):
-    """Will pick a column or list of columns from input.
+    """Will pick a column or list of columns from input [DEPRECATED].
+
+    DEPRECATED: Effectively replaced by the "columns" keyword available
+    in all other functions.
+
+    Will be removed in a future version of `tstoolbox`.
 
     Can use column names or column numbers.  If using numbers, column
     number 1 is the first data column.
@@ -86,6 +91,16 @@ def pick(
     clean=False,
 ):
     """Will pick a column or list of columns from input."""
+    warnings.warn(
+        """
+*
+*   DEPRECATED in favor of using the "columns" keyword available in all
+*   other functions.
+*
+*   Will be removed in a future version of `tstoolbox`.
+*
+"""
+    )
     return tsutils.common_kwds(
         tsutils.read_iso_ts(
             input_ts, skiprows=skiprows, names=names, index_type=index_type

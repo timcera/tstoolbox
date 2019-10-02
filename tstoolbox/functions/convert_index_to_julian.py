@@ -3,11 +3,15 @@
 
 from __future__ import absolute_import, division, print_function
 
+import warnings
+
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 from . import convert_index
+
+warnings.filterwarnings("ignore")
 
 
 @mando.command(formatter_class=RSTHelpFormatter, doctype="numpy")
@@ -29,7 +33,10 @@ def convert_index_to_julian(
 ):
     """DEPRECATED: Use convert_index instead.
 
-    For command line::
+    Will be removed in a future version of `tstoolbox`.
+
+    To use `convert_index` in place of `convert_index_to_julian` for
+    command line::
 
         tstoolbox convert_index julian ...
 
@@ -38,6 +45,16 @@ def convert_index_to_julian(
         from tstoolbox import tstoolbox
         ndf = ntstoolbox.convert_index('julian', ...)
     """
+    warnings.warn(
+        """
+*
+*   DEPRECATED in favor of using `convert_index` with the 'julian'
+*   option.
+*
+*   Will be removed in a future version of `tstoolbox`.
+*
+"""
+    )
     return convert_index(
         "julian",
         epoch="julian",

@@ -39,7 +39,8 @@ def date_offset_cli(
 
     offset: str
 
-        Pandas offset.
+        Any of the Pandas offset codes.  This is only the offset code
+        and doesn't include a prefixed interval.
 
         {pandas_offset_codes}
 

@@ -32,24 +32,23 @@ def converttz_cli(
 
     Parameters
     ----------
-    fromtz: str
-        The time zone of the original time-series.
+    fromtz : str
+        The time zone of the original time-series.  The 'EST', 'EDT',
+        and 'America/New_York' could in some sense be thought of as the
+        same, however 'EST' and 'EDT' would force the time index to have
+        the same offset from UTC, regardless of daylight savings time,
+        where 'America/New_York' would implement the appropriate
+        daylight savings offset.
 
-        The 'EST', 'EDT', and 'America/New_York' could in some sense be
-        thought of as the same, however 'EST' and 'EDT' would force the time
-        index to have the same offset from UTC, regardless of daylight savings
-        time, where 'America/New_York' would implement the appropriate daylight
-        savings offset.
-
-    totz: str
-        The time zone of the converted time-series.
-
-        Same note applies as for `fromtz`.
+    totz : str
+        The time zone of the converted time-series.  Same note applies
+        as for `fromtz`.  Needs to be different from `fromtz`.
 
     {input_ts}
+    {columns}
     {start_date}
     {end_date}
-    {columns}
+    {round_index}
     {dropna}
     {clean}
     {skiprows}
@@ -57,7 +56,6 @@ def converttz_cli(
     {names}
     {source_units}
     {target_units}
-    {round_index}
     {tablefmt}
 
     """

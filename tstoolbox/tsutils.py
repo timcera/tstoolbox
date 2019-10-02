@@ -26,22 +26,23 @@ docstrings = {
         The main purpose of this option is to convert units from those
         specified in the header line of the input into 'target_units'.
 
-        The units of the input time-series or values are specified as the
-        second field of a ':' delimited name in the header line of the input or
-        in the 'source_units' keyword.
+        The units of the input time-series or values are specified as
+        the second field of a ':' delimited name in the header line of
+        the input or in the 'source_units' keyword.
 
         Any unit string compatible with the 'pint' library can be used.
 
-        This option will also add the 'target_units' string to the column
-        names.""",
+        This option will also add the 'target_units' string to the
+        column names.""",
     "source_units": r"""source_units
         [optional, default is None, transformation]
 
         If unit is specified for the column as the second field of a ':'
-        delimited column name, then the specified units and the 'source_units'
-        must match exactly.
+        delimited column name, then the specified units and the
+        'source_units' must match exactly.
 
-        Any unit string compatible with the 'pint' library can be used.""",
+        Any unit string compatible with the 'pint' library can be
+        used.""",
     "names": r"""names
         [optional, default is None, input filter]
 
@@ -53,15 +54,16 @@ docstrings = {
         Can be either 'number' or 'datetime'.  Use 'number' with index
         values that are Julian dates, or other epoch reference.""",
     "input_ts": r"""input_ts : str
-        [optional, required if using Python API, default is '-' (stdin)]
+        [optional though required if using Python API, default is '-'
+        (stdin)]
 
-        Whether from a file or standard input, data requires a header of column
-        names.  The default header is the first line of the input, but this can
-        be changed using the 'skiprows' option.
+        Whether from a file or standard input, data requires a header of
+        column names.  The default header is the first line of the
+        input, but this can be changed using the 'skiprows' option.
 
         Most separators will be automatically detected. Most common date
-        formats can be used, but the closer to ISO 8601 date/time standard the
-        better.
+        formats can be used, but the closer to ISO 8601 date/time
+        standard the better.
 
         Command line::
 
@@ -72,8 +74,8 @@ docstrings = {
             |                         | input (stdin).         |
             +-------------------------+------------------------+
 
-            In many cases it is better to use redirection rather that use
-            `--input_ts=filename.csv`.  The following are identical:
+            In many cases it is better to use redirection rather that
+            use `--input_ts=filename.csv`.  The following are identical:
 
             From a file:
 
@@ -83,19 +85,19 @@ docstrings = {
 
                 command subcmd --input_ts=- < filename.csv
 
-            The BEST way since you don't have to include `--input_ts=-` because
-            that is the default:
+            The BEST way since you don't have to include `--input_ts=-`
+            because that is the default:
 
-                command subcmd < filename.csv
+                command subcmd < file.csv
 
             Can also combine commands by piping:
 
-                command subcmd < filename.csv | command subcmd1 > fileout.csv
+                command subcmd < filein.csv | command subcmd1 > fileout.csv
 
         As Python Library::
 
-            You MUST use the `input_ts=...` option where `input_ts` can be one
-            of a [pandas DataFrame, pandas Series, dict, tuple,
+            You MUST use the `input_ts=...` option where `input_ts` can
+            be one of a [pandas DataFrame, pandas Series, dict, tuple,
             list, StringIO, or file name].
 
             If result is a time series, returns a pandas DataFrame.""",
@@ -108,9 +110,9 @@ docstrings = {
         separate by commas with no spaces. As used in `tstoolbox pick`
         command.
 
-        This solves a big problem so that you don't have to create a data set
-        with a certain order, you can rearrange columns when data is read
-        in.""",
+        This solves a big problem so that you don't have to create
+        a data set with a certain order, you can rearrange columns when
+        data is read in.""",
     "start_date": r"""start_date : str
         [optional, defaults to first date in time-series, input filter]
 
@@ -155,172 +157,175 @@ docstrings = {
     "header": r"""header : str
         [optional, default is 'default', output format]
 
-        This is if you want a different header than is the default for this
-        output table.  Pass a list of strings for each column in the table.""",
-    "pandas_offset_codes": r"""+-------+-----------------------------+
-        | Alias | Description                 |
-        +=======+=============================+
-        | B     | business day                |
-        +-------+-----------------------------+
-        | C     | custom business day         |
-        |       | (experimental)              |
-        +-------+-----------------------------+
-        | D     | calendar day                |
-        +-------+-----------------------------+
-        | W     | weekly                      |
-        +-------+-----------------------------+
-        | M     | month end                   |
-        +-------+-----------------------------+
-        | BM    | business month end          |
-        +-------+-----------------------------+
-        | CBM   | custom business month end   |
-        +-------+-----------------------------+
-        | MS    | month start                 |
-        +-------+-----------------------------+
-        | BMS   | business month start        |
-        +-------+-----------------------------+
-        | CBMS  | custom business month start |
-        +-------+-----------------------------+
-        | Q     | quarter end                 |
-        +-------+-----------------------------+
-        | BQ    | business quarter end        |
-        +-------+-----------------------------+
-        | QS    | quarter start               |
-        +-------+-----------------------------+
-        | BQS   | business quarter start      |
-        +-------+-----------------------------+
-        | A     | year end                    |
-        +-------+-----------------------------+
-        | BA    | business year end           |
-        +-------+-----------------------------+
-        | AS    | year start                  |
-        +-------+-----------------------------+
-        | BAS   | business year start         |
-        +-------+-----------------------------+
-        | H     | hourly                      |
-        +-------+-----------------------------+
-        | T     | minutely                    |
-        +-------+-----------------------------+
-        | S     | secondly                    |
-        +-------+-----------------------------+
-        | L     | milliseconds                |
-        +-------+-----------------------------+
-        | U     | microseconds                |
-        +-------+-----------------------------+
-        | N     | nanoseconds                 |
-        +-------+-----------------------------+
+        This is if you want a different header than is the default for
+        this output table.  Pass a list of strings for each column in
+        the table.""",
+    "pandas_offset_codes": r"""+-------+------------------------------------+
+        +-------+------------------------------------+
+        | Alias | Description                        |
+        +=======+====================================+
+        | B     | Business day                       |
+        +-------+------------------------------------+
+        | C     | Custom business day (experimental) |
+        +-------+------------------------------------+
+        | D     | calendar Day                       |
+        +-------+------------------------------------+
+        | W     | Weekly                             |
+        +-------+------------------------------------+
+        | M     | Month end                          |
+        +-------+------------------------------------+
+        | BM    | Business Month end                 |
+        +-------+------------------------------------+
+        | CBM   | Custom Business Month end          |
+        +-------+------------------------------------+
+        | MS    | Month Start                        |
+        +-------+------------------------------------+
+        | BMS   | Business Month Start               |
+        +-------+------------------------------------+
+        | CBMS  | Custom Business Month Start        |
+        +-------+------------------------------------+
+        | Q     | Quarter end                        |
+        +-------+------------------------------------+
+        | BQ    | Business Quarter end               |
+        +-------+------------------------------------+
+        | QS    | Quarter Start                      |
+        +-------+------------------------------------+
+        | BQS   | Business Quarter Start             |
+        +-------+------------------------------------+
+        | A     | Annual end                         |
+        +-------+------------------------------------+
+        | BA    | Business Annual end                |
+        +-------+------------------------------------+
+        | AS    | Annual Start                       |
+        +-------+------------------------------------+
+        | BAS   | Business Annual Start              |
+        +-------+------------------------------------+
+        | H     | Hourly                             |
+        +-------+------------------------------------+
+        | T     | Minutely                           |
+        +-------+------------------------------------+
+        | S     | Secondly                           |
+        +-------+------------------------------------+
+        | L     | milliseconds                       |
+        +-------+------------------------------------+
+        | U     | microseconds                       |
+        +-------+------------------------------------+
+        | N     | Nanoseconds                        |
+        +-------+------------------------------------+
 
         Weekly has the following anchored frequencies:
 
-        +-------+-------------------------------+
-        | Alias | Description                   |
-        +=======+===============================+
-        | W-SUN | weekly frequency (sundays).   |
-        |       | Same as 'W'.                  |
-        +-------+-------------------------------+
-        | W-MON | weekly frequency (mondays)    |
-        +-------+-------------------------------+
-        | W-TUE | weekly frequency (tuesdays)   |
-        +-------+-------------------------------+
-        | W-WED | weekly frequency (wednesdays) |
-        +-------+-------------------------------+
-        | W-THU | weekly frequency (thursdays)  |
-        +-------+-------------------------------+
-        | W-FRI | weekly frequency (fridays)    |
-        +-------+-------------------------------+
-        | W-SAT | weekly frequency (saturdays)  |
-        +-------+-------------------------------+
+        +-------+-------------+-------------------------------+
+        | Alias | Equivalents | Description                   |
+        +=======+=============+===============================+
+        | W-SUN | W           | Weekly frequency (SUNdays).   |
+        +-------+-------------+-------------------------------+
+        | W-MON |             | Weekly frequency (MONdays)    |
+        +-------+-------------+-------------------------------+
+        | W-TUE |             | Weekly frequency (TUEsdays)   |
+        +-------+-------------+-------------------------------+
+        | W-WED |             | Weekly frequency (WEDnesdays) |
+        +-------+-------------+-------------------------------+
+        | W-THU |             | Weekly frequency (THUrsdays)  |
+        +-------+-------------+-------------------------------+
+        | W-FRI |             | Weekly frequency (FRIdays)    |
+        +-------+-------------+-------------------------------+
+        | W-SAT |             | Weekly frequency (SATurdays)  |
+        +-------+-------------+-------------------------------+
 
         Quarterly frequencies (Q, BQ, QS, BQS) and annual frequencies
-        (A, BA, AS, BAS) have the following anchoring suffixes:
+        (A, BA, AS, BAS) replace the "x" in the "Alias" column to have
+        the following anchoring suffixes:
 
-        +-------+-------------------------------+
-        | Alias | Description                   |
-        +=======+===============================+
-        | -DEC  | year ends in December (same   |
-        |       | as 'Q' and 'A')               |
-        +-------+-------------------------------+
-        | -JAN  | year ends in January          |
-        +-------+-------------------------------+
-        | -FEB  | year ends in February         |
-        +-------+-------------------------------+
-        | -MAR  | year ends in March            |
-        +-------+-------------------------------+
-        | -APR  | year ends in April            |
-        +-------+-------------------------------+
-        | -MAY  | year ends in May              |
-        +-------+-------------------------------+
-        | -JUN  | year ends in June             |
-        +-------+-------------------------------+
-        | -JUL  | year ends in July             |
-        +-------+-------------------------------+
-        | -AUG  | year ends in August           |
-        +-------+-------------------------------+
-        | -SEP  | year ends in September        |
-        +-------+-------------------------------+
-        | -OCT  | year ends in October          |
-        +-------+-------------------------------+
-        | -NOV  | year ends in November         |
-        +-------+-------------------------------+""",
-    "plotting_position_table": r"""+------------+-----+-----------------+-----------------------+
-        | Name       | a   | Equation        | Description           |
-        |            |     | (1-a)/(n+1-2*a) |                       |
-        +============+=====+=================+=======================+
-        | weibull    | 0   | i/(n+1)         | mean of sampling      |
-        |            |     |                 | distribution          |
-        |            |     |                 | (default)             |
-        +------------+-----+-----------------+-----------------------+
-        | benard and | 0.3 | (i-0.3)/(n+0.4) | approx. median of     |
-        | bos-       |     |                 | sampling distribution |
-        | levenbach  |     |                 |                       |
-        +------------+-----+-----------------+-----------------------+
-        | tukey      | 1/3 | (i-1/3)/(n+1/3) | approx. median of     |
-        |            |     |                 | sampling distribution |
-        +------------+-----+-----------------+-----------------------+
-        | gumbel     | 1   | (i-1)/(n-1)     | mode of sampling      |
-        |            |     |                 | distribution          |
-        +------------+-----+-----------------+-----------------------+
-        | hazen      | 1/2 | (i-1/2)/n       | midpoints of n equal  |
-        |            |     |                 | intervals             |
-        +------------+-----+-----------------+-----------------------+
-        | cunnane    | 2/5 | (i-2/5)/(n+1/5) | subjective            |
-        +------------+-----+-----------------+-----------------------+
-        | california | NA  | i/n             |                       |
-        +------------+-----+-----------------+-----------------------+
+        +-------+----------+-------------+----------------------------+
+        | Alias | Examples | Equivalents | Description                |
+        +=======+==========+=============+============================+
+        | x-DEC | A-DEC    | A           | year ends end of DECember  |
+        |       | Q-DEC    | Q           |                            |
+        |       | AS-DEC   | AS          |                            |
+        |       | QS-DEC   | QS          |                            |
+        +-------+----------+-------------+----------------------------+
+        | x-JAN |          |             | year ends end of JANuary   |
+        +-------+----------+-------------+----------------------------+
+        | x-FEB |          |             | year ends end of FEBruary  |
+        +-------+----------+-------------+----------------------------+
+        | x-MAR |          |             | year ends end of MARch     |
+        +-------+----------+-------------+----------------------------+
+        | x-APR |          |             | year ends end of APRil     |
+        +-------+----------+-------------+----------------------------+
+        | x-MAY |          |             | year ends end of MAY       |
+        +-------+----------+-------------+----------------------------+
+        | x-JUN |          |             | year ends end of JUNe      |
+        +-------+----------+-------------+----------------------------+
+        | x-JUL |          |             | year ends end of JULy      |
+        +-------+----------+-------------+----------------------------+
+        | x-AUG |          |             | year ends end of AUGust    |
+        +-------+----------+-------------+----------------------------+
+        | x-SEP |          |             | year ends end of SEPtember |
+        +-------+----------+-------------+----------------------------+
+        | x-OCT |          |             | year ends end of OCTober   |
+        +-------+----------+-------------+----------------------------+
+        | x-NOV |          |             | year ends end of NOVember  |
+        +-------+----------+-------------+----------------------------+""",
+    "plotting_position_table": r"""+---------------+-----+-----------------+-----------------------+
+        | Name          | a   | Equation        | Description           |
+        |               |     | (i-a)/(n+1-2*a) |                       |
+        +===============+=====+=================+=======================+
+        | weibull       | 0   | i/(n+1)         | mean of sampling      |
+        | (default)     |     |                 | distribution          |
+        +---------------+-----+-----------------+-----------------------+
+        | benard and    | 0.3 | (i-0.3)/(n+0.4) | approx. median of     |
+        | bos-levenbach |     |                 | sampling distribution |
+        +---------------+-----+-----------------+-----------------------+
+        | tukey         | 1/3 | (i-1/3)/(n+1/3) | approx. median of     |
+        |               |     |                 | sampling distribution |
+        +---------------+-----+-----------------+-----------------------+
+        | gumbel        | 1   | (i-1)/(n-1)     | mode of sampling      |
+        |               |     |                 | distribution          |
+        +---------------+-----+-----------------+-----------------------+
+        | hazen         | 1/2 | (i-1/2)/n       | midpoints of n equal  |
+        |               |     |                 | intervals             |
+        +---------------+-----+-----------------+-----------------------+
+        | cunnane       | 2/5 | (i-2/5)/(n+1/5) | subjective            |
+        +---------------+-----+-----------------+-----------------------+
+        | california    | NA  | i/n             |                       |
+        +---------------+-----+-----------------+-----------------------+
 
         Where 'i' is the sorted rank of the y value, and 'n' is the
         total number of values to be plotted.""",
     "clean": r"""clean
         [optional, default is False, input filter]
 
-        The 'clean' command will repair an index, removing duplicate index
-        values and sorting.""",
+        The 'clean' command will repair a input index, removing
+        duplicate index values and sorting.""",
     "skiprows": r"""skiprows: list-like or integer or callable
         [optional, default is None which will infer header from first
         line, input filter]
 
-        Line numbers to skip (0-indexed) or number of lines to skip (int)
-        at the start of the file.
+        Line numbers to skip (0-indexed) or number of lines to skip
+        (int) at the start of the file.
 
-        If callable, the callable function will be evaluated against the row
-        indices, returning True if the row should be skipped and False
-        otherwise.  An example of a valid callable argument would be
+        If callable, the callable function will be evaluated against the
+        row indices, returning True if the row should be skipped and
+        False otherwise.  An example of a valid callable argument would
+        be
 
         ``lambda x: x in [0, 2]``.""",
     "groupby": r"""groupby: str
         [optional, default is None, transformation]
 
-        The pandas offset code to group the time-series data into.  A special
-        code is also available to group 'months_across_years' that will group
-        into twelve categories for each month.""",
+        The pandas offset code to group the time-series data into.
+        A special code is also available to group 'months_across_years'
+        that will group into twelve categories for each month.""",
     "force_freq": r"""force_freq: str
         [optional, output format]
 
-        Force this frequency for the files.  Typically you will only want to
-        enforce a smaller interval where tstoolbox will insert missing values
-        as needed.  WARNING: you may lose data if not careful with this option.
-        In general, letting the algorithm determine the frequency should always
-        work, but this option will override.  Use PANDAS offset codes.""",
+        Force this frequency for the output.  Typically you will only
+        want to enforce a smaller interval where tstoolbox will insert
+        missing values as needed.  WARNING: you may lose data if not
+        careful with this option.  In general, letting the algorithm
+        determine the frequency should always work, but this option will
+        override.  Use PANDAS offset codes.""",
 }
 
 

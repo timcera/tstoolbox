@@ -295,9 +295,9 @@ def convert_index(
 *   Instead you gave {1}.
 *
 """.format(
-                    epoch, interval
-                )
+                epoch, interval
             )
+        )
 
     if to == "number":
         # Index must be datetime - let's make sure
