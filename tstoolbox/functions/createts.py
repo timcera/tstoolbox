@@ -36,6 +36,8 @@ def createts_cli(
         To use this form `--start_date` and `--end_date` must be supplied
         also.  The `freq` option is the pandas date offset code used to create
         the index.
+
+        {pandas_offset_codes}
     fillvalue
         [optional, default is None]
 

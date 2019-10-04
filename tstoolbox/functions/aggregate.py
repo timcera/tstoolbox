@@ -47,6 +47,7 @@ def aggregate_cli(
         'mean', 'sem', 'sum', 'std', 'max', 'min', 'median', 'first', 'last' or
         'ohlc' to calculate on each group.
     {groupby}
+        {pandas_offset_codes}
     {input_ts}
     {columns}
     {start_date}

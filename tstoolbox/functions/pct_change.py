@@ -55,6 +55,8 @@ def pct_change_cli(
         [optional, defaults to None]
 
         A pandas time offset string to represent the interval.
+
+        {pandas_offset_codes}
     {input_ts}
     {columns}
     {start_date}
