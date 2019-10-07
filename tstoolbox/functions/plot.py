@@ -589,7 +589,7 @@ def plot_cli(
     {round_index}
 
     """
-    plot(
+    plt = plot(
         input_ts=input_ts,
         columns=columns,
         start_date=start_date,
@@ -1381,9 +1381,9 @@ def plot(
 
     plt.title(title)
     plt.tight_layout()
-    if ofilename is None:
-        return plt
-    plt.savefig(ofilename)
+    if ofilename is not None:
+        plt.savefig(ofilename)
+    return plt
 
 
 plot.__doc__ = plot_cli.__doc__
