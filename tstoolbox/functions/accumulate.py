@@ -7,6 +7,7 @@ import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import pandas as pd
 
 from .. import tsutils
 
@@ -39,7 +40,13 @@ def accumulate_cli(
     statistic : str
         [optional, default is 'sum', transformation]
 
-        'sum', 'max', 'min', 'prod'
+        Any of 'sum', 'max', 'min', 'prod' or list of same.
+
+        API example::
+            statistic=['sum', 'max']
+
+        CLI example::
+            --statistic=sum,max
     {input_ts}
     {start_date}
     {end_date}
@@ -77,7 +84,8 @@ def accumulate_cli(
     )
 
 
-@tsutils.validator(statistic=[str, ["domain", ["sum", "max", "min", "prod"]], 1])
+@tsutils.validator(statistic=[str, ["domain", ["sum", "max", "min",
+                                               "prod"]], None])
 def accumulate(
     input_ts="-",
     columns=None,
@@ -108,8 +116,14 @@ def accumulate(
         target_units=target_units,
         clean=clean,
     )
-    ntsd = eval("tsd.cum{0}()".format(statistic))
-    return tsutils.return_input(print_input, tsd, ntsd, statistic)
+    statistic = tsutils.make_list(statistic)
+
+    ntsd = pd.DataFrame()
+    for stat in statistic:
+        tmptsd = eval("tsd.cum{0}()".format(stat))
+        tmptsd.columns = [tsutils.renamer(i, stat) for i in tmptsd.columns]
+        ntsd = ntsd.join(tmptsd, how="outer")
+    return tsutils.return_input(print_input, tsd, ntsd)
 
 
 accumulate.__doc__ = accumulate_cli.__doc__
