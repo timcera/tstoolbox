@@ -87,6 +87,7 @@ def clip_cli(
     )
 
 
+@tsutils.validator(a_min=[float, ["pass", []], 1], a_max=[float, ["pass", []], 1])
 def clip(
     input_ts="-",
     start_date=None,

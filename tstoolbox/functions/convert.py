@@ -89,6 +89,7 @@ def convert_cli(
     )
 
 
+@tsutils.validator(factor=[float, ["pass", []], 1], offset=[float, ["pass", []], 1])
 def convert(
     input_ts="-",
     columns=None,

@@ -137,6 +137,12 @@ def rank_cli(
     )
 
 
+@tsutils.validator(
+    method=[str, ["domain", ["average", "min", "max", "first", "dense"]], 1],
+    na_option=[str, ["domain", ["keep", "top", "bottom"]], 1],
+    ascending=[bool, ["domain", [True, False]], 1],
+    pct=[bool, ["domain", [True, False]], 1],
+)
 def rank(
     input_ts="-",
     columns=None,

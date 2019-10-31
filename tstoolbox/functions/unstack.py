@@ -129,14 +129,14 @@ def unstack(
         )
     except ValueError:
         raise ValueError(
-            """
-*
-*   Duplicate index (time stamp and '{0}') where found.
-*   Found these duplicate indices:
-*   {1}
-*
+            tsutils.error_wrapper(
+                """
+Duplicate index (time stamp and '{0}') where found.
+Found these duplicate indices:
+{1}
 """.format(
-                column_names, tsd.index.get_duplicates()
+                    column_names, tsd.index.get_duplicates()
+                )
             )
         )
 

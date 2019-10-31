@@ -111,6 +111,31 @@ def expanding_window_cli(
     )
 
 
+@tsutils.validator(
+    statistic=[
+        str,
+        [
+            "domain",
+            [
+                "corr",
+                "count",
+                "cov",
+                "kurt",
+                "max",
+                "mean",
+                "median",
+                "min",
+                "skew",
+                "std",
+                "sum",
+                "var",
+            ],
+        ],
+        1,
+    ],
+    min_periods=[int, ["pass", []], 1],
+    center=[bool, ["domain", [True, False]], 1],
+)
 def expanding_window(
     input_ts="-",
     columns=None,
@@ -128,6 +153,7 @@ def expanding_window(
     target_units=None,
     print_input=False,
 ):
+    """Calculate an expanding window statistic."""
     tsd = tsutils.common_kwds(
         tsutils.read_iso_ts(
             input_ts, skiprows=skiprows, names=names, index_type=index_type

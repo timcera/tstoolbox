@@ -94,6 +94,28 @@ def calculate_fdc_cli(
     )
 
 
+@tsutils.validator(
+    percent_point_function=[str, ["domain", ["norm", "lognorm", "weibull"]], 1],
+    plotting_position=[
+        str,
+        [
+            "domain",
+            [
+                "weibull",
+                "benard",
+                "bos-levenbach",
+                "tukey",
+                "gumbel",
+                "hazen",
+                "cunnane",
+                "california",
+            ],
+        ],
+        1,
+    ],
+    sort_values=[str, ["domain", ["ascending", "descending"]], 1],
+    sort_index=[str, ["domain", ["ascending", "descending"]], 1],
+)
 def calculate_fdc(
     input_ts="-",
     columns=None,
@@ -111,28 +133,6 @@ def calculate_fdc(
     sort_index="ascending",
 ):
     """Return the frequency distribution curve."""
-    if sort_values not in ["ascending", "descending"]:
-        raise ValueError(
-            """
-*
-*   The 'sort_values' option must be either 'ascending' or 'descending'.
-*   You gave {0}.
-*
-""".format(
-                sort_values
-            )
-        )
-    if sort_index not in ["ascending", "descending"]:
-        raise ValueError(
-            """
-*
-*   The 'sort_index' option must be either 'ascending' or 'descending'.
-*   You gave {0}.
-*
-""".format(
-                sort_index
-            )
-        )
     sort_values = bool(sort_values == "ascending")
 
     tsd = tsutils.common_kwds(

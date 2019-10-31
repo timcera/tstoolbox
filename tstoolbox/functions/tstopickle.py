@@ -87,6 +87,7 @@ def tstopickle(
     target_units=None,
     clean=False,
 ):
+    """Pickle the data into a Python pickled file."""
     tsd = tsutils.common_kwds(
         tsutils.read_iso_ts(
             input_ts, skiprows=skiprows, names=names, index_type=index_type

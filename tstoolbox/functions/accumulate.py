@@ -77,6 +77,7 @@ def accumulate_cli(
     )
 
 
+@tsutils.validator(statistic=[str, ["domain", ["sum", "max", "min", "prod"]], 1])
 def accumulate(
     input_ts="-",
     columns=None,
@@ -107,18 +108,7 @@ def accumulate(
         target_units=target_units,
         clean=clean,
     )
-    try:
-        ntsd = eval("tsd.cum{0}()".format(statistic))
-    except AttributeError:
-        raise ValueError(
-            """
-*
-*   Statistic {0} is not implemented.
-*
-""".format(
-                statistic
-            )
-        )
+    ntsd = eval("tsd.cum{0}()".format(statistic))
     return tsutils.return_input(print_input, tsd, ntsd, statistic)
 
 

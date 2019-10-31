@@ -102,13 +102,13 @@ def stdtozrxp(
     )
     if len(tsd.columns) != 1:
         raise ValueError(
-            """
-*
-*   The "stdtozrxp" command can only accept a single
-*   'time-series, instead it is seeing {0}.
-*
+            tsutils.error_wrapper(
+                """
+The "stdtozrxp" command can only accept a single
+'time-series, instead it is seeing {0}.
 """.format(
-                len(tsd.columns)
+                    len(tsd.columns)
+                )
             )
         )
 

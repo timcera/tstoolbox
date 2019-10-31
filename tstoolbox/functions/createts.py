@@ -64,6 +64,7 @@ def createts_cli(
     )
 
 
+@tsutils.validator(freq=[str, ["pass", []], 1])
 def createts(
     freq=None,
     fillvalue=None,
@@ -76,16 +77,17 @@ def createts(
     if input_ts is None:
         if (start_date is None) or (end_date is None) or (freq is None):
             raise ValueError(
-                """
-*
-*   If input_ts is None, then start_date, end_date, and freq must be supplied.
-*   Instead you have:
-*   start_date = {0},
-*   end_date = {1},
-*   freq = {2}
-*
+                tsutils.error_wrapper(
+                    """
+If input_ts is None, then start_date, end_date, and freq must be supplied.
+
+Instead you have:
+start_date = {0},
+end_date = {1},
+freq = {2}
 """.format(
-                    start_date, end_date, freq
+                        start_date, end_date, freq
+                    )
                 )
             )
 

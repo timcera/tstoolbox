@@ -81,6 +81,7 @@ def date_offset_cli(
     )
 
 
+@tsutils.validator(intervals=[int, ["pass", []], 1], offset=[str, ["pass", []], 1])
 def date_offset(
     intervals,
     offset,

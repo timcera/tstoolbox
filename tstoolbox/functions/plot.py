@@ -63,15 +63,15 @@ def _know_your_limits(xylimits, axis="arithmetic"):
             nlim[1] = 0.99
         if nlim[0] < 0 or nlim[0] > 1 or nlim[1] < 0 or nlim[1] > 1:
             raise ValueError(
-                """
-*
-*   Both limits must be between 0 and 1 for the
-*   'normal', 'lognormal', or 'weibull' axis.
-*
-*   Instead you have {0}.
-*
+                tsutils.error_wrapper(
+                    """
+Both limits must be between 0 and 1 for the
+'normal', 'lognormal', or 'weibull' axis.
+
+Instead you have {0}.
 """.format(
-                    nlim
+                        nlim
+                    )
                 )
             )
 
@@ -81,14 +81,14 @@ def _know_your_limits(xylimits, axis="arithmetic"):
     if nlim[0] is not None and nlim[1] is not None:
         if nlim[0] >= nlim[1]:
             raise ValueError(
-                """
-*
-*   The second limit must be greater than the first.
-*
-*   You gave {0}.
-*
+                tsutils.error_wrapper(
+                    """
+The second limit must be greater than the first.
+
+You gave {0}.
 """.format(
-                    nlim
+                        nlim
+                    )
                 )
             )
 
@@ -97,14 +97,14 @@ def _know_your_limits(xylimits, axis="arithmetic"):
             nlim[1] is not None and nlim[1] <= 0
         ):
             raise ValueError(
-                """
-*
-*   If log plot cannot have limits less than or equal to 0.
-*
-*   You have {0}.
-*
+                tsutils.error_wrapper(
+                    """
+If log plot cannot have limits less than or equal to 0.
+
+You have {0}.
 """.format(
-                    nlim
+                        nlim
+                    )
                 )
             )
 
@@ -646,6 +646,82 @@ def plot_cli(
     )
 
 
+@tsutils.validator(
+    ofilename=[str, ["pass", []], 1],
+    type=[
+        str,
+        [
+            "domain",
+            [
+                "time",
+                "xy",
+                "double_mass",
+                "boxplot",
+                "scatter_matrix",
+                "lag_plot",
+                "autocorrelation",
+                "bootstrap",
+                "histogram",
+                "kde",
+                "kde_time",
+                "bar",
+                "barh",
+                "bar_stacked",
+                "barh_stacked",
+                "heatmap",
+                "norm_xaxis",
+                "norm_yaxis",
+                "lognorm_yaxis",
+                "lognorm_xaxis",
+                "weibull_xaxis",
+                "weibull_yaxis",
+                "taylor",
+                "target",
+                "probability_density",
+            ],
+        ],
+        1,
+    ],
+    lag_plot_lag=[int, ["range", [1, None]], 1],
+    xtitle=[str, ["pass", []], 1],
+    ytitle=[str, ["pass", []], 1],
+    title=[str, ["pass", []], 1],
+    figsize=[float, ["range", [0, None]], 2],
+    legend=[bool, ["domain", [True, False]], 1],
+    legend_names=[str, ["pass", []], 1],
+    subplots=[bool, ["domain", [True, False]], 1],
+    sharex=[bool, ["domain", [True, False]], 1],
+    sharey=[bool, ["domain", [True, False]], 1],
+    colors=[str, ["pass", []], None],
+    linestyles=[str, ["pass", []], None],
+    markerstyles=[str, ["pass", []], None],
+    style=[str, ["pass", []], None],
+    xlim=[float, ["pass", []], 2],
+    ylim=[float, ["pass", []], 2],
+    xaxis=[str, ["domain", ["arithmetic", "log"]], 1],
+    yaxis=[str, ["domain", ["arithmetic", "log"]], 1],
+    secondary_y=[bool, ["domain", [True, False]], 1],
+    mark_right=[bool, ["domain", [True, False]], 1],
+    scatter_matrix_diagonal=[str, ["domain", ["kde", "hist"]], 1],
+    bootstrap_size=[int, ["range", [0, None]], 1],
+    xy_match_line=[str, ["pass", []], 1],
+    grid=[bool, ["domain", [True, False]], 1],
+    label_rotation=[float, ["pass", []], 1],
+    label_skip=[int, ["range", [1, None]], 1],
+    drawstyle=[str, ["pass", []], 1],
+    por=[bool, ["domain", [True, False]], 1],
+    invert_xaxis=[bool, ["domain", [True, False]], 1],
+    invert_yaxis=[bool, ["domain", [True, False]], 1],
+    plotting_position=[
+        str,
+        [
+            "domain",
+            ["weibull", "benard", "tukey", "gumbel", "hazen", "cunnane", "california"],
+        ],
+        1,
+    ],
+    prob_plot_sort_values=[str, ["domain", ["ascending", "descending"]], 1],
+)
 def plot(
     input_ts="-",
     columns=None,
@@ -729,13 +805,13 @@ def plot(
     if type in ["bootstrap", "heatmap", "autocorrelation", "lag_plot"]:
         if len(tsd.columns) != 1:
             raise ValueError(
-                """
-*
-*   The '{1}' plot can only work with 1 time-series in the DataFrame.
-*   The DataFrame that you supplied has {0} time-series.
-*
+                tsutils.error_wrapper(
+                    """
+The '{1}' plot can only work with 1 time-series in the DataFrame.
+The DataFrame that you supplied has {0} time-series.
 """.format(
-                    len(tsd.columns), type
+                        len(tsd.columns), type
+                    )
                 )
             )
 
@@ -770,11 +846,11 @@ def plot(
         lnames = tsutils.make_list(legend_names)
         if len(lnames) != len(set(lnames)):
             raise ValueError(
-                """
-*
-*   Each name in legend_names must be unique.
-*
+                tsutils.error_wrapper(
+                    """
+Each name in legend_names must be unique.
 """
+                )
             )
         if len(tsd.columns) == len(lnames):
             renamedict = dict(list(zip(tsd.columns, lnames)))
@@ -783,16 +859,16 @@ def plot(
             renamedict[tsd.columns[1]] = lnames[0]
         else:
             raise ValueError(
-                """
-*
-*   For 'legend_names' you must have the same number of comma
-*   separated names as columns in the input data.  The input
-*   data has {0} where the number of 'legend_names' is {1}.
-*
-*   If 'xy' type you need to have legend names as x,y1,y2,y3,...
-*
+                tsutils.error_wrapper(
+                    """
+For 'legend_names' you must have the same number of comma
+separated names as columns in the input data.  The input
+data has {0} where the number of 'legend_names' is {1}.
+
+If 'xy' type you need to have legend names as x,y1,y2,y3,...
 """.format(
-                    len(tsd.columns), len(lnames)
+                        len(tsd.columns), len(lnames)
+                    )
                 )
             )
         tsd.rename(columns=renamedict, inplace=True)
@@ -821,14 +897,14 @@ def plot(
         nstyle = tsutils.make_list(style)
         if len(nstyle) != len(tsd.columns):
             raise ValueError(
-                """
-*
-*   You have to have the same number of style strings as time-series to plot.
-*   You supplied '{0}' for style which has {1} style strings,
-*   but you have {2} time-series.
-*
+                tsutils.error_wrapper(
+                    """
+You have to have the same number of style strings as time-series to plot.
+You supplied '{0}' for style which has {1} style strings,
+but you have {2} time-series.
 """.format(
-                    style, len(nstyle), len(tsd.columns)
+                        style, len(nstyle), len(tsd.columns)
+                    )
                 )
             )
         colors = []
@@ -1078,17 +1154,6 @@ def plot(
                 oydata = pd.np.sort(oydata)
             elif prob_plot_sort_values == "descending":
                 oydata = pd.np.sort(oydata)[::-1]
-            else:
-                raise ValueError(
-                    """
-*
-*  The 'prob_plot_sort_values' option can only be 'ascending' or
-*  'descending'.  You gave {prob_plot_sort_values}.
-*
-""".format(
-                        **locals()
-                    )
-                )
             n = len(oydata)
             norm_axis = ax.xaxis
             oxdata = ppf(tsutils.set_plotting_position(n, plotting_position))
@@ -1250,11 +1315,11 @@ def plot(
         tsd = tsutils.asbestfreq(tsd)
         if tsd.index.freqstr != "D":
             raise ValueError(
-                """
-*
-*  The "heatmap" plot type can only work with daily time series.
-*
+                tsutils.error_wrapper(
+                    """
+The "heatmap" plot type can only work with daily time series.
 """
+                )
             )
         dr = pd.date_range(
             "{0}-01-01".format(byear), "{0}-12-31".format(eyear), freq="D"
@@ -1345,17 +1410,6 @@ def plot(
             plt.legend(loc="best")
     elif type == "histogram":
         tsd.hist(figsize=figsize)
-    else:
-        raise ValueError(
-            """
-*
-*   Plot 'type' {0} is not supported.
-*
-""".format(
-                type
-            )
-        )
-
     if xy_match_line:
         if isinstance(xy_match_line, str):
             xymsty = xy_match_line

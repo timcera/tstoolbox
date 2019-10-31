@@ -81,6 +81,7 @@ def converttz_cli(
     )
 
 
+@tsutils.validator(fromtz=[str, ["pass", []], 1], totz=[str, ["pass", []], 1])
 def converttz(
     fromtz,
     totz,

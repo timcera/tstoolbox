@@ -79,6 +79,10 @@ def calculate_kde_cli(
     )
 
 
+@tsutils.validator(
+    ascending=[bool, ["domain", [True, False]], 1],
+    evaluate=[bool, ["domain", [True, False]]],
+)
 def calculate_kde(
     ascending=True,
     evaluate=False,
@@ -108,13 +112,14 @@ def calculate_kde(
 
     if len(tsd.columns) > 1:
         raise ValueError(
-            """
-*
-*   Right now "calculate_kde" only support one time-series at a time.
-*   You gave {0}.
-*
+            tsutils.error_wrapper(
+                """
+Right now "calculate_kde" only support one time-series at a time.
+
+You gave {0}.
 """.format(
-                tsd.columns
+                    tsd.columns
+                )
             )
         )
 

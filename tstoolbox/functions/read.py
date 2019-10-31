@@ -93,6 +93,11 @@ def read_cli(
     )
 
 
+@tsutils.validator(
+    filenames=[str, ["pass", []], None],
+    append=[str, ["domain", ["columns", "row", "combine"]], 1],
+    force_freq=[str, ["pass", []], 1],
+)
 def read(
     filenames,
     force_freq=None,
@@ -112,13 +117,14 @@ def read(
     """Collect time series from a list of pickle or csv files."""
     if append not in ["combine", "rows", "columns"]:
         raise ValueError(
-            """
-*
-*   The "append" keyword must be "combine", "rows", or "columns".
-*   You game me {0}.
-*
+            tsutils.error_wrapper(
+                """
+The "append" keyword must be "combine", "rows", or "columns".
+
+You game me {0}.
 """.format(
-                append
+                    append
+                )
             )
         )
 

@@ -190,6 +190,26 @@ def filter_cli(
     )
 
 
+@tsutils.validator(
+    filter_type=[
+        str,
+        [
+            "domain",
+            [
+                "flat",
+                "hanning",
+                "hamming",
+                "bartlett",
+                "blackman",
+                "fft_highpass",
+                "fft_lowpass",
+            ],
+        ],
+        1,
+    ],
+    window_len=[int, ["pass", []], 1],
+    cutoff_period=[float, ["pass", []], 1],
+)
 def filter(
     filter_type,
     input_ts="-",
@@ -226,12 +246,12 @@ def filter(
 
     if len(tsd.values) < window_len:
         raise ValueError(
-            """
-*
-*   Input vector (length={0}) needs to be bigger than window size ({1}).
-*
+            tsutils.error_wrapper(
+                """
+Input vector (length={0}) needs to be bigger than window size ({1}).
 """.format(
-                len(tsd.values), window_len
+                    len(tsd.values), window_len
+                )
             )
         )
 

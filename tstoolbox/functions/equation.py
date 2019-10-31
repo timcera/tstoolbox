@@ -191,6 +191,7 @@ def equation_cli(
     )
 
 
+@tsutils.validator(equation_str=[str, ["pass", []], 1])
 def equation(
     equation_str,
     input_ts="-",

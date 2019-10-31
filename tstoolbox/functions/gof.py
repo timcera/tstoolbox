@@ -115,6 +115,31 @@ def gof_cli(
     )
 
 
+@tsutils.validator(
+    stats=[
+        str,
+        [
+            "domain",
+            [
+                "bias",
+                "pc_bias",
+                "apc_bias",
+                "rmsd",
+                "crmsd",
+                "corrcoef",
+                "murphyss",
+                "nse",
+                "kge",
+                "index_agreement",
+                "brierss",
+                "mean",
+                "stdev",
+                "all",
+            ],
+        ],
+        None,
+    ]
+)
 def gof(
     input_ts="-",
     stats="all",
@@ -168,12 +193,12 @@ def gof(
     )
     if len(tsd.columns) != 2:
         raise ValueError(
-            """
-*
-*   The gof algorithms work with two time-series only.  You gave {0}.
-*
+            tsutils.error_wrapper(
+                """
+The gof algorithms work with two time-series only.  You gave {0}.
 """.format(
-                len(tsd.columns)
+                    len(tsd.columns)
+                )
             )
         )
     lennao, lennas = tsd.isna().sum()

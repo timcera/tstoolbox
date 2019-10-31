@@ -105,6 +105,12 @@ def normalization_cli(
     )
 
 
+@tsutils.validator(
+    mode=[str, ["domain", ["minmax", "zscore", "pct_rank"]], 1],
+    min_limit=[float, ["pass", []], 1],
+    max_limit=[float, ["pass", []], 1],
+    pct_rank_method=[str, ["domain", ["average", "min", "max", "first", "dense"]], 1],
+)
 def normalization(
     input_ts="-",
     columns=None,
@@ -156,13 +162,13 @@ def normalization(
         tsd = tsd.rank(method=pct_rank_method, pct=True)
     else:
         raise ValueError(
-            """
-*
-*   The 'mode' options are 'minmax', 'zscore', or 'pct_rank', you gave me
-*   {0}.
-*
+            tsutils.error_wrapper(
+                """
+The 'mode' options are 'minmax', 'zscore', or 'pct_rank', you gave me
+{0}.
 """.format(
-                mode
+                    mode
+                )
             )
         )
 

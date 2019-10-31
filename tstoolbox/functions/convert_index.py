@@ -160,6 +160,7 @@ def convert_index_cli(
     tsutils._printiso(tsd, tablefmt=tablefmt)
 
 
+@tsutils.validator(to=[str, ["domain", ["datetime", "number"]], 1])
 def convert_index(
     to,
     interval=None,
@@ -177,7 +178,6 @@ def convert_index(
     skiprows=None,
 ):
     """Convert datetime to/from Julian dates from different epochs."""
-
     # Clip to start_date/end_date if possible.
     if to == "datetime":
         index_type = "number"
@@ -189,16 +189,6 @@ def convert_index(
         nstart_date = start_date
         nend_date = end_date
         nround_index = round_index
-    else:
-        raise ValueError(
-            """
-*
-*   The 'to' argument must be 'number' or 'datetime'.  You gave {0}.
-*
-""".format(
-                to
-            )
-        )
 
     tsd = tsutils.common_kwds(
         tsutils.read_iso_ts(

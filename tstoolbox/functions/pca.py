@@ -70,6 +70,7 @@ def pca_cli(
     )
 
 
+@tsutils.validator(n_components=[int, ["range", [1, None]], 1])
 def pca(
     input_ts="-",
     columns=None,

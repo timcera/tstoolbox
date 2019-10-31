@@ -116,6 +116,7 @@ def dtw_cli(
     )
 
 
+@tsutils.validator(window=[int, ["pass", []], 1])
 def dtw(
     input_ts="-",
     columns=None,

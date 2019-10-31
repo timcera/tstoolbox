@@ -163,6 +163,16 @@ def ewm_window_cli(
     )
 
 
+@tsutils.validator(
+    statistic=[str, ["domain", ["corr", "cov", "mean", "std", "var"]], 1],
+    alpha_com=[float, ["pass", []], 1],
+    alpha_span=[float, ["pass", []], 1],
+    alpha_halflife=[float, ["pass", []], 1],
+    alpha=[float, ["pass", []], 1],
+    min_periods=[int, ["range", [0, None]], 1],
+    adjust=[bool, ["domain", [True, False]], 1],
+    ignore_na=[bool, ["domain", [True, False]], 1],
+)
 def ewm_window(
     input_ts="-",
     columns=None,

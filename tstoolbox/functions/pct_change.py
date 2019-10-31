@@ -99,6 +99,12 @@ def pct_change_cli(
     )
 
 
+@tsutils.validator(
+    periods=[int, ["range", [1, None]], 1],
+    fill_method=[str, ["domain", ["backfill", "bfill", "ffill", "pad"]], 1],
+    limit=[int, ["range", [0, None]], 1],
+    freq=[str, ["pass", []], 1],
+)
 def pct_change(
     input_ts="-",
     columns=None,

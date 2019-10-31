@@ -139,6 +139,11 @@ def fill_cli(
     )
 
 
+@tsutils.validator(
+    method=[str, ["pass", []], 1],
+    from_columns=[str, ["pass", []], 1],
+    to_columns=[str, ["pass", []], 1],
+)
 def fill(
     input_ts="-",
     method="ffill",
@@ -217,14 +222,14 @@ def fill(
             ntsd = ntsd.fillna(value=float(method))
         except ValueError:
             raise ValueError(
-                """
-*
-*   The allowable values for 'method' are 'ffill', 'bfill', 'linear',
-*   'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'mean', 'median',
-*   'max', 'min', 'from', or a number.  Instead you have {0}.
-*
+                tsutils.error_wrapper(
+                    """
+The allowable values for 'method' are 'ffill', 'bfill', 'linear',
+'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'mean', 'median',
+'max', 'min', 'from', or a number.  Instead you have {0}.
 """.format(
-                    method
+                        method
+                    )
                 )
             )
     ntsd = ntsd.iloc[1:-1]
@@ -284,15 +289,15 @@ def fill_by_correlation(
     if method.lower() in single_source_ts:
         if len(basets.columns) != 1:
             raise ValueError(
-                """
-*
-*   For methods in {0}
-*   You can only have a single source column.  You can pass in onlu 2
-*   time-series or use the flag 'choose_best' along with 'maximum_lag'.
-*   Instead there are {1} source time series.
-*
+                tsutils.error_wrapper(
+                    """
+For methods in {0}
+You can only have a single source column.  You can pass in onlu 2
+time-series or use the flag 'choose_best' along with 'maximum_lag'.
+Instead there are {1} source time series.
 """.format(
-                    single_source_ts, len(basets.columns)
+                        single_source_ts, len(basets.columns)
+                    )
                 )
             )
 

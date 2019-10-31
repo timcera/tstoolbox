@@ -6,6 +6,7 @@ import bz2
 import gzip
 import os
 import sys
+from textwrap import TextWrapper
 from functools import reduce
 from io import StringIO
 from math import gcd
@@ -19,12 +20,25 @@ from tabulate import tabulate as tb
 
 ureg = UnitRegistry()
 
+wrapper = TextWrapper(initial_indent="*   ", subsequent_indent="*   ")
+
+
+def error_wrapper(estr):
+    nestr = ["", "*"]
+    for paragraph in estr.split("\n\n"):
+        nestr.append("\n".join(wrapper.wrap(paragraph.strip())))
+        nestr.append("*")
+    nestr.append("")
+    return "\n".join(nestr)
+
+
 docstrings = {
     "target_units": r"""target_units
         [optional, default is None, transformation]
 
-        The main purpose of this option is to convert units from those
-        specified in the header line of the input into 'target_units'.
+        The purpose of this option is to specify target units for unit
+        conversion.  The source units are specified in the header line
+        of the input or using the 'source_units' keyword.
 
         The units of the input time-series or values are specified as
         the second field of a ':' delimited name in the header line of
@@ -161,7 +175,6 @@ docstrings = {
         this output table.  Pass a list of strings for each column in
         the table.""",
     "pandas_offset_codes": r"""+-------+------------------------------------+
-        +-------+------------------------------------+
         | Alias | Description                        |
         +=======+====================================+
         | B     | Business day                       |
@@ -267,29 +280,29 @@ docstrings = {
         +-------+----------+-------------+----------------------------+
         | x-NOV |          |             | year ends end of NOVember  |
         +-------+----------+-------------+----------------------------+""",
-    "plotting_position_table": r"""+---------------+-----+-----------------+-----------------------+
-        | Name          | a   | Equation        | Description           |
-        |               |     | (i-a)/(n+1-2*a) |                       |
-        +===============+=====+=================+=======================+
-        | weibull       | 0   | i/(n+1)         | mean of sampling      |
-        | (default)     |     |                 | distribution          |
-        +---------------+-----+-----------------+-----------------------+
-        | benard and    | 0.3 | (i-0.3)/(n+0.4) | approx. median of     |
-        | bos-levenbach |     |                 | sampling distribution |
-        +---------------+-----+-----------------+-----------------------+
-        | tukey         | 1/3 | (i-1/3)/(n+1/3) | approx. median of     |
-        |               |     |                 | sampling distribution |
-        +---------------+-----+-----------------+-----------------------+
-        | gumbel        | 1   | (i-1)/(n-1)     | mode of sampling      |
-        |               |     |                 | distribution          |
-        +---------------+-----+-----------------+-----------------------+
-        | hazen         | 1/2 | (i-1/2)/n       | midpoints of n equal  |
-        |               |     |                 | intervals             |
-        +---------------+-----+-----------------+-----------------------+
-        | cunnane       | 2/5 | (i-2/5)/(n+1/5) | subjective            |
-        +---------------+-----+-----------------+-----------------------+
-        | california    | NA  | i/n             |                       |
-        +---------------+-----+-----------------+-----------------------+
+    "plotting_position_table": r"""+------------+-----+-----------------+-----------------------+
+        | Name       | a   | Equation        | Description           |
+        |            |     | (i-a)/(n+1-2*a) |                       |
+        +============+=====+=================+=======================+
+        | weibull    | 0   | i/(n+1)         | mean of sampling      |
+        | (default)  |     |                 | distribution          |
+        +------------+-----+-----------------+-----------------------+
+        | benard     | 0.3 | (i-0.3)/(n+0.4) | approx. median of     |
+        |            |     |                 | sampling distribution |
+        +------------+-----+-----------------+-----------------------+
+        | tukey      | 1/3 | (i-1/3)/(n+1/3) | approx. median of     |
+        |            |     |                 | sampling distribution |
+        +------------+-----+-----------------+-----------------------+
+        | gumbel     | 1   | (i-1)/(n-1)     | mode of sampling      |
+        |            |     |                 | distribution          |
+        +------------+-----+-----------------+-----------------------+
+        | hazen      | 1/2 | (i-1/2)/n       | midpoints of n equal  |
+        |            |     |                 | intervals             |
+        +------------+-----+-----------------+-----------------------+
+        | cunnane    | 2/5 | (i-2/5)/(n+1/5) | subjective            |
+        +------------+-----+-----------------+-----------------------+
+        | california | NA  | i/n             |                       |
+        +------------+-----+-----------------+-----------------------+
 
         Where 'i' is the sorted rank of the y value, and 'n' is the
         total number of values to be plotted.""",
@@ -334,7 +347,7 @@ def stride_and_unit(sunit):
     if sunit is None:
         return sunit
     unit = sunit.lstrip("+-. 1234567890")
-    stride = freqstr[: freqstr.index(unit)]
+    stride = sunit[: sunit.index(unit)]
     if len(stride):
         stride = int(stride)
     else:
@@ -343,6 +356,7 @@ def stride_and_unit(sunit):
 
 
 def set_ppf(ptype):
+    """Return correct Percentage Point Function for `ptype`."""
     if ptype == "norm":
         from scipy.stats.distributions import norm
 
@@ -373,28 +387,6 @@ def _plotting_position_equation(i, n, a):
 
 def set_plotting_position(n, plotting_position="weibull"):
     """Create plotting position 1D array using linspace."""
-    plotplist = [
-        "weibull",
-        "benard",
-        "tukey",
-        "gumbel",
-        "hazen",
-        "cunnane",
-        "california",
-    ]
-    if plotting_position not in plotplist:
-        raise ValueError(
-            """
-*
-*    The plotting_position option accepts:
-*    {1}
-*    plotting position options, you gave {0}.
-*
-""".format(
-                plotting_position, plotplist
-            )
-        )
-
     if plotting_position == "weibull":
         return pd.np.linspace(
             _plotting_position_equation(1, n, 0.0),
@@ -459,7 +451,6 @@ def parsedate(dstr, strftime=None, settings=None):
     """Use dateparser to parse a wide variety of dates.
 
     Used for start and end dates.
-
     """
     if dstr is None:
         return dstr
@@ -483,12 +474,12 @@ def parsedate(dstr, strftime=None, settings=None):
 
     if pdate is None:
         raise ValueError(
-            """
-*
-*   Could not parse date string '{0}'.
-*
+            error_wrapper(
+                """
+Could not parse date string '{0}'.
 """.format(
-                dstr
+                    dstr
+                )
             )
         )
 
@@ -548,16 +539,14 @@ def _pick_column_or_value(tsd, var):
 
 
 def make_list(*strorlist, **kwds):
-    """Normalize strings, converting to numbers or lists.
-    """
+    """Normalize strings, converting to numbers or lists."""
     try:
         n = kwds.pop("n")
     except KeyError:
         n = 1
 
     if isinstance(strorlist, (list, tuple)) and len(strorlist) == 1:
-        """ Normalize lists and tuples of length 1 to scalar.
-        """
+        """ Normalize lists and tuples of length 1 to scalar."""
         strorlist = strorlist[0]
 
     try:
@@ -608,12 +597,12 @@ def make_list(*strorlist, **kwds):
     if n > 1:
         if len(strorlist) != n:
             raise ValueError(
-                """
-*
-*   The length should be {0}, but it is {1}.
-*
+                error_wrapper(
+                    """
+The length should be {0}, but it is {1}.
 """.format(
-                    n, len(strorlist)
+                        n, len(strorlist)
+                    )
                 )
             )
 
@@ -645,6 +634,189 @@ def make_list(*strorlist, **kwds):
     return ret
 
 
+# Take `air_pressure` from df.loc[:, 1]
+# Take `short_wave_rad` from df.loc[:, 'swaverad']
+# The `temperature` keyword is set to 23.4 for all time periods
+# The `wind_speed` keyword is set to 2.4 and 3.1 in turn
+#
+# Will output two columns, one with wind_speed equal to 2.4, the next
+# with wind_speed equal to 3.1.
+#
+# API:
+# testfunction(input_ts=df,
+#              air_pressure='_1',
+#              short_wave_rad='swaverad',
+#              temperature=23.4,
+#              wind_speed=[2.4, 3.1])
+#             )
+#
+# CLI:
+# mettoolbox testfunction --air_pressure=_1 \
+#                         --short_wave_rad=swaverad \
+#                         --temperature 23.4 \
+#                         --wind_speed 2.4,3.1 < df.csv
+
+
+def Coerce(ntype, msg=None):
+    """Coerce a value to a type.
+
+    If the type constructor throws a ValueError, the value will be marked as
+    Invalid.
+    """
+
+    def f(v):
+        if v is None:
+            return None
+        if isinstance(v, str):
+            if "," in v:
+                v = v.split(",")
+        try:
+            if isinstance(v, (list, tuple)):
+                return [ntype(i) for i in v]
+            return ntype(v)
+        except ValueError:
+            raise ValueError(msg or ("Cannot coerce {0} to {1}.".format(v, ntype)))
+
+    return f
+
+
+def _vhead(funcname, argname, nargs, nvar, vlen):
+    if not isinstance(nvar, list):
+        nvar = [nvar]
+    if vlen is not None and len(nvar) != vlen:
+        items = "item" if vlen == 1 else "items"
+        raise ValueError(
+            error_wrapper(
+                """
+The argument {argname} can only be {vlen} {items} long.
+
+You gave {nvar}.
+""".format(
+                    **locals()
+                )
+            )
+        )
+    return nvar
+
+
+def _vdomain(funcname, argname, nargs, nvar, vlen):
+    nvar = _vhead(funcname, argname, nargs, nvar, vlen)
+    for i in nvar:
+        if i is None:
+            continue
+        if i not in nargs:
+            raise ValueError(
+                error_wrapper(
+                    """
+The argument "{argname}" should be one of the terms in {nargs}.
+
+You gave "{i}".
+""".format(
+                        **locals()
+                    )
+                )
+            )
+
+
+def _vrange(funcname, argname, nargs, nvar, vlen):
+    nvar = _vhead(funcname, argname, nargs, nvar, vlen)
+    for i in nvar:
+        if i is None:
+            continue
+        if nargs[0] is None:
+            if i > nargs[1]:
+                raise ValueError(
+                    error_wrapper(
+                        """
+The argument "{1}" should be less than {4}.
+
+You gave "{2}".
+""".format(
+                            funcname, argname, i, nargs[0], nargs[1]
+                        )
+                    )
+                )
+            continue
+        if nargs[1] is None:
+            if i < nargs[0]:
+                raise ValueError(
+                    error_wrapper(
+                        """
+The argument "{1}" should be greater than {3}.
+
+You gave "{2}".
+""".format(
+                            funcname, argname, i, nargs[0], nargs[1]
+                        )
+                    )
+                )
+            continue
+        if i < nargs[0] or i > nargs[1]:
+            raise ValueError(
+                error_wrapper(
+                    """
+The argument "{1}" should be between {3} to {4}.
+
+You gave "{2}".
+""".format(
+                        funcname, argname, i, nargs[0], nargs[1]
+                    )
+                )
+            )
+
+
+def _vpass(funcname, argname, nargs, nvar, vlen):
+    pass
+
+
+validator_func = {"domain": _vdomain, "range": _vrange, "pass": _vpass}
+
+
+def validator(**argchecks):  # validate ranges for both+defaults
+    def onDecorator(func):  # onCall remembers func and argchecks
+        if not __debug__:  # True if "python -O main.py args.."
+            return func  # wrap if debugging else use original
+        else:
+            code = func.__code__
+            allargs = code.co_varnames[: code.co_argcount]
+            funcname = func.__name__
+
+            def onCall(*pargs, **kargs):
+                # all pargs match first N args by position
+                # the rest must be in kargs or omitted defaults
+                positionals = list(allargs)
+                positionals = positionals[: len(pargs)]
+
+                for (argname, (ctype, (valid, (nargs)), vlen)) in argchecks.items():
+                    # for all args to be checked
+                    if argname in kargs:
+                        # was passed by name
+                        nvar = Coerce(ctype)(kargs[argname])
+                        validator_func[valid](funcname, argname, nargs, nvar, vlen)
+                    elif argname in positionals:
+                        # was passed by position
+                        position = positionals.index(argname)
+                        nvar = Coerce(ctype)(pargs[position])
+                        validator_func[valid](funcname, argname, nargs, nvar, vlen)
+                return func(*pargs, **kargs)  # okay: run original call
+
+            return onCall
+
+    return onDecorator
+
+
+@validator(
+    start_date=[parsedate, ["pass", []], 1],
+    end_date=[parsedate, ["pass", []], 1],
+    force_freq=[str, ["pass", []], 1],
+    groupby=[str, ["pass", []], 1],
+    dropna=[str, ["domain", ["no", "any", "all"]], 1],
+    round_index=[str, ["pass", []], 1],
+    clean=[bool, ["domain", [True, False]], 1],
+    target_units=[str, ["pass", []], None],
+    source_units=[str, ["pass", []], None],
+    bestfreq=[bool, ["domain", [True, False]], 1],
+)
 def common_kwds(
     input_tsd=None,
     start_date=None,
@@ -655,8 +827,6 @@ def common_kwds(
     dropna="no",
     round_index=None,
     clean=False,
-    variables=None,
-    variables_ts=None,
     target_units=None,
     source_units=None,
     bestfreq=True,
@@ -676,19 +846,6 @@ def common_kwds(
     """
     ntsd = input_tsd
 
-    if pick is not None and variables is not None:
-        raise ValueError(
-            """
-*
-*   The 'pick' and 'variables' keywords have very similar functions and cannot
-*   be used together.  'pick' will select column number(s) or name(s) from the
-*   input.  The 'variables' keyword allows for the selection of column name(s)
-*   from the input, or to represent a constant value, or a mixture of column
-*   names and values.
-*
-"""
-        )
-
     target_units = make_list(target_units, n=len(ntsd.columns))
     source_units = make_list(source_units, n=len(ntsd.columns))
 
@@ -703,58 +860,25 @@ def common_kwds(
     if bestfreq is True:
         ntsd = asbestfreq(ntsd, force_freq=force_freq)
 
-    if variables is not None:
-        collector = []
-        names = []
-        if variables_ts is None:
-            index = [0]
-        else:
-            index = [pd.Timestamp(variables_ts)]
-        for inx, v in enumerate(variables):
-            try:
-                # See if 'variable' is a value.
-                collector.append(np.array([float(v)]))
-                try:
-                    names.append("var{0}:{1}".format(inx, source_units[inx]))
-                except IndexError:
-                    names.append("var{0}".format(inx))
-            except ValueError:
-                # The 'variable' is a column.
-                collector.append(_pick(ntsd, v))
-                index = ntsd.index
-                if ":" not in ntsd.columns[inx]:
-                    try:
-                        names.append(
-                            "{0}:{1}".format(ntsd.columns[inx], source_units[inx])
-                        )
-                    except IndexError:
-                        names.append("{0}".format(ntsd.columns[inx]))
-                else:
-                    names.append(ntsd.columns[inx])
-
-        nv = pd.DataFrame()
-        for v in collector:
-            nv = nv.join(
-                pd.DataFrame(index=index, data=pd.np.broadcast_to(v, [len(index)])),
-                how="outer",
-            )
-        ntsd = nv
-        ntsd.columns[:] = names
-
     if source_units is not None:
 
         if len(source_units) != len(ntsd.columns):
+            items = "item" if len(source_units) == 1 else "items"
             raise ValueError(
-                """
-*
-*   To use the 'source_units' keyword to assign units, you must assign a unit
-*   for every column in the input.  You have {0} items where
-*   source_units={1}
-*   and there are {2} columns in the input data
-*   {3}.
-*
+                error_wrapper(
+                    """
+To use the 'source_units' keyword to assign units, you must assign a unit
+for every column in the input.  You have {0} {4} where
+source_units={1}
+and there are {2} columns in the input data
+{3}.
 """.format(
-                    len(source_units), source_units, len(ntsd.columns), ntsd.columns
+                        len(source_units),
+                        source_units,
+                        len(ntsd.columns),
+                        ntsd.columns,
+                        items,
+                    )
                 )
             )
 
@@ -766,14 +890,14 @@ def common_kwds(
                 names.append(ntsd.columns[inx])
                 if words[1] != testunits:
                     raise ValueError(
-                        """
-*
-*   If 'source_units' specified must match units from column name.  Column
-*   name units are specified as the second ':' delimited field.
-*   You specified 'source_units' as {0}, but column name units are {1}.
-*
+                        error_wrapper(
+                            """
+If 'source_units' specified must match units from column name.  Column
+name units are specified as the second ':' delimited field.
+You specified 'source_units' as {0}, but column name units are {1}.
 """.format(
-                            source_units[inx], words[1]
+                                source_units[inx], words[1]
+                            )
                         )
                     )
             else:
@@ -787,9 +911,7 @@ def common_kwds(
             except (AttributeError, IndexError):
                 source_units.append("")
 
-    ntsd = _date_slice(
-        ntsd, start_date=parsedate(start_date), end_date=parsedate(end_date)
-    )
+    ntsd = _date_slice(ntsd, start_date=start_date, end_date=end_date)
 
     if ntsd.index.is_all_dates is True:
         ntsd.index.name = "Datetime"
@@ -798,17 +920,6 @@ def common_kwds(
         if groupby == "months_across_years":
             return ntsd.groupby(lambda x: x.month)
         return ntsd.resample(groupby)
-
-    if dropna not in ["any", "all", "no"]:
-        raise ValueError(
-            """
-*
-*   The "dropna" option must be "any", "all" or "no", not "{0}".
-*
-""".format(
-                dropna
-            )
-        )
 
     if dropna in ["any", "all"]:
         ntsd = ntsd.dropna(axis="index", how=dropna)
@@ -822,29 +933,34 @@ def common_kwds(
     if target_units is not None:
 
         if len(target_units) != len(ntsd.columns):
+            items = "item" if len(source_units) == 1 else "items"
             raise ValueError(
-                """
-*
-*   To use the 'target_units' keyword to assign units, you must assign a unit
-*   for every column in the input.  You have {0} items where
-*   target_units={1}
-*   and there are {2} columns in the input data
-*   {3}.
-*
+                error_wrapper(
+                    """
+To use the 'target_units' keyword to assign units, you must assign a unit
+for every column in the input.  You have {0} {4} where
+target_units={1}
+and there are {2} columns in the input data
+{3}.
 """.format(
-                    len(target_units), target_units, len(ntsd.columns), ntsd.columns
+                        len(target_units),
+                        target_units,
+                        len(ntsd.columns),
+                        ntsd.columns,
+                        items,
+                    )
                 )
             )
 
         if source_units is None:
             raise ValueError(
-                """
-*
-*   To specify target_units, you must also specify source_units.  You can
-*   specify source_units either by using the source_units keyword or placing
-*   in the name of the data column as the second ':' separated field.
-*
+                error_wrapper(
+                    """
+To specify target_units, you must also specify source_units.  You can
+specify source_units either by using the source_units keyword or placing
+in the name of the data column as the second ':' separated field.
 """
+                )
             )
 
         ncolumns = []
@@ -887,35 +1003,35 @@ def _pick(tsd, columns):
                 target_col = int(i) - 1
             except ValueError:
                 raise ValueError(
-                    """
-*
-*   The name {0} isn't in the list of column names
-*   {1}.
-*
+                    error_wrapper(
+                        """
+The name {0} isn't in the list of column names
+{1}.
 """.format(
-                        i, tsd.columns
+                            i, tsd.columns
+                        )
                     )
                 )
             if target_col < 0:
                 raise ValueError(
-                    """
-*
-*   The requested column index {0} must be greater than or equal to 0.
-*   First data column is index 1, index is column 0.
-*
+                    error_wrapper(
+                        """
+The requested column index {0} must be greater than or equal to 0.
+First data column is index 1, index is column 0.
 """.format(
-                        i
+                            i
+                        )
                     )
                 )
             if target_col > len(tsd.columns):
                 raise ValueError(
-                    """
-*
-*   The request column index {0} must be less than the
-*   number of columns {1}.
-*
+                    error_wrapper(
+                        """
+The request column index {0} must be less than the
+number of columns {1}.
 """.format(
-                        i, len(tsd.columns)
+                            i, len(tsd.columns)
+                        )
                     )
                 )
 
@@ -1008,14 +1124,14 @@ def asbestfreq(data, force_freq=None):
     )
     if np.any(ndiff <= 0):
         raise ValueError(
-            """
-*
-*   Duplicate or time reversal index entry at
-*   record {1} (start count at 0):
-*   "{0}".
-*
+            error_wrapper(
+                """
+Duplicate or time reversal index entry at
+record {1} (start count at 0):
+"{0}".
 """.format(
-                data.index[:-1][ndiff <= 0][0], pd.np.where(ndiff <= 0)[0][0] + 1
+                    data.index[:-1][ndiff <= 0][0], pd.np.where(ndiff <= 0)[0][0] + 1
+                )
             )
         )
 
@@ -1110,8 +1226,8 @@ def asbestfreq(data, force_freq=None):
     return data
 
 
-# Print the suffix into the third ":" separated field.
 def renamer(xloc, suffix):
+    """Print the suffix into the third ":" separated field of the header."""
     if suffix is None:
         suffix = ""
     try:
@@ -1143,7 +1259,6 @@ def print_input(
     showindex="never",
 ):
     """Print the input time series also."""
-
     return _printiso(
         return_input(iftrue, intds, output, suffix=suffix),
         date_format=date_format,
@@ -1155,7 +1270,6 @@ def print_input(
 
 def return_input(iftrue, intds, output, suffix="", reverse_index=False):
     """Print the input time series also."""
-
     output.columns = [renamer(i, suffix) for i in output.columns]
     if iftrue:
         return intds.join(output, lsuffix="_1", rsuffix="_2", how="outer")
@@ -1181,7 +1295,6 @@ def _printiso(
     tablefmt="csv",
 ):
     """Separate so can use in tests."""
-
     if isinstance(tsd, (pd.DataFrame, pd.Series)):
         if isinstance(tsd, pd.Series):
             tsd = pd.DataFrame(tsd)
@@ -1296,6 +1409,15 @@ def is_valid_url(url, qualifying=None):
     return all((getattr(token, qualifying_attr) for qualifying_attr in qualifying))
 
 
+@validator(
+    parse_dates=[bool, ["domain", [True, False]], 1],
+    extended_columns=[bool, ["domain", [True, False]], 1],
+    dropna=[str, ["domain", ["no", "any", "all"]], 1],
+    force_freq=[str, ["pass", []], 1],
+    index_type=[str, ["domain", ["datetime", "number"]], 1],
+    names=[str, ["pass", []], 1],
+    skiprows=[int, ["pass", []], 1],
+)
 def read_iso_ts(
     indat,
     parse_dates=True,
@@ -1361,14 +1483,14 @@ def read_iso_ts(
             fname = ""
         else:
             raise ValueError(
-                """
-*
-*   Can't figure out what "input_ts={0}" is.
-*   I tested if it was a string or StringIO object, DataFrame, local file,
-*   or an URL.  If you want to pull from stdin use "-" or redirection/piping.
-*
+                error_wrapper(
+                    """
+Can't figure out what "input_ts={0}" is.
+I tested if it was a string or StringIO object, DataFrame, local file,
+or an URL.  If you want to pull from stdin use "-" or redirection/piping.
 """.format(
-                    indat
+                        indat
+                    )
                 )
             )
 
@@ -1432,14 +1554,14 @@ def read_iso_ts(
 
     else:
         raise ValueError(
-            """
-*
-*   Can't figure out what was passed to read_iso_ts.
-*   You gave me {0}, of
-*   {1}.
-*
+            error_wrapper(
+                """
+Can't figure out what was passed to read_iso_ts.
+You gave me {0}, of
+{1}.
 """.format(
-                indat, type(indat)
+                    indat, type(indat)
+                )
             )
         )
 

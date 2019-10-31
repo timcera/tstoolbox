@@ -86,6 +86,9 @@ def replace_cli(
     )
 
 
+@tsutils.validator(
+    from_values=[float, ["pass", []], None], to_values=[float, ["pass", []], None]
+)
 def replace(
     from_values,
     to_values,

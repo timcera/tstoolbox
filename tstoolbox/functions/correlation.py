@@ -73,6 +73,7 @@ def correlation_cli(
     )
 
 
+@tsutils.validator(lags=[int, ["pass", []], None])
 def correlation(
     lags,
     input_ts="-",
@@ -88,6 +89,7 @@ def correlation(
     target_units=None,
     skiprows=None,
 ):
+    """Develop a correlation between time-series and potentially lags."""
     ntsd = lag.lag(
         lags,
         input_ts=input_ts,

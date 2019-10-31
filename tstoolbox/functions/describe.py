@@ -66,6 +66,7 @@ def describe_cli(
     )
 
 
+@tsutils.validator(transpose=[bool, ["domain", [True, False]], 1])
 def describe(
     input_ts="-",
     columns=None,

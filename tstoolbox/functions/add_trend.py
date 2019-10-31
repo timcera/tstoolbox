@@ -81,6 +81,9 @@ def add_trend_cli(
     )
 
 
+@tsutils.validator(
+    start_offset=[float, ["pass", []], 1], end_offset=[float, ["pass", []], 1]
+)
 def add_trend(
     start_offset,
     end_offset,

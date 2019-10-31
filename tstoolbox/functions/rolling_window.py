@@ -169,6 +169,36 @@ def rolling_window_cli(
     )
 
 
+@tsutils.validator(
+    statistic=[
+        str,
+        [
+            "domain",
+            [
+                "corr",
+                "count",
+                "cov",
+                "kurt",
+                "max",
+                "mean",
+                "median",
+                "min",
+                "quantile",
+                "skew",
+                "std",
+                "sum",
+                "var",
+            ],
+        ],
+        1,
+    ],
+    window=[int, ["range", [0, None]], 1],
+    min_periods=[int, ["range", [0, None]], 1],
+    center=[bool, ["domain", [True, False]], 1],
+    win_type=[str, ["pass", []], 1],
+    on=[str, ["pass", []], 1],
+    closed=[str, ["domain", ["right", "left", "both", "neither"]], 1],
+)
 def rolling_window(
     statistic,
     groupby=None,

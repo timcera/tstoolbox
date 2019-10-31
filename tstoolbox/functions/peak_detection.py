@@ -135,13 +135,13 @@ def _datacheck_peakdetect(x_axis, y_axis):
 
     if len(y_axis) != len(x_axis):
         raise ValueError(
-            """
-*
-*   The length of y values must equal the length of x values.  Instead the
-*   length of y values is {0} and the length of x values is {1}.
-*
+            tsutils.error_wrapper(
+                """
+The length of y values must equal the length of x values.  Instead the
+length of y values is {0} and the length of x values is {1}.
 """.format(
-                len(y_axis), len(x_axis)
+                    len(y_axis), len(x_axis)
+                )
             )
         )
 
@@ -906,6 +906,14 @@ def peak_detection_cli(
     )
 
 
+@tsutils.validator(
+    extrema=[str, ["domain", ["peak", "valley", "both"]], 1],
+    method=[str, ["domain", ["rel", "minmax", "zero_crossing", "parabola", "sine"]], 1],
+    window=[int, ["range", [0, None]], 1],
+    pad_len=[int, ["range", [0, None]], 1],
+    points=[int, ["range", [0, None]], 1],
+    lock_frequency=[bool, ["domain", [True, False]], 1],
+)
 def peak_detection(
     input_ts="-",
     columns=None,
@@ -931,31 +939,6 @@ def peak_detection(
     r"""Peak and valley detection."""
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
-
-    if extrema not in ["peak", "valley", "both"]:
-        raise ValueError(
-            """
-*
-*   The `extrema` argument must be one of 'peak',
-*   'valley', or 'both'.  You supplied {0}.
-*
-""".format(
-                extrema
-            )
-        )
-
-    if method not in ["rel", "minmax", "zero_crossing", "parabola", "sine"]:
-        raise ValueError(
-            """
-*
-*   The `method` argument must be one of 'rel', 'minmax',
-*   'zero_crossing', 'parabola', or 'sine'.  You supplied {0}.
-*
-""".format(
-                method
-            )
-        )
-
     tsd = tsutils.common_kwds(
         tsutils.read_iso_ts(
             input_ts, skiprows=skiprows, names=names, index_type=index_type

@@ -93,6 +93,16 @@ def aggregate_cli(
     )
 
 
+@tsutils.validator(
+    statistic=[
+        str,
+        [
+            "domain",
+            ["mean", "sum", "std", "sem", "max", "median", "first", "last", "ohlc"],
+        ],
+        1,
+    ]
+)
 def aggregate(
     input_ts="-",
     groupby=None,
@@ -113,51 +123,26 @@ def aggregate(
     print_input=False,
 ):
     """Take a time series and aggregate to specified frequency."""
-    statslist = [
-        "mean",
-        "sum",
-        "std",
-        "sem",
-        "max",
-        "min",
-        "median",
-        "first",
-        "last",
-        "ohlc",
-    ]
-    if statistic not in statslist:
-        raise ValueError(
-            """
-*
-*   The statistic option must be one of:
-*   {1}
-*   to apply to each aggregation.
-*   You gave {0}.
-*
-""".format(
-                statistic, statslist
-            )
-        )
 
     aggd = {"hourly": "H", "daily": "D", "monthly": "M", "yearly": "A"}
 
     if agg_interval is not None:
         if groupby is not None:
             raise ValueError(
-                """
-*
-*   You cannot specify both 'groupby' and 'agg_interval'.  The 'agg_interval'
-*   option is deprecated in favor of 'groupby'.
-*
+                tsutils.error_wrapper(
+                    """
+You cannot specify both 'groupby' and 'agg_interval'.  The 'agg_interval'
+option is deprecated in favor of 'groupby'.
 """
+                )
             )
         warnings.warn(
-            """
-*
-*   The 'agg_interval' option has been deprecated in favor of 'groupby' to be
-*   consistent with other tstoolbox commands.
-*
+            tsutils.error_wrapper(
+                """
+The 'agg_interval' option has been deprecated in favor of 'groupby' to be
+consistent with other tstoolbox commands.
 """
+            )
         )
         groupby = aggd.get(agg_interval, agg_interval)
 

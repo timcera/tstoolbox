@@ -70,6 +70,7 @@ def lag_cli(
     )
 
 
+@tsutils.validator(lags=[int, ["pass", []], 1])
 def lag(
     lags,
     input_ts="-",
