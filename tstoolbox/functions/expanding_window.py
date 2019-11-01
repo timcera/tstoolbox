@@ -170,9 +170,13 @@ def expanding_window(
     ntsd = tsd.expanding(min_periods=min_periods, center=center)
 
     if statistic:
-        ntsd = eval("ntsd.{0}()".format(statistic))
+        nntsd = pd.DataFrame()
+        for stat in tsutils.make_list(statistic):
+            ntsd = eval("ntsd.{0}()".format(statistic))
+            ntsd.columns = [tsutils.renamer(i, "expanding.{0}".format(stat))]
+            nntsd = nntsd.join(ntsd, how="outer")
 
-    return tsutils.return_input(print_input, tsd, ntsd, "expanding." + statistic)
+    return tsutils.return_input(print_input, tsd, nntsd)
 
 
 expanding_window.__doc__ = expanding_window_cli.__doc__

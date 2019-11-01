@@ -84,8 +84,7 @@ def accumulate_cli(
     )
 
 
-@tsutils.validator(statistic=[str, ["domain", ["sum", "max", "min",
-                                               "prod"]], None])
+@tsutils.validator(statistic=[str, ["domain", ["sum", "max", "min", "prod"]], None])
 def accumulate(
     input_ts="-",
     columns=None,

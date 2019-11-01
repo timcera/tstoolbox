@@ -219,10 +219,14 @@ def ewm_window(
         ignore_na=ignore_na,
     )
 
+    nntsd = pd.DataFrame()
     if statistic:
-        ntsd = eval("ntsd.{0}()".format(statistic))
+        for stat in tsutils.make_list(statistic):
+            ntsd = eval("ntsd.{0}()".format(stat))
+            ntsd = [tsutils.renamer(i, "ewm.{0}".format(stat)) for i in ntsd.columns]
+            nntsd = nntsd.join(ntsd, how="outer")
 
-    return tsutils.return_input(print_input, tsd, ntsd, "ewm." + statistic)
+    return tsutils.return_input(print_input, tsd, nntsd)
 
 
 ewm_window.__doc__ = ewm_window_cli.__doc__

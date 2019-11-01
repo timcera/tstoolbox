@@ -191,7 +191,7 @@ def equation_cli(
     )
 
 
-@tsutils.validator(equation_str=[str, ["pass", []], 1])
+@tsutils.validator(equation_str=[str, ["pass", []], None])
 def equation(
     equation_str,
     input_ts="-",
@@ -231,37 +231,41 @@ def equation(
                 return pd.np.nan
         return eval(nequation)
 
-    tsearch, nsearch, testeval, nequation = _parse_equation(equation_str)
-    if tsearch and nsearch:
-        y = pd.DataFrame(pd.Series(index=x.index), columns=["_"], dtype="float64")
-        for t in range(len(x)):
-            y.iloc[t, 0] = returnval(t, x, testeval, nequation)
-    elif tsearch:
-        y = x.copy()
-        for t in range(len(x)):
-            y.iloc[t, :] = returnval(t, x, testeval, nequation)
-    elif nsearch:
-        y = pd.DataFrame(pd.Series(index=x.index), columns=["_"], dtype="float64")
-        try:
-            y.iloc[:, 0] = eval(nequation)
-        except IndexError:
-            raise IndexError(
-                """
+    newy = pd.DataFrame()
+    for cnt, eqn in enumerate(tsutils.make_list(equation_str, sep="@")):
+        tsearch, nsearch, testeval, nequation = _parse_equation(eqn)
+        if tsearch and nsearch:
+            y = pd.DataFrame(pd.Series(index=x.index), columns=["_"], dtype="float64")
+            for t in range(len(x)):
+                y.iloc[t, 0] = returnval(t, x, testeval, nequation)
+        elif tsearch:
+            y = x.copy()
+            for t in range(len(x)):
+                y.iloc[t, :] = returnval(t, x, testeval, nequation)
+        elif nsearch:
+            y = pd.DataFrame(pd.Series(index=x.index), columns=["_"], dtype="float64")
+            try:
+                y.iloc[:, 0] = eval(nequation)
+            except IndexError:
+                raise IndexError(
+                    """
 *
 *   There are {0} columns, but the equation you are trying to apply is trying
 *   to access a column greater than that.
 *
 """.format(
-                    y.shape[1]
+                        y.shape[1]
+                    )
                 )
-            )
 
-    else:
-        y = eval(equation_str)
+        else:
+            y = eval(eqn)
+        y.columns = [tsutils.renamer(i, "equation.{0}".format(cnt)) for i in y.columns]
+        newy = newy.join(y, how="outer")
 
-    y = tsutils.memory_optimize(y)
+    newy = tsutils.memory_optimize(newy)
 
-    return tsutils.return_input(print_input, x, y, "equation")
+    return tsutils.return_input(print_input, x, newy)
 
 
 equation.__doc__ = equation_cli.__doc__

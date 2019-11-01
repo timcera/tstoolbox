@@ -44,8 +44,15 @@ def aggregate_cli(
     statistic : str
         [optional, defaults to 'mean']
 
-        'mean', 'sem', 'sum', 'std', 'max', 'min', 'median', 'first', 'last' or
-        'ohlc' to calculate on each group.
+        Any of 'mean', 'sem', 'sum', 'std', 'max', 'min', 'median',
+        'first', 'last', 'ohlc', or list of same to calculate on each
+        group.
+
+        API example::
+            statistic=['mean', 'max', 'first']
+
+        CLI example::
+            --statistic=mean,max,first
     {groupby}
         {pandas_offset_codes}
     {input_ts}
@@ -207,7 +214,7 @@ consistent with other tstoolbox commands.
         )
         tmptsd.columns = [tsutils.renamer(i, method) for i in tmptsd.columns]
         newts = newts.join(tmptsd, how="outer")
-    return tsutils.return_input(print_input, tsd, newts, "")
+    return tsutils.return_input(print_input, tsd, newts)
 
 
 aggregate.__doc__ = aggregate_cli.__doc__

@@ -544,6 +544,10 @@ def make_list(*strorlist, **kwds):
         n = kwds.pop("n")
     except KeyError:
         n = 1
+    try:
+        sep = kwds.pop("sep")
+    except KeyError:
+        sep = ","
 
     if isinstance(strorlist, (list, tuple)) and len(strorlist) == 1:
         """ Normalize lists and tuples of length 1 to scalar."""
@@ -589,7 +593,7 @@ def make_list(*strorlist, **kwds):
                     pass
 
     try:
-        strorlist = strorlist.split(",")
+        strorlist = strorlist.split(sep)
     except AttributeError:
         pass
 

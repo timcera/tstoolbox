@@ -81,7 +81,7 @@ def calculate_kde_cli(
 
 @tsutils.validator(
     ascending=[bool, ["domain", [True, False]], 1],
-    evaluate=[bool, ["domain", [True, False]]],
+    evaluate=[bool, ["domain", [True, False]], 1],
 )
 def calculate_kde(
     ascending=True,
