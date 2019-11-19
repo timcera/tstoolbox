@@ -125,8 +125,8 @@ docstrings = {
         command.
 
         This solves a big problem so that you don't have to create
-        a data set with a certain order, you can rearrange columns when
-        data is read in.""",
+        a data set with a certain column order, you can rearrange
+        columns when data is read in.""",
     "start_date": r"""start_date : str
         [optional, defaults to first date in time-series, input filter]
 
@@ -280,29 +280,39 @@ docstrings = {
         +-------+----------+-------------+----------------------------+
         | x-NOV |          |             | year ends end of NOVember  |
         +-------+----------+-------------+----------------------------+""",
-    "plotting_position_table": r"""+------------+-----+-----------------+-----------------------+
-        | Name       | a   | Equation        | Description           |
-        |            |     | (i-a)/(n+1-2*a) |                       |
-        +============+=====+=================+=======================+
-        | weibull    | 0   | i/(n+1)         | mean of sampling      |
-        | (default)  |     |                 | distribution          |
-        +------------+-----+-----------------+-----------------------+
-        | benard     | 0.3 | (i-0.3)/(n+0.4) | approx. median of     |
-        |            |     |                 | sampling distribution |
-        +------------+-----+-----------------+-----------------------+
-        | tukey      | 1/3 | (i-1/3)/(n+1/3) | approx. median of     |
-        |            |     |                 | sampling distribution |
-        +------------+-----+-----------------+-----------------------+
-        | gumbel     | 1   | (i-1)/(n-1)     | mode of sampling      |
-        |            |     |                 | distribution          |
-        +------------+-----+-----------------+-----------------------+
-        | hazen      | 1/2 | (i-1/2)/n       | midpoints of n equal  |
-        |            |     |                 | intervals             |
-        +------------+-----+-----------------+-----------------------+
-        | cunnane    | 2/5 | (i-2/5)/(n+1/5) | subjective            |
-        +------------+-----+-----------------+-----------------------+
-        | california | NA  | i/n             |                       |
-        +------------+-----+-----------------+-----------------------+
+    "plotting_position_table": r"""+------------+--------+----------------------+-----------------------+
+        | Name       | a      | Equation             | Description           |
+        |            |        | (i-a)/(n+1-2*a)      |                       |
+        +============+========+======================+=======================+
+        | weibull    | 0      | i/(n+1)              | mean of sampling      |
+        | (default)  |        |                      | distribution          |
+        +------------+--------+----------------------+-----------------------+
+        | benard     | 0.3    | (i-0.3)/(n+0.4)      | approx. median of     |
+        |            |        |                      | sampling distribution |
+        +------------+--------+----------------------+-----------------------+
+        | filliben   | 0.3175 | (i-0.3175)/(n+0.365) |                       |
+        +------------+--------+----------------------+-----------------------+
+        | yu         | 0.326  | (i-0.326)/(n+0.348)  |                       |
+        +------------+--------+----------------------+-----------------------+
+        | tukey      | 1/3    | (i-1/3)/(n+1/3)      | approx. median of     |
+        |            |        |                      | sampling distribution |
+        +------------+--------+----------------------+-----------------------+
+        | blom       | 0.375  | (i-0.375)/(n+0.25)   |                       |
+        +------------+--------+----------------------+-----------------------+
+        | cunnane    | 2/5    | (i-2/5)/(n+1/5)      | subjective            |
+        +------------+--------+----------------------+-----------------------+
+        | gringorton | 0.44   | (1-0.44)/(n+0.12)    |                       |
+        +------------+--------+----------------------+-----------------------+
+        | hazen      | 1/2    | (i-1/2)/n            | midpoints of n equal  |
+        |            |        |                      | intervals             |
+        +------------+--------+----------------------+-----------------------+
+        | larsen     | 0.567  | (i-0.567)/(n-0.134)  |                       |
+        +------------+--------+----------------------+-----------------------+
+        | gumbel     | 1      | (i-1)/(n-1)          | mode of sampling      |
+        |            |        |                      | distribution          |
+        +------------+--------+----------------------+-----------------------+
+        | california | NA     | i/n                  |                       |
+        +------------+--------+----------------------+-----------------------+
 
         Where 'i' is the sorted rank of the y value, and 'n' is the
         total number of values to be plotted.""",
@@ -385,46 +395,35 @@ def _plotting_position_equation(i, n, a):
     return (i - a) / float(n + 1 - 2 * a)
 
 
+def _plotting_linspace(n, a):
+    return pd.np.linspace(
+        _plotting_position_equation(1, n, a), _plotting_position_equation(n, n, a), n
+    )
+
+
+ppdict = {
+    "weibull": 0,
+    "benard": 0.3,
+    "filliben": 0.3175,
+    "yu": 0.326,
+    "tukey": 1 / 3,
+    "blom": 0.375,
+    "cunnane": 2 / 5,
+    "gringorton": 0.44,
+    "hazen": 1 / 2,
+    "larsen": 0.567,
+    "gumbel": 1,
+}
+
+
 def set_plotting_position(n, plotting_position="weibull"):
     """Create plotting position 1D array using linspace."""
-    if plotting_position == "weibull":
-        return pd.np.linspace(
-            _plotting_position_equation(1, n, 0.0),
-            _plotting_position_equation(n, n, 0.0),
-            n,
-        )
-    elif plotting_position == "benard":
-        return pd.np.linspace(
-            _plotting_position_equation(1, n, 0.3),
-            _plotting_position_equation(n, n, 0.3),
-            n,
-        )
-    elif plotting_position == "tukey":
-        return pd.np.linspace(
-            _plotting_position_equation(1, n, 1.0 / 3.0),
-            _plotting_position_equation(n, n, 1.0 / 3.0),
-            n,
-        )
-    elif plotting_position == "gumbel":
-        return pd.np.linspace(
-            _plotting_position_equation(1, n, 1.0),
-            _plotting_position_equation(n, n, 1.0),
-            n,
-        )
-    elif plotting_position == "hazen":
-        return pd.np.linspace(
-            _plotting_position_equation(1, n, 1.0 / 2.0),
-            _plotting_position_equation(n, n, 1.0 / 2.0),
-            n,
-        )
-    elif plotting_position == "cunnane":
-        return pd.np.linspace(
-            _plotting_position_equation(1, n, 2.0 / 5.0),
-            _plotting_position_equation(n, n, 2.0 / 5.0),
-            n,
-        )
-    elif plotting_position == "california":
-        return pd.np.linspace(1.0 / n, 1.0, n)
+    try:
+        return _plotting_linspace(n, ppdict[plotting_position])
+    except KeyError:
+        if plotting_position == "california":
+            return pd.np.linspace(1.0 / n, 1.0, n)
+        return _plotting_linspace(n, plotting_position)
 
 
 def b(s):
@@ -638,6 +637,8 @@ The length should be {0}, but it is {1}.
     return ret
 
 
+# NOT SET YET...
+#
 # Take `air_pressure` from df.loc[:, 1]
 # Take `short_wave_rad` from df.loc[:, 'swaverad']
 # The `temperature` keyword is set to 23.4 for all time periods
@@ -664,19 +665,43 @@ The length should be {0}, but it is {1}.
 def Coerce(ntype, msg=None):
     """Coerce a value to a type.
 
-    If the type constructor throws a ValueError, the value will be marked as
-    Invalid.
+    float:
+        1     -> 1.0
+        '1.1' -> 1.1
+        '1,'  -> [1.0, None]
+    int:
+        1     -> 1
+        '1'   -> 1
+        '1,'  -> [1, None]
+    str:
+        1     -> '1'
+        '1'   -> '1'
+        '1,'  -> ['1', None]
+    bool:
+        True  -> True
+        False -> False
+        1     -> True
+        0     -> False
+        ''    -> False
+        'a'   -> True
+        '1,'  -> [True, False]
     """
 
     def f(v):
-        if v is None:
+        if v is None or v == '':
             return None
         if isinstance(v, str):
             if "," in v:
                 v = v.split(",")
         try:
             if isinstance(v, (list, tuple)):
-                return [ntype(i) for i in v]
+                rl = []
+                for i in v:
+                    if i is None or i == '':
+                        rl.append(i)
+                    else:
+                        rl.append(ntype(i))
+                return rl
             return ntype(v)
         except ValueError:
             raise ValueError(msg or ("Cannot coerce {0} to {1}.".format(v, ntype)))
@@ -791,17 +816,37 @@ def validator(**argchecks):  # validate ranges for both+defaults
                 positionals = list(allargs)
                 positionals = positionals[: len(pargs)]
 
-                for (argname, (ctype, (valid, (nargs)), vlen)) in argchecks.items():
-                    # for all args to be checked
-                    if argname in kargs:
-                        # was passed by name
-                        nvar = Coerce(ctype)(kargs[argname])
-                        validator_func[valid](funcname, argname, nargs, nvar, vlen)
-                    elif argname in positionals:
-                        # was passed by position
-                        position = positionals.index(argname)
-                        nvar = Coerce(ctype)(pargs[position])
-                        validator_func[valid](funcname, argname, nargs, nvar, vlen)
+                for (argname, comb) in argchecks.items():
+                    collect_errors = []
+                    incomb = comb
+                    if callable(comb[0]):
+                        incomb = [comb]
+                    for ctype, (valid, (nargs)), vlen in incomb:
+                        # for all args to be checked
+                        iffinally = True
+                        if argname in kargs:
+                            # was passed by name
+                            cval = kargs[argname]
+                        elif argname in positionals:
+                            # was passed by position
+                            position = positionals.index(argname)
+                            cval = pargs[position]
+                        else:
+                            iffinally = False
+
+                        if iffinally is True:
+                            try:
+                                nvar = Coerce(ctype)(cval)
+                                validator_func[valid](
+                                    funcname, argname, nargs, nvar, vlen
+                                )
+                                collect_errors.append(None)
+                                break
+                            except ValueError as e:
+                                collect_errors.append(repr(e))
+                    if len(collect_errors) > 0 and all(collect_errors) is True:
+                        raise ValueError("\n\n".join(collect_errors))
+
                 return func(*pargs, **kargs)  # okay: run original call
 
             return onCall
@@ -1016,7 +1061,7 @@ The name {0} isn't in the list of column names
                         )
                     )
                 )
-            if target_col < 0:
+            if target_col < -1:
                 raise ValueError(
                     error_wrapper(
                         """
