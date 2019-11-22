@@ -36,6 +36,8 @@ def normalization_cli(
 ):
     """Return the normalization of the time series.
 
+    This scales the time-series, usually between 0 and 1.
+
     Parameters
     ----------
     mode : str

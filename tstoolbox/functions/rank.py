@@ -38,16 +38,15 @@ def rank_cli(
 ):
     """Compute numerical data ranks (1 through n) along axis.
 
-    Equal values are assigned a rank that is the average of the ranks of those
-    values
+    Equal values are assigned a rank depending on `method`.
 
     Parameters
     ----------
     axis
         [optional, default is 0]
 
-        0 or 'index' for rows. 1 or 'columns' for columns.  Index to direct
-        ranking.
+        0 or 'index' for rows. 1 or 'columns' for columns.  Index to
+        direct ranking.
     method : str
         [optional, default is 'average']
 
@@ -70,8 +69,8 @@ def rank_cli(
     numeric_only
         [optional, default is None]
 
-        Include only float, int, boolean data. Valid only for DataFrame or
-        Panel objects.
+        Include only float, int, boolean data. Valid only for DataFrame
+        or Panel objects.
     na_option : str
         [optional, default is 'keep']
 

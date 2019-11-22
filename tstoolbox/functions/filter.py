@@ -145,10 +145,10 @@ def filter_cli(
         [optional, default is None]
 
         For 'fft_highpass' and 'fft_lowpass'.  Must be supplied if using
-        'fft_highpass' or 'fft_lowpass'.  The period in input time units that
-        will form the cutoff between low frequencies (longer periods) and high
-        frequencies (shorter periods).  Filter will be smoothed by `window_len`
-        running average.
+        'fft_highpass' or 'fft_lowpass'.  The period in input time units
+        that will form the cutoff between low frequencies (longer
+        periods) and high frequencies (shorter periods).  Filter will be
+        smoothed by `window_len` running average.
     {input_ts}
     {start_date}
     {end_date}

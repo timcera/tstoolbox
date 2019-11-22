@@ -35,6 +35,8 @@ def remove_trend_cli(
 ):
     """Remove a 'trend'.
 
+    Subtracts from the data a linearly interpolated trend of the data.
+
     Parameters
     ----------
     {input_ts}

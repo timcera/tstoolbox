@@ -20,6 +20,8 @@ warnings.filterwarnings("ignore")
 def add_trend_cli(
     start_offset,
     end_offset,
+    start_index=0,
+    end_index=-1,
     input_ts="-",
     start_date=None,
     end_date=None,
@@ -37,12 +39,30 @@ def add_trend_cli(
 ):
     """Add a trend.
 
+    Adds a linear interpolated trend to the input data.  The trend
+    values start at [`start_index`, `start_offset`] and end at
+    [`end_index`, `end_offset`].
+
     Parameters
     ----------
     start_offset : float
-        The starting value for the applied trend.
+        The starting value for the applied trend.  This is the starting
+        value for the linear interpolation that will be added to the
+        input data.
     end_offset : float
-        The ending value for the applied trend.
+        The ending value for the applied trend.  This is the ending
+        value for the linear interpolation that will be added to the
+        input data.
+    start_index : int
+        [optional, default is 0, transformation]
+
+        The starting index where `start_offset` will be initiated.  Rows
+        prior to `start_index` will not be affected.
+    end_index : int
+        [optional, default is -1, transformation]
+
+        The ending index where `end_offset` will be set.  Rows after
+        `end_index` will not be affected.
     {input_ts}
     {columns}
     {start_date}
@@ -63,6 +83,8 @@ def add_trend_cli(
         add_trend(
             start_offset,
             end_offset,
+            start_index=start_index,
+            end_index=end_index,
             input_ts=input_ts,
             columns=columns,
             clean=clean,
@@ -82,11 +104,16 @@ def add_trend_cli(
 
 
 @tsutils.validator(
-    start_offset=[float, ["pass", []], 1], end_offset=[float, ["pass", []], 1]
+    start_offset=[float, ["pass", []], 1],
+    end_offset=[float, ["pass", []], 1],
+    start_index=[int, ["pass", []], 1],
+    end_index=[int, ["pass", []], 1],
 )
 def add_trend(
     start_offset,
     end_offset,
+    start_index=0,
+    end_index=-1,
     input_ts="-",
     columns=None,
     clean=False,
@@ -119,8 +146,8 @@ def add_trend(
     ntsd = tsd.copy().astype("float64")
 
     ntsd.iloc[:, :] = pd.np.nan
-    ntsd.iloc[0, :] = float(start_offset)
-    ntsd.iloc[-1, :] = float(end_offset)
+    ntsd.iloc[start_index, :] = float(start_offset)
+    ntsd.iloc[end_index, :] = float(end_offset)
     ntsd = ntsd.interpolate(method="values")
 
     ntsd = ntsd + tsd

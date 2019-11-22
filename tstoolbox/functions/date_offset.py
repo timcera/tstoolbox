@@ -28,7 +28,10 @@ def date_offset_cli(
     round_index=None,
     tablefmt="csv",
 ):
-    """Apply an offset to a time-series.
+    """Apply a date offset to a time-series index.
+
+    If you want to adjust to a different time-zone then should use the
+    "converttz" tstoolbox command.
 
     Parameters
     ----------

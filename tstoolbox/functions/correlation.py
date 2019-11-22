@@ -39,6 +39,13 @@ def correlation_cli(
         a string must be a comma separated list of integers.  If lags ==
         0 then will only cross correlate on the input time-series.
 
+        Python example::
+
+            lags=[2, 5, 3]
+
+        Command line example::
+
+            --lags='2,5,3'
     {print_input}
     {input_ts}
     {start_date}

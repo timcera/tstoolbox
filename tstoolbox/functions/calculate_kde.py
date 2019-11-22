@@ -34,19 +34,21 @@ def calculate_kde_cli(
 ):
     """Return the kernel density estimation (KDE) curve.
 
-    Returns a time-series or the KDE curve depending on the `evaluate` keyword.
+    Returns a time-series or the KDE curve depending on the `evaluate`
+    keyword.
 
     Parameters
     ----------
     ascending : bool
-        [optional, defaults to True]
+        [optional, defaults to True, input filter]
 
         Sort order.
     evaluate : bool
-        [optional, defaults to False]
+        [optional, defaults to False, transformation]
 
-        Whether or not to return a time-series of KDE density values or the KDE
-        curve.  Defaults to False, which would return the KDE curve.
+        Whether or not to return a time-series of KDE density values or
+        the KDE curve.  Defaults to False, which would return the KDE
+        curve.
     {input_ts}
     {columns}
     {start_date}

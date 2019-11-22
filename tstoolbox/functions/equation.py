@@ -97,13 +97,15 @@ def equation_cli(
     """Apply <equation_str> to the time series data.
 
     The <equation_str> argument is a string contained in single quotes
-    with 'x' used as the variable representing the input.  For example,
-    '(1 - x)*sin(x)'.
+    with 'x', 'x[t]', or 'x1', 'x2', 'x3', ...etc. used as the variable
+    representing the input.  For example, '(1 - x)*sin(x)'.
 
     Parameters
     ----------
     equation_str : str
         String contained in single quotes that defines the equation.
+
+        Can have multiple equations separated by an "@" symbol.
 
         There are four different types of equations that can be used.
 
@@ -145,12 +147,12 @@ def equation_cli(
             'tan(x*pi/180)'
 
         are all valid <equation> strings.  The variable 't' is special
-        representing the time at which 'x' occurs.  This means you can
-        do things like::
+        representing the index (usually time) at which 'x' occurs.  This
+        means you can do things like::
 
             'x[t] + max(x[t-1], x[t+1])*0.6'
 
-        to add to the current value 0.6 times the maximum adjacent
+        to add to the current value 0.6 times the maximum row adjacent
         value.
     {input_ts}
     {columns}

@@ -35,12 +35,13 @@ def convert_index_to_julian(
 
     Will be removed in a future version of `tstoolbox`.
 
-    To use `convert_index` in place of `convert_index_to_julian` for
-    command line::
+    Use `convert_index` in place of `convert_index_to_julian`.
+
+    For command line::
 
         tstoolbox convert_index julian ...
 
-    For Python API::
+    For Python::
 
         from tstoolbox import tstoolbox
         ndf = ntstoolbox.convert_index('julian', ...)

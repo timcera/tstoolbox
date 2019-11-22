@@ -40,12 +40,12 @@ def clip_cli(
     Parameters
     ---------
     a_min
-        [optional, defaults to None]
+        [optional, defaults to None, transformation]
 
         All values lower than this will be set to this value.
         Default is None.
     a_max
-        [optional, defaults to None]
+        [optional, defaults to None, transformation]
 
         All values higher than this will be set to this value.
         Default is None.
@@ -119,6 +119,8 @@ def clip(
         target_units=target_units,
         clean=clean,
     )
+
+    ntsd = pd.DataFrame()
     for col in tsd.columns:
         if a_min is None:
             try:
@@ -136,7 +138,9 @@ def clip(
         else:
             n_max = float(a_max)
 
-    return tsutils.return_input(print_input, tsd, tsd.clip(n_min, n_max), "clip")
+        ntsd = ntsd.join(tsd[col].clip(n_min, n_max), how="outer")
+
+    return tsutils.return_input(print_input, tsd, ntsd, "clip")
 
 
 clip.__doc__ = clip_cli.__doc__

@@ -140,7 +140,32 @@ def fill_cli(
 
 
 @tsutils.validator(
-    method=[str, ["pass", []], 1],
+    method=[
+        [
+            str,
+            [
+                "domain",
+                [
+                    "ffill",
+                    "bfill",
+                    "2.3",
+                    "linear",
+                    "nearest",
+                    "zero",
+                    "slinear",
+                    "quadratic",
+                    "cubic",
+                    "mean",
+                    "median",
+                    "max",
+                    "min",
+                    "from",
+                ],
+            ],
+            1,
+        ],
+        [float, ["pass", []], 1],
+    ],
     from_columns=[str, ["pass", []], 1],
     to_columns=[str, ["pass", []], 1],
 )

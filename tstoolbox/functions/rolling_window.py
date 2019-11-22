@@ -192,7 +192,7 @@ def rolling_window_cli(
         ],
         1,
     ],
-    window=[int, ["range", [0, None]], 1],
+    window=[int, ["range", [0, None]], None],
     min_periods=[int, ["range", [0, None]], 1],
     center=[bool, ["domain", [True, False]], 1],
     win_type=[str, ["pass", []], 1],

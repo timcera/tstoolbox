@@ -42,11 +42,11 @@ def convert_cli(
     Parameters
     ----------
     factor : float
-        [optional, default is 1.0]
+        [optional, default is 1.0, transformation]
 
         Factor to multiply the time series values.
     offset : float
-        [optional, default is 0.0]
+        [optional, default is 0.0, transformation]
 
         Offset to add to the time series values.
     {input_ts}

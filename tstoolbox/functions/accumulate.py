@@ -42,10 +42,10 @@ def accumulate_cli(
 
         Any of 'sum', 'max', 'min', 'prod' or list of same.
 
-        API example::
+        Python example::
             statistic=['sum', 'max']
 
-        CLI example::
+        Command line example::
             --statistic=sum,max
     {input_ts}
     {start_date}

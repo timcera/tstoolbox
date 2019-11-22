@@ -43,11 +43,11 @@ def convert_index_cli(
         source data should be a number and the converted index will be
         datetime.
     interval
-        [optional, defaults to None]
+        [optional, defaults to None, transformation]
 
         The `interval` parameter defines the unit time.  One of the pandas
         offset codes.  The default of 'None' will set the unit time for all
-        defined epochs to daily except 'unix' which will defaults to seconds.
+        defined epochs to daily except 'unix' which will default to seconds.
 
         You can give any smaller unit time than daily for all defined epochs
         except 'unix' which requires an interval less than seconds.  For an
@@ -56,7 +56,7 @@ def convert_index_cli(
 
         {pandas_offset_codes}
     epoch : str
-        [optional, defaults to 'julian']
+        [optional, defaults to 'julian', transformation]
 
         Can be one of, 'julian', 'reduced', 'modified', 'truncated', 'dublin',
         'cnes', 'ccsds', 'lop', 'lilian', 'rata_die', 'mars_sol_date', 'unix',
@@ -160,7 +160,33 @@ def convert_index_cli(
     tsutils._printiso(tsd, tablefmt=tablefmt)
 
 
-@tsutils.validator(to=[str, ["domain", ["datetime", "number"]], 1])
+@tsutils.validator(
+    to=[str, ["domain", ["datetime", "number"]], 1],
+    epoch=[
+        [
+            str,
+            [
+                "domain",
+                [
+                    "julian",
+                    "reduced",
+                    "modified",
+                    "truncated",
+                    "dublin",
+                    "cnes",
+                    "ccsds",
+                    "lop",
+                    "lilian",
+                    "rata_die",
+                    "mars_sol",
+                    "unix",
+                ],
+            ],
+            1,
+        ],
+        [tsutils.parsedate, ["pass", []], 1],
+    ],
+)
 def convert_index(
     to,
     interval=None,

@@ -179,9 +179,9 @@ def plot_cli(
         Output filename for the plot.  Extension defines
         the type, for example 'filename.png' will create a PNG file.
 
-        If used within the Python API, if `ofilename` is None will
-        return the Matplotlib figure that can then be changed or added
-        to as needed.
+        If used within Python, and `ofilename` is None will return the
+        Matplotlib figure that can then be changed or added to as
+        needed.
     type : str
         [optional, defaults to 'time']
 
@@ -314,8 +314,8 @@ def plot_cli(
         [optional, default is 'auto']
 
         The default 'auto' will cycle through matplotlib colors.  Otherwise at
-        command line supply a comma separated matplotlib color codes, or for
-        the Python API a list of color code strings.
+        command line supply a comma separated matplotlib color codes, or
+        within Python a list of color code strings.
 
         Separated 'colors', 'linestyles', and 'markerstyles' instead of using
         the 'style' keyword.

@@ -39,7 +39,8 @@ def gof_cli(
     ----------
     {input_ts}
     stats : str
-        [optional,  API: list, CLI: comma separated string, default is 'all']
+        [optional,  Python: list, Command line: comma separated string,
+        default is 'all']
 
         The statistics that will be presented.
 

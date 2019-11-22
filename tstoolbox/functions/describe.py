@@ -33,7 +33,7 @@ def describe_cli(
     Parameters
     ----------
     transpose
-        [optional, default is False]
+        [optional, default is False, output format]
 
         If 'transpose' option is used, will transpose describe output.
     {input_ts}

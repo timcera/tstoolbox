@@ -40,27 +40,30 @@ def ewm_window_cli(
 ):
     """Calculate exponential weighted functions.
 
-    Exactly one of center of mass, span, half-life, and alpha must be provided.
-    Allowed values and relationship between the parameters are specified in the
-    parameter descriptions above; see the link at the end of this section for
-    a detailed explanation.
+    Exactly one of `alpha_com` (center of mass), `alpha_span`,
+    `alpha_halflife`, and `alpha` must be provided to calculate the
+    'alpha' term.  Allowed values and relationship between the
+    parameters are specified in the parameter descriptions below; see
+    the link at the end of this section for a detailed explanation.
 
-    When adjust is True (default), weighted averages are calculated using
-    weights (1-alpha)**(n-1), (1-alpha)**(n-2), . . . , 1-alpha, 1.
+    When `adjust` is True (default), weighted averages are calculated
+    using weights (1-alpha)**(n-1), (1-alpha)**(n-2), . . . , 1-alpha,
+    1.
 
-    When adjust is False, weighted averages are calculated recursively as:
-        weighted_average[0] = arg[0]; weighted_average[i]
-        = (1-alpha)*weighted_average[i-1] + alpha*arg[i].
+    When `adjust` is False, weighted averages are calculated recursively
+    as: weighted_average[0] = arg[0]; weighted_average[i]
+    = (1-alpha)*weighted_average[i-1] + alpha*arg[i].
 
-    When ignore_na is False (default), weights are based on absolute positions.
-    For example, the weights of x and y used in calculating the final weighted
-    average of [x, None, y] are (1-alpha)**2 and 1 (if adjust is True), and
-    (1-alpha)**2 and alpha (if adjust is False).
+    When `ignore_na` is False (default), weights are based on absolute
+    positions.  For example, the weights of x and y used in calculating
+    the final weighted average of [x, None, y] are (1-alpha)**2 and
+    1 (if `adjust` is True), and (1-alpha)**2 and alpha (if `adjust` is
+    False).
 
-    When ignore_na is True (reproducing pre-0.15.0 behavior), weights are based
-    on relative positions. For example, the weights of x and y used in
-    calculating the final weighted average of [x, None, y] are 1-alpha and
-    1 (if adjust is True), and 1-alpha and alpha (if adjust is False).
+    When `ignore_na` is True weights are based on relative positions.
+    For example, the weights of x and y used in calculating the final
+    weighted average of [x, None, y] are 1-alpha and 1 (if `adjust` is
+    True), and 1-alpha and alpha (if adjust is `False`).
 
     More details can be found at
     http://pandas.pydata.org/pandas-docs/stable/computation.html#exponentially-weighted-windows
@@ -87,23 +90,29 @@ def ewm_window_cli(
     alpha_com : float
         [optional, defaults to None]
 
-        Specify decay in terms of center of mass, alpha=1/(1+com), for com>=0
+        Specify decay in terms of center of mass::
+
+            alpha = 1/(1+`alpha_com`), for `alpha_com` >= 0
 
     alpha_span : float
         [optional, defaults to None]
 
-        Specify decay in terms of span, alpha=2/(span+1), for span1
+        Specify decay in terms of span::
+
+            alpha = 2/(`alpha_span`+1), for `alpha_span` > 1
 
     alpha_halflife : float
         [optional, defaults to None]
 
-        Specify decay in terms of half-life, alpha=1-exp(log(0.5)/halflife),
-        for halflife>0
+        Specify decay in terms of half-life::
+
+            alpha = 1-exp(log(0.5)/`alpha_halflife`), for
+            `alpha_halflife`>0
 
     alpha : float
         [optional, defaults to None]
 
-        Specify smoothing factor alpha directly, 0<alpha<=1
+        Specify smoothing factor "alpha" directly, 0<`alpha`<=1
 
     min_periods : int
         [optional, default is 0]
@@ -164,11 +173,11 @@ def ewm_window_cli(
 
 
 @tsutils.validator(
-    statistic=[str, ["domain", ["corr", "cov", "mean", "std", "var"]], 1],
-    alpha_com=[float, ["pass", []], 1],
-    alpha_span=[float, ["pass", []], 1],
-    alpha_halflife=[float, ["pass", []], 1],
-    alpha=[float, ["pass", []], 1],
+    statistic=[str, ["domain", ["corr", "cov", "mean", "std", "var"]], None],
+    alpha_com=[float, ["range", [0,]], 1],
+    alpha_span=[float, ["range", [1,]], 1],
+    alpha_halflife=[float, ["range", [0,]], 1],
+    alpha=[float, ["range", [0, 1]], 1],
     min_periods=[int, ["range", [0, None]], 1],
     adjust=[bool, ["domain", [True, False]], 1],
     ignore_na=[bool, ["domain", [True, False]], 1],

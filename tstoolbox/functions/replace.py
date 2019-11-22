@@ -38,16 +38,14 @@ def replace_cli(
     Parameters
     ----------
     from_values
-        All values in this comma separated list are replaced
-        with the corresponding value in to_values.  Use the
-        string 'None' to represent a missing value.  If
-        using 'None' as a from_value it might be easier to
-        use the "fill" subcommand instead.
+        All values in this comma separated list are replaced with the
+        corresponding value in to_values.  Use the string 'None' to
+        represent a missing value.  If using 'None' as a from_value it
+        might be easier to use the "fill" subcommand instead.
     to_values
-        All values in this comma separater list are the
-        replacement values corresponding one-to-one to the
-        items in from_values.  Use the string 'None' to
-        represent a missing value.
+        All values in this comma separated list are the replacement
+        values corresponding one-to-one to the items in from_values.
+        Use the string 'None' to represent a missing value.
     {input_ts}
     {columns}
     {start_date}

@@ -42,19 +42,21 @@ def aggregate_cli(
     Parameters
     ----------
     statistic : str
-        [optional, defaults to 'mean']
+        [optional, defaults to 'mean', transformation]
 
         Any of 'mean', 'sem', 'sum', 'std', 'max', 'min', 'median',
         'first', 'last', 'ohlc', or list of same to calculate on each
-        group.
+        `groupby` group.
 
-        API example::
+        Python example::
             statistic=['mean', 'max', 'first']
 
-        CLI example::
+        Command line example::
             --statistic=mean,max,first
     {groupby}
+
         {pandas_offset_codes}
+
     {input_ts}
     {columns}
     {start_date}
@@ -107,7 +109,7 @@ def aggregate_cli(
             "domain",
             ["mean", "sum", "std", "sem", "max", "median", "first", "last", "ohlc"],
         ],
-        1,
+        None,
     ]
 )
 def aggregate(

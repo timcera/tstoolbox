@@ -68,7 +68,7 @@ docstrings = {
         Can be either 'number' or 'datetime'.  Use 'number' with index
         values that are Julian dates, or other epoch reference.""",
     "input_ts": r"""input_ts : str
-        [optional though required if using Python API, default is '-'
+        [optional though required if using within Python, default is '-'
         (stdin)]
 
         Whether from a file or standard input, data requires a header of
@@ -79,13 +79,15 @@ docstrings = {
         formats can be used, but the closer to ISO 8601 date/time
         standard the better.
 
-        Command line::
+        Command line:
 
             +-------------------------+------------------------+
+            | Keyword Example         | Description            |
+            +=========================+========================+
             | --input_ts=filename.csv | to read 'filename.csv' |
             +-------------------------+------------------------+
             | --input_ts='-'          | to read from standard  |
-            |                         | input (stdin).         |
+            |                         | input (stdin)          |
             +-------------------------+------------------------+
 
             In many cases it is better to use redirection rather that
@@ -231,7 +233,7 @@ docstrings = {
         +-------+-------------+-------------------------------+
         | Alias | Equivalents | Description                   |
         +=======+=============+===============================+
-        | W-SUN | W           | Weekly frequency (SUNdays).   |
+        | W-SUN | W           | Weekly frequency (SUNdays)    |
         +-------+-------------+-------------------------------+
         | W-MON |             | Weekly frequency (MONdays)    |
         +-------+-------------+-------------------------------+
@@ -339,7 +341,8 @@ docstrings = {
 
         The pandas offset code to group the time-series data into.
         A special code is also available to group 'months_across_years'
-        that will group into twelve categories for each month.""",
+        that will group into twelve monthly categories across the entire
+        time-series.""",
     "force_freq": r"""force_freq: str
         [optional, output format]
 
@@ -395,12 +398,6 @@ def _plotting_position_equation(i, n, a):
     return (i - a) / float(n + 1 - 2 * a)
 
 
-def _plotting_linspace(n, a):
-    return pd.np.linspace(
-        _plotting_position_equation(1, n, a), _plotting_position_equation(n, n, a), n
-    )
-
-
 ppdict = {
     "weibull": 0,
     "benard": 0.3,
@@ -418,12 +415,13 @@ ppdict = {
 
 def set_plotting_position(n, plotting_position="weibull"):
     """Create plotting position 1D array using linspace."""
+    if plotting_position == "california":
+        return pd.np.linspace(1.0 / n, 1.0, n)
     try:
-        return _plotting_linspace(n, ppdict[plotting_position])
+        a = ppdict[plotting_position]
     except KeyError:
-        if plotting_position == "california":
-            return pd.np.linspace(1.0 / n, 1.0, n)
-        return _plotting_linspace(n, plotting_position)
+        a = float(plotting_position)
+    return _plotting_position_equation(pd.np.arange(1, n + 1), n, a)
 
 
 def b(s):
@@ -688,7 +686,7 @@ def Coerce(ntype, msg=None):
     """
 
     def f(v):
-        if v is None or v == '':
+        if v is None or v == "":
             return None
         if isinstance(v, str):
             if "," in v:
@@ -697,7 +695,7 @@ def Coerce(ntype, msg=None):
             if isinstance(v, (list, tuple)):
                 rl = []
                 for i in v:
-                    if i is None or i == '':
+                    if i is None or i == "":
                         rl.append(i)
                     else:
                         rl.append(ntype(i))
