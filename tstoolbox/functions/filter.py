@@ -53,7 +53,7 @@ def _transform(vector, cutoff_period, window_len, lopass=None):
 
     Parameters
     ----------
-    vector : array_like, evenly spaced samples in time
+    vector: array_like, evenly spaced samples in time
 
     Returns
     -------
@@ -132,11 +132,11 @@ def filter_cli(
 
     Parameters
     ----------
-    filter_type : str
+    filter_type: str
         'flat', 'hanning', 'hamming', 'bartlett', 'blackman',
         'fft_highpass' and 'fft_lowpass' for Fast Fourier Transform
         filter in the frequency domain.
-    window_len : int
+    window_len: int
         [optional, default is 5]
 
         For the windowed types, 'flat', 'hanning', 'hamming',

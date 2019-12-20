@@ -841,7 +841,7 @@ def validator(**argchecks):  # validate ranges for both+defaults
                                 collect_errors.append(None)
                                 break
                             except ValueError as e:
-                                collect_errors.append(repr(e))
+                                collect_errors.append(str(e))
                     if len(collect_errors) > 0 and all(collect_errors) is True:
                         raise ValueError("\n\n".join(collect_errors))
 
@@ -876,6 +876,7 @@ def common_kwds(
     clean=False,
     target_units=None,
     source_units=None,
+    test_units=False,
     bestfreq=True,
 ):
     """Process all common_kwds across sub-commands into single function.
@@ -893,10 +894,10 @@ def common_kwds(
     """
     ntsd = input_tsd
 
+    ntsd = _pick(ntsd, pick)
+
     target_units = make_list(target_units, n=len(ntsd.columns))
     source_units = make_list(source_units, n=len(ntsd.columns))
-
-    ntsd = _pick(ntsd, pick)
 
     if clean is True:
         ntsd = ntsd.sort_index()
@@ -908,27 +909,6 @@ def common_kwds(
         ntsd = asbestfreq(ntsd, force_freq=force_freq)
 
     if source_units is not None:
-
-        if len(source_units) != len(ntsd.columns):
-            items = "item" if len(source_units) == 1 else "items"
-            raise ValueError(
-                error_wrapper(
-                    """
-To use the 'source_units' keyword to assign units, you must assign a unit
-for every column in the input.  You have {0} {4} where
-source_units={1}
-and there are {2} columns in the input data
-{3}.
-""".format(
-                        len(source_units),
-                        source_units,
-                        len(ntsd.columns),
-                        ntsd.columns,
-                        items,
-                    )
-                )
-            )
-
         names = []
         for inx in list(range(len(ntsd.columns))):
             words = ntsd.columns[inx].split(":")
@@ -941,7 +921,7 @@ and there are {2} columns in the input data
                             """
 If 'source_units' specified must match units from column name.  Column
 name units are specified as the second ':' delimited field.
-You specified 'source_units' as {0}, but column name units are {1}.
+You specified 'source_units' as {0}, but column units are {1}.
 """.format(
                                 source_units[inx], words[1]
                             )
@@ -976,40 +956,21 @@ You specified 'source_units' as {0}, but column name units are {1}.
         except ValueError:
             pass
 
-    # Convert source_units to target_units.
-    if target_units is not None:
-
-        if len(target_units) != len(ntsd.columns):
-            items = "item" if len(source_units) == 1 else "items"
-            raise ValueError(
-                error_wrapper(
-                    """
-To use the 'target_units' keyword to assign units, you must assign a unit
-for every column in the input.  You have {0} {4} where
-target_units={1}
-and there are {2} columns in the input data
-{3}.
-""".format(
-                        len(target_units),
-                        target_units,
-                        len(ntsd.columns),
-                        ntsd.columns,
-                        items,
-                    )
-                )
-            )
-
-        if source_units is None:
-            raise ValueError(
-                error_wrapper(
-                    """
+    if source_units is None and target_units is not None and test_units is True:
+        source_units = target_units
+    elif source_units is None and target_units is not None and test_units is False:
+        raise ValueError(
+            error_wrapper(
+                """
 To specify target_units, you must also specify source_units.  You can
 specify source_units either by using the source_units keyword or placing
 in the name of the data column as the second ':' separated field.
 """
-                )
             )
+        )
 
+    # Convert source_units to target_units.
+    if target_units is not None:
         ncolumns = []
         for inx, colname in enumerate(ntsd.columns):
             words = colname.split(":")
@@ -1025,6 +986,7 @@ in the name of the data column as the second ':' separated field.
                     pass
             ncolumns.append(":".join(words))
         ntsd.columns = ncolumns
+
     return ntsd
 
 

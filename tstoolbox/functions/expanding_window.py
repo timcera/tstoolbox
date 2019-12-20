@@ -5,6 +5,7 @@ from __future__ import absolute_import, division, print_function
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import pandas as pd
 
 from .. import tsutils
 
@@ -172,9 +173,13 @@ def expanding_window(
     if statistic:
         nntsd = pd.DataFrame()
         for stat in tsutils.make_list(statistic):
-            ntsd = eval("ntsd.{0}()".format(statistic))
-            ntsd.columns = [tsutils.renamer(i, "expanding.{0}".format(stat))]
+            ntsd = eval("ntsd.{0}()".format(stat))
+            ntsd.columns = [
+                tsutils.renamer(i, "expanding.{0}".format(stat)) for i in ntsd.columns
+            ]
             nntsd = nntsd.join(ntsd, how="outer")
+    else:
+        nntsd = ntsd
 
     return tsutils.return_input(print_input, tsd, nntsd)
 

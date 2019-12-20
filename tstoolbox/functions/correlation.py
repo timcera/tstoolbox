@@ -6,8 +6,6 @@ from __future__ import absolute_import, print_function
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
-import pandas as pd
-
 from .. import tsutils
 from . import lag
 

@@ -7,6 +7,7 @@ import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import pandas as pd
 
 from .. import tsutils
 
@@ -228,12 +229,14 @@ def ewm_window(
         ignore_na=ignore_na,
     )
 
-    nntsd = pd.DataFrame()
     if statistic:
+        nntsd = pd.DataFrame()
         for stat in tsutils.make_list(statistic):
             ntsd = eval("ntsd.{0}()".format(stat))
             ntsd = [tsutils.renamer(i, "ewm.{0}".format(stat)) for i in ntsd.columns]
             nntsd = nntsd.join(ntsd, how="outer")
+    else:
+        nntsd = ntsd
 
     return tsutils.return_input(print_input, tsd, nntsd)
 

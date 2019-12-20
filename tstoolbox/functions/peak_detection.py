@@ -820,18 +820,18 @@ def peak_detection_cli(
 
     Parameters
     ----------
-    extrema : str
+    extrema: str
         [optional, default is 'peak']
 
         'peak', 'valley', or 'both' to determine what should be
         returned.
-    method : str
+    method: str
         [optional, default is 'rel']
 
         'rel', 'minmax', 'zero_crossing', 'parabola', 'sine' methods are
         available.  The different algorithms have different strengths
         and weaknesses.
-    window : int
+    window: int
         [optional, default is 24]
 
         There will not usually be multiple peaks within the window
@@ -847,11 +847,11 @@ def peak_detection_cli(
 
         For 'zero_crossing' the window keyword is the dimension of the
         smoothing window and should be an odd integer.
-    pad_len : int
+    pad_len: int
         [optional, default is 5]
 
         Used with FFT to pad edges of time-series.
-    points : int
+    points: int
         [optional, default is 9]
 
         For 'parabola' and 'sine' methods. How many points around the
