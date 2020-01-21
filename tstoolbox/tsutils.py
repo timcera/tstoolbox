@@ -3,6 +3,7 @@
 from __future__ import division, print_function
 
 import bz2
+import datetime
 import gzip
 import os
 import sys
@@ -12,13 +13,17 @@ from io import StringIO
 from math import gcd
 from urllib.parse import urlparse
 
+import dateparser
 import numpy as np
 from pint import UnitRegistry
 import pandas as pd
+from scipy.stats.distributions import norm
+from scipy.stats.distributions import lognorm
 from tabulate import simple_separated_format
 from tabulate import tabulate as tb
 
 ureg = UnitRegistry()
+
 
 wrapper = TextWrapper(initial_indent="*   ", subsequent_indent="*   ")
 
@@ -371,12 +376,8 @@ def stride_and_unit(sunit):
 def set_ppf(ptype):
     """Return correct Percentage Point Function for `ptype`."""
     if ptype == "norm":
-        from scipy.stats.distributions import norm
-
         return norm.ppf
     elif ptype == "lognorm":
-        from scipy.stats.distributions import lognorm
-
         return lognorm.freeze(0.5, loc=0).ppf
     elif ptype == "weibull":
 
@@ -451,9 +452,6 @@ def parsedate(dstr, strftime=None, settings=None):
     """
     if dstr is None:
         return dstr
-
-    import dateparser
-    import datetime
 
     # The API should boomerang a datetime.datetime instance and None.
     if isinstance(dstr, datetime.datetime):
@@ -540,15 +538,36 @@ def make_list(*strorlist, **kwds):
     try:
         n = kwds.pop("n")
     except KeyError:
-        n = 1
+        n = None
+
     try:
         sep = kwds.pop("sep")
     except KeyError:
         sep = ","
 
-    if isinstance(strorlist, (list, tuple)) and len(strorlist) == 1:
-        """ Normalize lists and tuples of length 1 to scalar."""
-        strorlist = strorlist[0]
+    try:
+        kwdname = kwds.pop("kwdname")
+    except KeyError:
+        kwdname = ""
+
+    if isinstance(strorlist, (list, tuple)):
+        if len(strorlist) > 1:
+            if len(strorlist) == n:
+                return strorlist
+            else:
+                raise ValueError(
+                    error_wrapper(
+                        """
+The list {0} for "{2}" should have {1} members according to function requirements.
+""".format(
+                            strorlist, n, kwdname
+                        )
+                    )
+                )
+        elif len(strorlist) == 1:
+            """ Normalize lists and tuples of length 1 to scalar for
+            further processing."""
+            strorlist = strorlist[0]
 
     try:
         strorlist = strorlist.strip()
@@ -560,52 +579,51 @@ def make_list(*strorlist, **kwds):
         """
         return None
 
-    if n == 1:
-        if isinstance(strorlist, (int, float)):
-            """ 1      -> [1]
-                1.2    -> [1.2]
-            """
-            return [strorlist]
+    if isinstance(strorlist, (int, float)):
+        """ 1      -> [1]
+            1.2    -> [1.2]
+        """
+        return [strorlist]
 
-        if isinstance(strorlist, (str, bytes)) and (
-            strorlist == "None" or strorlist == ""
-        ):
-            """ 'None' -> None
-                ''     -> None
-            """
-            return None
+    if isinstance(strorlist, (str, bytes)) and (strorlist in ["None", ""]):
+        """ 'None' -> None
+            ''     -> None
+        """
+        return None
 
-        if isinstance(strorlist, (str, bytes)):
-            """ '1'   -> [1]
-                '5.7' -> [5.7]
+    if isinstance(strorlist, (str, bytes)):
+        """ '1'   -> [1]
+            '5.7' -> [5.7]
 
-                Anything other than a scalar int or float continues.
-            """
+            Anything other than a scalar int or float continues.
+        """
+        try:
+            return [int(strorlist)]
+        except ValueError:
             try:
-                return [int(strorlist)]
+                return [float(strorlist)]
             except ValueError:
-                try:
-                    return [float(strorlist)]
-                except ValueError:
-                    pass
+                pass
 
     try:
         strorlist = strorlist.split(sep)
     except AttributeError:
         pass
 
+    if n is None:
+        n = len(strorlist)
+
     # At this point 'strorlist' variable should be a list or tuple.
-    if n > 1:
-        if len(strorlist) != n:
-            raise ValueError(
-                error_wrapper(
-                    """
-The length should be {0}, but it is {1}.
+    if len(strorlist) != n:
+        raise ValueError(
+            error_wrapper(
+                """
+The list {0} for "{2}" should have {1} members according to function requirements.
 """.format(
-                        n, len(strorlist)
-                    )
+                    strorlist, n, kwdname
                 )
             )
+        )
 
     # [1, 2, 3]          -> [1, 2, 3]
     # ['1', '2']         -> [1, 2]
@@ -755,7 +773,7 @@ def _vrange(funcname, argname, nargs, nvar, vlen):
                 raise ValueError(
                     error_wrapper(
                         """
-The argument "{1}" should be less than {4}.
+The argument "{1}" should be less than or equal to {4}.
 
 You gave "{2}".
 """.format(
@@ -769,7 +787,7 @@ You gave "{2}".
                 raise ValueError(
                     error_wrapper(
                         """
-The argument "{1}" should be greater than {3}.
+The argument "{1}" should be greater than or equal to {3}.
 
 You gave "{2}".
 """.format(
@@ -782,7 +800,7 @@ You gave "{2}".
             raise ValueError(
                 error_wrapper(
                     """
-The argument "{1}" should be between {3} to {4}.
+The argument "{1}" should be between {3} to {4}, inclusive.
 
 You gave "{2}".
 """.format(
@@ -803,110 +821,79 @@ def validator(**argchecks):  # validate ranges for both+defaults
     def onDecorator(func):  # onCall remembers func and argchecks
         if not __debug__:  # True if "python -O main.py args.."
             return func  # wrap if debugging else use original
-        else:
-            code = func.__code__
-            allargs = code.co_varnames[: code.co_argcount]
-            funcname = func.__name__
+        code = func.__code__
+        allargs = code.co_varnames[: code.co_argcount]
+        funcname = func.__name__
 
-            def onCall(*pargs, **kargs):
-                # all pargs match first N args by position
-                # the rest must be in kargs or omitted defaults
-                positionals = list(allargs)
-                positionals = positionals[: len(pargs)]
+        def onCall(*pargs, **kargs):
+            # all pargs match first N args by position
+            # the rest must be in kargs or omitted defaults
+            positionals = list(allargs)
+            positionals = positionals[: len(pargs)]
 
-                for (argname, comb) in argchecks.items():
-                    collect_errors = []
-                    incomb = comb
-                    if callable(comb[0]):
-                        incomb = [comb]
-                    for ctype, (valid, (nargs)), vlen in incomb:
-                        # for all args to be checked
-                        iffinally = True
-                        if argname in kargs:
-                            # was passed by name
-                            cval = kargs[argname]
-                        elif argname in positionals:
-                            # was passed by position
-                            position = positionals.index(argname)
-                            cval = pargs[position]
-                        else:
-                            iffinally = False
+            for (argname, comb) in argchecks.items():
+                collect_errors = []
+                incomb = comb
+                if callable(comb[0]):
+                    incomb = [comb]
+                for ctype, (valid, (nargs)), vlen in incomb:
+                    # for all args to be checked
+                    iffinally = True
+                    if argname in kargs:
+                        # was passed by name
+                        cval = kargs[argname]
+                    elif argname in positionals:
+                        # was passed by position
+                        position = positionals.index(argname)
+                        cval = pargs[position]
+                    else:
+                        iffinally = False
 
-                        if iffinally is True:
-                            try:
-                                nvar = Coerce(ctype)(cval)
-                                validator_func[valid](
-                                    funcname, argname, nargs, nvar, vlen
-                                )
-                                collect_errors.append(None)
-                                break
-                            except ValueError as e:
-                                collect_errors.append(str(e))
-                    if len(collect_errors) > 0 and all(collect_errors) is True:
-                        raise ValueError("\n\n".join(collect_errors))
+                    if iffinally is True:
+                        try:
+                            nvar = Coerce(ctype)(cval)
+                            validator_func[valid](funcname, argname, nargs, nvar, vlen)
+                            collect_errors.append(None)
+                            break
+                        except ValueError as e:
+                            collect_errors.append(str(e))
+                if len(collect_errors) > 0 and all(collect_errors) is True:
+                    raise ValueError("\n\n".join(collect_errors))
 
-                return func(*pargs, **kargs)  # okay: run original call
+            return func(*pargs, **kargs)  # okay: run original call
 
-            return onCall
+        return onCall
 
     return onDecorator
 
 
-@validator(
-    start_date=[parsedate, ["pass", []], 1],
-    end_date=[parsedate, ["pass", []], 1],
-    force_freq=[str, ["pass", []], 1],
-    groupby=[str, ["pass", []], 1],
-    dropna=[str, ["domain", ["no", "any", "all"]], 1],
-    round_index=[str, ["pass", []], 1],
-    clean=[bool, ["domain", [True, False]], 1],
-    target_units=[str, ["pass", []], None],
-    source_units=[str, ["pass", []], None],
-    bestfreq=[bool, ["domain", [True, False]], 1],
-)
-def common_kwds(
-    input_tsd=None,
-    start_date=None,
-    end_date=None,
-    pick=None,
-    force_freq=None,
-    groupby=None,
-    dropna="no",
-    round_index=None,
-    clean=False,
-    target_units=None,
-    source_units=None,
-    test_units=False,
-    bestfreq=True,
-):
-    """Process all common_kwds across sub-commands into single function.
+def _normalize_units(ntsd, source_units, target_units):
+    """
 
-    Parameters
-    ----------
-    input_tsd: DataFrame
-        Input data which should be a DataFrame.
+    The following is aspirational and may not reflect the code.
 
-    Returns
-    -------
-    df: DataFrame
-        DataFrame altered according to options.
+    +--------------+--------------+--------------+--------------+--------------+
+    | INPUT        | INPUT        | INPUT        | RETURN       | RETURN       |
+    | ntsd.columns | source_units | target_units | source_units | target_units |
+    +==============+==============+==============+==============+==============+
+    | ["col1:cm",  | ["ft",       | ["m",        | ValueError   |              |
+    |  "col2:cm"]  |  "cm"]       |  "cm"]       |              |              |
+    +--------------+--------------+--------------+--------------+--------------+
+    | ["col1:cm",  | ["cm"]       | ["ft"]       | ValueError   |              |
+    |  "col2:cm"]  |              |              |              |              |
+    +--------------+--------------+--------------+--------------+--------------+
+    | ["col1:cm",  | ["cm"]       | ["ft"]       | ["cm",       | ["ft",       |
+    |  "col2"]     |              |              |  ""]         |  ""]         |
+    +--------------+--------------+--------------+--------------+--------------+
+    |              | ["cm"]       | ["ft"]       | ["cm"]       | ["ft"]       |
+    +--------------+--------------+--------------+--------------+--------------+
+    | ["cm"]       | None         | ["ft"]       | ["cm"]       | ["ft"]       |
+    +--------------+--------------+--------------+--------------+--------------+
 
     """
-    ntsd = input_tsd
-
-    ntsd = _pick(ntsd, pick)
 
     target_units = make_list(target_units, n=len(ntsd.columns))
     source_units = make_list(source_units, n=len(ntsd.columns))
-
-    if clean is True:
-        ntsd = ntsd.sort_index()
-        ntsd = ntsd[~ntsd.index.duplicated()]
-
-    ntsd = _round_index(ntsd, round_index=round_index)
-
-    if bestfreq is True:
-        ntsd = asbestfreq(ntsd, force_freq=force_freq)
 
     if source_units is not None:
         names = []
@@ -938,6 +925,104 @@ You specified 'source_units' as {0}, but column units are {1}.
             except (AttributeError, IndexError):
                 source_units.append("")
 
+    if source_units is None and target_units is not None:
+        raise ValueError(
+            error_wrapper(
+                """
+To specify target_units, you must also specify source_units.  You can
+specify source_units either by using the `source_units` keyword or placing
+in the name of the data column as the second ':' separated field.
+
+The `source_units` keyword must specify units that are convertible
+to the `target_units`: {target_units}
+""".format(
+                    **locals()
+                )
+            )
+        )
+
+    # Convert source_units to target_units.
+    if target_units is not None:
+        ncolumns = []
+        for inx, colname in enumerate(ntsd.columns):
+            words = colname.split(":")
+            if len(words) > 1:
+                # convert words[1] to target_units[inx]
+                Q_ = ureg.Quantity
+                try:
+                    ntsd[colname] = Q_(ntsd[colname], ureg(words[1])).to(
+                        target_units[inx]
+                    )
+                    words[1] = target_units[inx]
+                except AttributeError:
+                    raise ValueError(
+                        error_wrapper(
+                            """
+No conversion between {0} and {1}.""".format(
+                                words[1], target_units[inx]
+                            )
+                        )
+                    )
+            ncolumns.append(":".join(words))
+        ntsd.columns = ncolumns
+
+    return ntsd
+
+
+@validator(
+    start_date=[parsedate, ["pass", []], 1],
+    end_date=[parsedate, ["pass", []], 1],
+    force_freq=[str, ["pass", []], 1],
+    groupby=[str, ["pass", []], 1],
+    dropna=[str, ["domain", ["no", "any", "all"]], 1],
+    round_index=[str, ["pass", []], 1],
+    clean=[bool, ["domain", [True, False]], 1],
+    target_units=[str, ["pass", []], None],
+    source_units=[str, ["pass", []], None],
+    bestfreq=[bool, ["domain", [True, False]], 1],
+)
+def common_kwds(
+    input_tsd=None,
+    start_date=None,
+    end_date=None,
+    pick=None,
+    force_freq=None,
+    groupby=None,
+    dropna="no",
+    round_index=None,
+    clean=False,
+    target_units=None,
+    source_units=None,
+    bestfreq=True,
+):
+    """Process all common_kwds across sub-commands into single function.
+
+    Parameters
+    ----------
+    input_tsd: DataFrame
+        Input data which should be a DataFrame.
+
+    Returns
+    -------
+    df: DataFrame
+        DataFrame altered according to options.
+
+    """
+    ntsd = input_tsd
+
+    ntsd = _pick(ntsd, pick)
+
+    ntsd = _normalize_units(ntsd, source_units, target_units)
+
+    if clean is True:
+        ntsd = ntsd.sort_index()
+        ntsd = ntsd[~ntsd.index.duplicated()]
+
+    ntsd = _round_index(ntsd, round_index=round_index)
+
+    if bestfreq is True:
+        ntsd = asbestfreq(ntsd, force_freq=force_freq)
+
     ntsd = _date_slice(ntsd, start_date=start_date, end_date=end_date)
 
     if ntsd.index.is_all_dates is True:
@@ -956,37 +1041,6 @@ You specified 'source_units' as {0}, but column units are {1}.
         except ValueError:
             pass
 
-    if source_units is None and target_units is not None and test_units is True:
-        source_units = target_units
-    elif source_units is None and target_units is not None and test_units is False:
-        raise ValueError(
-            error_wrapper(
-                """
-To specify target_units, you must also specify source_units.  You can
-specify source_units either by using the source_units keyword or placing
-in the name of the data column as the second ':' separated field.
-"""
-            )
-        )
-
-    # Convert source_units to target_units.
-    if target_units is not None:
-        ncolumns = []
-        for inx, colname in enumerate(ntsd.columns):
-            words = colname.split(":")
-            if len(words) > 1:
-                # convert words[1] to target_units[inx]
-                Q_ = ureg.Quantity
-                try:
-                    ntsd[colname] = Q_(ntsd[colname], ureg(words[1])).to(
-                        target_units[inx]
-                    )
-                    words[1] = target_units[inx]
-                except AttributeError:
-                    pass
-            ncolumns.append(":".join(words))
-        ntsd.columns = ncolumns
-
     return ntsd
 
 
@@ -1001,52 +1055,53 @@ def _pick(tsd, columns):
             # if using column names
             ncolumns.append(tsd.columns.tolist().index(i))
             continue
-        elif i == tsd.index.name:
+
+        if i == tsd.index.name:
             # if wanting the index
             # making it -1 that will be evaluated later...
             ncolumns.append(-1)
             continue
-        else:
-            # if using column numbers
-            try:
-                target_col = int(i) - 1
-            except ValueError:
-                raise ValueError(
-                    error_wrapper(
-                        """
+
+        # if using column numbers
+        try:
+            target_col = int(i) - 1
+        except ValueError:
+            raise ValueError(
+                error_wrapper(
+                    """
 The name {0} isn't in the list of column names
 {1}.
 """.format(
-                            i, tsd.columns
-                        )
+                        i, tsd.columns
                     )
                 )
-            if target_col < -1:
-                raise ValueError(
-                    error_wrapper(
-                        """
+            )
+        if target_col < -1:
+            raise ValueError(
+                error_wrapper(
+                    """
 The requested column index {0} must be greater than or equal to 0.
 First data column is index 1, index is column 0.
 """.format(
-                            i
-                        )
+                        i
                     )
                 )
-            if target_col > len(tsd.columns):
-                raise ValueError(
-                    error_wrapper(
-                        """
+            )
+        if target_col > len(tsd.columns):
+            raise ValueError(
+                error_wrapper(
+                    """
 The request column index {0} must be less than the
 number of columns {1}.
 """.format(
-                            i, len(tsd.columns)
-                        )
+                        i, len(tsd.columns)
                     )
                 )
+            )
 
-            # columns names or numbers or index organized into
-            # numbers in ncolumns
-            ncolumns.append(target_col)
+        # columns names or numbers or index organized into
+        # numbers in ncolumns
+        ncolumns.append(target_col)
 
     if len(ncolumns) == 1 and ncolumns[0] != -1:
         return pd.DataFrame(tsd[tsd.columns[ncolumns]])
@@ -1460,7 +1515,7 @@ def read_iso_ts(
 
     result = {}
     if isinstance(indat, (str, bytes, StringIO)):
-        if indat == "-" or indat == b"-":
+        if indat in ["-", b"-"]:
             # if from stdin format must be the tstoolbox standard
             # pandas read_csv supports file like objects
             header = 0

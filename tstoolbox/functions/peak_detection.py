@@ -504,7 +504,7 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         if len(raw) > 1:
             peak_pos = [x_axis[index] for index in zip(*raw)[0]]
             hz.append(np.mean(np.diff(peak_pos)))
-    hz = 1 // np.mean(hz)
+    hz = 1.0 // np.mean(hz)
 
     # model function
     # if cosine is used then tau could equal the x position of the peak
