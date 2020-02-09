@@ -107,7 +107,18 @@ def aggregate_cli(
         str,
         [
             "domain",
-            ["mean", "sum", "std", "sem", "max", "median", "first", "last", "ohlc"],
+            [
+                "mean",
+                "sum",
+                "std",
+                "sem",
+                "max",
+                "min",
+                "median",
+                "first",
+                "last",
+                "ohlc",
+            ],
         ],
         None,
     ]
