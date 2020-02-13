@@ -63,10 +63,13 @@ docstrings = {
         Any unit string compatible with the 'pint' library can be
         used.""",
     "names": r"""names
-        [optional, default is None, input filter]
+        [optional, default is None, transformation]
 
         If None, the column names are taken from the first row after
-        'skiprows' from the input dataset.""",
+        'skiprows' from the input dataset.
+
+        MUST include a name for all columns in the input dataset,
+        including the index column.""",
     "index_type": r"""index_type : str
         [optional, default is 'datetime', output format]
 
@@ -885,6 +888,9 @@ def _normalize_units(ntsd, source_units, target_units):
     | ["col1:cm",  | ["cm"]       | ["ft"]       | ["cm",       | ["ft",       |
     |  "col2"]     |              |              |  ""]         |  ""]         |
     +--------------+--------------+--------------+--------------+--------------+
+    | ["col1",     | ["", "cm"]   | ["", "ft"]   | ["",          | ["",         |
+    |  "col2:cm"]  |              |              |  "cm"]       |  "ft"]       |
+    +--------------+--------------+--------------+--------------+--------------+
     |              | ["cm"]       | ["ft"]       | ["cm"]       | ["ft"]       |
     +--------------+--------------+--------------+--------------+--------------+
     | ["cm"]       | None         | ["ft"]       | ["cm"]       | ["ft"]       |
@@ -950,7 +956,7 @@ to the `target_units`: {target_units}
                 # convert words[1] to target_units[inx]
                 Q_ = ureg.Quantity
                 try:
-                    ntsd[colname] = Q_(ntsd[colname], ureg(words[1])).to(
+                    ntsd[colname] = Q_(ntsd[colname].to_numpy(), ureg(words[1])).to(
                         target_units[inx]
                     )
                     words[1] = target_units[inx]
@@ -1028,11 +1034,6 @@ def common_kwds(
     if ntsd.index.is_all_dates is True:
         ntsd.index.name = "Datetime"
 
-    if groupby is not None:
-        if groupby == "months_across_years":
-            return ntsd.groupby(lambda x: x.month)
-        return ntsd.resample(groupby)
-
     if dropna in ["any", "all"]:
         ntsd = ntsd.dropna(axis="index", how=dropna)
     else:
@@ -1040,6 +1041,11 @@ def common_kwds(
             ntsd = asbestfreq(ntsd)
         except ValueError:
             pass
+
+    if groupby is not None:
+        if groupby == "months_across_years":
+            return ntsd.groupby(lambda x: x.month)
+        return ntsd.resample(groupby)
 
     return ntsd
 
@@ -1575,7 +1581,7 @@ or an URL.  If you want to pull from stdin use "-" or redirection/piping.
 
         if not result:
             if names is not None:
-                header = None
+                header = 0
                 names = make_list(names)
             if index_type == "number":
                 parse_dates = False
