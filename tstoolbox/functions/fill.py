@@ -47,6 +47,8 @@ def fill_cli(
     skiprows=None,
     from_columns=None,
     to_columns=None,
+    limit=None,
+    order=None,
     tablefmt="csv",
 ):
     """Fill missing values (NaN) with different methods.
@@ -62,37 +64,60 @@ def fill_cli(
         String contained in single quotes or a number that
         defines the method to use for filling.
 
-        +-----------+----------------------------------------+
-        | method=   | fill missing values with...            |
-        +===========+========================================+
-        | ffill     | ...the last good value                 |
-        +-----------+----------------------------------------+
-        | bfill     | ...the next good value                 |
-        +-----------+----------------------------------------+
-        | 2.3       | ...with this number                    |
-        +-----------+----------------------------------------+
-        | linear    | ...with linearly interpolated values   |
-        +-----------+----------------------------------------+
-        | nearest   | ...nearest good value                  |
-        +-----------+----------------------------------------+
-        | zero      | ...zeroth order spline                 |
-        +-----------+----------------------------------------+
-        | slinear   | ...first order spline                  |
-        +-----------+----------------------------------------+
-        | quadratic | ...second order spline                 |
-        +-----------+----------------------------------------+
-        | cubic     | ...third order spline                  |
-        +-----------+----------------------------------------+
-        | mean      | ...with mean                           |
-        +-----------+----------------------------------------+
-        | median    | ...with median                         |
-        +-----------+----------------------------------------+
-        | max       | ...with maximum                        |
-        +-----------+----------------------------------------+
-        | min       | ...with minimum                        |
-        +-----------+----------------------------------------+
-        | from      | ...with good values from other columns |
-        +-----------+----------------------------------------+
+        +----------------------+-----------------------------------------------+
+        | method=              | fill missing values with...                   |
+        +======================+===============================================+
+        | ffill                | ...the last good value                        |
+        +----------------------+-----------------------------------------------+
+        | bfill                | ...the next good value                        |
+        +----------------------+-----------------------------------------------+
+        | 2.3                  | ...with this number                           |
+        +----------------------+-----------------------------------------------+
+        | linear               | ...ignore index, values are equally spaced    |
+        +----------------------+-----------------------------------------------+
+        | index                | ...linear interpolation using datetime index  |
+        +----------------------+-----------------------------------------------+
+        | values               | ...linear interpolation using numerical index |
+        +----------------------+-----------------------------------------------+
+        | nearest              | ...nearest good value                         |
+        +----------------------+-----------------------------------------------+
+        | zero                 | ...zeroth order spline                        |
+        +----------------------+-----------------------------------------------+
+        | slinear              | ...first order spline                         |
+        +----------------------+-----------------------------------------------+
+        | quadratic            | ...second order spline                        |
+        +----------------------+-----------------------------------------------+
+        | cubic                | ...third order spline                         |
+        +----------------------+-----------------------------------------------+
+        | spline               | ...nth order spline                           |
+        | order=n              |                                               |
+        +----------------------+-----------------------------------------------+
+        | polynomial           | ...nth order polynomial                       |
+        | order=n              |                                               |
+        +----------------------+-----------------------------------------------+
+        | barycentric          | ...barycentric                                |
+        +----------------------+-----------------------------------------------+
+        | mean                 | ...with mean                                  |
+        +----------------------+-----------------------------------------------+
+        | median               | ...with median                                |
+        +----------------------+-----------------------------------------------+
+        | max                  | ...with maximum                               |
+        +----------------------+-----------------------------------------------+
+        | min                  | ...with minimum                               |
+        +----------------------+-----------------------------------------------+
+        | from                 | ...with good values from other columns        |
+        +----------------------+-----------------------------------------------+
+        | time                 | ...daily and higher resolution to interval    |
+        +----------------------+-----------------------------------------------+
+        | krogh                | ...krogh algorithm                            |
+        +----------------------+-----------------------------------------------+
+        | piecewise_polynomial | ...piecewise-polynomial algorithm             |
+        | from_derivatives     |                                               |
+        +----------------------+-----------------------------------------------+
+        | pchip                | ...pchip algorithm                            |
+        +----------------------+-----------------------------------------------+
+        | akima                | ...akima algorithm                            |
+        +----------------------+-----------------------------------------------+
 
     {print_input}
     {input_ts}
@@ -115,6 +140,15 @@ def fill_cli(
 
         List of column names/numbers that missing values will be
         replaced in from good values in the `from_columns` keyword.
+    limit : int
+        [default is None]
+
+        Gaps of missing values greater than this number will not be filled.
+    order : int
+        [required if method is 'spline' or 'polynomial', otherwise not used,
+        default is None]
+
+        The order of the 'spline' or 'polynomial' fit for missing values.
     {tablefmt}
 
     """
@@ -134,6 +168,8 @@ def fill_cli(
             skiprows=skiprows,
             from_columns=from_columns,
             to_columns=to_columns,
+            limit=limit,
+            order=order,
         ),
         tablefmt=tablefmt,
     )
@@ -148,18 +184,28 @@ def fill_cli(
                 [
                     "ffill",
                     "bfill",
-                    "2.3",
                     "linear",
+                    "index",
+                    "values",
                     "nearest",
                     "zero",
                     "slinear",
                     "quadratic",
                     "cubic",
+                    "spline",
+                    "polynomial",
+                    "barycentric",
                     "mean",
                     "median",
                     "max",
                     "min",
                     "from",
+                    "time",
+                    "krogh",
+                    "piecewise_polynomial",
+                    "from_derivatives",
+                    "pchip",
+                    "akima",
                 ],
             ],
             1,
@@ -168,6 +214,8 @@ def fill_cli(
     ],
     from_columns=[str, ["pass", []], 1],
     to_columns=[str, ["pass", []], 1],
+    limit=[int, ["range", [0, ]], 1],
+    order=[int, ["range", [0, ]], 1],
 )
 def fill(
     input_ts="-",
@@ -184,6 +232,8 @@ def fill(
     skiprows=None,
     from_columns=None,
     to_columns=None,
+    limit=None,
+    order=None,
 ):
     """Fill missing values (NaN) with different methods."""
     tsd = tsutils.common_kwds(
@@ -215,25 +265,34 @@ def fill(
     )
     ntsd = pd.concat([predf, ntsd, postf])
     if method in ["ffill", "bfill"]:
-        ntsd = ntsd.fillna(method=method)
-    elif method == "linear":
-        ntsd = ntsd.apply(pd.Series.interpolate, method="values")
-    elif method in ["nearest", "zero", "slinear", "quadratic", "cubic"]:
-        from scipy.interpolate import interp1d
-
-        for c in ntsd.columns:
-            df2 = ntsd[c].dropna()
-            f = interp1d(df2.index.values.astype("d"), df2.values, kind=method)
-            slices = pd.isnull(ntsd[c])
-            ntsd[c][slices] = f(ntsd[c][slices].index.values.astype("d"))
+        ntsd = ntsd.fillna(method=method, limit=limit)
+    elif method in ["linear",
+                    "time",
+                    "index",
+                    "values",
+                    "nearest",
+                    "zero",
+                    "slinear",
+                    "quadratic",
+                    "cubic",
+                    "spline",
+                    "polynomial",
+                    "barycentric",
+                    "kroch",
+                    "piecewise_polynomial",
+                    "pchip",
+                    "akima",
+                    "from_derivatives",
+                   ]:
+        ntsd = ntsd.interpolate(method=method, limit=limit, order=order)
     elif method == "mean":
-        ntsd = ntsd.fillna(ntsd.mean())
+        ntsd = ntsd.fillna(ntsd.mean(), limit=limit)
     elif method == "median":
-        ntsd = ntsd.fillna(ntsd.median())
+        ntsd = ntsd.fillna(ntsd.median(), limit=limit)
     elif method == "max":
-        ntsd = ntsd.fillna(ntsd.max())
+        ntsd = ntsd.fillna(ntsd.max(), limit=limit)
     elif method == "min":
-        ntsd = ntsd.fillna(ntsd.min())
+        ntsd = ntsd.fillna(ntsd.min(), limit=limit)
     elif method == "from":
         from_columns, to_columns = _validate_columns(ntsd, from_columns, to_columns)
         for to in to_columns:
@@ -244,15 +303,16 @@ def fill(
                 ntsd.loc[mask, to] = ntsd.loc[mask, fro]
     else:
         try:
-            ntsd = ntsd.fillna(value=float(method))
+            ntsd = ntsd.fillna(value=float(method), limit=limit)
         except ValueError:
             raise ValueError(
                 tsutils.error_wrapper(
                     """
 The allowable values for 'method' are 'ffill', 'bfill', 'linear',
-'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'mean', 'median',
-'max', 'min', 'from', or a number.  Instead you have {0}.
-""".format(
+'index', 'values', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic',
+'spline', 'polynomial', 'barycentric', 'mean', 'median', 'max', 'min', 'from',
+'krogh', 'piecewise_polynomial', 'from_derivatives', 'pchip', 'akima', or
+a number.  Instead you have {0}.  """.format(
                         method
                     )
                 )
