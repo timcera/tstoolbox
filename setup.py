@@ -20,15 +20,15 @@ if sys.argv[-1] == "publish":
     # 'now', otherwise ChromeOS/google drive sets to 1970-01-01 and then
     # no one can install it because zip doesn't support dates before
     # 1980.
-    os.chdir("dist")
-    os.system("tar xvzf {pkg_name}-{version}.tar.gz".format(**locals()))
-    os.system("find {pkg_name}-{version}* -exec touch {{}} \\;".format(**locals()))
-    os.system(
-        "tar czf {pkg_name}-{version}.tar.gz {pkg_name}-{version}".format(**locals())
-    )
-    shutil.rmtree("{pkg_name}-{version}".format(**locals()))
-    os.chdir("..")
-
+#    os.chdir("dist")
+#    os.system("tar xvzf {pkg_name}-{version}.tar.gz".format(**locals()))
+#    os.system("find {pkg_name}-{version}* -exec touch {{}} \\;".format(**locals()))
+#    os.system(
+#        "tar czf {pkg_name}-{version}.tar.gz {pkg_name}-{version}".format(**locals())
+#    )
+#    shutil.rmtree("{pkg_name}-{version}".format(**locals()))
+#    os.chdir("..")
+#
     os.system("twine upload dist/{pkg_name}-{version}.tar.gz".format(**locals()))
     sys.exit()
 

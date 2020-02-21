@@ -16,9 +16,9 @@ pkgs="\
      pytest-mpl \
      "
 
-# pandas no longer supports 2.6
-#~/python_ves/python-3.5.2 \
-envs=(~/python_ves/python-3.6.8  ~/python_ves/python-3.7.3)
+envs=(~/pythons/python-3.6.0  \
+      ~/pythons/python-3.7.0  \
+      ~/pythons/python-3.8.0)
 
 pytest_opts='--doctest-modules --ignore docsrc --mpl'
 
@@ -31,7 +31,7 @@ for env in ${envs[@]}; do
     pip install --no-cache --upgrade --only-binary numpy,pandas,scipy ${pkgs}
     pip uninstall -y ${program}
     rm -rf build
-    python setup.py develop
+    pip install -e ../${program}
     pytest ${pytest_opts}
     deactivate
 done
@@ -41,4 +41,3 @@ coverage run `which pytest` ${pytest_opts}
 coverage report --include="${program}/*" --omit="tests/*"
 coverage html --include="${program}/*" --omit="tests/*"
 flake8 ${program}/__init__.py ${program}/${program}.py ${program}/tsutils.py ${program}/functions/*.py --exit-zero
-
