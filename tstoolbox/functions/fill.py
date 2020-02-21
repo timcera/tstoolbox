@@ -6,6 +6,7 @@ from __future__ import absolute_import, print_function
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
+import numpy as np
 import pandas as pd
 
 from .. import tsutils
@@ -353,7 +354,7 @@ def fill_by_correlation(
     ntsd = tsutils.asbestfreq(ntsd)
 
     if transform == "log10":
-        ntsd = pd.np.log10(ntsd)
+        ntsd = np.log10(ntsd)
 
     firstcol = pd.DataFrame(ntsd.iloc[:, 0])
     basets = pd.DataFrame(ntsd.iloc[:, 1:])
@@ -365,9 +366,9 @@ def fill_by_correlation(
             shifty = allothers.shift(index)
             testdf = firstcol.join(shifty)
             lagres = testdf.dropna().corr().iloc[1:, 0]
-            collect.append(pd.np.abs(lagres.values))
-        collect = pd.np.array(collect)
-        bestlag, bestts = pd.np.unravel_index(collect.argmax(), collect.shape)
+            collect.append(np.abs(lagres.values))
+        collect = np.array(collect)
+        bestlag, bestts = np.unravel_index(collect.argmax(), collect.shape)
         basets = pd.DataFrame(ntsd.iloc[:, bestts + 1].shift(bestlag))
 
     single_source_ts = ["move1", "move2", "move3"]
@@ -389,8 +390,8 @@ Instead there are {1} source time series.
     if method == "move1":
         ntsd = firstcol.join(basets)
         dna = ntsd.dropna()
-        means = pd.np.mean(dna)
-        stdevs = pd.np.std(dna)
+        means = np.mean(dna)
+        stdevs = np.std(dna)
         print(means[1] + stdevs[1] / stdevs[0] * means[0])
         print(means, stdevs)
 

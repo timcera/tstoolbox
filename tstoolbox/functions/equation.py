@@ -9,6 +9,7 @@ import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 from numpy import *
 
+import numpy as np
 import pandas as pd
 
 from .. import tsutils
@@ -230,7 +231,7 @@ def equation(
         for tst in testeval:
             tvalue = eval(tst)
             if tvalue < 0 or tvalue >= len(x):
-                return pd.np.nan
+                return np.nan
         return eval(nequation)
 
     newy = pd.DataFrame()

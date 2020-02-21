@@ -291,13 +291,13 @@ Input vector (length={0}) needs to be bigger than window size ({1}).
         elif filter_type in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
             if window_len < 3:
                 continue
-            s = pd.np.pad(tsd[col].values, window_len // 2, "reflect")
+            s = np.pad(tsd[col].values, window_len // 2, "reflect")
 
             if filter_type == "flat":  # moving average
-                w = pd.np.ones(window_len, "d")
+                w = np.ones(window_len, "d")
             else:
-                w = eval("pd.np." + filter_type + "(window_len)")
-            tsd[col].values[:] = pd.np.convolve(w / w.sum(), s, mode="valid")
+                w = eval("np." + filter_type + "(window_len)")
+            tsd[col].values[:] = np.convolve(w / w.sum(), s, mode="valid")
 
     return tsutils.return_input(print_input, otsd, tsd, "filter")
 

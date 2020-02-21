@@ -8,6 +8,7 @@ import warnings
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
+import numpy as np
 import pandas as pd
 
 from .. import tsutils
@@ -124,17 +125,17 @@ def clip(
     for col in tsd.columns:
         if a_min is None:
             try:
-                n_min = pd.np.finfo(tsd[col].dtype).min
+                n_min = np.finfo(tsd[col].dtype).min
             except ValueError:
-                n_min = pd.np.iinfo(tsd[col].dtype).min
+                n_min = np.iinfo(tsd[col].dtype).min
         else:
             n_min = float(a_min)
 
         if a_max is None:
             try:
-                n_max = pd.np.finfo(tsd[col].dtype).max
+                n_max = np.finfo(tsd[col].dtype).max
             except ValueError:
-                n_max = pd.np.iinfo(tsd[col].dtype).max
+                n_max = np.iinfo(tsd[col].dtype).max
         else:
             n_max = float(a_max)
 

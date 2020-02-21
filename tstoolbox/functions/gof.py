@@ -207,6 +207,7 @@ The gof algorithms work with two time-series only.  You gave {0}.
     tsd = tsd.dropna(how="any")
 
     from .. import skill_metrics as sm
+    import numpy as np
     import pandas as pd
 
     statval = []
@@ -230,7 +231,7 @@ The gof algorithms work with two time-series only.  You gave {0}.
         statval.append(["Centered RMSD (CRMSD)", sm.centered_rms_dev(pred, ref)])
 
     if "corrcoef" in stats:
-        statval.append(["Correlation coefficient (r)", pd.np.corrcoef(pred, ref)[0, 1]])
+        statval.append(["Correlation coefficient (r)", np.corrcoef(pred, ref)[0, 1]])
 
     if "murphyss" in stats:
         statval.append(["Skill score (Murphy)", sm.skill_score_murphy(pred, ref)])

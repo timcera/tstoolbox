@@ -8,6 +8,7 @@ import warnings
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
+import numpy as np
 import pandas as pd
 
 from .. import tsutils
@@ -142,10 +143,10 @@ def add_trend(
         target_units=target_units,
         clean=clean,
     )
-    # Need it to be float since will be using pd.np.nan
+    # Need it to be float since will be using np.nan
     ntsd = tsd.copy().astype("float64")
 
-    ntsd.iloc[:, :] = pd.np.nan
+    ntsd.iloc[:, :] = np.nan
     ntsd.iloc[start_index, :] = float(start_offset)
     ntsd.iloc[end_index, :] = float(end_offset)
     ntsd = ntsd.interpolate(method="values")

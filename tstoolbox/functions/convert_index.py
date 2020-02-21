@@ -8,6 +8,7 @@ import warnings
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
+import numpy as np
 import pandas as pd
 from pandas.tseries.frequencies import to_offset
 
@@ -234,13 +235,13 @@ def convert_index(
         "julian": lambda x: x,
         "reduced": lambda x: x - 2400000,
         "modified": lambda x: x - 2400000.5,
-        "truncated": lambda x: pd.np.floor(x - 2440000.5),
+        "truncated": lambda x: np.floor(x - 2440000.5),
         "dublin": lambda x: x - 2415020,
         "cnes": lambda x: x - 2433282.5,
         "ccsds": lambda x: x - 2436204.5,
         "lop": lambda x: x - 2448622.5,
-        "lilian": lambda x: pd.np.floor(x - 2299159.5),
-        "rata_die": lambda x: pd.np.floor(x - 1721424.5),
+        "lilian": lambda x: np.floor(x - 2299159.5),
+        "rata_die": lambda x: np.floor(x - 1721424.5),
         "mars_sol": lambda x: (x - 2405522) / 1.02749,
         "unix": lambda x: (x - 2440587.5),
     }

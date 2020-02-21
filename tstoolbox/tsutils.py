@@ -386,7 +386,7 @@ def set_ppf(ptype):
 
         def ppf(y):
             """Percentage Point Function for the weibull distibution."""
-            return pd.np.log(-pd.np.log((1 - pd.np.array(y))))
+            return np.log(-np.log((1 - np.array(y))))
 
         return ppf
     elif ptype is None:
@@ -420,12 +420,12 @@ ppdict = {
 def set_plotting_position(n, plotting_position="weibull"):
     """Create plotting position 1D array using linspace."""
     if plotting_position == "california":
-        return pd.np.linspace(1.0 / n, 1.0, n)
+        return np.linspace(1.0 / n, 1.0, n)
     try:
         a = ppdict[plotting_position]
     except KeyError:
         a = float(plotting_position)
-    return _plotting_position_equation(pd.np.arange(1, n + 1), n, a)
+    return _plotting_position_equation(np.arange(1, n + 1), n, a)
 
 
 def b(s):
@@ -1137,10 +1137,10 @@ def _date_slice(input_tsd, start_date=None, end_date=None):
                 else:
                     tdate = pd.Timestamp(testdate, tz=input_tsd.index.tz)
                 # Is this comparison cheaper than the .join?
-                if not pd.np.any(input_tsd.index == tdate):
+                if not np.any(input_tsd.index == tdate):
                     # Create a dummy column at the date I want, then delete
                     # Not the best, but...
-                    row = pd.DataFrame([pd.np.nan], index=[tdate])
+                    row = pd.DataFrame([np.nan], index=[tdate])
                     row.columns = ["deleteme"]
                     input_tsd = input_tsd.join(row, how="outer")
                     input_tsd.drop("deleteme", inplace=True, axis=1)
@@ -1200,7 +1200,7 @@ Duplicate or time reversal index entry at
 record {1} (start count at 0):
 "{0}".
 """.format(
-                    data.index[:-1][ndiff <= 0][0], pd.np.where(ndiff <= 0)[0][0] + 1
+                    data.index[:-1][ndiff <= 0][0], np.where(ndiff <= 0)[0][0] + 1
                 )
             )
         )
@@ -1401,7 +1401,7 @@ def _printiso(
         if showindex in ["always", "default"]:
             print_index = True
 
-    elif isinstance(tsd, (int, float, tuple, pd.np.ndarray)):
+    elif isinstance(tsd, (int, float, tuple, np.ndarray)):
         tablefmt = None
 
     if tablefmt in ["csv", "tsv", "csv_nos", "tsv_nos"]:

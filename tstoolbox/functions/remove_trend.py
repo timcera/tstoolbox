@@ -8,6 +8,7 @@ import warnings
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
+import numpy as np
 import pandas as pd
 
 from .. import tsutils
@@ -108,7 +109,7 @@ def remove_trend(
     for col in tsd.columns:
         index = tsd.index.astype("l")
         index = index - index[0]
-        lin = pd.np.polyfit(index, tsd[col], 1)
+        lin = np.polyfit(index, tsd[col], 1)
         ntsd[col] = lin[0] * index + lin[1]
         ntsd[col] = tsd[col] - ntsd[col]
     return tsutils.return_input(print_input, tsd, ntsd, "remtrend")

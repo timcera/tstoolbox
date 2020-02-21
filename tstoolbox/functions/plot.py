@@ -9,6 +9,7 @@ import warnings
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
+import numpy as np
 import pandas as pd
 
 from .. import tsutils
@@ -1082,14 +1083,14 @@ but you have {2} time-series.
         from ..skill_metrics import taylor_diagram
 
         ref = tsd.iloc[:, 0]
-        std = [pd.np.std(ref)]
+        std = [np.std(ref)]
         ccoef = [1.0]
         crmsd = [0.0]
         for col in range(1, len(tsd.columns)):
-            std.append(pd.np.std(tsd.iloc[:, col]))
-            ccoef.append(pd.np.corrcoef(tsd.iloc[:, col], ref)[0][1])
+            std.append(np.std(tsd.iloc[:, col]))
+            ccoef.append(np.corrcoef(tsd.iloc[:, col], ref)[0][1])
             crmsd.append(centered_rms_dev(tsd.iloc[:, col].values, ref.values))
-        taylor_diagram(pd.np.array(std), pd.np.array(crmsd), pd.np.array(ccoef))
+        taylor_diagram(np.array(std), np.array(crmsd), np.array(ccoef))
     elif type in ["target"]:
         from ..skill_metrics import centered_rms_dev
         from ..skill_metrics import rmsd
@@ -1104,7 +1105,7 @@ but you have {2} time-series.
             biases.append(bias(tsd.iloc[:, col].values, ref))
             crmsds.append(centered_rms_dev(tsd.iloc[:, col].values, ref))
             rmsds.append(rmsd(tsd.iloc[:, col].values, ref))
-        target_diagram(pd.np.array(biases), pd.np.array(crmsds), pd.np.array(rmsds))
+        target_diagram(np.array(biases), np.array(crmsds), np.array(rmsds))
     elif type in ["xy", "double_mass"]:
         # PANDAS was not doing the right thing with xy plots
         # if you wanted lines between markers.
@@ -1115,8 +1116,8 @@ but you have {2} time-series.
             ndf = tsd.iloc[:, colindex * 2 : colindex * 2 + 2]
             if type == "double_mass":
                 ndf = ndf.dropna().cumsum()
-            oxdata = pd.np.array(ndf.iloc[:, 0])
-            oydata = pd.np.array(ndf.iloc[:, 1])
+            oxdata = np.array(ndf.iloc[:, 0])
+            oydata = np.array(ndf.iloc[:, 1])
 
             plotdict[(logx, logy)](
                 oxdata,
@@ -1149,11 +1150,11 @@ but you have {2} time-series.
         ys = tsd.iloc[:, :]
 
         for colindex in range(colcnt):
-            oydata = pd.np.array(ys.iloc[:, colindex].dropna())
+            oydata = np.array(ys.iloc[:, colindex].dropna())
             if prob_plot_sort_values == "ascending":
-                oydata = pd.np.sort(oydata)
+                oydata = np.sort(oydata)
             elif prob_plot_sort_values == "descending":
-                oydata = pd.np.sort(oydata)[::-1]
+                oydata = np.sort(oydata)[::-1]
             n = len(oydata)
             norm_axis = ax.xaxis
             oxdata = ppf(tsutils.set_plotting_position(n, plotting_position))
@@ -1172,15 +1173,15 @@ but you have {2} time-series.
             )
 
         # Make it pretty
-        xtmaj = pd.np.array([0.01, 0.1, 0.5, 0.9, 0.99])
+        xtmaj = np.array([0.01, 0.1, 0.5, 0.9, 0.99])
         xtmaj_str = ["1", "10", "50", "90", "99"]
-        xtmin = pd.np.concatenate(
+        xtmin = np.concatenate(
             [
-                pd.np.linspace(0.001, 0.01, 10),
-                pd.np.linspace(0.01, 0.1, 10),
-                pd.np.linspace(0.1, 0.9, 9),
-                pd.np.linspace(0.9, 0.99, 10),
-                pd.np.linspace(0.99, 0.999, 10),
+                np.linspace(0.001, 0.01, 10),
+                np.linspace(0.01, 0.1, 10),
+                np.linspace(0.1, 0.9, 9),
+                np.linspace(0.9, 0.99, 10),
+                np.linspace(0.99, 0.999, 10),
             ]
         )
         xtmaj = ppf(xtmaj)
@@ -1269,7 +1270,7 @@ but you have {2} time-series.
             plt.setp(line, linestyle=style[index][2:])
         xtitle = xtitle or "Time"
         ylimits = ax1.get_ylim()
-        ny = pd.np.linspace(ylimits[0], ylimits[1], 1000)
+        ny = np.linspace(ylimits[0], ylimits[1], 1000)
         for col in range(len(tsd.columns)):
             xvals = tsd.iloc[:, col].dropna().values
             pdf = gaussian_kde(xvals)
@@ -1330,7 +1331,7 @@ The "heatmap" plot type can only work with daily time series.
         for name, group in groups:
             ngroup = group.values
             if len(group.values) == 365:
-                ngroup = pd.np.append(group.values, [pd.np.nan])
+                ngroup = np.append(group.values, [np.nan])
             years[name.year] = ngroup
         years = years.T
         plt.imshow(years, interpolation=None, aspect="auto")

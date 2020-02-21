@@ -8,6 +8,7 @@ import sys
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
+import numpy as np
 import pandas as pd
 
 from .. import tsutils
@@ -33,9 +34,9 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x - y), window=10000):
 
     """
     # Create cost matrix via broadcasting with large int
-    ts_a, ts_b = pd.np.array(ts_a), pd.np.array(ts_b)
+    ts_a, ts_b = np.array(ts_a), np.array(ts_b)
     M, N = len(ts_a), len(ts_b)
-    cost = sys.maxsize * pd.np.ones((M, N))
+    cost = sys.maxsize * np.ones((M, N))
 
     # Initialize the first row and column
     cost[0, 0] = d(ts_a[0], ts_b[0])

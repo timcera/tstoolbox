@@ -1004,9 +1004,9 @@ def peak_detection(
         if cols[-6:] == "valley":
             datavals = minpeak
         maxx, _ = list(zip(*datavals))
-        hold = tmptsd[cols][pd.np.array(maxx).astype("i")]
-        tmptsd[cols][:] = pd.np.nan
-        tmptsd[cols][pd.np.array(maxx).astype("i")] = hold
+        hold = tmptsd[cols][np.array(maxx).astype("i")]
+        tmptsd[cols][:] = np.nan
+        tmptsd[cols][np.array(maxx).astype("i")] = hold
 
     tmptsd.index.name = "Datetime"
     tsd.index.name = "Datetime"
