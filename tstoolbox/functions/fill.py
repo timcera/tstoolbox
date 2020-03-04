@@ -215,8 +215,8 @@ def fill_cli(
     ],
     from_columns=[str, ["pass", []], 1],
     to_columns=[str, ["pass", []], 1],
-    limit=[int, ["range", [0, ]], 1],
-    order=[int, ["range", [0, ]], 1],
+    limit=[int, ["range", [0,]], 1],
+    order=[int, ["range", [0,]], 1],
 )
 def fill(
     input_ts="-",
@@ -267,24 +267,25 @@ def fill(
     ntsd = pd.concat([predf, ntsd, postf])
     if method in ["ffill", "bfill"]:
         ntsd = ntsd.fillna(method=method, limit=limit)
-    elif method in ["linear",
-                    "time",
-                    "index",
-                    "values",
-                    "nearest",
-                    "zero",
-                    "slinear",
-                    "quadratic",
-                    "cubic",
-                    "spline",
-                    "polynomial",
-                    "barycentric",
-                    "kroch",
-                    "piecewise_polynomial",
-                    "pchip",
-                    "akima",
-                    "from_derivatives",
-                   ]:
+    elif method in [
+        "linear",
+        "time",
+        "index",
+        "values",
+        "nearest",
+        "zero",
+        "slinear",
+        "quadratic",
+        "cubic",
+        "spline",
+        "polynomial",
+        "barycentric",
+        "kroch",
+        "piecewise_polynomial",
+        "pchip",
+        "akima",
+        "from_derivatives",
+    ]:
         ntsd = ntsd.interpolate(method=method, limit=limit, order=order)
     elif method == "mean":
         ntsd = ntsd.fillna(ntsd.mean(), limit=limit)
