@@ -17,7 +17,7 @@ class Testgof(TestCase):
             ["Skill score (Murphy)", 1.0],
             ["Nash-Sutcliffe Efficiency", 1.0],
             ["Common count observed and simulated", 1672],
-            ["Count of NaNs", "", 0, 0],
+            ["Count of NaNs", None, 0, 0],
         ]
 
     def test_gof(self):

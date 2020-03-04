@@ -1425,12 +1425,18 @@ def _printiso(
 
     if fmt is None:
         print(str(list(tsd))[1:-1])
-    elif tablefmt in ["csv_nos", "tsv_nos"]:
-        print(
-            tb(tsd, tablefmt=fmt, showindex=showindex, headers=headers).replace(" ", "")
-        )
+
+    all_table = tb(
+        tsd,
+        tablefmt=tablefmt,
+        showindex=showindex,
+        headers=headers,
+        floatfmt=float_format,
+    )
+    if tablefmt in ["csv_nos", "tsv_nos"]:
+        print(all_table.replace(" ", ""))
     else:
-        print(tb(tsd, tablefmt=fmt, showindex=showindex, headers=headers))
+        print(all_table)
 
 
 def open_local(filein):

@@ -29,6 +29,7 @@ def gof_cli(
     target_units=None,
     skiprows=None,
     tablefmt="plain",
+    float_format=".3f",
 ):
     """Will calculate goodness of fit statistics between two time-series.
 
@@ -94,6 +95,7 @@ def gof_cli(
     {target_units}
     {skiprows}
     {tablefmt}
+    {float_format}
 
     """
     tsutils._printiso(
@@ -113,6 +115,7 @@ def gof_cli(
         ),
         tablefmt=tablefmt,
         headers=["Statistic", "Comparison", "Observed", "Simulated"],
+        float_format=float_format,
     )
 
 
@@ -247,13 +250,13 @@ The gof algorithms work with two time-series only.  You gave {0}.
 
     statval.append(["Common count observed and simulated", len(tsd.index)])
 
-    statval.append(["Count of NaNs", "", lennao, lennas])
+    statval.append(["Count of NaNs", None, lennao, lennas])
 
     if "mean" in stats:
-        statval.append(["Mean", "", ref.mean(), pred.mean()])
+        statval.append(["Mean", None, ref.mean(), pred.mean()])
 
     if "stdev" in stats:
-        statval.append(["Standard deviation", "", ref.std(), pred.std()])
+        statval.append(["Standard deviation", None, ref.std(), pred.std()])
 
     return statval
 
