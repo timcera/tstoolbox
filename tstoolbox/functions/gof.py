@@ -79,6 +79,8 @@ def gof_cli(
         +-----------------+--------------------------------------------------+
         |                 |                       f = forecast probabilities |
         +-----------------+--------------------------------------------------+
+        | mae             | sum(abs(s - o))/N                                |
+        +-----------------+--------------------------------------------------+
         | mean            | observed mean, simulated mean                    |
         +-----------------+--------------------------------------------------+
         | stdev           | observed stdev, simulated stdev                  |
@@ -136,6 +138,7 @@ def gof_cli(
                 "kge",
                 "index_agreement",
                 "brierss",
+                "mae",
                 "mean",
                 "stdev",
                 "all",
@@ -172,6 +175,7 @@ def gof(
             "kge",
             "index_agreement",
             "brierss",
+            "mae",
             "mean",
             "stdev",
         ]
@@ -247,6 +251,12 @@ The gof algorithms work with two time-series only.  You gave {0}.
 
     if "index_agreement" in stats:
         statval.append(["Index of agreement", sm.index_agreement(pred, ref)])
+
+    if "brierss" in stats:
+        statval.append(["Brier's Score", np.sum(pred - ref)**2/len(tsd.index)])
+
+    if "mae" in stats:
+        statval.append(["Mean Absolute Error", np.sum(np.abs(pred - ref))/len(tsd.index)])
 
     statval.append(["Common count observed and simulated", len(tsd.index)])
 
