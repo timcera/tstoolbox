@@ -1324,7 +1324,7 @@ def print_input(
     output,
     suffix="",
     date_format=None,
-    float_format="%g",
+    float_format="g",
     tablefmt="csv",
     showindex="never",
 ):
@@ -1359,7 +1359,7 @@ def _printiso(
     tsd,
     date_format=None,
     sep=",",
-    float_format="%g",
+    float_format="g",
     showindex="never",
     headers="keys",
     tablefmt="csv",
