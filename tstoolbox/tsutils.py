@@ -1410,7 +1410,7 @@ def _printiso(
             try:
                 tsd.to_csv(
                     sys.stdout,
-                    float_format=float_format,
+                    float_format="%{0}".format(float_format),
                     date_format=date_format,
                     sep=sep,
                     index=print_index,

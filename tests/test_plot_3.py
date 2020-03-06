@@ -17,7 +17,7 @@ dfa = tstoolbox.aggregate(
 )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_histogram():
     plt.close("all")
     return tstoolbox.plot(
@@ -28,7 +28,7 @@ def test_histogram():
     )
 
 
-# @pytest.mark.mpl_image_compare
+# @pytest.mark.mpl_image_compare(tolerance=6)
 # def test_heatmap():
 #     plt.close("all")
 #     return tstoolbox.plot(
@@ -36,7 +36,7 @@ def test_histogram():
 #     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_norm_xaxis():
     plt.close("all")
     return tstoolbox.plot(
@@ -48,7 +48,7 @@ def test_norm_xaxis():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_norm_yaxis():
     plt.close("all")
     return tstoolbox.plot(
@@ -60,7 +60,7 @@ def test_norm_yaxis():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_lognorm_xaxis():
     plt.close("all")
     return tstoolbox.plot(
@@ -72,7 +72,7 @@ def test_lognorm_xaxis():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_lognorm_yaxis():
     plt.close("all")
     return tstoolbox.plot(
@@ -84,7 +84,7 @@ def test_lognorm_yaxis():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_weibull_xaxis():
     plt.close("all")
     return tstoolbox.plot(
@@ -96,7 +96,7 @@ def test_weibull_xaxis():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_weibull_yaxis():
     plt.close("all")
     return tstoolbox.plot(
@@ -108,7 +108,7 @@ def test_weibull_yaxis():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_kde_time():
     plt.close("all")
     return tstoolbox.plot(
@@ -120,7 +120,7 @@ def test_kde_time():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_kde_time_multiple_traces():
     plt.close("all")
     ndf = tstoolbox.read(["tests/daily.csv", "tests/02325000_flow.csv"])
@@ -134,7 +134,7 @@ def test_kde_time_multiple_traces():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_autocorrelation():
     plt.close("all")
     return tstoolbox.plot(

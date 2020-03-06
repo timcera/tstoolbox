@@ -31,7 +31,7 @@ def read_cli(
     clean=False,
     source_units=None,
     target_units=None,
-    float_format="%g",
+    float_format="g",
     round_index=None,
     tablefmt="csv",
 ):

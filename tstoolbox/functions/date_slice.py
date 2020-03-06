@@ -28,7 +28,7 @@ def date_slice_cli(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="%g",
+    float_format="g",
     tablefmt="csv",
 ):
     """Print out data to the screen between start_date and end_date.
@@ -88,7 +88,7 @@ def date_slice(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="%g",
+    float_format="g",
 ):
     """Print out data to the screen between start_date and end_date."""
     return tsutils.common_kwds(

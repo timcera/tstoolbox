@@ -31,7 +31,7 @@ def normalization_cli(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="%g",
+    float_format="g",
     tablefmt="csv",
 ):
     """Return the normalization of the time series.
@@ -131,7 +131,7 @@ def normalization(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="%g",
+    float_format="g",
 ):
     """Return the normalization of the time series."""
     tsd = tsutils.common_kwds(

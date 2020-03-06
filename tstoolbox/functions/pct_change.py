@@ -31,7 +31,7 @@ def pct_change_cli(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="%g",
+    float_format="g",
     tablefmt="csv",
 ):
     """Return the percent change between times.
@@ -123,7 +123,7 @@ def pct_change(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="%g",
+    float_format="g",
 ):
     """Return the percent change between times."""
     tsd = tsutils.common_kwds(

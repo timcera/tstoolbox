@@ -31,7 +31,7 @@ def convert_cli(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="%g",
+    float_format="g",
     tablefmt="csv",
 ):
     """Convert values of a time series by applying a factor and offset.
@@ -106,7 +106,7 @@ def convert(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="%g",
+    float_format="g",
 ):
     """Convert values of a time series by applying a factor and offset."""
     tsd = tsutils.common_kwds(

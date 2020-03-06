@@ -92,7 +92,7 @@ def equation_cli(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="%g",
+    float_format="g",
     tablefmt="csv",
 ):
     """Apply <equation_str> to the time series data.
@@ -210,7 +210,7 @@ def equation(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="%g",
+    float_format="g",
 ):
     """Apply <equation_str> to the time series data."""
     x = tsutils.common_kwds(

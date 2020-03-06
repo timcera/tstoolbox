@@ -17,7 +17,7 @@ dfa = tstoolbox.aggregate(
 )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_time_plot():
     plt.close("all")
     return tstoolbox.plot(
@@ -29,7 +29,7 @@ def test_time_plot():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_time_multiple_traces_plot():
     plt.close("all")
     return tstoolbox.plot(
@@ -41,7 +41,7 @@ def test_time_multiple_traces_plot():
     )
 
 
-# @pytest.mark.mpl_image_compare
+# @pytest.mark.mpl_image_compare(tolerance=6)
 # def test_time_multiple_traces_style_plot():
 #     plt.close("all")
 #     return tstoolbox.plot(
@@ -53,7 +53,7 @@ def test_time_multiple_traces_plot():
 #     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_time_multiple_traces_new_style_plot():
     plt.close("all")
     return tstoolbox.plot(
@@ -66,7 +66,7 @@ def test_time_multiple_traces_new_style_plot():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_time_markers():
     plt.close("all")
     return tstoolbox.plot(
@@ -79,7 +79,7 @@ def test_time_markers():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_xy():
     plt.close("all")
     return tstoolbox.plot(
@@ -87,7 +87,7 @@ def test_xy():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_xy_multiple_traces():
     plt.close("all")
     return tstoolbox.plot(
@@ -98,7 +98,7 @@ def test_xy_multiple_traces():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_xy_multiple_traces_logy():
     plt.close("all")
     return tstoolbox.plot(
@@ -110,7 +110,7 @@ def test_xy_multiple_traces_logy():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_xy_multiple_traces_logx():
     plt.close("all")
     return tstoolbox.plot(
@@ -122,7 +122,7 @@ def test_xy_multiple_traces_logx():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_xy_multiple_traces_markers():
     plt.close("all")
     return tstoolbox.plot(

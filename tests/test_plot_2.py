@@ -17,7 +17,7 @@ dfa = tstoolbox.aggregate(
 )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_double_mass():
     plt.close("all")
     return tstoolbox.plot(
@@ -28,7 +28,7 @@ def test_double_mass():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_double_mass_mult():
     plt.close("all")
     return tstoolbox.plot(
@@ -39,7 +39,7 @@ def test_double_mass_mult():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_double_mass_marker():
     plt.close("all")
     return tstoolbox.plot(
@@ -52,7 +52,7 @@ def test_double_mass_marker():
     )
 
 
-@pytest.mark.mpl_image_compare(tolerance=5)
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_boxplot():
     plt.close("all")
     xdf = tstoolbox.read(
@@ -65,7 +65,7 @@ def test_boxplot():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_scatter_matrix():
     plt.close("all")
     return tstoolbox.plot(
@@ -76,7 +76,7 @@ def test_scatter_matrix():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_lag_plot():
     plt.close("all")
     return tstoolbox.plot(columns=1, type="lag_plot", input_ts=df, ofilename=None)
@@ -92,7 +92,7 @@ def test_lag_plot():
 #                    input_ts='tests/02234500_65_65.csv')
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_probability_density():
     plt.close("all")
     return tstoolbox.plot(
@@ -103,25 +103,25 @@ def test_probability_density():
     )
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_bar():
     plt.close("all")
     return tstoolbox.plot(type="bar", input_ts=dfa, ofilename=None)
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_barh():
     plt.close("all")
     return tstoolbox.plot(type="barh", input_ts=dfa, ofilename=None)
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_bar_stacked():
     plt.close("all")
     return tstoolbox.plot(type="bar_stacked", input_ts=dfa, ofilename=None)
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare(tolerance=6)
 def test_barh_stacked():
     plt.close("all")
     return tstoolbox.plot(type="barh_stacked", input_ts=dfa, ofilename=None)
