@@ -30,6 +30,10 @@ def gof_cli(
     skiprows=None,
     tablefmt="plain",
     float_format=".3f",
+    kge_sr=1.0,
+    kge09_salpha=1.0,
+    kge_sbeta=1.0,
+    kge12_sgamma=1.0,
 ):
     """Will calculate goodness of fit statistics between two time-series.
 
@@ -48,23 +52,39 @@ def gof_cli(
         +-----------------+--------------------------------------------------+
         | stats           | Description                                      |
         +=================+==================================================+
-        | bias            | mean(s) - mean(o)                                |
+        | bias            | Bias                                             |
         +-----------------+--------------------------------------------------+
-        | pc_bias         | 100.0*sum(s-o)/sum(o)                            |
+        |                 | mean(s) - mean(o)                                |
         +-----------------+--------------------------------------------------+
-        | apc_bias        | 100.0*sum(abs(s-o))/sum(o)                       |
+        | pc_bias         | Percent Bias                                     |
         +-----------------+--------------------------------------------------+
-        | rmsd            | sum[(s - o)**2]/N                                |
+        |                 | 100.0*sum(s-o)/sum(o)                            |
         +-----------------+--------------------------------------------------+
-        | crmsd           | sum[(s - mean(s))(o - mean(o))]**2/N             |
+        | apc_bias        | Absolute Percent Bias                            |
+        +-----------------+--------------------------------------------------+
+        |                 | 100.0*sum(abs(s-o))/sum(o)                       |
+        +-----------------+--------------------------------------------------+
+        | rmsd            | Root Mean Square Deviation                       |
+        +-----------------+--------------------------------------------------+
+        |                 | sqrt(sum[(s - o)**2]/N)                          |
+        +-----------------+--------------------------------------------------+
+        | crmsd           | Centered Root Mean Square Deviation              |
+        +-----------------+--------------------------------------------------+
+        |                 | sum[(s - mean(s))(o - mean(o))]**2/N             |
         +-----------------+--------------------------------------------------+
         | corrcoef        | Correlation coefficient                          |
         +-----------------+--------------------------------------------------+
-        | murphyss        | 1 - RMSE**2/SDEV**2                              |
+        | murphyss        | Murphy Skill Score                               |
         +-----------------+--------------------------------------------------+
-        | nse             | 1 - sum(s - o)**2 / sum (o - mean(r))**2         |
+        |                 | 1 - RMSE**2/SDEV**2                              |
         +-----------------+--------------------------------------------------+
-        | kge             | 1 - sqrt((cc-1)**2 + (alpha-1)**2 + (beta-1)**2) |
+        | nse             | Nash-Sufcliffe Efficiency                        |
+        +-----------------+--------------------------------------------------+
+        |                 | 1 - sum(s - o)**2 / sum (o - mean(r))**2         |
+        +-----------------+--------------------------------------------------+
+        | kge09           | Kling-Gupta Efficiency, 2009                     |
+        +-----------------+--------------------------------------------------+
+        |                 | 1 - sqrt((cc-1)**2 + (alpha-1)**2 + (beta-1)**2) |
         +-----------------+--------------------------------------------------+
         |                 |                     cc = correlation coefficient |
         +-----------------+--------------------------------------------------+
@@ -72,14 +92,30 @@ def gof_cli(
         +-----------------+--------------------------------------------------+
         |                 |            beta = sum(simulated) / sum(observed) |
         +-----------------+--------------------------------------------------+
-        | index_agreement | 1.0 - sum((o - s)**2) /                          |
+        | kge12           | Kling-Gupta Efficiency, 2012                     |
+        +-----------------+--------------------------------------------------+
+        |                 | 1 - sqrt((cc-1)**2 + (alpha-1)**2 + (beta-1)**2) |
+        +-----------------+--------------------------------------------------+
+        |                 |                     cc = correlation coefficient |
+        +-----------------+--------------------------------------------------+
+        |                 |           alpha = std(simulated) / std(observed) |
+        +-----------------+--------------------------------------------------+
+        |                 |            beta = sum(simulated) / sum(observed) |
+        +-----------------+--------------------------------------------------+
+        | index_agreement | Index of Aggreement                              |
+        +-----------------+--------------------------------------------------+
+        |                 | 1.0 - sum((o - s)**2) /                          |
         |                 | sum((abs(s - mean(o)) + abs(o - mean(o)))**2)    |
         +-----------------+--------------------------------------------------+
-        | brierss         | sum(f - o)**2/N                                  |
+        | brierss         | Brier Skill Score                                |
+        +-----------------+--------------------------------------------------+
+        |                 | sum(f - o)**2/N                                  |
         +-----------------+--------------------------------------------------+
         |                 |                       f = forecast probabilities |
         +-----------------+--------------------------------------------------+
-        | mae             | sum(abs(s - o))/N                                |
+        | mae             | Mean Absolute Error                              |
+        +-----------------+--------------------------------------------------+
+        |                 | sum(abs(s - o))/N                                |
         +-----------------+--------------------------------------------------+
         | mean            | observed mean, simulated mean                    |
         +-----------------+--------------------------------------------------+
@@ -98,7 +134,22 @@ def gof_cli(
     {skiprows}
     {tablefmt}
     {float_format}
+    kge_sr: float
+        [optional, defaults to 1.0]
 
+        Scaling factor for `kge09` and `kge12` correlation.
+    kge09_salpha: float
+        [optional, defaults to 1.0]
+
+        Scaling factor for `kge09` alpha.
+    kge_sbeta: float
+        [optional, defaults to 1.0]
+
+        Scaling factor for `kge09` and `kge12` beta.
+    kge12_sgamma: float
+        [optional, defaults to 1.0]
+
+        Scaling factor for `kge12` beta.
     """
     tsutils._printiso(
         gof(
@@ -114,6 +165,10 @@ def gof_cli(
             source_units=source_units,
             target_units=target_units,
             skiprows=skiprows,
+            kge_sr=kge_sr,
+            kge09_salpha=kge09_salpha,
+            kge_sbeta=kge_sbeta,
+            kge12_sgamma=kge12_sgamma,
         ),
         tablefmt=tablefmt,
         headers=["Statistic", "Comparison", "Observed", "Simulated"],
@@ -122,6 +177,8 @@ def gof_cli(
 
 
 @tsutils.validator(
+    kge09=[float, ["pass", []], 1],
+    kge12=[float, ["pass", []], 1],
     stats=[
         str,
         [
@@ -136,6 +193,8 @@ def gof_cli(
                 "murphyss",
                 "nse",
                 "kge",
+                "kge09",
+                "kge12",
                 "index_agreement",
                 "brierss",
                 "mae",
@@ -160,6 +219,10 @@ def gof(
     source_units=None,
     target_units=None,
     skiprows=None,
+    kge_sr=1.0,
+    kge09_salpha=1.0,
+    kge_sbeta=1.0,
+    kge12_sgamma=1.0,
 ):
     """Will calculate goodness of fit statistics between two time-series."""
     if stats == "all":
@@ -172,7 +235,8 @@ def gof(
             "corrcoef",
             "murphyss",
             "nse",
-            "kge",
+            "kge09",
+            "kge12",
             "index_agreement",
             "brierss",
             "mae",
@@ -215,7 +279,6 @@ The gof algorithms work with two time-series only.  You gave {0}.
 
     from .. import skill_metrics as sm
     import numpy as np
-    import pandas as pd
 
     statval = []
 
@@ -246,8 +309,11 @@ The gof algorithms work with two time-series only.  You gave {0}.
     if "nse" in stats:
         statval.append(["Nash-Sutcliffe Efficiency", sm.nse(pred, ref)])
 
-    if "kge" in stats:
-        statval.append(["Kling-Gupta Efficiency", sm.kge(pred, ref)])
+    if "kge" in stats or "kge09" in stats:
+        statval.append(["Kling-Gupta Efficiency, 2009", sm.kge09(pred, ref, sr=kge_sr, salpha=kge09_salpha, sbeta = kge_sbeta)])
+
+    if "kge12" in stats:
+        statval.append(["Kling-Gupta Efficiency, 2012", sm.kge12(pred, ref, sr=kge_sr, sgamma=kge12_sgamma, sbeta = kge_sbeta)])
 
     if "index_agreement" in stats:
         statval.append(["Index of agreement", sm.index_agreement(pred, ref)])
