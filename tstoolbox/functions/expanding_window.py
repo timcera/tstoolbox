@@ -134,7 +134,7 @@ def expanding_window_cli(
         ],
         None,
     ],
-    min_periods=[int, ["range", [0, ]], 1],
+    min_periods=[int, ["range", [0,]], 1],
     center=[bool, ["domain", [True, False]], 1],
 )
 def expanding_window(

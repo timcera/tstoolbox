@@ -1437,8 +1437,10 @@ def _printiso(
     else:
         print(all_table)
 
+
 # Make _printiso public.  Keep both around until convert all toolboxes.
 printiso = _printiso
+
 
 def open_local(filein):
     """

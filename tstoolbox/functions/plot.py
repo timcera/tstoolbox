@@ -1113,7 +1113,7 @@ but you have {2} time-series.
         # Boy I do not like matplotlib.
 
         for colindex in range(colcnt):
-            ndf = tsd.iloc[:, colindex * 2: colindex * 2 + 2]
+            ndf = tsd.iloc[:, colindex * 2 : colindex * 2 + 2]
             if type == "double_mass":
                 ndf = ndf.dropna().cumsum()
             oxdata = np.array(ndf.iloc[:, 0])

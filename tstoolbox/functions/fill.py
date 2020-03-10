@@ -215,8 +215,8 @@ def fill_cli(
     ],
     from_columns=[str, ["pass", []], 1],
     to_columns=[str, ["pass", []], 1],
-    limit=[int, ["range", [0, ]], 1],
-    order=[int, ["range", [0, ]], 1],
+    limit=[int, ["range", [0,]], 1],
+    order=[int, ["range", [0,]], 1],
 )
 def fill(
     input_ts="-",
