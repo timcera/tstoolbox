@@ -66,7 +66,7 @@ def convert_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         convert(
             input_ts=input_ts,
             columns=columns,

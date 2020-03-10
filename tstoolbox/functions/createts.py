@@ -58,7 +58,7 @@ def createts_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         createts(
             freq=freq,
             fillvalue=fillvalue,

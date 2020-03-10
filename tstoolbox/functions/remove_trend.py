@@ -9,7 +9,6 @@ import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 import numpy as np
-import pandas as pd
 
 from .. import tsutils
 
@@ -56,7 +55,7 @@ def remove_trend_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         remove_trend(
             input_ts=input_ts,
             columns=columns,

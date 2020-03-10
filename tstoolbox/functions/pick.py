@@ -57,7 +57,7 @@ def pick_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         pick(
             columns,
             input_ts=input_ts,

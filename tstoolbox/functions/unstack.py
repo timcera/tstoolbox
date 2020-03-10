@@ -76,7 +76,7 @@ def unstack_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         unstack(
             column_names,
             input_ts=input_ts,

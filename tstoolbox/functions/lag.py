@@ -51,7 +51,7 @@ def lag_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         lag(
             lags,
             input_ts=input_ts,
@@ -74,7 +74,6 @@ def lag_cli(
 def lag(
     lags,
     input_ts="-",
-    method="ffill",
     print_input=False,
     start_date=None,
     end_date=None,
@@ -86,7 +85,7 @@ def lag(
     target_units=None,
     skiprows=None,
 ):
-    """Fill missing values (NaN) with different methods."""
+    """Create a series of lagged time-series."""
     tsd = tsutils.common_kwds(
         tsutils.read_iso_ts(
             input_ts,

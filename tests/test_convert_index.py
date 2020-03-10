@@ -3,6 +3,7 @@
 
 from unittest import TestCase
 
+import numpy as np
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 from tstoolbox import tstoolbox, tsutils
@@ -39,13 +40,13 @@ class Testconvert_index(TestCase):
         ("julian", "h", 2444240.5 * 24),
         ("reduced", "D", 2444240.5 - 2400000),
         ("modified", "D", 2444240.5 - 2400000.5),
-        ("truncated", "D", pd.np.floor(2444240.5 - 2440000.5)),
+        ("truncated", "D", np.floor(2444240.5 - 2440000.5)),
         ("dublin", "D", 2444240.5 - 2415020),
         ("cnes", "D", 2444240.5 - 2433282.5),
         ("ccsds", "D", 2444240.5 - 2436204.5),
         ("lop", "D", 2444240.5 - 2448622.5),
-        ("lilian", "D", pd.np.floor(2444240.5 - 2299159.5)),
-        ("rata_die", "D", pd.np.floor(2444240.5 - 1721424.5)),
+        ("lilian", "D", np.floor(2444240.5 - 2299159.5)),
+        ("rata_die", "D", np.floor(2444240.5 - 1721424.5)),
         ("mars_sol", "D", (2444240.5 - 2405522) / 1.02749),
         ("julian", None, 2444240.5),
     ],
@@ -62,7 +63,7 @@ def test_epoch_interval(epoch, interval, expected):
 
 def test_raises():
     with pytest.raises(ValueError):
-        out = tstoolbox.convert_index(
+        _ = tstoolbox.convert_index(
             "zebra",
             input_ts="tests/data_gainesville_daily_precip.csv",
             interval="D",

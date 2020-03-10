@@ -74,7 +74,7 @@ def pct_change_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         pct_change(
             input_ts=input_ts,
             columns=columns,
@@ -93,8 +93,8 @@ def pct_change_cli(
             round_index=round_index,
             source_units=source_units,
             target_units=target_units,
-            float_format=float_format,
         ),
+        float_format=float_format,
         tablefmt=tablefmt,
     )
 
@@ -153,7 +153,6 @@ def pct_change(
             periods=periods, fill_method=fill_method, limit=limit, freq=freq
         ),
         "pctchange",
-        float_format=float_format,
     )
 
 

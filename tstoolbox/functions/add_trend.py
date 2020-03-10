@@ -9,7 +9,6 @@ import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 import numpy as np
-import pandas as pd
 
 from .. import tsutils
 
@@ -80,7 +79,7 @@ def add_trend_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         add_trend(
             start_offset,
             end_offset,

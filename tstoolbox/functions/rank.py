@@ -109,7 +109,7 @@ def rank_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         rank(
             input_ts=input_ts,
             columns=columns,
@@ -127,11 +127,11 @@ def rank_cli(
             ascending=ascending,
             pct=pct,
             print_input=print_input,
-            float_format=float_format,
             source_units=source_units,
             target_units=target_units,
             round_index=round_index,
         ),
+        float_format=float_format,
         tablefmt=tablefmt,
     )
 
@@ -159,7 +159,6 @@ def rank(
     ascending=True,
     pct=False,
     print_input=False,
-    float_format="g",
     source_units=None,
     target_units=None,
     round_index=None,
@@ -197,7 +196,6 @@ def rank(
             pct=pct,
         ),
         "rank",
-        float_format=float_format,
     )
 
 

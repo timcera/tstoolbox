@@ -151,7 +151,7 @@ def gof_cli(
 
         Scaling factor for `kge12` beta.
     """
-    tsutils._printiso(
+    tsutils.printiso(
         gof(
             input_ts=input_ts,
             stats=stats,
@@ -204,7 +204,7 @@ def gof_cli(
             ],
         ],
         None,
-    ]
+    ],
 )
 def gof(
     input_ts="-",
@@ -310,19 +310,31 @@ The gof algorithms work with two time-series only.  You gave {0}.
         statval.append(["Nash-Sutcliffe Efficiency", sm.nse(pred, ref)])
 
     if "kge" in stats or "kge09" in stats:
-        statval.append(["Kling-Gupta Efficiency, 2009", sm.kge09(pred, ref, sr=kge_sr, salpha=kge09_salpha, sbeta = kge_sbeta)])
+        statval.append(
+            [
+                "Kling-Gupta Efficiency, 2009",
+                sm.kge09(pred, ref, sr=kge_sr, salpha=kge09_salpha, sbeta=kge_sbeta),
+            ]
+        )
 
     if "kge12" in stats:
-        statval.append(["Kling-Gupta Efficiency, 2012", sm.kge12(pred, ref, sr=kge_sr, sgamma=kge12_sgamma, sbeta = kge_sbeta)])
+        statval.append(
+            [
+                "Kling-Gupta Efficiency, 2012",
+                sm.kge12(pred, ref, sr=kge_sr, sgamma=kge12_sgamma, sbeta=kge_sbeta),
+            ]
+        )
 
     if "index_agreement" in stats:
         statval.append(["Index of agreement", sm.index_agreement(pred, ref)])
 
     if "brierss" in stats:
-        statval.append(["Brier's Score", np.sum(pred - ref)**2/len(tsd.index)])
+        statval.append(["Brier's Score", np.sum(pred - ref) ** 2 / len(tsd.index)])
 
     if "mae" in stats:
-        statval.append(["Mean Absolute Error", np.sum(np.abs(pred - ref))/len(tsd.index)])
+        statval.append(
+            ["Mean Absolute Error", np.sum(np.abs(pred - ref)) / len(tsd.index)]
+        )
 
     statval.append(["Common count observed and simulated", len(tsd.index)])
 

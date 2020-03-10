@@ -114,7 +114,7 @@ def calculate_fdc_cli(
         upper limit of 0.95 and a lower limit of 0.05 since 0.9 = 0.95
         - 0.05.
     """
-    tsutils._printiso(
+    tsutils.printiso(
         calculate_fdc(
             input_ts=input_ts,
             columns=columns,

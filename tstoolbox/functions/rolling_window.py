@@ -141,7 +141,7 @@ def rolling_window_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         rolling_window(
             statistic,
             groupby=groupby,

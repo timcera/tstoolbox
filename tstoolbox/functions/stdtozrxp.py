@@ -52,7 +52,7 @@ def stdtozrxp_cli(
     {round_index}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         stdtozrxp(
             input_ts=input_ts,
             columns=columns,

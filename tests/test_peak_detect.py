@@ -7,6 +7,7 @@ from unittest import TestCase
 
 import pytest
 
+import numpy as np
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 from tstoolbox import tstoolbox, tsutils
@@ -69,30 +70,30 @@ input_peak_detection = b"""Datetime,0
 class TestPeakDetect(TestCase):
     def setUp(self):
         dindex = pd.date_range("2000-01-01T00:00:00", periods=24, freq="H")
-        self.ats = pd.np.arange(0, 360, 15)
-        self.ats = pd.np.sin(2 * pd.np.pi * self.ats / 360)
+        self.ats = np.arange(0, 360, 15)
+        self.ats = np.sin(2 * np.pi * self.ats / 360)
         self.ats = pd.DataFrame(self.ats, index=dindex)
         self.ats = tsutils.memory_optimize(self.ats)
 
         self.compare = self.ats.copy()
         self.compare = self.compare.join(
             pd.Series(
-                pd.np.zeros(len(self.ats)).astype("f"),
+                np.zeros(len(self.ats)).astype("f"),
                 index=self.ats.index,
                 name="0::peak",
             )
         )
         self.compare = self.compare.join(
             pd.Series(
-                pd.np.zeros(len(self.ats)).astype("f"),
+                np.zeros(len(self.ats)).astype("f"),
                 index=self.ats.index,
                 name="0::valley",
             )
         )
         self.compare.index.name = "Datetime"
-        self.compare["0::peak"] = pd.np.nan
+        self.compare["0::peak"] = np.nan
         self.compare.loc[self.compare[0] == 1, "0::peak"] = 1
-        self.compare["0::valley"] = pd.np.nan
+        self.compare["0::valley"] = np.nan
         self.compare.loc[self.compare[0] == -1, "0::valley"] = -1
         self.compare = tsutils.memory_optimize(self.compare)
 

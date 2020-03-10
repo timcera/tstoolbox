@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import tempfile
 from unittest import TestCase
 
-import pandas as pd
-from tstoolbox import tstoolbox
 from tstoolbox import tsutils
 
 

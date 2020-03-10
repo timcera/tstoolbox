@@ -1,6 +1,6 @@
-import sys
 from unittest import TestCase
 
+import numpy as np
 import pandas as pd
 import tstoolbox.tsutils as tsutils
 from pandas.util.testing import assert_frame_equal
@@ -12,7 +12,7 @@ from . import capture
 class TestReplace(TestCase):
     def setUp(self):
         dindex = pd.date_range("2011-01-01T00:00:00", periods=26, freq="H")
-        self.ats = pd.np.ones((26))
+        self.ats = np.ones((26))
         self.ats = pd.DataFrame(
             self.ats, index=dindex, columns=["Value_with_missing::replace"]
         )

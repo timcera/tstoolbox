@@ -53,7 +53,7 @@ def tstopickle_cli(
     {round_index}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         tstopickle(
             filename,
             input_ts=input_ts,

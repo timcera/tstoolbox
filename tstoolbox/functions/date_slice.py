@@ -54,7 +54,7 @@ def date_slice_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         date_slice(
             input_ts=input_ts,
             columns=columns,
@@ -68,7 +68,6 @@ def date_slice_cli(
             round_index=round_index,
             source_units=source_units,
             target_units=target_units,
-            float_format=float_format,
         ),
         float_format=float_format,
         tablefmt=tablefmt,
@@ -88,7 +87,6 @@ def date_slice(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="g",
 ):
     """Print out data to the screen between start_date and end_date."""
     return tsutils.common_kwds(

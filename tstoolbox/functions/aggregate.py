@@ -78,7 +78,7 @@ def aggregate_cli(
         DEPRECATED:
         Just prefix the number in front of the 'groupby' pandas offset code.
     """
-    tsutils._printiso(
+    tsutils.printiso(
         aggregate(
             input_ts=input_ts,
             groupby=groupby,

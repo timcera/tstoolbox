@@ -82,7 +82,7 @@ def normalization_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         normalization(
             input_ts=input_ts,
             columns=columns,
@@ -101,8 +101,8 @@ def normalization_cli(
             round_index=round_index,
             source_units=source_units,
             target_units=target_units,
-            float_format=float_format,
         ),
+        float_format=float_format,
         tablefmt=tablefmt,
     )
 
@@ -131,7 +131,6 @@ def normalization(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="g",
 ):
     """Return the normalization of the time series."""
     tsd = tsutils.common_kwds(

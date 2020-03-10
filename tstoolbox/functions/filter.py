@@ -97,7 +97,7 @@ def _transform(vector, cutoff_period, window_len, lopass=None):
         )
 
     factor = np.convolve(factor, [1.0 / window_len] * window_len, mode=1)
-    factor = factor[window_len + 1 : -(window_len + 1)]
+    factor = factor[window_len + 1: -(window_len + 1)]
 
     result = result * factor
 
@@ -166,7 +166,7 @@ def filter_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         filter(
             filter_type,
             input_ts=input_ts,
@@ -181,11 +181,11 @@ def filter_cli(
             print_input=print_input,
             cutoff_period=cutoff_period,
             window_len=window_len,
-            float_format=float_format,
             source_units=source_units,
             target_units=target_units,
             round_index=round_index,
         ),
+        float_format=float_format,
         tablefmt=tablefmt,
     )
 
@@ -224,7 +224,6 @@ def filter(
     print_input=False,
     cutoff_period=None,
     window_len=5,
-    float_format="g",
     source_units=None,
     target_units=None,
     round_index=None,

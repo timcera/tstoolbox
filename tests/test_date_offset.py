@@ -3,7 +3,6 @@
 
 from __future__ import print_function
 
-import os
 from unittest import TestCase
 
 import pandas as pd

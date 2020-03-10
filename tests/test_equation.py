@@ -7,6 +7,7 @@ import shlex
 import subprocess
 from unittest import TestCase
 
+import numpy as np
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 from tstoolbox import tstoolbox, tsutils
@@ -25,7 +26,7 @@ class TestEquation(TestCase):
         self.equation.index.name = "Datetime"
         self.equation = tsutils.memory_optimize(self.equation)
 
-        self.equation_cli = capture.capture(tsutils._printiso, self.equation)
+        self.equation_cli = capture.capture(tsutils.printiso, self.equation)
 
         dindex = pd.date_range("2000-01-01T00:00:00", periods=6, freq="D")
         ts1 = [4.50, 4.60, 4.70, 4.60, 4.50, 4.40]
@@ -49,12 +50,12 @@ class TestEquation(TestCase):
         )
 
         self.equation_result = pd.DataFrame(
-            {"_::equation.0": pd.np.array(ts2) * 10}, index=dindex, dtype="float64"
+            {"_::equation.0": np.array(ts2) * 10}, index=dindex, dtype="float64"
         )
         self.equation_result = tsutils.memory_optimize(self.equation_result)
 
         self.equation_multiple_cols_01_cli = capture.capture(
-            tsutils._printiso, self.equation_multiple_cols_01
+            tsutils.printiso, self.equation_multiple_cols_01
         )
 
         ts3 = [50.1, 95.1, 38.9, 27.7, 11.7, 8.7]
@@ -69,12 +70,12 @@ class TestEquation(TestCase):
         )
 
         self.equation_multiple_cols_02_cli = capture.capture(
-            tsutils._printiso, self.equation_multiple_cols_02
+            tsutils.printiso, self.equation_multiple_cols_02
         )
 
         ts3 = [0, 97.92, 41.66, 30.52, 14.46, 0]
-        ts3[0] = pd.np.nan
-        ts3[-1] = pd.np.nan
+        ts3[0] = np.nan
+        ts3[-1] = np.nan
         self.equation_multiple_cols_03 = pd.DataFrame(
             {"Value": ts1, "Value1": ts2, "_::equation.0": ts3},
             index=dindex,
@@ -86,14 +87,14 @@ class TestEquation(TestCase):
         )
 
         self.equation_multiple_cols_03_cli = capture.capture(
-            tsutils._printiso, self.equation_multiple_cols_03
+            tsutils.printiso, self.equation_multiple_cols_03, float_format=".2f"
         )
 
         dindex = pd.date_range("2011-01-01T00:00:00", periods=48, freq="H")
         ts1 = [2] * 48
         ts2 = [5.2] * 48
-        ts2[0] = pd.np.nan
-        ts2[-1] = pd.np.nan
+        ts2[0] = np.nan
+        ts2[-1] = np.nan
         self.equation_multiple_cols_04 = pd.DataFrame(
             {"Value": ts1, "Value::equation.0": ts2}, index=dindex
         )
@@ -103,7 +104,7 @@ class TestEquation(TestCase):
         )
 
         self.equation_multiple_cols_04_cli = capture.capture(
-            tsutils._printiso, self.equation_multiple_cols_04
+            tsutils.printiso, self.equation_multiple_cols_04
         )
 
     def test_equation(self):
@@ -224,7 +225,7 @@ class TestEquation(TestCase):
             '"x1[t] + 0.6*maximum(x1[t-1], x1[t+1]) + x2" '
             '--input_ts="tests/data_multiple_cols.csv" '
             "--print_input=True "
-            '--float_format="%.2f"'
+            '--float_format=".2f"'
         )
         args = shlex.split(args)
         out = subprocess.Popen(

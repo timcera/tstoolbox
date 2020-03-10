@@ -74,7 +74,7 @@ def stack_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         stack(
             input_ts=input_ts,
             columns=columns,

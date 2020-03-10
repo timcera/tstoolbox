@@ -63,7 +63,7 @@ def accumulate_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         accumulate(
             input_ts=input_ts,
             skiprows=skiprows,

@@ -72,7 +72,7 @@ def read_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         read(
             filenames,
             force_freq=force_freq,

@@ -62,7 +62,7 @@ def date_offset_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         date_offset(
             intervals,
             offset,

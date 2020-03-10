@@ -16,7 +16,7 @@ from .. import tsutils
 
 warnings.filterwarnings("ignore")
 
-marker_list = [
+MARKER_LIST = [
     ".",
     ",",
     "o",
@@ -41,9 +41,9 @@ marker_list = [
     "_",
 ]
 
-color_list = ["b", "g", "r", "c", "m", "y", "k"]
+COLOR_LIST = ["b", "g", "r", "c", "m", "y", "k"]
 
-line_list = ["-", "--", "-.", ":"]
+LINE_LIST = ["-", "--", "-.", ":"]
 
 
 def _know_your_limits(xylimits, axis="arithmetic"):
@@ -877,17 +877,17 @@ If 'xy' type you need to have legend names as x,y1,y2,y3,...
         lnames = tsd.columns
 
     if colors == "auto":
-        colors = color_list
+        colors = COLOR_LIST
     else:
         colors = tsutils.make_list(colors)
 
     if linestyles == "auto":
-        linestyles = line_list
+        linestyles = LINE_LIST
     else:
         linestyles = tsutils.make_list(linestyles)
 
     if markerstyles == "auto":
-        markerstyles = marker_list
+        markerstyles = MARKER_LIST
     else:
         markerstyles = tsutils.make_list(markerstyles)
         if markerstyles is None:
@@ -917,7 +917,7 @@ but you have {2} time-series.
                 markerstyles.append(" ")
                 linestyles.append("-")
                 continue
-            if st[1] in marker_list:
+            if st[1] in MARKER_LIST:
                 markerstyles.append(st[1])
                 try:
                     linestyles.append(st[2:])
@@ -1113,7 +1113,7 @@ but you have {2} time-series.
         # Boy I do not like matplotlib.
 
         for colindex in range(colcnt):
-            ndf = tsd.iloc[:, colindex * 2 : colindex * 2 + 2]
+            ndf = tsd.iloc[:, colindex * 2: colindex * 2 + 2]
             if type == "double_mass":
                 ndf = ndf.dropna().cumsum()
             oxdata = np.array(ndf.iloc[:, 0])
@@ -1356,12 +1356,7 @@ The "heatmap" plot type can only work with daily time series.
         ]
         plt.xticks(mnths, mnths_labels)
         grid = False
-    elif (
-        type == "bar"
-        or type == "bar_stacked"
-        or type == "barh"
-        or type == "barh_stacked"
-    ):
+    elif type in ("bar", "bar_stacked", "barh", "barh_stacked"):
         stacked = False
         if type[-7:] == "stacked":
             stacked = True

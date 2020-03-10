@@ -66,7 +66,7 @@ def clip_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         clip(
             input_ts=input_ts,
             start_date=start_date,

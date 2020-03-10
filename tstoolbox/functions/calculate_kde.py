@@ -62,7 +62,7 @@ def calculate_kde_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         calculate_kde(
             ascending=ascending,
             evaluate=evaluate,

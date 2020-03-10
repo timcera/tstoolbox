@@ -48,7 +48,7 @@ def describe_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         describe(
             input_ts=input_ts,
             columns=columns,

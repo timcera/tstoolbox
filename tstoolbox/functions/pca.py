@@ -51,7 +51,7 @@ def pca_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         pca(
             input_ts=input_ts,
             columns=columns,

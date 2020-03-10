@@ -158,7 +158,7 @@ def convert_index_cli(
         target_units=target_units,
         skiprows=skiprows,
     )
-    tsutils._printiso(tsd, tablefmt=tablefmt)
+    tsutils.printiso(tsd, tablefmt=tablefmt)
 
 
 @tsutils.validator(

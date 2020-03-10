@@ -59,7 +59,7 @@ def converttz_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         converttz(
             fromtz,
             totz,

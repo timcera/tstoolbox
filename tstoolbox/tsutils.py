@@ -22,16 +22,17 @@ from scipy.stats.distributions import lognorm
 from tabulate import simple_separated_format
 from tabulate import tabulate as tb
 
-ureg = UnitRegistry()
+UREG = UnitRegistry()
 
 
-wrapper = TextWrapper(initial_indent="*   ", subsequent_indent="*   ")
+WRAPPER = TextWrapper(initial_indent="*   ", subsequent_indent="*   ")
 
 
 def error_wrapper(estr):
+    """ Wrap estr into error format used by toolboxes. """
     nestr = ["", "*"]
     for paragraph in estr.split("\n\n"):
-        nestr.append("\n".join(wrapper.wrap(paragraph.strip())))
+        nestr.append("\n".join(WRAPPER.wrap(paragraph.strip())))
         nestr.append("*")
     nestr.append("")
     return "\n".join(nestr)
@@ -369,7 +370,7 @@ def stride_and_unit(sunit):
         return sunit
     unit = sunit.lstrip("+-. 1234567890")
     stride = sunit[: sunit.index(unit)]
-    if len(stride):
+    if len(stride) > 0:
         stride = int(stride)
     else:
         stride = 1
@@ -402,7 +403,7 @@ def _plotting_position_equation(i, n, a):
     return (i - a) / float(n + 1 - 2 * a)
 
 
-ppdict = {
+PPDICT = {
     "weibull": 0,
     "benard": 0.3,
     "filliben": 0.3175,
@@ -422,7 +423,7 @@ def set_plotting_position(n, plotting_position="weibull"):
     if plotting_position == "california":
         return np.linspace(1.0 / n, 1.0, n)
     try:
-        a = ppdict[plotting_position]
+        a = PPDICT[plotting_position]
     except KeyError:
         a = float(plotting_position)
     return _plotting_position_equation(np.arange(1, n + 1), n, a)
@@ -557,20 +558,18 @@ def make_list(*strorlist, **kwds):
         if len(strorlist) > 1:
             if len(strorlist) == n:
                 return strorlist
-            else:
-                raise ValueError(
-                    error_wrapper(
-                        """
+            raise ValueError(
+                error_wrapper(
+                    """
 The list {0} for "{2}" should have {1} members according to function requirements.
 """.format(
-                            strorlist, n, kwdname
-                        )
+                        strorlist, n, kwdname
                     )
                 )
-        elif len(strorlist) == 1:
-            """ Normalize lists and tuples of length 1 to scalar for
-            further processing."""
-            strorlist = strorlist[0]
+            )
+        # Normalize lists and tuples of length 1 to scalar for
+        # further processing.
+        strorlist = strorlist[0]
 
     try:
         strorlist = strorlist.strip()
@@ -578,28 +577,28 @@ The list {0} for "{2}" should have {1} members according to function requirement
         pass
 
     if strorlist is None or isinstance(strorlist, (type(None))):
-        """ None -> None
-        """
+        ### None -> None
+        ###
         return None
 
     if isinstance(strorlist, (int, float)):
-        """ 1      -> [1]
-            1.2    -> [1.2]
-        """
+        ### 1      -> [1]
+        ### 1.2    -> [1.2]
+        ###
         return [strorlist]
 
     if isinstance(strorlist, (str, bytes)) and (strorlist in ["None", ""]):
-        """ 'None' -> None
-            ''     -> None
-        """
+        ### 'None' -> None
+        ### ''     -> None
+        ###
         return None
 
     if isinstance(strorlist, (str, bytes)):
-        """ '1'   -> [1]
-            '5.7' -> [5.7]
+        ### '1'   -> [1]
+        ### '5.7' -> [5.7]
 
-            Anything other than a scalar int or float continues.
-        """
+        ### Anything other than a scalar int or float continues.
+        ###
         try:
             return [int(strorlist)]
         except ValueError:
@@ -628,15 +627,15 @@ The list {0} for "{2}" should have {1} members according to function requirement
             )
         )
 
-    # [1, 2, 3]          -> [1, 2, 3]
-    # ['1', '2']         -> [1, 2]
+    ### [1, 2, 3]          -> [1, 2, 3]
+    ### ['1', '2']         -> [1, 2]
 
-    # [1, 'er', 5.6]     -> [1, 'er', 5.6]
-    # [1,'er',5.6]       -> [1, 'er', 5.6]
-    # ['1','er','5.6']   -> [1, 'er', 5.6]
+    ### [1, 'er', 5.6]     -> [1, 'er', 5.6]
+    ### [1,'er',5.6]       -> [1, 'er', 5.6]
+    ### ['1','er','5.6']   -> [1, 'er', 5.6]
 
-    # ['1','','5.6']     -> [1, None, 5.6]
-    # ['1','None','5.6'] -> [1, None, 5.6]
+    ### ['1','','5.6']     -> [1, None, 5.6]
+    ### ['1','None','5.6'] -> [1, None, 5.6]
 
     ret = []
     for each in strorlist:
@@ -954,9 +953,9 @@ to the `target_units`: {target_units}
             words = colname.split(":")
             if len(words) > 1:
                 # convert words[1] to target_units[inx]
-                Q_ = ureg.Quantity
+                Q_ = UREG.Quantity
                 try:
-                    ntsd[colname] = Q_(ntsd[colname].to_numpy(), ureg(words[1])).to(
+                    ntsd[colname] = Q_(ntsd[colname].to_numpy(), UREG(words[1])).to(
                         target_units[inx]
                     )
                     words[1] = target_units[inx]
@@ -1438,6 +1437,8 @@ def _printiso(
     else:
         print(all_table)
 
+# Make _printiso public.  Keep both around until convert all toolboxes.
+printiso = _printiso
 
 def open_local(filein):
     """

@@ -97,7 +97,7 @@ def dtw_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         dtw(
             input_ts=input_ts,
             columns=columns,
@@ -142,7 +142,7 @@ def dtw(
         end_date=end_date,
         pick=columns,
         round_index=round_index,
-        dropna="no",
+        dropna=dropna,
         source_units=source_units,
         target_units=target_units,
         clean=clean,

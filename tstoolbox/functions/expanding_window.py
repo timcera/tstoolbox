@@ -90,7 +90,7 @@ def expanding_window_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         expanding_window(
             input_ts=input_ts,
             columns=columns,
@@ -134,7 +134,7 @@ def expanding_window_cli(
         ],
         None,
     ],
-    min_periods=[int, ["range", [0,]], 1],
+    min_periods=[int, ["range", [0, ]], 1],
     center=[bool, ["domain", [True, False]], 1],
 )
 def expanding_window(

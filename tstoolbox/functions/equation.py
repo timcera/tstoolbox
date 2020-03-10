@@ -3,6 +3,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import re
 import warnings
 
 import mando
@@ -19,8 +20,6 @@ warnings.filterwarnings("ignore")
 
 def _parse_equation(equation_str):
     """Private function to parse the equation used in the calculations."""
-    import re
-
     # Get rid of spaces
     nequation = equation_str.replace(" ", "")
 
@@ -172,7 +171,7 @@ def equation_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         equation(
             equation_str,
             input_ts=input_ts,
@@ -188,8 +187,8 @@ def equation_cli(
             round_index=round_index,
             source_units=source_units,
             target_units=target_units,
-            float_format=float_format,
         ),
+        float_format=float_format,
         tablefmt=tablefmt,
     )
 
@@ -210,7 +209,6 @@ def equation(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="g",
 ):
     """Apply <equation_str> to the time series data."""
     x = tsutils.common_kwds(

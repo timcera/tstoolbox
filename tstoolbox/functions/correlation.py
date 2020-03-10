@@ -58,7 +58,7 @@ def correlation_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         correlation(
             lags,
             input_ts=input_ts,

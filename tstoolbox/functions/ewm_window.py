@@ -146,7 +146,7 @@ def ewm_window_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         ewm_window(
             input_ts=input_ts,
             columns=columns,
@@ -175,9 +175,9 @@ def ewm_window_cli(
 
 @tsutils.validator(
     statistic=[str, ["domain", ["corr", "cov", "mean", "std", "var"]], None],
-    alpha_com=[float, ["range", [0,]], 1],
-    alpha_span=[float, ["range", [1,]], 1],
-    alpha_halflife=[float, ["range", [0,]], 1],
+    alpha_com=[float, ["range", [0, ]], 1],
+    alpha_span=[float, ["range", [1, ]], 1],
+    alpha_halflife=[float, ["range", [0, ]], 1],
     alpha=[float, ["range", [0, 1]], 1],
     min_periods=[int, ["range", [0, None]], 1],
     adjust=[bool, ["domain", [True, False]], 1],

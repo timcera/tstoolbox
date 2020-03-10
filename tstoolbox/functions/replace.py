@@ -62,7 +62,7 @@ def replace_cli(
     {tablefmt}
 
     """
-    tsutils._printiso(
+    tsutils.printiso(
         replace(
             from_values,
             to_values,
