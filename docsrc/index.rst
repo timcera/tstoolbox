@@ -8,7 +8,7 @@ tstoolbox
 This is the home page for tstoolbox.  tstoolbox is a command line program and
 Python library to work with time-series.
 
-tstoolbox should work with Python 3.5+.
+tstoolbox should work with Python 3.6+.
 
 Table of Contents
 -----------------

@@ -543,6 +543,8 @@ def make_list(*strorlist, **kwds):
         n = kwds.pop("n")
     except KeyError:
         n = None
+    if n is not None:
+        n = int(n)
 
     try:
         sep = kwds.pop("sep")
@@ -555,21 +557,25 @@ def make_list(*strorlist, **kwds):
         kwdname = ""
 
     if isinstance(strorlist, (list, tuple)):
-        if len(strorlist) > 1:
-            if len(strorlist) == n:
-                return strorlist
-            raise ValueError(
-                error_wrapper(
-                    """
+        # The following will fix ((tuples, in, a, tuple, problem),)
+        strorlist = list(pd.core.common.flatten(strorlist))
+        if len(strorlist) == 1:
+            # Normalize lists and tuples of length 1 to scalar for
+            # further processing.
+            strorlist = strorlist[0]
+
+    if isinstance(strorlist, (list, tuple)):
+        if n is not None:
+            if len(strorlist) != n:
+                raise ValueError(
+                    error_wrapper(
+                        """
 The list {0} for "{2}" should have {1} members according to function requirements.
 """.format(
-                        strorlist, n, kwdname
+                            strorlist, n, kwdname
+                        )
                     )
                 )
-            )
-        # Normalize lists and tuples of length 1 to scalar for
-        # further processing.
-        strorlist = strorlist[0]
 
     try:
         strorlist = strorlist.strip()
@@ -1051,7 +1057,7 @@ def common_kwds(
 
 def _pick(tsd, columns):
     columns = make_list(columns)
-    if not columns:
+    if columns is None:
         return tsd
     ncolumns = []
 
@@ -1295,7 +1301,24 @@ record {1} (start count at 0):
     return data
 
 
-def renamer(xloc, suffix):
+def dedupIndex(idx, fmt=None, ignoreFirst=True):
+    # fmt:          A string format that receives two arguments:
+    #               name and a counter. By default: fmt='%s.%03d'
+    # ignoreFirst:  Disable/enable postfixing of first element.
+    idx = pd.Series(idx)
+    duplicates = idx[idx.duplicated()].unique()
+    fmt = "%s.%03d" if fmt is None else fmt
+    for name in duplicates:
+        dups = idx == name
+        ret = [
+            fmt % (name, i) if (i != 0 or not ignoreFirst) else name
+            for i in range(dups.sum())
+        ]
+        idx.loc[dups] = ret
+    return pd.Index(idx)
+
+
+def renamer(xloc, suffix=""):
     """Print the suffix into the third ":" separated field of the header."""
     if suffix is None:
         suffix = ""
@@ -1309,10 +1332,11 @@ def renamer(xloc, suffix):
     elif len(words) == 2:
         words.append(suffix)
     elif len(words) == 3:
-        if words[2] != "" and suffix != "":
-            words[2] = words[2] + "_" + suffix
-        elif words[2] == "" and suffix != "":
-            words[2] = suffix
+        if suffix:
+            if words[2]:
+                words[2] = words[2] + "_" + suffix
+            else:
+                words[2] = suffix
     return ":".join(words)
 
 
@@ -1608,9 +1632,13 @@ or an URL.  If you want to pull from stdin use "-" or redirection/piping.
                 engine="python",
                 skiprows=skiprows,
             )
-            result.columns = [
-                fstr.format(fname, str(i).strip()) for i in result.columns
-            ]
+            first = [i.split(":")[0] for i in result.columns]
+            first = [fstr.format(fname, i) for i in first]
+            first = [[i.strip()] for i in dedupIndex(first)]
+
+            rest = [i.rstrip(".0123456789 ").split(":")[1:] for i in result.columns]
+
+            result.columns = [":".join(i + j) for i, j in zip(first, rest)]
 
             tmpc = result.columns.values
             for index, i in enumerate(result.columns):

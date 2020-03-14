@@ -18,7 +18,6 @@ warnings.filterwarnings("ignore")
 @mando.command("read", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def read_cli(
-    filenames,
     force_freq=None,
     append="columns",
     columns=None,
@@ -34,6 +33,7 @@ def read_cli(
     float_format="g",
     round_index=None,
     tablefmt="csv",
+    *filenames,
 ):
     """
     Collect time series from a list of pickle or csv files.
@@ -43,8 +43,9 @@ def read_cli(
     Parameters
     ----------
     filenames : str
-        List of comma delimited filenames to read time series
-        from.
+        From the command line a list of comma or space delimited filenames to
+        read time series from.  Using the Python API a list or tuple of
+        filenames.
     append : str
         [optional, default is 'columns']
 
@@ -74,7 +75,7 @@ def read_cli(
     """
     tsutils.printiso(
         read(
-            filenames,
+            *filenames,
             force_freq=force_freq,
             append=append,
             columns=columns,
@@ -100,7 +101,7 @@ def read_cli(
     force_freq=[str, ["pass", []], 1],
 )
 def read(
-    filenames,
+    *filenames,
     force_freq=None,
     append="columns",
     columns=None,
