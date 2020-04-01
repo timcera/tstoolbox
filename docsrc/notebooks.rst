@@ -6,6 +6,7 @@ Notebooks
 .. toctree::
     :maxdepth: 1
 
-    ../notebooks/tstoolbox-statistics
-    ../notebooks/tstoolbox_filling
+    ../notebooks/tstoolbox_statistics_python
+    ../notebooks/tstoolbox_filling_python
+    ../notebooks/tstoolbox_plot_bash
 
