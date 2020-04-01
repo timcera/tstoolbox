@@ -1442,11 +1442,9 @@ def _printiso(
             except IOError:
                 return
         else:
-            fmt = simple_separated_format(sep)
-    else:
-        fmt = tablefmt
+            tablefmt = simple_separated_format(sep)
 
-    if fmt is None:
+    if tablefmt is None:
         print(str(list(tsd))[1:-1])
 
     all_table = tb(
@@ -1482,25 +1480,13 @@ def open_local(filein):
 
 
 def memory_optimize(tsd):
-    """Convert all columns to known types."""
-    tsd = tsd.apply(
-        lambda col: pd.to_datetime(col, errors="ignore")
-        if col.dtypes == object
-        else col,
-        axis=0,
-    )
-    tsd = tsd.apply(
-        lambda col: pd.to_numeric(col, errors="ignore", downcast="float")
-        if col.dtypes == float
-        else col,
-        axis=0,
-    )
-    tsd = tsd.apply(
-        lambda col: pd.to_numeric(col, errors="ignore", downcast="integer")
-        if col.dtypes == int
-        else col,
-        axis=0,
-    )
+    """Convert all columns to known types.
+
+    "infer_objects" replaced some code here such that the "memory_optimize"
+    function might go away.  Kept in case want to add additional
+    optimizations.
+    """
+    tsd = tsd.infer_objects()
     return tsd
 
 
