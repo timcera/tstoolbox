@@ -3,7 +3,7 @@
 
 from unittest import TestCase
 
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 from tstoolbox import tstoolbox, tsutils
 
 
@@ -39,7 +39,9 @@ class TestDescribe(TestCase):
     def test_normalize(self):
         """Test the normalization API function using the zscore method."""
         out = tstoolbox.normalization(mode="zscore", input_ts="tests/data_sunspot.csv")
-        assert_frame_equal(out, self.data_zscore)
+        assert_frame_equal(
+            out, self.data_zscore, check_less_precise=4, check_column_type=False
+        )
 
     def test_pct_rank(self):
         """Test the normalization API function using the pct_rank method."""

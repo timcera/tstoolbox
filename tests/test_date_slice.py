@@ -6,7 +6,7 @@ import subprocess
 from unittest import TestCase
 
 import pandas as pd
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 from tstoolbox import tstoolbox, tsutils
 
 from . import capture

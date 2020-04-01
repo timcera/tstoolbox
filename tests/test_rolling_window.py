@@ -6,8 +6,9 @@ import subprocess
 from unittest import TestCase
 
 import pandas
+import numpy as np
 import tstoolbox.tsutils as tsutils
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 from tstoolbox import tstoolbox
 
 from . import capture
@@ -16,14 +17,14 @@ from . import capture
 class TestRollingWindow(TestCase):
     def setUp(self):
         dr = pandas.date_range("2000-01-01", periods=2, freq="D")
-        ts = pandas.Series([pandas.np.nan, 9.1], index=dr)
+        ts = pandas.Series([np.nan, 9.1], index=dr)
         self.compare_rolling_window_sum = pandas.DataFrame(
             ts, columns=["Value::rolling.2.sum"]
         )
         self.compare_rolling_window_sum.index.name = "Datetime"
 
         dr = pandas.date_range("2000-01-01", periods=2, freq="D")
-        ts = pandas.Series([pandas.np.nan, 4.55], index=dr)
+        ts = pandas.Series([np.nan, 4.55], index=dr)
         self.compare_rolling_window_mean = pandas.DataFrame(
             ts, columns=["Value::rolling.2.mean"]
         )

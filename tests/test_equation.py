@@ -9,7 +9,7 @@ from unittest import TestCase
 
 import numpy as np
 import pandas as pd
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 from tstoolbox import tstoolbox, tsutils
 
 from . import capture
@@ -97,7 +97,7 @@ class TestEquation(TestCase):
         ts2[-1] = np.nan
         self.equation_multiple_cols_04 = pd.DataFrame(
             {"Value": ts1, "Value::equation.0": ts2}, index=dindex
-        )
+        ).infer_objects()
         self.equation_multiple_cols_04.index.name = "Datetime"
         self.equation_multiple_cols_04 = tsutils.memory_optimize(
             self.equation_multiple_cols_04

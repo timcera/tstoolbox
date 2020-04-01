@@ -9,7 +9,7 @@ import pytest
 
 import numpy as np
 import pandas as pd
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 from tstoolbox import tstoolbox, tsutils
 
 output_peak_detection = b"""Datetime,0,0::peak,0::valley
