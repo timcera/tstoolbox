@@ -43,18 +43,22 @@ def _parse_equation(equation_str):
     # for example 'x[t]+0.6*max(x[t+1],x[t-1]' would have
     # testeval = ['t', 't+1', 't-1']
     testeval = set()
+
     # If there is both function of t and column terms x1, x2, ...etc.
     if tsearch and nsearch:
         testeval.update(re.findall(r"x[1-9][0-9]*\[(.*?t.*?)\]", nequation))
+
         # replace 'x1[t+1]' with 'x.iloc[t+1,1-1]'
         # replace 'x2[t+7]' with 'x.iloc[t+7,2-1]'
         # ...etc
         nequation = re.sub(
             r"x([1-9][0-9]*)\[(.*?t.*?)\]", r"x.iloc[\2,\1-1]", nequation
         )
+
         # replace 'x1' with 'x.iloc[t,1-1]'
         # replace 'x4' with 'x.iloc[t,4-1]'
         nequation = re.sub(r"x([1-9][0-9]*)", r"x.iloc[t,\1-1]", nequation)
+
     # If there is only a function of t, i.e. x[t]
     elif tsearch:
         testeval.update(re.findall(r"x\[(.*?t.*?)\]", nequation))
@@ -226,7 +230,14 @@ def equation(
     )
 
     def returnval(t, x, testeval, nequation):
+        """Return the 'eval'uated equation.
+
+        Need "x" and "t" as those variables since will be used in "equation"
+        even if they do not directly appear in the "returnval" function.
+        """
         for tst in testeval:
+            # If any of the equations in "testeval" are < 0 or > len(x) must be
+            # np.nan.
             tvalue = eval(tst)
             if tvalue < 0 or tvalue >= len(x):
                 return np.nan
@@ -236,7 +247,11 @@ def equation(
     for cnt, eqn in enumerate(tsutils.make_list(equation_str, sep="@")):
         tsearch, nsearch, testeval, nequation = _parse_equation(eqn)
         if tsearch and nsearch:
-            y = pd.DataFrame(pd.Series(index=x.index), columns=["_"], dtype="float64")
+            y = pd.DataFrame(
+                pd.Series(index=x.index, dtype="float64"),
+                columns=["_"],
+                dtype="float64",
+            )
             for t in range(len(x)):
                 y.iloc[t, 0] = returnval(t, x, testeval, nequation)
         elif tsearch:
@@ -244,7 +259,11 @@ def equation(
             for t in range(len(x)):
                 y.iloc[t, :] = returnval(t, x, testeval, nequation)
         elif nsearch:
-            y = pd.DataFrame(pd.Series(index=x.index), columns=["_"], dtype="float64")
+            y = pd.DataFrame(
+                pd.Series(index=x.index, dtype="float64"),
+                columns=["_"],
+                dtype="float64",
+            )
             try:
                 y.iloc[:, 0] = eval(nequation)
             except IndexError:

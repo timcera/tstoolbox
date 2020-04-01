@@ -108,7 +108,7 @@ def ewm_window_cli(
         Specify decay in terms of half-life::
 
             alpha = 1-exp(log(0.5)/`alpha_halflife`), for
-            `alpha_halflife`>0
+            `alpha_halflife` > 0
 
     alpha : float
         [optional, defaults to None]
