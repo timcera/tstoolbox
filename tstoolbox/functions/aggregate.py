@@ -144,7 +144,7 @@ def aggregate(
 ):
     """Take a time series and aggregate to specified frequency."""
 
-    aggd = {"hourly": "H", "daily": "D", "monthly": "M", "yearly": "A"}
+    aggd = {"hourly": "H", "daily": "D", "monthly": "M", "yearly": "A", "all": "all"}
 
     if agg_interval is not None:
         if groupby is not None:
@@ -222,9 +222,20 @@ consistent with other tstoolbox commands.
     methods = tsutils.make_list(statistic)
     newts = pd.DataFrame()
     for method in methods:
-        tmptsd = eval(
-            """tsd.resample('{0}{1}').{2}()""".format(ninterval, groupby, method)
-        )
+        if groupby == "all":
+            try:
+                tmptsd = pd.DataFrame(eval(
+                    """tsd.aggregate({0})""".format(method)
+                )).T
+            except NameError:
+                tmptsd = pd.DataFrame(eval(
+                    """tsd.aggregate('{0}')""".format(method)
+                )).T
+            tmptsd.index = [tsd.index[-1]]
+        else:
+            tmptsd = eval(
+                """tsd.resample('{0}{1}').{2}()""".format(ninterval, groupby, method)
+            )
         tmptsd.columns = [tsutils.renamer(i, method) for i in tmptsd.columns]
         newts = newts.join(tmptsd, how="outer")
     return tsutils.return_input(print_input, tsd, newts)
