@@ -55,6 +55,9 @@ def aggregate_cli(
             --statistic=mean,max,first
     {groupby}
 
+        The `groupby` keyword has a special option 'all' which will aggregate
+        all records.
+
         {pandas_offset_codes}
 
     {input_ts}
@@ -224,13 +227,9 @@ consistent with other tstoolbox commands.
     for method in methods:
         if groupby == "all":
             try:
-                tmptsd = pd.DataFrame(eval(
-                    """tsd.aggregate({0})""".format(method)
-                )).T
+                tmptsd = pd.DataFrame(eval("""tsd.aggregate({0})""".format(method))).T
             except NameError:
-                tmptsd = pd.DataFrame(eval(
-                    """tsd.aggregate('{0}')""".format(method)
-                )).T
+                tmptsd = pd.DataFrame(eval("""tsd.aggregate('{0}')""".format(method))).T
             tmptsd.index = [tsd.index[-1]]
         else:
             tmptsd = eval(
