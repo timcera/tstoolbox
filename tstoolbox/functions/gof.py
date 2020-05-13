@@ -72,7 +72,9 @@ def gof_cli(
         +-----------------+--------------------------------------------------+
         |                 | sum[(s - mean(s))(o - mean(o))]**2/N             |
         +-----------------+--------------------------------------------------+
-        | corrcoef        | Correlation coefficient                          |
+        | corrcoef        | Pearson Correlation coefficient (r)              |
+        +-----------------+--------------------------------------------------+
+        | coefdet         | Coefficient of determination (R^2)               |
         +-----------------+--------------------------------------------------+
         | murphyss        | Murphy Skill Score                               |
         +-----------------+--------------------------------------------------+
@@ -190,6 +192,7 @@ def gof_cli(
                 "rmsd",
                 "crmsd",
                 "corrcoef",
+                "coefdet",
                 "murphyss",
                 "nse",
                 "kge",
@@ -233,6 +236,7 @@ def gof(
             "rmsd",
             "crmsd",
             "corrcoef",
+            "coefdet",
             "murphyss",
             "nse",
             "kge09",
@@ -301,7 +305,10 @@ The gof algorithms work with two time-series only.  You gave {0}.
         statval.append(["Centered RMSD (CRMSD)", sm.centered_rms_dev(pred, ref)])
 
     if "corrcoef" in stats:
-        statval.append(["Correlation coefficient (r)", np.corrcoef(pred, ref)[0, 1]])
+        statval.append(["Pearson coefficient of correlation (r)", np.corrcoef(pred, ref)[0, 1]])
+
+    if "coefdet" in stats:
+        statval.append(["Coefficient of determination (R^2)", np.corrcoef(pred, ref)[0, 1]**2])
 
     if "murphyss" in stats:
         statval.append(["Skill score (Murphy)", sm.skill_score_murphy(pred, ref)])
