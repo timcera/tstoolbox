@@ -132,7 +132,7 @@ def lag(
         dfn = pd.DataFrame(data=None, columns=columns, index=ntsd.index)
         for c, i in zip(columns, lags):
             dfn[c] = ntsd[k].shift(periods=i)
-        ntsd = pd.concat([ntsd, dfn], axis=1, join_axes=[ntsd.index])
+        ntsd = pd.concat([ntsd, dfn], axis=1).reindex(ntsd.index)
     return tsutils.return_input(print_input, tsd, ntsd, "lag")
 
 
