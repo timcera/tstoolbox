@@ -51,6 +51,7 @@ def fill_cli(
     limit=None,
     order=None,
     tablefmt="csv",
+    force_freq=None,
 ):
     """Fill missing values (NaN) with different methods.
 
@@ -151,6 +152,10 @@ def fill_cli(
 
         The order of the 'spline' or 'polynomial' fit for missing values.
     {tablefmt}
+    {force_freq}
+
+        {pandas_offset_codes}
+
 
     """
     tsutils.printiso(
@@ -171,6 +176,7 @@ def fill_cli(
             to_columns=to_columns,
             limit=limit,
             order=order,
+            force_freq=force_freq,
         ),
         tablefmt=tablefmt,
     )
@@ -217,6 +223,7 @@ def fill_cli(
     to_columns=[str, ["pass", []], 1],
     limit=[int, ["range", [0,]], 1],
     order=[int, ["range", [0,]], 1],
+    force_freq=[str, ["pass", []], 1],
 )
 def fill(
     input_ts="-",
@@ -235,6 +242,7 @@ def fill(
     to_columns=None,
     limit=None,
     order=None,
+    force_freq=None,
 ):
     """Fill missing values (NaN) with different methods."""
     tsd = tsutils.common_kwds(
@@ -250,6 +258,7 @@ def fill(
         pick=columns,
         source_units=source_units,
         target_units=target_units,
+        force_freq=force_freq,
         clean=clean,
     )
     if print_input is True:
