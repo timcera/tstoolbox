@@ -39,7 +39,7 @@ def error_wrapper(estr):
 
 
 docstrings = {
-    "target_units": r"""target_units
+    "target_units": r"""target_units: str
         [optional, default is None, transformation]
 
         The purpose of this option is to specify target units for unit
@@ -54,7 +54,7 @@ docstrings = {
 
         This option will also add the 'target_units' string to the
         column names.""",
-    "source_units": r"""source_units
+    "source_units": r"""source_units: str
         [optional, default is None, transformation]
 
         If unit is specified for the column as the second field of a ':'
@@ -63,7 +63,7 @@ docstrings = {
 
         Any unit string compatible with the 'pint' library can be
         used.""",
-    "names": r"""names
+    "names": r"""names: str
         [optional, default is None, transformation]
 
         If None, the column names are taken from the first row after
@@ -442,12 +442,21 @@ def doc(fdict, **kwargs):
 
     def f(fn):
         fn.__doc__ = fn.__doc__.format(**fdict)
+        # kwargs is currently always empty.
+        # Could remove, but keeping in case useful in future.
         for attr in kwargs:
             setattr(fn, attr, kwargs[attr])
         return fn
 
     return f
 
+def convert_keyword_to_postional(keyword_name, *args, **kwargs):
+    """ When complete will convert keyword_name from **kwargs to end of *args. """
+
+    def f(fn):
+        return fn
+
+    return f
 
 def parsedate(dstr, strftime=None, settings=None):
     """Use dateparser to parse a wide variety of dates.
