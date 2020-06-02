@@ -38,7 +38,7 @@ install_requires = [
     "pint",
     "matplotlib",
     "xlsxwriter",
-    "sklearn",
+    "scikit-learn",
     "setuptools",
 ]
 
