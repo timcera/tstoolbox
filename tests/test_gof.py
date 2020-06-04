@@ -13,7 +13,7 @@ class Testgof(TestCase):
             ["Bias", 0.0],
             ["Root-mean-square Deviation (RMSD)", 0.0],
             ["Centered RMSD (CRMSD)", 0.0],
-            ["Correlation coefficient (r)", 1.0],
+            ["Pearson coefficient of correlation (r)", 1.0],
             ["Skill score (Murphy)", 1.0],
             ["Nash-Sutcliffe Efficiency", 1.0],
             ["Brier's Score", 0.0],

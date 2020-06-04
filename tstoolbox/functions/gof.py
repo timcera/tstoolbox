@@ -305,10 +305,14 @@ The gof algorithms work with two time-series only.  You gave {0}.
         statval.append(["Centered RMSD (CRMSD)", sm.centered_rms_dev(pred, ref)])
 
     if "corrcoef" in stats:
-        statval.append(["Pearson coefficient of correlation (r)", np.corrcoef(pred, ref)[0, 1]])
+        statval.append(
+            ["Pearson coefficient of correlation (r)", np.corrcoef(pred, ref)[0, 1]]
+        )
 
     if "coefdet" in stats:
-        statval.append(["Coefficient of determination (R^2)", np.corrcoef(pred, ref)[0, 1]**2])
+        statval.append(
+            ["Coefficient of determination (R^2)", np.corrcoef(pred, ref)[0, 1] ** 2]
+        )
 
     if "murphyss" in stats:
         statval.append(["Skill score (Murphy)", sm.skill_score_murphy(pred, ref)])
