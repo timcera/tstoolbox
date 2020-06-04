@@ -104,8 +104,25 @@ def rolling_window_cli(
     win_type : str
         [optional, default is None]
 
-        Provide a window type. If None, all points are evenly weighted. See the
-        notes below for further information.
+        Provide a window type.
+
+        One of::
+
+            boxcar
+            triang
+            blackman
+            hamming
+            bartlett
+            parzen
+            bohman
+            blackmanharris
+            nuttall
+            barthann
+            kaiser (needs beta)
+            gaussian (needs std)
+            general_gaussian (needs power, width)
+            slepian (needs width)
+            exponential (needs tau), center is set to None.
 
     on : str
         [optional, default is None]
