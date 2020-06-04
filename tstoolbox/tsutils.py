@@ -450,6 +450,7 @@ def doc(fdict, **kwargs):
 
     return f
 
+
 def convert_keyword_to_postional(keyword_name, *args, **kwargs):
     """ When complete will convert keyword_name from **kwargs to end of *args. """
 
@@ -457,6 +458,7 @@ def convert_keyword_to_postional(keyword_name, *args, **kwargs):
         return fn
 
     return f
+
 
 def parsedate(dstr, strftime=None, settings=None):
     """Use dateparser to parse a wide variety of dates.
