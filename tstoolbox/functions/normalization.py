@@ -33,10 +33,13 @@ def normalization_cli(
     target_units=None,
     float_format="g",
     tablefmt="csv",
+    with_centering=True,
+    with_scaling=True,
+    quantile_range=(0.25, 0.75),
 ):
     """Return the normalization of the time series.
 
-    This scales the time-series, usually between 0 and 1.
+    This scales the time-series.
 
     Parameters
     ----------
@@ -48,16 +51,25 @@ def normalization_cli(
             (X-Xmin)/(Xmax-Xmin)*(max_limit-min_limit)
 
         zscore
-            X-mean(X)/stddev(X)
+            (X-mean(X))/stddev(X)
 
         pct_rank
             rank(X)*100/N
+
+        maxabs
+            Scale by absolute value between -1 and 1.
+
+        normal
+            Scale to unit normal.
+
+        robust
+            Robust scale to ranked quantile ranges.
     min_limit : float
-        [optional, defaults to 0]
+        [optional, defaults to 0, used for mode=minmax]
 
         Defines the minimum limit of the minmax normalization.
     max_limit : float
-        [optional, defaults to 1]
+        [optional, defaults to 1, used for mode=minmax]
 
         Defines the maximum limit of the minmax normalization.
     pct_rank_method : str
@@ -65,6 +77,19 @@ def normalization_cli(
 
         Defines how tied ranks are broken.  Can be 'average', 'min', 'max',
         'first', 'dense'.
+    with_centering : bool
+        [optional, defaults to True, used when mode=robust]
+
+        If True, center the data before scaling.
+    with_scaling : bool
+        [optional, defaults to True, used when mode=robust]
+
+        If True, scale the data to interquartile range.
+    quantile_range : tuple
+        [optional, defaults to (0.25, 0.75)
+        (q_min, q_max), 0.0 < q_min < q_max < 100.0]
+
+        Quantile range used to calculate scale.
     {input_ts}
     {columns}
     {start_date}
@@ -101,6 +126,9 @@ def normalization_cli(
             round_index=round_index,
             source_units=source_units,
             target_units=target_units,
+            with_centering=with_centering,
+            with_scaling=with_scaling,
+            quantile_range=quantile_range,
         ),
         float_format=float_format,
         tablefmt=tablefmt,
@@ -108,7 +136,11 @@ def normalization_cli(
 
 
 @tsutils.validator(
-    mode=[str, ["domain", ["minmax", "zscore", "pct_rank"]], 1],
+    mode=[
+        str,
+        ["domain", ["minmax", "zscore", "pct_rank", "maxabs", "normal", "robust"]],
+        1,
+    ],
     min_limit=[float, ["pass", []], 1],
     max_limit=[float, ["pass", []], 1],
     pct_rank_method=[str, ["domain", ["average", "min", "max", "first", "dense"]], 1],
@@ -131,6 +163,9 @@ def normalization(
     round_index=None,
     source_units=None,
     target_units=None,
+    with_centering=True,
+    with_scaling=True,
+    quantile_range=(0.25, 0.75),
 ):
     """Return the normalization of the time series."""
     tsd = tsutils.common_kwds(
@@ -161,18 +196,22 @@ def normalization(
         tsd = (tsd - tsd.mean()) / tsd.std()
     elif mode == "pct_rank":
         tsd = tsd.rank(method=pct_rank_method, pct=True)
-    else:
-        raise ValueError(
-            tsutils.error_wrapper(
-                """
-The 'mode' options are 'minmax', 'zscore', or 'pct_rank', you gave me
-{0}.
-""".format(
-                    mode
-                )
-            )
-        )
+    elif mode == "maxabs":
+        from sklearn.preprocessing import MaxAbsScaler
 
+        tsd.loc[:, :] = MaxAbsScaler().fit_transform(tsd)
+    elif mode == "normal":
+        from sklearn.preprocessing import Normalizer
+
+        tsd.loc[:, :] = Normalizer().fit_transform(tsd)
+    elif mode == "robust":
+        from sklearn.preprocessing import RobustScaler
+
+        tsd.loc[:, :] = RobustScaler(
+            with_centering=with_centering,
+            with_scaling=with_scaling,
+            quantile_range=quantile_range,
+        ).fit_transform(tsd)
     tsd = tsutils.memory_optimize(tsd)
     return tsutils.return_input(print_input, otsd, tsd, "{0}".format(mode))
 
