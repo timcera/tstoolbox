@@ -31,6 +31,7 @@ from .functions.ewm_window import ewm_window
 from .functions.expanding_window import expanding_window
 from .functions.fill import fill
 from .functions.filter import filter
+from .functions.fit import fit
 from .functions.gof import gof
 from .functions.lag import lag
 from .functions.normalization import normalization

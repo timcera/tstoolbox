@@ -39,6 +39,7 @@ install_requires = [
     "matplotlib",
     "xlsxwriter",
     "scikit-learn",
+    "statsmodels",
     "setuptools",
 ]
 
