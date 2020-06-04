@@ -14,6 +14,7 @@ from . import lag
 @tsutils.doc(tsutils.docstrings)
 def correlation_cli(
     lags,
+    method="pearson",
     input_ts="-",
     print_input=False,
     start_date=None,
@@ -44,6 +45,17 @@ def correlation_cli(
         Command line example::
 
             --lags='2,5,3'
+
+    method : str
+        [optional, default to "pearson"]
+
+        Method of correlation::
+
+            pearson : standard correlation coefficient
+
+            kendall : Kendall Tau correlation coefficient
+
+            spearman : Spearman rank correlation
     {print_input}
     {input_ts}
     {start_date}
@@ -61,6 +73,7 @@ def correlation_cli(
     tsutils.printiso(
         correlation(
             lags,
+            method=method,
             input_ts=input_ts,
             print_input=print_input,
             start_date=start_date,
@@ -78,11 +91,14 @@ def correlation_cli(
     )
 
 
-@tsutils.validator(lags=[int, ["pass", []], None])
+@tsutils.validator(
+    lags=[int, ["range", [0, None]], None],
+    method=[str, ["domain", ["pearson", "kendall", "spearman"]], 1],
+)
 def correlation(
     lags,
+    method="pearson",
     input_ts="-",
-    method="ffill",
     print_input=False,
     start_date=None,
     end_date=None,
@@ -109,7 +125,7 @@ def correlation(
         target_units=target_units,
         skiprows=skiprows,
     )
-    return ntsd.corr()
+    return ntsd.corr(method=method)
 
 
 correlation.__doc__ = correlation_cli.__doc__
