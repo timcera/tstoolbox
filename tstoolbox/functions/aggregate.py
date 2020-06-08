@@ -146,7 +146,6 @@ def aggregate(
     print_input=False,
 ):
     """Take a time series and aggregate to specified frequency."""
-
     aggd = {"hourly": "H", "daily": "D", "monthly": "M", "yearly": "A", "all": "all"}
 
     if agg_interval is not None:
