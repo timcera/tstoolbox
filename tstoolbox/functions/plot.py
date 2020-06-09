@@ -66,8 +66,8 @@ def _know_your_limits(xylimits, axis="arithmetic"):
             raise ValueError(
                 tsutils.error_wrapper(
                     """
-Both limits must be between 0 and 1 for the
-'normal', 'lognormal', or 'weibull' axis.
+Both limits must be between 0 and 1 for the 'normal', 'lognormal', or 'weibull'
+axis.
 
 Instead you have {0}.
 """.format(
@@ -1012,17 +1012,27 @@ but you have {2} time-series.
 
     if not isinstance(tsd.index, pd.DatetimeIndex):
         tsd.insert(0, tsd.index.name, tsd.index)
+        if type == "time":
+            raise ValueError(
+                tsutils.error_wrapper(
+                    """
+The index is not a datetime index and cannot be plotted as a time-series.
+Instead of `type="time"` you might want `type="xy"` or change the index to
+a datetime index.
+"""
+                )
+            )
 
     if type in ["xy", "double_mass"]:
         if tsd.shape[1] % 2 != 0:
             raise AttributeError(
-                """
-*
-*   The 'xy' and 'double_mass' types must have an even number of columns
-*   arranged as x,y pairs.  You supplied {0} columns.
-*
+                tsutils.error_wrapper(
+                    """
+The 'xy' and 'double_mass' types must have an even number of columns arranged
+as x,y pairs.  You supplied {0} columns.
 """.format(
-                    tsd.shape[1]
+                        tsd.shape[1]
+                    )
                 )
             )
         colcnt = tsd.shape[1] // 2
