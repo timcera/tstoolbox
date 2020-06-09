@@ -5,9 +5,27 @@ from __future__ import absolute_import, print_function
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import numpy as np
+import pandas as pd
 
 from .. import tsutils
 from . import lag
+
+
+def autocorrelation(series):
+    """Perform autocorrelation if lags==0"""
+    n = len(series)
+    data = np.asarray(series)
+    mean = np.mean(data)
+    c0 = np.sum((data - mean) ** 2) / float(n)
+
+    def r(h):
+        return ((data[: n - h] - mean) * (data[h:] - mean)).sum() / float(n) / c0
+
+    x = np.arange(n) + 1
+    y = [r(loc) for loc in x]
+
+    return x, y
 
 
 @mando.command("correlation", formatter_class=RSTHelpFormatter, doctype="numpy")
@@ -27,6 +45,8 @@ def correlation_cli(
     target_units=None,
     skiprows=None,
     tablefmt="csv",
+    round_index=None,
+    dropna=None,
 ):
     """Develop a correlation between time-series and potentially lags.
 
@@ -68,6 +88,8 @@ def correlation_cli(
     {target_units}
     {columns}
     {tablefmt}
+    {round_index}
+    {dropna}
 
     """
     tsutils.printiso(
@@ -85,6 +107,8 @@ def correlation_cli(
             source_units=source_units,
             target_units=target_units,
             skiprows=skiprows,
+            round_index=round_index,
+            dropna=dropna,
         ),
         showindex="always",
         tablefmt=tablefmt,
@@ -109,22 +133,33 @@ def correlation(
     source_units=None,
     target_units=None,
     skiprows=None,
+    round_index=None,
+    dropna=None,
 ):
     """Develop a correlation between time-series and potentially lags."""
-    ntsd = lag.lag(
-        lags,
-        input_ts=input_ts,
-        print_input=print_input,
+    tsd = tsutils.common_kwds(
+        tsutils.read_iso_ts(
+            input_ts, skiprows=skiprows, names=names, index_type=index_type
+        ),
         start_date=start_date,
         end_date=end_date,
-        columns=columns,
-        clean=clean,
-        index_type=index_type,
-        names=names,
+        pick=columns,
+        round_index=round_index,
+        dropna=dropna,
         source_units=source_units,
         target_units=target_units,
-        skiprows=skiprows,
+        clean=clean,
     )
+    lags = tsutils.make_list(lags)
+
+    if len(lags) == 1 and int(lags[0]) == 0:
+        ntsd = pd.DataFrame()
+        for cname, cdata in tsd.iteritems():
+            x, y = autocorrelation(cdata)
+            ntsd = ntsd.join(pd.DataFrame(y, index=x, columns=[cname]), how="outer")
+        return ntsd
+
+    ntsd = lag.lag(lags, input_ts=tsd,)
     return ntsd.corr(method=method)
 
 
