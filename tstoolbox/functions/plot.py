@@ -195,15 +195,19 @@ def plot_cli(
             column of data.
         xy
             An (x,y) plot, also know as a scatter plot.  Data must be organized
-            as x1,y1,x2,y2,x3,y3,....
+            as x1,y1,x2,y2,x3,y3,....  The "columns" keyword can be used to
+            duplicate or change the column order.
         double_mass
             An (x,y) plot of the cumulative sum of x and y.  Data must be
-            organized as x1,y1,x2,y2,x3,y3,....
+            organized as x1,y1,x2,y2,x3,y3,....  The "columns" keyword can be
+            used to duplicate or change the column order.
         boxplot
             Box extends from lower to upper quartile, with line at the
             median.  Depending on the statistics, the wiskers represent
             the range of the data or 1.5 times the inter-quartile range
-            (Q3 - Q1).  Data should be organized as y1,y2,y3,....
+            (Q3 - Q1).  Data should be organized as y1,y2,y3,....  The
+            "columns" keyword can be used to duplicate or change the column
+            order.
         scatter_matrix
             Plots all columns against each other in a matrix, with the diagonal
             plots either histogram or KDE probability distribution
@@ -1011,7 +1015,6 @@ but you have {2} time-series.
     figsize = tsutils.make_list(figsize, n=2)
 
     if not isinstance(tsd.index, pd.DatetimeIndex):
-        tsd.insert(0, tsd.index.name, tsd.index)
         if type == "time":
             raise ValueError(
                 tsutils.error_wrapper(
