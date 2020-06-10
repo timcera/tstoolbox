@@ -1102,8 +1102,8 @@ The name {0} isn't in the list of column names
             raise ValueError(
                 error_wrapper(
                     """
-The requested column index {0} must be greater than or equal to 0.
-First data column is index 1, index is column 0.
+The requested column "{0}" must be greater than or equal to 0.
+First data column is 1, index is column 0.
 """.format(
                         i
                     )
@@ -1132,9 +1132,9 @@ number of columns {1}.
     for index, col in enumerate(ncolumns):
         if col == -1:
             # Use the -1 marker to indicate index
-            jtsd = pd.DataFrame(tsd.index)
+            jtsd = pd.DataFrame(tsd.index, index=tsd.index)
         else:
-            jtsd = pd.DataFrame(tsd[tsd.columns[col]])
+            jtsd = pd.DataFrame(tsd[tsd.columns[col]], index=tsd.index)
 
         newtsd = newtsd.join(jtsd, lsuffix="_{0}".format(index), how="outer")
     return newtsd
