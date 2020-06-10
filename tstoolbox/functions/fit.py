@@ -128,18 +128,18 @@ def fit(
     tmptsd = pd.DataFrame()
     for meth in method:
         if meth == "lowess":
-            for _, cdata in tsd.iteritems():
+            for cname, cdata in tsd.iteritems():
                 smooth = lowess(cdata, tsd.index, frac=lowess_frac)
                 index, data = np.transpose(smooth)
-                ftsd = pd.DataFrame(data, index=tsd.index)
+                ftsd = pd.DataFrame(data, index=tsd.index, columns=[cname])
                 tmptsd = tmptsd.join(ftsd, how="outer")
         elif meth == "linear":
-            for _, cdata in tsd.iteritems():
+            for cname, cdata in tsd.iteritems():
                 index = tsd.index.astype("l")
                 index = index - index[0]
                 m, b = np.polyfit(index, cdata, 1)
                 data = m * index + b
-                ftsd = pd.DataFrame(data, index=tsd.index)
+                ftsd = pd.DataFrame(data, index=tsd.index, columns=[cname])
                 tmptsd = tmptsd.join(ftsd, how="outer")
 
         tmptsd.columns = [tsutils.renamer(i, meth) for i in tmptsd.columns]
