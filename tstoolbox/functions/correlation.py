@@ -24,8 +24,7 @@ def autocorrelation(series):
 
     x = np.arange(n) + 1
     y = [r(loc) for loc in x]
-
-    return x, y
+    return y
 
 
 @mando.command("correlation", formatter_class=RSTHelpFormatter, doctype="numpy")
@@ -53,10 +52,14 @@ def correlation_cli(
     Parameters
     ----------
     lags : str, int, or list
-        If an integer will calculate all lags up to and including the
-        lag number.  If a list will calculate each lag in the list.  If
-        a string must be a comma separated list of integers.  If lags ==
-        0 then will only cross correlate on the input time-series.
+        If lags are greater than 0 then returns a cross correlation matrix
+        between all time-series and all lags.  If an integer will calculate and
+        use all lags up to and including the lag number.  If a list will
+        calculate each lag in the list.  If a string must be a comma separated
+        list of integers.
+
+        If lags == 0 then will return an auto-correlation on each input
+        time-series.
 
         Python example::
 
@@ -155,8 +158,15 @@ def correlation(
     if len(lags) == 1 and int(lags[0]) == 0:
         ntsd = pd.DataFrame()
         for cname, cdata in tsd.iteritems():
-            x, y = autocorrelation(cdata)
-            ntsd = ntsd.join(pd.DataFrame(y, index=x, columns=[cname]), how="outer")
+            y = autocorrelation(cdata)
+            ntsd = ntsd.join(
+                pd.DataFrame(y, index=tsd.index, columns=[cname]), how="outer"
+            )
+        try:
+            x = pd.timedelta_range(start=1, end=len(ntsd) + 1, freq=tsd.index.freqstr)
+        except ValueError:
+            x = np.arange(len(ntsd)) + 1
+        ntsd.index = x
         return ntsd
 
     ntsd = lag.lag(lags, input_ts=tsd,)
