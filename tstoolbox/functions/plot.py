@@ -16,6 +16,24 @@ from .. import tsutils
 
 warnings.filterwarnings("ignore")
 
+ldocstrings = tsutils.docstrings
+ldocstrings[
+    "xydata"
+] = """If the input 'x,y' dataset(s) is organized as
+            'index,x1,y1,x2,y2,x3,y3,...,xN,yN' then the 'index' is ignored.  If
+            there is one 'x,y' dataset then it can be organized as 'index,y'
+            where 'index' is used for 'x'.  The "columns" keyword can be used
+            to duplicate or change the order of all the data columns."""
+ldocstrings[
+    "ydata"
+] = """Data must be organized as 'index,y1,y2,y3,...,yN'.  The 'index' is
+            ignored and all data columns are plotted.  The "columns" keyword
+            can be used to duplicate or change the order of all the data
+            columns."""
+ldocstrings[
+    "yone"
+] = """Data must be organized as 'index,y1'.  Can only plot one series."""
+
 MARKER_LIST = [
     ".",
     ",",
@@ -191,45 +209,60 @@ def plot_cli(
         Can be one of the following:
 
         time
-            Standard time series plot.  Time is the index, and plots each
-            column of data.
+            Standard time series plot.
+
+            Data must be organized as 'index,y1,y2,y3,...,yN'.  The 'index' must
+            be a date/time and all data columns are plotted.  Legend names are
+            taken from the column names in the first row unless over-ridden by
+            the `legend_names` keyword.
         xy
-            An (x,y) plot, also know as a scatter plot.  Data must be organized
-            as x1,y1,x2,y2,x3,y3,....  The "columns" keyword can be used to
-            duplicate or change the column order.
+            An 'x,y' plot, also know as a scatter plot.
+
+            {xydata}
         double_mass
-            An (x,y) plot of the cumulative sum of x and y.  Data must be
-            organized as x1,y1,x2,y2,x3,y3,....  The "columns" keyword can be
-            used to duplicate or change the column order.
+            An 'x,y' plot of the cumulative sum of x and y.
+
+            {xydata}
         boxplot
             Box extends from lower to upper quartile, with line at the
             median.  Depending on the statistics, the wiskers represent
             the range of the data or 1.5 times the inter-quartile range
-            (Q3 - Q1).  Data should be organized as y1,y2,y3,....  The
-            "columns" keyword can be used to duplicate or change the column
-            order.
+            (Q3 - Q1).
+
+            {ydata}
         scatter_matrix
             Plots all columns against each other in a matrix, with the diagonal
             plots either histogram or KDE probability distribution
             depending on `scatter_matrix_diagonal` keyword.
+
+            {ydata}
         lag_plot
-            Indicates structure in the data.  Only available for a single
-            time-series.
+            Indicates structure in the data.
+
+            {yone}
         autocorrelation
             Plot autocorrelation.  Only available for a single time-series.
+
+            {yone}
         bootstrap
             Visually assess aspects of a data set by plotting random
             selections of values.  Only available for a single time-series.
+
+            {yone}
         histogram
             Calculate and create a histogram plot.  See 'kde' for a smooth
             representation of a histogram.
         kde
             This plot is an estimation of the probability density function
             based on the data called kernel density estimation (KDE).
+
+            {ydata}
         kde_time
             This plot is an estimation of the probability density function
             based on the data called kernel density estimation (KDE) combined
             with a time-series plot.
+
+            {ydata}
         bar
             Column plot.
         barh
@@ -859,18 +892,21 @@ Each name in legend_names must be unique.
             )
         if len(tsd.columns) == len(lnames):
             renamedict = dict(list(zip(tsd.columns, lnames)))
-        elif type == "xy" and len(tsd.columns) // 2 == len(lnames):
+        elif type in ["xy", "double_mass"] and (
+            len(tsd.columns) // 2 == len(lnames) or len(tsd.columns) == 1
+        ):
             renamedict = dict(list(zip(tsd.columns[2::2], lnames[1:])))
             renamedict[tsd.columns[1]] = lnames[0]
         else:
             raise ValueError(
                 tsutils.error_wrapper(
                     """
-For 'legend_names' you must have the same number of comma
-separated names as columns in the input data.  The input
-data has {0} where the number of 'legend_names' is {1}.
+For 'legend_names' and most plot types you must have the same number of comma
+separated names as columns in the input data.  The input data has {0} where the
+number of 'legend_names' is {1}.
 
-If 'xy' type you need to have legend names as x,y1,y2,y3,...
+If `type` is 'xy' or 'double_mass' you need to have legend names as l1,l2,l3,...
+where l1 is the legend for x1,y1, l2 is the legend for x2,y2, ...etc.
 """.format(
                         len(tsd.columns), len(lnames)
                     )
@@ -1027,18 +1063,21 @@ a datetime index.
             )
 
     if type in ["xy", "double_mass"]:
-        if tsd.shape[1] % 2 != 0:
-            raise AttributeError(
-                tsutils.error_wrapper(
-                    """
+        if tsd.shape[1] > 1:
+            if tsd.shape[1] % 2 != 0:
+                raise AttributeError(
+                    tsutils.error_wrapper(
+                        """
 The 'xy' and 'double_mass' types must have an even number of columns arranged
-as x,y pairs.  You supplied {0} columns.
+as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
 """.format(
-                        tsd.shape[1]
+                            tsd.shape[1]
+                        )
                     )
                 )
-            )
-        colcnt = tsd.shape[1] // 2
+            colcnt = tsd.shape[1] // 2
+        else:
+            colcnt = 1
     elif type in [
         "norm_xaxis",
         "norm_yaxis",
@@ -1126,9 +1165,13 @@ as x,y pairs.  You supplied {0} columns.
         # Boy I do not like matplotlib.
 
         for colindex in range(colcnt):
-            ndf = tsd.iloc[:, colindex * 2 : colindex * 2 + 2]
+            if colcnt == 1:
+                ndf = tsd.reset_index()
+            else:
+                ndf = tsd.iloc[:, colindex * 2 : colindex * 2 + 2]
             if type == "double_mass":
-                ndf = ndf.dropna().cumsum()
+                ndf.iloc[:, 0] = ndf.iloc[:, 0].cumsum()
+                ndf.iloc[:, 1] = ndf.iloc[:, 1].cumsum()
             oxdata = np.array(ndf.iloc[:, 0])
             oydata = np.array(ndf.iloc[:, 1])
 
@@ -1230,8 +1273,7 @@ as x,y pairs.  You supplied {0} columns.
             ax.legend(loc="best")
 
     elif type in ["kde", "probability_density"]:
-        ax = tsd.plot(
-            kind="kde",
+        ax = tsd.plot.kde(
             legend=legend,
             subplots=subplots,
             sharex=sharex,
@@ -1418,7 +1460,7 @@ The "heatmap" plot type can only work with daily time series.
         if legend is True:
             plt.legend(loc="best")
     elif type == "histogram":
-        tsd.hist(figsize=figsize)
+        tsd.hist(figsize=figsize, sharey=sharey, sharex=sharex)
     if xy_match_line:
         if isinstance(xy_match_line, str):
             xymsty = xy_match_line
