@@ -38,6 +38,123 @@ def error_wrapper(estr):
     return "\n".join(nestr)
 
 
+_CODES = {}
+_CODES["SUB_D"]: {
+    "N": "Nanoseconds",
+    "U": "microseconds",
+    "L": "miLliseconds",
+    "S": "Secondly",
+    "T": "minuTely",
+    "H": "Hourly",
+}
+_CODES["DAILY"]: {
+    "D": "calendar Day",
+    "B": "Business day",
+    "C": "Custom business day (experimental)",
+}
+_CODES["WEEKLY"]: {
+    "W": "Weekly",
+    "W-SUN": "Weekly frequency (SUNdays)",
+    "W-MON": "Weekly frequency (MONdays)",
+    "W-TUE": "Weekly frequency (TUEsdays)",
+    "W-WED": "Weekly frequency (WEDnesdays)",
+    "W-THU": "Weekly frequency (THUrsdays)",
+    "W-FRI": "Weekly frequency (FRIdays)",
+    "W-SAT": "Weekly frequency (SATurdays)",
+}
+_CODES["MONTH"]: {
+    "M": "Month end",
+    "MS": "Month Start",
+    "BM": "Business Month end",
+    "BMS": "Business Month Start",
+    "CBM": "Custom Business Month end",
+    "CBMS": "Custom Business Month Start",
+}
+_CODES["QUARTERLY"]: {
+    "Q": "Quarter end",
+    "Q-JAN": "Quarterly, quarter ends end of JANuary",
+    "Q-FEB": "Quarterly, quarter ends end of FEBruary",
+    "Q-MAR": "Quarterly, quarter ends end of MARch",
+    "Q-APR": "Quarterly, quarter ends end of APRil",
+    "Q-MAY": "Quarterly, quarter ends end of MAY",
+    "Q-JUN": "Quarterly, quarter ends end of JUNe",
+    "Q-JUL": "Quarterly, quarter ends end of JULy",
+    "Q-AUG": "Quarterly, quarter ends end of AUGust",
+    "Q-SEP": "Quarterly, quarter ends end of SEPtember",
+    "Q-OCT": "Quarterly, quarter ends end of OCTober",
+    "Q-NOV": "Quarterly, quarter ends end of NOVember",
+    "Q-DEC": "Quarterly, quarter ends end of DECember",
+    "QS": "Quarter Start",
+    "QS-JAN": "Quarterly, quarter Starts end of JANuary",
+    "QS-FEB": "Quarterly, quarter Starts end of FEBruary",
+    "QS-MAR": "Quarterly, quarter Starts end of MARch",
+    "QS-APR": "Quarterly, quarter Starts end of APRil",
+    "QS-MAY": "Quarterly, quarter Starts end of MAY",
+    "QS-JUN": "Quarterly, quarter Starts end of JUNe",
+    "QS-JUL": "Quarterly, quarter Starts end of JULy",
+    "QS-AUG": "Quarterly, quarter Starts end of AUGust",
+    "QS-SEP": "Quarterly, quarter Starts end of SEPtember",
+    "QS-OCT": "Quarterly, quarter Starts end of OCTober",
+    "QS-NOV": "Quarterly, quarter Starts end of NOVember",
+    "QS-DEC": "Quarterly, quarter Starts end of DECember",
+    "BQ": "Business Quarter end",
+    "BQS": "Business Quarter Start",
+}
+_CODES["ANNUAL"]: {
+    "A": "Annual end",
+    "A-JAN": "Annual, year ends end of JANuary",
+    "A-FEB": "Annual, year ends end of FEBruary",
+    "A-MAR": "Annual, year ends end of MARch",
+    "A-APR": "Annual, year ends end of APRil",
+    "A-MAY": "Annual, year ends end of MAY",
+    "A-JUN": "Annual, year ends end of JUNe",
+    "A-JUL": "Annual, year ends end of JULy",
+    "A-AUG": "Annual, year ends end of AUGust",
+    "A-SEP": "Annual, year ends end of SEPtember",
+    "A-OCT": "Annual, year ends end of OCTober",
+    "A-NOV": "Annual, year ends end of NOVember",
+    "A-DEC": "Annual, year ends end of DECember",
+    "AS": "Annual Start",
+    "AS-JAN": "Annual, year Starts end of JANuary",
+    "AS-FEB": "Annual, year Starts end of FEBruary",
+    "AS-MAR": "Annual, year Starts end of MARch",
+    "AS-APR": "Annual, year Starts end of APRil",
+    "AS-MAY": "Annual, year Starts end of MAY",
+    "AS-JUN": "Annual, year Starts end of JUNe",
+    "AS-JUL": "Annual, year Starts end of JULy",
+    "AS-AUG": "Annual, year Starts end of AUGust",
+    "AS-SEP": "Annual, year Starts end of SEPtember",
+    "AS-OCT": "Annual, year Starts end of OCTober",
+    "AS-NOV": "Annual, year Starts end of NOVember",
+    "AS-DEC": "Annual, year Starts end of DECember",
+    "BA": "Business Annual end",
+    "BA-JAN": "Business Annual, business year ends end of JANuary",
+    "BA-FEB": "Business Annual, business year ends end of FEBruary",
+    "BA-MAR": "Business Annual, business year ends end of MARch",
+    "BA-APR": "Business Annual, business year ends end of APRil",
+    "BA-MAY": "Business Annual, business year ends end of MAY",
+    "BA-JUN": "Business Annual, business year ends end of JUNe",
+    "BA-JUL": "Business Annual, business year ends end of JULy",
+    "BA-AUG": "Business Annual, business year ends end of AUGust",
+    "BA-SEP": "Business Annual, business year ends end of SEPtember",
+    "BA-OCT": "Business Annual, business year ends end of OCTober",
+    "BA-NOV": "Business Annual, business year ends end of NOVember",
+    "BA-DEC": "Business Annual, business year ends end of DECember",
+    "BAS": "Business Annual Start",
+    "BS-JAN": "Business Annual Start, business year starts end of JANuary",
+    "BS-FEB": "Business Annual Start, business year starts end of FEBruary",
+    "BS-MAR": "Business Annual Start, business year starts end of MARch",
+    "BS-APR": "Business Annual Start, business year starts end of APRil",
+    "BS-MAY": "Business Annual Start, business year starts end of MAY",
+    "BS-JUN": "Business Annual Start, business year starts end of JUNe",
+    "BS-JUL": "Business Annual Start, business year starts end of JULy",
+    "BS-AUG": "Business Annual Start, business year starts end of AUGust",
+    "BS-SEP": "Business Annual Start, business year starts end of SEPtember",
+    "BS-OCT": "Business Annual Start, business year starts end of OCTober",
+    "BS-NOV": "Business Annual Start, business year starts end of NOVember",
+    "BS-DEC": "Business Annual Start, business year starts end of DECember",
+}
+
 docstrings = {
     "target_units": r"""target_units: str
         [optional, default is None, transformation]
@@ -185,56 +302,62 @@ docstrings = {
         This is if you want a different header than is the default for
         this output table.  Pass a list of strings for each column in
         the table.""",
-    "pandas_offset_codes": r"""+-------+------------------------------------+
+    "pandas_offset_codes": r"""+-------+---------------+
+        | Alias | Description   |
+        +=======+===============+
+        | N     | Nanoseconds   |
+        +-------+---------------+
+        | U     | microseconds  |
+        +-------+---------------+
+        | L     | milliseconds  |
+        +-------+---------------+
+        | S     | Secondly      |
+        +-------+---------------+
+        | T     | Minutely      |
+        +-------+---------------+
+        | H     | Hourly        |
+        +-------+---------------+
+        | D     | calendar Day  |
+        +-------+---------------+
+        | W     | Weekly        |
+        +-------+---------------+
+        | M     | Month end     |
+        +-------+---------------+
+        | MS    | Month Start   |
+        +-------+---------------+
+        | Q     | Quarter end   |
+        +-------+---------------+
+        | QS    | Quarter Start |
+        +-------+---------------+
+        | A     | Annual end    |
+        +-------+---------------+
+        | AS    | Annual Start  |
+        +-------+---------------+
+
+        Business offset codes.
+
+        +-------+------------------------------------+
         | Alias | Description                        |
         +=======+====================================+
         | B     | Business day                       |
         +-------+------------------------------------+
-        | C     | Custom business day (experimental) |
-        +-------+------------------------------------+
-        | D     | calendar Day                       |
-        +-------+------------------------------------+
-        | W     | Weekly                             |
-        +-------+------------------------------------+
-        | M     | Month end                          |
-        +-------+------------------------------------+
         | BM    | Business Month end                 |
-        +-------+------------------------------------+
-        | CBM   | Custom Business Month end          |
-        +-------+------------------------------------+
-        | MS    | Month Start                        |
         +-------+------------------------------------+
         | BMS   | Business Month Start               |
         +-------+------------------------------------+
-        | CBMS  | Custom Business Month Start        |
-        +-------+------------------------------------+
-        | Q     | Quarter end                        |
-        +-------+------------------------------------+
         | BQ    | Business Quarter end               |
-        +-------+------------------------------------+
-        | QS    | Quarter Start                      |
         +-------+------------------------------------+
         | BQS   | Business Quarter Start             |
         +-------+------------------------------------+
-        | A     | Annual end                         |
-        +-------+------------------------------------+
         | BA    | Business Annual end                |
-        +-------+------------------------------------+
-        | AS    | Annual Start                       |
         +-------+------------------------------------+
         | BAS   | Business Annual Start              |
         +-------+------------------------------------+
-        | H     | Hourly                             |
+        | C     | Custom business day (experimental) |
         +-------+------------------------------------+
-        | T     | Minutely                           |
+        | CBM   | Custom Business Month end          |
         +-------+------------------------------------+
-        | S     | Secondly                           |
-        +-------+------------------------------------+
-        | L     | milliseconds                       |
-        +-------+------------------------------------+
-        | U     | microseconds                       |
-        +-------+------------------------------------+
-        | N     | Nanoseconds                        |
+        | CBMS  | Custom Business Month Start        |
         +-------+------------------------------------+
 
         Weekly has the following anchored frequencies:
@@ -362,6 +485,19 @@ docstrings = {
         determine the frequency should always work, but this option will
         override.  Use PANDAS offset codes.""",
 }
+
+# Decided this was inelegant, but left here in case I figure out what I want
+# and how I want it.
+# ntables = {}
+# for key in ["SUB_D", "DAILY", "WEEKLY", "QUATERLY", "ANNUAL"]:
+#     ntables[key] = tb(_CODES[key].items(), tablefmt="grid", headers=["Alias", "Description"],)
+#     ntables[key] = "        ".join(ntables[key].splitlines(True))
+# codes_table = f"""{ntables["SUB_D"]}
+#
+#     {ntables["DAILY"]}
+#     """
+#
+# docstrings["pandas_offset_codes"] = codes_table
 
 
 def stride_and_unit(sunit):
