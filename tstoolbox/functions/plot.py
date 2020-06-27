@@ -1075,9 +1075,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
                         )
                     )
                 )
-            colcnt = tsd.shape[1] // 2
-        else:
-            colcnt = 1
+        colcnt = tsd.shape[1] // 2
     elif type in [
         "norm_xaxis",
         "norm_yaxis",
@@ -1165,7 +1163,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
         # Boy I do not like matplotlib.
 
         for colindex in range(colcnt):
-            if colcnt == 1:
+            if colcnt == 0:
                 ndf = tsd.reset_index()
             else:
                 ndf = tsd.iloc[:, colindex * 2 : colindex * 2 + 2]
