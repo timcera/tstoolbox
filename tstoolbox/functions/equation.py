@@ -57,6 +57,7 @@ def _parse_equation(equation_str):
 
         # replace 'x1' with 'x.iloc[t,1-1]'
         # replace 'x4' with 'x.iloc[t,4-1]'
+        # ...etc
         nequation = re.sub(r"x([1-9][0-9]*)", r"x.iloc[t,\1-1]", nequation)
 
     # If there is only a function of t, i.e. x[t]
@@ -97,6 +98,7 @@ def equation_cli(
     target_units=None,
     float_format="g",
     tablefmt="csv",
+    output_names="",
 ):
     """Apply <equation_str> to the time series data.
 
@@ -173,8 +175,10 @@ def equation_cli(
     {target_units}
     {round_index}
     {tablefmt}
+    {output_names}
 
     """
+    output_names = tsutils.make_list(output_names)
     tsutils.printiso(
         equation(
             equation_str,
@@ -191,6 +195,7 @@ def equation_cli(
             round_index=round_index,
             source_units=source_units,
             target_units=target_units,
+            output_names=output_names,
         ),
         float_format=float_format,
         tablefmt=tablefmt,
@@ -213,6 +218,7 @@ def equation(
     round_index=None,
     source_units=None,
     target_units=None,
+    output_names=[],
 ):
     """Apply <equation_str> to the time series data."""
     x = tsutils.common_kwds(
@@ -285,7 +291,7 @@ def equation(
 
     newy = tsutils.memory_optimize(newy)
 
-    return tsutils.return_input(print_input, x, newy)
+    return tsutils.return_input(print_input, x, newy, output_names=output_names)
 
 
 equation.__doc__ = equation_cli.__doc__

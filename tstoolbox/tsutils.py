@@ -484,6 +484,13 @@ docstrings = {
         careful with this option.  In general, letting the algorithm
         determine the frequency should always work, but this option will
         override.  Use PANDAS offset codes.""",
+    "output_names": r"""output_names: str
+        [optional, output_format]
+
+        The tstoolbox will change the names of the output columns to include
+        some record of the operations used on each column.  The `output_names`
+        will override that feature.  Must be a list or tuple equal to the
+        number of columns in the output data.""",
 }
 
 # Decided this was inelegant, but left here in case I figure out what I want
@@ -1508,9 +1515,11 @@ def print_input(
     )
 
 
-def return_input(iftrue, intds, output, suffix="", reverse_index=False):
+def return_input(
+    iftrue, intds, output, suffix="", reverse_index=False, output_names=[]
+):
     """Print the input time series also."""
-    output.columns = [renamer(i, suffix) for i in output.columns]
+    output.columns = output_names or [renamer(i, suffix) for i in output.columns]
     if iftrue:
         return intds.join(output, lsuffix="_1", rsuffix="_2", how="outer")
     if reverse_index is True:
