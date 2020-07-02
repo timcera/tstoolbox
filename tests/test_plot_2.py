@@ -15,6 +15,9 @@ df = tstoolbox.aggregate(
 dfa = tstoolbox.aggregate(
     agg_interval="A", clean=True, input_ts="tests/02234500_65_65.csv"
 )
+dfa = tstoolbox.equation(
+    "x1*120@x2", input_ts=dfa, output_names=["Elevation::mean", "Flow::mean"]
+)
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)

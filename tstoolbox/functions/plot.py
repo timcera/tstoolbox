@@ -20,8 +20,8 @@ ldocstrings = tsutils.docstrings
 ldocstrings[
     "xydata"
 ] = """If the input 'x,y' dataset(s) is organized as
-            'index,x1,y1,x2,y2,x3,y3,...,xN,yN' then the 'index' is ignored.  If
-            there is one 'x,y' dataset then it can be organized as 'index,y'
+            'index,x1,y1,x2,y2,x3,y3,...,xN,yN' then the 'index' is ignored.
+            If there is one 'x,y' dataset then it can be organized as 'index,y'
             where 'index' is used for 'x'.  The "columns" keyword can be used
             to duplicate or change the order of all the data columns."""
 ldocstrings[
@@ -61,7 +61,9 @@ MARKER_LIST = [
 
 COLOR_LIST = ["b", "g", "r", "c", "m", "y", "k"]
 
-LINE_LIST = ["-", "--", "-.", ":"]
+LINE_LIST = ["-", "--", "-.", ":", "solid", "dashed", "dashdot", "dotted"]
+
+HATCH_LIST = ["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
 
 
 def _know_your_limits(xylimits, axis="arithmetic"):
@@ -155,6 +157,7 @@ def plot_cli(
     colors="auto",
     linestyles="auto",
     markerstyles=" ",
+    bar_hatchstyles="auto",
     style="auto",
     logx=False,
     logy=False,
@@ -211,10 +214,10 @@ def plot_cli(
         time
             Standard time series plot.
 
-            Data must be organized as 'index,y1,y2,y3,...,yN'.  The 'index' must
-            be a date/time and all data columns are plotted.  Legend names are
-            taken from the column names in the first row unless over-ridden by
-            the `legend_names` keyword.
+            Data must be organized as 'index,y1,y2,y3,...,yN'.  The 'index'
+            must be a date/time and all data columns are plotted.  Legend names
+            are taken from the column names in the first row unless over-ridden
+            by the `legend_names` keyword.
         xy
             An 'x,y' plot, also know as a scatter plot.
 
@@ -410,23 +413,23 @@ def plot_cli(
         Separated 'colors', 'linestyles', and 'markerstyles' instead of using
         the 'style' keyword.
 
-        +------+--------------+
-        | Code | Lines        |
-        +======+==============+
-        | \-   | solid        |
-        +------+--------------+
-        | --   | dashed       |
-        +------+--------------+
-        | -.   | dash_dot     |
-        +------+--------------+
-        | :    | dotted       |
-        +------+--------------+
-        | None | draw nothing |
-        +------+--------------+
-        | ' '  | draw nothing |
-        +------+--------------+
-        | ''   | draw nothing |
-        +------+--------------+
+        +---------+--------------+
+        | Code    | Lines        |
+        +=========+==============+
+        | ``-``   | solid        |
+        +---------+--------------+
+        | --      | dashed       |
+        +---------+--------------+
+        | -.      | dash_dot     |
+        +---------+--------------+
+        | :       | dotted       |
+        +---------+--------------+
+        | None    | draw nothing |
+        +---------+--------------+
+        | ' '     | draw nothing |
+        +---------+--------------+
+        | ''      | draw nothing |
+        +---------+--------------+
 
         Line reference:
         http://matplotlib.org/api/artist_api.html
@@ -440,57 +443,57 @@ def plot_cli(
         Separated 'colors', 'linestyles', and 'markerstyles' instead of using
         the 'style' keyword.
 
-        +------+----------------+
-        | Code | Markers        |
-        +======+================+
-        | .    | point          |
-        +------+----------------+
-        | o    | circle         |
-        +------+----------------+
-        | v    | triangle down  |
-        +------+----------------+
-        | ^    | triangle up    |
-        +------+----------------+
-        | <    | triangle left  |
-        +------+----------------+
-        | >    | triangle right |
-        +------+----------------+
-        | 1    | tri_down       |
-        +------+----------------+
-        | 2    | tri_up         |
-        +------+----------------+
-        | 3    | tri_left       |
-        +------+----------------+
-        | 4    | tri_right      |
-        +------+----------------+
-        | 8    | octagon        |
-        +------+----------------+
-        | s    | square         |
-        +------+----------------+
-        | p    | pentagon       |
-        +------+----------------+
-        | \*   | star           |
-        +------+----------------+
-        | h    | hexagon1       |
-        +------+----------------+
-        | H    | hexagon2       |
-        +------+----------------+
-        | \+   | plus           |
-        +------+----------------+
-        | x    | x              |
-        +------+----------------+
-        | D    | diamond        |
-        +------+----------------+
-        | d    | thin diamond   |
-        +------+----------------+
-        | _    | hline          |
-        +------+----------------+
-        | None | nothing        |
-        +------+----------------+
-        | ' '  | nothing        |
-        +------+----------------+
-        | ''   | nothing        |
-        +------+----------------+
+        +-------+----------------+
+        | Code  | Markers        |
+        +=======+================+
+        | .     | point          |
+        +-------+----------------+
+        | o     | circle         |
+        +-------+----------------+
+        | v     | triangle down  |
+        +-------+----------------+
+        | ^     | triangle up    |
+        +-------+----------------+
+        | <     | triangle left  |
+        +-------+----------------+
+        | >     | triangle right |
+        +-------+----------------+
+        | 1     | tri_down       |
+        +-------+----------------+
+        | 2     | tri_up         |
+        +-------+----------------+
+        | 3     | tri_left       |
+        +-------+----------------+
+        | 4     | tri_right      |
+        +-------+----------------+
+        | 8     | octagon        |
+        +-------+----------------+
+        | s     | square         |
+        +-------+----------------+
+        | p     | pentagon       |
+        +-------+----------------+
+        | ``*`` | star           |
+        +-------+----------------+
+        | h     | hexagon1       |
+        +-------+----------------+
+        | H     | hexagon2       |
+        +-------+----------------+
+        | ``+`` | plus           |
+        +-------+----------------+
+        | x     | x              |
+        +-------+----------------+
+        | D     | diamond        |
+        +-------+----------------+
+        | d     | thin diamond   |
+        +-------+----------------+
+        | _     | hline          |
+        +-------+----------------+
+        | None  | nothing        |
+        +-------+----------------+
+        | ' '   | nothing        |
+        +-------+----------------+
+        | ''    | nothing        |
+        +-------+----------------+
 
         Marker reference:
         http://matplotlib.org/api/markers_api.html
@@ -504,6 +507,38 @@ def plot_cli(
         Comma separated matplotlib style strings per time-series.  Just
         combine codes in 'ColorMarkerLine' order, for example 'r*--' is
         a red dashed line with star marker.
+    bar_hatchstyles
+        [optional, default to "auto", only used if type equal to "bar", "barh",
+        "bar_stacked", and "barh_stacked"]
+
+        If 'auto' will iterate through the available matplotlib hatch types.
+        Otherwise on the command line a comma separated list, or a list of
+        strings if using the Python API.
+
+        +-----------------+-------------------+
+        | bar_hatchstyles | Description       |
+        +=================+===================+
+        | /               | diagonal hatching |
+        +-----------------+-------------------+
+        | ``\``           | back diagonal     |
+        +-----------------+-------------------+
+        | ``|``           | vertical          |
+        +-----------------+-------------------+
+        | -               | horizontal        |
+        +-----------------+-------------------+
+        | +               | crossed           |
+        +-----------------+-------------------+
+        | x               | crossed diagonal  |
+        +-----------------+-------------------+
+        | o               | small circle      |
+        +-----------------+-------------------+
+        | O               | large circle      |
+        +-----------------+-------------------+
+        | .               | dots              |
+        +-----------------+-------------------+
+        | *               | stars             |
+        +-----------------+-------------------+
+
     logx
         DEPRECATED: use '--xaxis="log"' instead.
     logy
@@ -650,6 +685,7 @@ def plot_cli(
         colors=colors,
         linestyles=linestyles,
         markerstyles=markerstyles,
+        bar_hatchstyles=bar_hatchstyles,
         style=style,
         logx=logx,
         logy=logy,
@@ -731,8 +767,9 @@ def plot_cli(
     sharex=[bool, ["domain", [True, False]], 1],
     sharey=[bool, ["domain", [True, False]], 1],
     colors=[str, ["pass", []], None],
-    linestyles=[str, ["pass", []], None],
-    markerstyles=[str, ["pass", []], None],
+    linestyles=[str, ["domain", ["auto", None, "", " ", "  "] + LINE_LIST], None],
+    markerstyles=[str, ["domain", ["auto", None, "", " ", "  "] + MARKER_LIST], None],
+    bar_hatchstyles=[str, ["domain", ["auto", None, "", " ", "  "] + HATCH_LIST], None],
     style=[str, ["pass", []], None],
     xlim=[float, ["pass", []], 2],
     ylim=[float, ["pass", []], 2],
@@ -783,6 +820,7 @@ def plot(
     colors="auto",
     linestyles="auto",
     markerstyles=" ",
+    bar_hatchstyles="auto",
     style="auto",
     logx=False,
     logy=False,
@@ -905,8 +943,9 @@ For 'legend_names' and most plot types you must have the same number of comma
 separated names as columns in the input data.  The input data has {0} where the
 number of 'legend_names' is {1}.
 
-If `type` is 'xy' or 'double_mass' you need to have legend names as l1,l2,l3,...
-where l1 is the legend for x1,y1, l2 is the legend for x2,y2, ...etc.
+If `type` is 'xy' or 'double_mass' you need to have legend names as
+l1,l2,l3,...  where l1 is the legend for x1,y1, l2 is the legend for x2,y2,
+...etc.
 """.format(
                         len(tsd.columns), len(lnames)
                     )
@@ -925,6 +964,11 @@ where l1 is the legend for x1,y1, l2 is the legend for x2,y2, ...etc.
         linestyles = LINE_LIST
     else:
         linestyles = tsutils.make_list(linestyles)
+
+    if bar_hatchstyles == "auto":
+        bar_hatchstyles = HATCH_LIST
+    else:
+        bar_hatchstyles = tsutils.make_list(bar_hatchstyles)
 
     if markerstyles == "auto":
         markerstyles = MARKER_LIST
@@ -969,7 +1013,7 @@ but you have {2} time-series.
     if linestyles is None:
         linestyles = [" "]
     else:
-        linestyles = [" " if i == "  " else i for i in linestyles]
+        linestyles = [" " if i in ["  ", None] else i for i in linestyles]
     markerstyles = [" " if i is None else i for i in markerstyles]
 
     icolors = itertools.cycle(colors)
@@ -985,6 +1029,9 @@ but you have {2} time-series.
     icolors = itertools.cycle(colors)
     imarkerstyles = itertools.cycle(markerstyles)
     ilinestyles = itertools.cycle(linestyles)
+
+    # Only for bar, barh, bar_stacked, and barh_stacked.
+    ibar_hatchstyles = itertools.cycle(bar_hatchstyles)
 
     if (
         logx is True
@@ -1035,13 +1082,13 @@ but you have {2} time-series.
         if logy is True:
             logy = False
             warnings.warn(
-                """
-*
-*   The --type={1} cannot also have the yaxis set to {0}.
-*   The {0} setting for yaxis is ignored.
-*
+                tsutils.error_wrapper(
+                    """
+The --type={1} cannot also have the yaxis set to {0}.
+The {0} setting for yaxis is ignored.
 """.format(
-                    yaxis, type
+                        yaxis, type
+                    )
                 )
             )
 
@@ -1049,6 +1096,7 @@ but you have {2} time-series.
     ylim = _know_your_limits(ylim, axis=yaxis)
 
     figsize = tsutils.make_list(figsize, n=2)
+    _, ax = plt.subplots(figsize=figsize)
 
     if not isinstance(tsd.index, pd.DatetimeIndex):
         if type == "time":
@@ -1086,7 +1134,6 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
     ]:
         colcnt = tsd.shape[1]
 
-    _, ax = plt.subplots(figsize=figsize)
     if type in [
         "xy",
         "double_mass",
@@ -1096,7 +1143,6 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
         "lognorm_yaxis",
         "weibull_xaxis",
         "weibull_yaxis",
-        "heatmap",
     ]:
         plotdict = {
             (False, True): ax.semilogy,
@@ -1167,7 +1213,9 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
                 ndf = tsd.reset_index()
             else:
                 ndf = tsd.iloc[:, colindex * 2 : colindex * 2 + 2]
+
             if type == "double_mass":
+                ndf = ndf.dropna()
                 ndf.iloc[:, 0] = ndf.iloc[:, 0].cumsum()
                 ndf.iloc[:, 1] = ndf.iloc[:, 1].cumsum()
             oxdata = np.array(ndf.iloc[:, 0])
@@ -1185,6 +1233,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
 
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
+
         if legend is True:
             ax.legend(loc="best")
 
@@ -1324,15 +1373,20 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
         xtitle = xtitle or "Time"
         ylimits = ax1.get_ylim()
         ny = np.linspace(ylimits[0], ylimits[1], 1000)
+
+        # reset to beginning of iterator
+        icolors = itertools.cycle(colors)
+        imarkerstyles = itertools.cycle(markerstyles)
+        ilinestyles = itertools.cycle(linestyles)
         for col in range(len(tsd.columns)):
             xvals = tsd.iloc[:, col].dropna().values
             pdf = gaussian_kde(xvals)
             ax0.plot(
                 pdf(ny),
                 ny,
-                linestyle=style[col][2:],
-                color=style[col][0],
-                marker=style[col][1],
+                linestyle=next(ilinestyles),
+                color=next(icolors),
+                marker=next(imarkerstyles),
                 label=tsd.columns[col],
                 drawstyle=drawstyle,
             )
@@ -1416,21 +1470,26 @@ The "heatmap" plot type can only work with daily time series.
         kind = "bar"
         if type[:4] == "barh":
             kind = "barh"
-        ax = tsd.plot(
+        color = [next(icolors) for i in range(len(tsd.columns))]
+        tsd.plot(
+            ax=ax,
             kind=kind,
             legend=legend,
             stacked=stacked,
-            style=style,
             logx=logx,
             logy=logy,
             xlim=xlim,
             ylim=ylim,
             figsize=figsize,
+            linestyle=None,
+            color=color,
         )
-        for index, line in enumerate(ax.lines):
-            plt.setp(line, color=style[index][0])
-            plt.setp(line, marker=style[index][1])
-            plt.setp(line, linestyle=style[index][2:])
+
+        hatches = [next(ibar_hatchstyles) for i in range(len(tsd.columns))]
+        hatches = "".join(h * len(tsd.index) for h in hatches)
+        for patch, hatch in zip(ax.patches, hatches):
+            patch.set_hatch(hatch)
+
         freq = tsutils.asbestfreq(tsd, force_freq=force_freq).index.freqstr
         if freq is not None:
             if "A" in freq:
@@ -1459,6 +1518,7 @@ The "heatmap" plot type can only work with daily time series.
             plt.legend(loc="best")
     elif type == "histogram":
         tsd.hist(figsize=figsize, sharey=sharey, sharex=sharex)
+
     if xy_match_line:
         if isinstance(xy_match_line, str):
             xymsty = xy_match_line

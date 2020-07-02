@@ -25,15 +25,16 @@ def test_histogram():
         clean=True,
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
+        sharex=False,
     )
 
 
-# @pytest.mark.mpl_image_compare(tolerance=6)
-# def test_heatmap():
-#     plt.close("all")
-#     return tstoolbox.plot(
-#         type="heatmap", columns=2, clean=True, input_ts=df, ofilename=None
-#     )
+@pytest.mark.mpl_image_compare(tolerance=6)
+def test_heatmap():
+    plt.close("all")
+    return tstoolbox.plot(
+        type="heatmap", columns=2, clean=True, input_ts=df, ofilename=None
+    )
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)
