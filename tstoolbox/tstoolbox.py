@@ -42,6 +42,7 @@ from .functions.pick import pick
 from .functions.plot import plot
 from .functions.rank import rank
 from .functions.read import read
+from .functions.regression import regression
 from .functions.remove_trend import remove_trend
 from .functions.replace import replace
 from .functions.rolling_window import rolling_window

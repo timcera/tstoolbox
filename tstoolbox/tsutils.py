@@ -815,6 +815,21 @@ The list {0} for "{2}" should have {1} members according to function requirement
     return ret
 
 
+def make_iloc(columns, col_list):
+    """Imitates the .ix option with subtracting one to convert."""
+
+    # ["1", "Value2"]    ->    [0, "Value2"]
+    # [1, 2, 3]          ->    [0, 1, 2]
+    columns = make_list(columns)
+    ntestc = []
+    for i in col_list:
+        try:
+            ntestc.append(int(i) - 1)
+        except ValueError:
+            ntestc.append(col_list.index(i))
+    return ntestc
+
+
 # NOT SET YET...
 #
 # Take `air_pressure` from df.loc[:, 1]
