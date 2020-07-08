@@ -820,13 +820,13 @@ def make_iloc(columns, col_list):
 
     # ["1", "Value2"]    ->    [0, "Value2"]
     # [1, 2, 3]          ->    [0, 1, 2]
-    columns = make_list(columns)
+    col_list = make_list(col_list)
     ntestc = []
     for i in col_list:
         try:
             ntestc.append(int(i) - 1)
         except ValueError:
-            ntestc.append(col_list.index(i))
+            ntestc.append(columns.index(i))
     return ntestc
 
 

@@ -36,8 +36,8 @@ _FUNCS = {
     #    "MultiTaskElasticNet": linear_model.MultiTaskElasticNet,
     #    "MultiTaskLassoCV": linear_model.MultiTaskLassoCV,
     #    "MultiTaskLasso": linear_model.MultiTaskLasso,
-    #    "OrthogonalMatchingPursuitCV": linear_model.OrthogonalMatchingPursuitCV,
-    #    "OrthogonalMatchingPursuit": linear_model.OrthogonalMatchingPursuit,
+    "OrthogonalMatchingPursuitCV": linear_model.OrthogonalMatchingPursuitCV,
+    "OrthogonalMatchingPursuit": linear_model.OrthogonalMatchingPursuit,
     #    "PassiveAggressive": linear_model.PassiveAggressiveClassifier,
     #    "Perceptron": linear_model.Perceptron,
     "RANSAC": linear_model.RANSACRegressor,
@@ -47,24 +47,6 @@ _FUNCS = {
     "TheilSen": linear_model.TheilSenRegressor,
 }
 
-
-def _validate_columns(ntsd, x_train_cols, y_train_cols):
-    x_train_cols = tsutils.common_kwds(ntsd, pick=x_train_cols)
-    y_train_cols = tsutils.common_kwds(ntsd, pick=y_train_cols)
-    for to in y_train_cols:
-        for fro in x_train_cols:
-            if to == fro:
-                raise ValueError(
-                    tsutils.error_wrapper(
-                        """
-You can't have columns in both "x_train_cols", and "y_train_col"
-keywords.  Instead you have "{to}" in both.
-""".format(
-                            **locals()
-                        )
-                    )
-                )
-    return x_train_cols, y_train_cols
 
 
 @mando.command("regression", formatter_class=RSTHelpFormatter, doctype="numpy")
@@ -99,6 +81,8 @@ def regression_cli(
         The method of regression.
 
         ARD
+            Requires lots of memory.
+
             Fit the weights of a regression model, using an ARD prior. The
             weights of the regression model are assumed to be in Gaussian
             distributions. Also estimate the parameters lambda (precisions of
@@ -163,6 +147,9 @@ def regression_cli(
             then treats the problem as a regression task (multi-output
             regression in the multiclass case).
         SGD
+            Input must be scaled by removing mean and scaling to unit variance.
+            Can use 'tstoolbox normalization ...' to scale the input.
+
             Linear model fitted by minimizing a regularized empirical loss with
             SGD.  SGD stands for Stochastic Gradient Descent: the gradient of
             the loss is estimated each sample at a time and the model is
@@ -237,6 +224,7 @@ def regression_cli(
             print_input=print_input,
         ),
         tablefmt=tablefmt,
+        headers=[],
     )
 
 
@@ -259,6 +247,22 @@ def regression(
     print_input=False,
 ):
     """Regression of data."""
+    x_train_cols = tsutils.make_list(x_train_cols)
+    y_train_col = tsutils.make_list(y_train_col)
+    for to in y_train_col:
+        for fro in x_train_cols:
+            if to == fro:
+                raise ValueError(
+                    tsutils.error_wrapper(
+                        """
+You can't have columns in both "x_train_cols", and "y_train_col"
+keywords.  Instead you have "{to}" in both.
+""".format(
+                            **locals()
+                        )
+                    )
+                )
+
     tsd = tsutils.common_kwds(
         tsutils.read_iso_ts(
             input_ts, skiprows=skiprows, names=names, index_type=index_type
@@ -270,6 +274,7 @@ def regression(
         dropna=dropna,
         clean=clean,
     )
+
     if print_input is True:
         ntsd = tsd.copy()
     else:
@@ -281,10 +286,9 @@ def regression(
     else:
         nx_pred_cols = x_pred_cols
 
-    x_train_cols = tsutils.make_list(x_train_cols)
-    x_train_cols, y_train_col = _validate_columns(ntsd, x_train_cols, y_train_col)
-
-    wtsd = x_train_cols.merge(y_train_col, left_index=True, right_index=True)
+    x_train_cols = tsutils.make_iloc(ntsd.columns, x_train_cols)
+    y_train_col = tsutils.make_iloc(ntsd.columns, y_train_col)
+    wtsd = ntsd.iloc[:, x_train_cols + y_train_col]
 
     # Train on 'any' dropna
     wtsddna = wtsd.dropna()
@@ -297,12 +301,13 @@ def regression(
     if x_pred_cols is None:
         x_pred = x_train
     else:
-        nx_pred_cols = tsutils.make_iloc(wtsd.columns, x_pred_cols)
-        x_pred = wtsd.iloc[:, nx_pred_cols]
-
+        nx_pred_cols = tsutils.make_iloc(ntsd.columns, x_pred_cols)
+        x_pred = ntsd.iloc[:, nx_pred_cols].dropna()
     y_pred = regr.predict(x_pred)
 
     if x_pred_cols is None:
+        if method == 'RANSAC':
+            regr = regr.estimator_
         rdata = []
         rdata.append(["Coefficients", regr.coef_])
         rdata.append(["Intercept", regr.intercept_])
@@ -311,7 +316,7 @@ def regression(
         return rdata
     else:
         return tsutils.return_input(
-            print_input, tsd, pd.DataFrame(y_pred, index=wtsd.index)
+            print_input, tsd, pd.DataFrame(y_pred, index=x_pred.index)
         )
 
 
