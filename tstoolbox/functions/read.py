@@ -36,9 +36,12 @@ def read_cli(
     *filenames,
 ):
     """
-    Collect time series from a list of pickle or csv files.
+    Combines time-series from a list of pickle or csv files.
 
     Prints the read in time-series in the tstoolbox standard format.
+
+    WARNING: Accepts naive and timezone aware time-series by converting all to
+    UTC and removing timezone information.
 
     Parameters
     ----------
@@ -97,7 +100,7 @@ def read_cli(
 
 @tsutils.validator(
     filenames=[str, ["pass", []], None],
-    append=[str, ["domain", ["columns", "row", "combine"]], 1],
+    append=[str, ["domain", ["columns", "rows", "combine"]], 1],
     force_freq=[str, ["pass", []], 1],
 )
 def read(
@@ -136,6 +139,7 @@ You game me {0}.
     filenames = tsutils.make_list(filenames)
     result = pd.DataFrame()
     result_list = []
+    zones = set()
     for i in filenames:
         tsd = tsutils.common_kwds(
             tsutils.read_iso_ts(
@@ -151,10 +155,18 @@ You game me {0}.
             source_units=source_units,
             target_units=target_units,
         )
-        if append != "combine":
-            result_list.append(tsd)
-        else:
-            result = result.combine_first(tsd)
+        result_list.append(tsd)
+        zones.add(tsd.index.tzinfo)
+
+    for res in result_list:
+        if len(zones) != 1:
+            try:
+                res.index = res.index.tz_convert(None)
+            except TypeError:
+                pass
+
+        if append == "combine":
+            result = result.combine_first(res)
 
     if append != "combine":
         result = pd.concat(result_list, axis=append)
