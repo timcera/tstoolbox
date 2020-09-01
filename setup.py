@@ -41,6 +41,7 @@ install_requires = [
     "scikit-learn",
     "statsmodels",
     "setuptools",
+    "SciencePlots",
 ]
 
 setup(

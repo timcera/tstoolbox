@@ -189,6 +189,7 @@ def plot_cli(
     source_units=None,
     target_units=None,
     lag_plot_lag=1,
+    plot_styles="bright",
 ):
     r"""Plot data.
 
@@ -660,8 +661,46 @@ def plot_cli(
     {source_units}
     {target_units}
     {round_index}
+    plot_styles: str
+        [optional, default is "default"]
 
-    """
+        Set the style of the plot.  One or more of Matplotlib styles "classic",
+        "Solarize_Light2", "bmh", "dark_background", "fast", "fivethirtyeight",
+        "ggplot", "grayscale", "seaborn", "seaborn-bright",
+        "seaborn-colorblind", "seaborn-dark", "seaborn-dark-palette",
+        "seaborn-darkgrid", "seaborn-deep", "seaborn-muted",
+        "seaborn-notebook", "seaborn-paper", "seaborn-pastel",
+        "seaborn-poster", "seaborn-talk", "seaborn-ticks", "seaborn-white",
+        "seaborn-whitegrid", "tableau-colorblind10", and
+
+        SciencePlots styles "science", "grid", "ieee", "scatter", "notebook",
+        "high-vis", "bright", "vibrant", "muted", and "retro".
+
+        If multiple styles then each over rides some or all of the
+        characteristics of the previous.
+
+        Color Blind Appropriate Styles
+
+        The styles "seaborn-colorblind", "tableau-colorblind10", "bright",
+        "vibrant", and "muted" are all styles that are setup to be able to be
+        distinguished by someone with color blindness.
+
+        Black, White, and Gray Styles
+
+        The "ieee" style is appropriate for black, white, and gray, however the
+        "ieee" also will change the chart size to fit in a column of the "IEEE"
+        journal.
+
+        The "grayscale" is another style useful for photo-copyable black,
+        white, nd gray.
+
+        Matplotlib styles:
+            https://matplotlib.org/3.3.1/gallery/style_sheets/style_sheets_reference.html
+
+        SciencePlots styles:
+            https://github.com/garrettj403/SciencePlots
+
+        """
     plt = plot(
         input_ts=input_ts,
         columns=columns,
@@ -717,6 +756,7 @@ def plot_cli(
         source_units=source_units,
         target_units=target_units,
         lag_plot_lag=lag_plot_lag,
+        plot_styles=plot_styles,
     )
 
 
@@ -796,6 +836,50 @@ def plot_cli(
         1,
     ],
     prob_plot_sort_values=[str, ["domain", ["ascending", "descending"]], 1],
+    plot_styles=[
+        str,
+        [
+            "domain",
+            [
+                "classic",
+                "Solarize_Light2",
+                "bmh",
+                "dark_background",
+                "fast",
+                "fivethirtyeight",
+                "ggplot",
+                "grayscale",
+                "seaborn",
+                "seaborn-bright",
+                "seaborn-colorblind",
+                "seaborn-dark",
+                "seaborn-dark-palette",
+                "seaborn-darkgrid",
+                "seaborn-deep",
+                "seaborn-muted",
+                "seaborn-notebook",
+                "seaborn-paper",
+                "seaborn-pastel",
+                "seaborn-poster",
+                "seaborn-talk",
+                "seaborn-ticks",
+                "seaborn-white",
+                "seaborn-whitegrid",
+                "tableau-colorblind10",
+                "science",
+                "grid",
+                "ieee",
+                "scatter",
+                "notebook",
+                "high-vis",
+                "bright",
+                "vibrant",
+                "muted",
+                "retro",
+            ],
+        ],
+        None,
+    ],
 )
 def plot(
     input_ts="-",
@@ -852,6 +936,7 @@ def plot(
     source_units=None,
     target_units=None,
     lag_plot_lag=1,
+    plot_styles="bright",
 ):
     r"""Plot data."""
     # Need to work around some old option defaults with the implementation of
@@ -956,7 +1041,7 @@ l1,l2,l3,...  where l1 is the legend for x1,y1, l2 is the legend for x2,y2,
         lnames = tsd.columns
 
     if colors == "auto":
-        colors = COLOR_LIST
+        colors = None
     else:
         colors = tsutils.make_list(colors)
 
@@ -1016,17 +1101,10 @@ but you have {2} time-series.
         linestyles = [" " if i in ["  ", None] else i for i in linestyles]
     markerstyles = [" " if i is None else i for i in markerstyles]
 
-    icolors = itertools.cycle(colors)
-    imarkerstyles = itertools.cycle(markerstyles)
-    ilinestyles = itertools.cycle(linestyles)
-
-    style = [
-        "{0}{1}{2}".format(next(icolors), next(imarkerstyles), next(ilinestyles))
-        for i in list(range(len(tsd.columns)))
-    ]
-
-    # reset to beginning of iterator
-    icolors = itertools.cycle(colors)
+    if colors is not None:
+        icolors = itertools.cycle(colors)
+    else:
+        icolors = None
     imarkerstyles = itertools.cycle(markerstyles)
     ilinestyles = itertools.cycle(linestyles)
 
@@ -1095,6 +1173,9 @@ The {0} setting for yaxis is ignored.
     xlim = _know_your_limits(xlim, axis=xaxis)
     ylim = _know_your_limits(ylim, axis=yaxis)
 
+    plot_styles = tsutils.make_list(plot_styles)
+    plt.style.use(plot_styles)
+
     figsize = tsutils.make_list(figsize, n=2)
     _, ax = plt.subplots(figsize=figsize)
 
@@ -1157,7 +1238,6 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             subplots=subplots,
             sharex=sharex,
             sharey=sharey,
-            style=None,
             logx=logx,
             logy=logy,
             xlim=xlim,
@@ -1168,9 +1248,22 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             drawstyle=drawstyle,
         )
         for index, line in enumerate(ax.lines):
-            plt.setp(line, color=style[index][0])
-            plt.setp(line, marker=style[index][1])
-            plt.setp(line, linestyle=style[index][2:])
+            if icolors is not None:
+                c = next(icolors)
+            else:
+                c = None
+            if imarkerstyles is not None:
+                m = next(imarkerstyles)
+            else:
+                m = None
+            if ilinestyles is not None:
+                l = next(ilinestyles)
+            else:
+                l = None
+            if c is not None:
+                plt.setp(line, color=c)
+            plt.setp(line, marker=m)
+            plt.setp(line, linestyle=l)
         xtitle = xtitle or "Time"
         if legend is True:
             plt.legend(loc="best")
@@ -1221,11 +1314,16 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             oxdata = np.array(ndf.iloc[:, 0])
             oydata = np.array(ndf.iloc[:, 1])
 
+            if icolors is not None:
+                c = next(icolors)
+            else:
+                c = None
+
             plotdict[(logx, logy)](
                 oxdata,
                 oydata,
                 linestyle=next(ilinestyles),
-                color=next(icolors),
+                color=c,
                 marker=next(imarkerstyles),
                 label=lnames[colindex],
                 drawstyle=drawstyle,
@@ -1265,11 +1363,15 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
                 oxdata, oydata = oydata, oxdata
                 norm_axis = ax.yaxis
 
+            if icolors is not None:
+                c = next(icolors)
+            else:
+                c = None
             plotdict[(logx, logy)](
                 oxdata,
                 oydata,
                 linestyle=next(ilinestyles),
-                color=next(icolors),
+                color=c,
                 marker=next(imarkerstyles),
                 label=lnames[colindex],
                 drawstyle=drawstyle,
@@ -1334,9 +1436,22 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             figsize=figsize,
         )
         for index, line in enumerate(ax.lines):
-            plt.setp(line, color=style[index][0])
-            plt.setp(line, marker=style[index][1])
-            plt.setp(line, linestyle=style[index][2:])
+            if icolors is not None:
+                c = next(icolors)
+            else:
+                c = None
+            if imarkerstyles is not None:
+                m = next(imarkerstyles)
+            else:
+                m = None
+            if ilinestyles is not None:
+                l = next(ilinestyles)
+            else:
+                l = None
+            if c is not None:
+                plt.setp(line, color=c)
+            plt.setp(line, marker=m)
+            plt.setp(line, linestyle=l)
         ytitle = ytitle or "Density"
         if legend is True:
             plt.legend(loc="best")
@@ -1367,25 +1482,43 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             ax=ax1,
         )
         for index, line in enumerate(ax1.lines):
-            plt.setp(line, color=style[index][0])
-            plt.setp(line, marker=style[index][1])
-            plt.setp(line, linestyle=style[index][2:])
+            if icolors is not None:
+                c = next(icolors)
+            else:
+                c = None
+            if imarkerstyles is not None:
+                m = next(imarkerstyles)
+            else:
+                m = None
+            if ilinestyles is not None:
+                l = next(ilinestyles)
+            else:
+                l = None
+            if c is not None:
+                plt.setp(line, color=c)
+            plt.setp(line, marker=m)
+            plt.setp(line, linestyle=l)
         xtitle = xtitle or "Time"
         ylimits = ax1.get_ylim()
         ny = np.linspace(ylimits[0], ylimits[1], 1000)
 
         # reset to beginning of iterator
-        icolors = itertools.cycle(colors)
+        if icolors is not None:
+            icolors = itertools.cycle(colors)
+        else:
+            icolors = None
         imarkerstyles = itertools.cycle(markerstyles)
         ilinestyles = itertools.cycle(linestyles)
         for col in range(len(tsd.columns)):
             xvals = tsd.iloc[:, col].dropna().values
             pdf = gaussian_kde(xvals)
+            if icolors is not None:
+                c = next(icolors)
             ax0.plot(
                 pdf(ny),
                 ny,
                 linestyle=next(ilinestyles),
-                color=next(icolors),
+                color=c,
                 marker=next(imarkerstyles),
                 label=tsd.columns[col],
                 drawstyle=drawstyle,
@@ -1470,7 +1603,10 @@ The "heatmap" plot type can only work with daily time series.
         kind = "bar"
         if type[:4] == "barh":
             kind = "barh"
-        color = [next(icolors) for i in range(len(tsd.columns))]
+        if icolors is not None:
+            c = [next(icolors) for i in range(len(tsd.columns))]
+        else:
+            c = None
         tsd.plot(
             ax=ax,
             kind=kind,
@@ -1482,7 +1618,7 @@ The "heatmap" plot type can only work with daily time series.
             ylim=ylim,
             figsize=figsize,
             linestyle=None,
-            color=color,
+            color=c,
         )
 
         hatches = [next(ibar_hatchstyles) for i in range(len(tsd.columns))]
