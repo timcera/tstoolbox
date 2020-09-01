@@ -48,7 +48,6 @@ _FUNCS = {
 }
 
 
-
 @mando.command("regression", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def regression_cli(
@@ -306,7 +305,7 @@ keywords.  Instead you have "{to}" in both.
     y_pred = regr.predict(x_pred)
 
     if x_pred_cols is None:
-        if method == 'RANSAC':
+        if method == "RANSAC":
             regr = regr.estimator_
         rdata = []
         rdata.append(["Coefficients", regr.coef_])
