@@ -28,6 +28,7 @@ def test_double_mass():
         clean=True,
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -39,6 +40,7 @@ def test_double_mass_mult():
         columns=[2, 3, 3, 2],
         input_ts="tests/data_daily_sample.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -52,6 +54,7 @@ def test_double_mass_marker():
         markerstyles="auto",
         input_ts="tests/data_daily_sample.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -64,7 +67,12 @@ def test_boxplot():
         append="combine",
     )
     return tstoolbox.plot(
-        input_ts=xdf, clean=True, columns=[2, 3], type="boxplot", ofilename=None
+        input_ts=xdf,
+        clean=True,
+        columns=[2, 3],
+        type="boxplot",
+        ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -76,6 +84,7 @@ def test_scatter_matrix():
         clean=True,
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -103,28 +112,37 @@ def test_probability_density():
         clean=True,
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)
 def test_bar():
     plt.close("all")
-    return tstoolbox.plot(type="bar", input_ts=dfa, ofilename=None)
+    return tstoolbox.plot(
+        type="bar", input_ts=dfa, plot_styles="classic", ofilename=None
+    )
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)
 def test_barh():
     plt.close("all")
-    return tstoolbox.plot(type="barh", input_ts=dfa, ofilename=None)
+    return tstoolbox.plot(
+        type="barh", input_ts=dfa, plot_styles="classic", ofilename=None
+    )
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)
 def test_bar_stacked():
     plt.close("all")
-    return tstoolbox.plot(type="bar_stacked", input_ts=dfa, ofilename=None)
+    return tstoolbox.plot(
+        type="bar_stacked", input_ts=dfa, plot_styles="classic", ofilename=None
+    )
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)
 def test_barh_stacked():
     plt.close("all")
-    return tstoolbox.plot(type="barh_stacked", input_ts=dfa, ofilename=None)
+    return tstoolbox.plot(
+        type="barh_stacked", input_ts=dfa, plot_styles="classic", ofilename=None
+    )

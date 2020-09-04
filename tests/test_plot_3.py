@@ -26,6 +26,7 @@ def test_histogram():
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
         sharex=False,
+        plot_styles="classic",
     )
 
 
@@ -33,7 +34,12 @@ def test_histogram():
 def test_heatmap():
     plt.close("all")
     return tstoolbox.plot(
-        type="heatmap", columns=2, clean=True, input_ts=df, ofilename=None
+        type="heatmap",
+        columns=2,
+        clean=True,
+        input_ts=df,
+        ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -46,6 +52,7 @@ def test_norm_xaxis():
         clean=True,
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -58,6 +65,7 @@ def test_norm_yaxis():
         clean=True,
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -70,6 +78,7 @@ def test_lognorm_xaxis():
         clean=True,
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -82,6 +91,7 @@ def test_lognorm_yaxis():
         clean=True,
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -94,6 +104,7 @@ def test_weibull_xaxis():
         clean=True,
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -106,6 +117,7 @@ def test_weibull_yaxis():
         clean=True,
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -118,6 +130,7 @@ def test_kde_time():
         clean=True,
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -132,6 +145,7 @@ def test_kde_time_multiple_traces():
         input_ts=ndf,
         ytitle="Flow",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -139,5 +153,9 @@ def test_kde_time_multiple_traces():
 def test_autocorrelation():
     plt.close("all")
     return tstoolbox.plot(
-        type="autocorrelation", columns=2, input_ts=df, ofilename=None
+        type="autocorrelation",
+        columns=2,
+        input_ts=df,
+        ofilename=None,
+        plot_styles="classic",
     )

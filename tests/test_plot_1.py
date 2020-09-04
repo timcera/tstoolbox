@@ -26,6 +26,7 @@ def test_time_plot():
         clean=True,
         input_ts="tests/02234500_65_65.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -38,6 +39,7 @@ def test_time_multiple_traces_plot():
         style="b-,r*",
         input_ts="tests/data_daily_sample.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -50,6 +52,7 @@ def test_time_multiple_traces_style_plot():
         style="b-,r  ",
         input_ts="tests/data_daily_sample.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -63,6 +66,7 @@ def test_time_multiple_traces_new_style_plot():
         linestyles="-, ",
         input_ts="tests/data_daily_sample.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -76,6 +80,7 @@ def test_time_markers():
         markerstyles="auto",
         input_ts="tests/data_daily_sample.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -83,7 +88,11 @@ def test_time_markers():
 def test_xy():
     plt.close("all")
     return tstoolbox.plot(
-        type="xy", clean=True, input_ts="tests/02234500_65_65.csv", ofilename=None
+        type="xy",
+        clean=True,
+        input_ts="tests/02234500_65_65.csv",
+        ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -95,6 +104,7 @@ def test_xy_multiple_traces():
         columns=[2, 3, 3, 2],
         input_ts="tests/data_daily_sample.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -107,6 +117,7 @@ def test_xy_multiple_traces_logy():
         yaxis="log",
         input_ts="tests/data_daily_sample.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -119,6 +130,7 @@ def test_xy_multiple_traces_logx():
         xaxis="log",
         input_ts="tests/data_daily_sample.csv",
         ofilename=None,
+        plot_styles="classic",
     )
 
 
@@ -132,4 +144,5 @@ def test_xy_multiple_traces_markers():
         markerstyles="auto",
         input_ts="tests/data_daily_sample.csv",
         ofilename=None,
+        plot_styles="classic",
     )
