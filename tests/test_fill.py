@@ -24,6 +24,7 @@ class TestFill(TestCase):
             self.ats, index=dindex, columns=["Value_with_missing::fill"]
         )
         self.ats.index.name = "Datetime"
+        self.ats = tsutils.memory_optimize(self.ats)
 
         self.ats_cli = capture.capture(tsutils._printiso, self.ats)
 
@@ -61,6 +62,7 @@ class TestFill(TestCase):
         self.nearest_compare["Value_with_missing::fill"][
             "2011-01-01T12:00:00":"2011-01-01T13:00:00"
         ] = 9.0
+        self.nearest_compare = tsutils.memory_optimize(self.nearest_compare)
 
         self.nearest_compare_cli = capture.capture(
             tsutils._printiso, self.nearest_compare
@@ -103,6 +105,7 @@ class TestFill(TestCase):
         self.median_compare["Value_with_missing::fill"]["2011-01-01T16:00:00"] = 2.0
         self.median_compare["Value_with_missing::fill"]["2011-01-01T22:00:00"] = 2.0
         self.median_compare["Value_with_missing::fill"]["2011-01-01T23:00:00"] = 2.0
+        self.median_compare = tsutils.memory_optimize(self.median_compare)
 
         self.median_compare_cli = capture.capture(
             tsutils._printiso, self.median_compare
@@ -118,6 +121,7 @@ class TestFill(TestCase):
         self.max_compare["Value_with_missing::fill"]["2011-01-01T16:00:00"] = 9.0
         self.max_compare["Value_with_missing::fill"]["2011-01-01T22:00:00"] = 9.0
         self.max_compare["Value_with_missing::fill"]["2011-01-01T23:00:00"] = 9.0
+        self.max_compare = tsutils.memory_optimize(self.max_compare)
 
         self.max_compare_cli = capture.capture(tsutils._printiso, self.max_compare)
 
@@ -131,6 +135,7 @@ class TestFill(TestCase):
         self.min_compare["Value_with_missing::fill"]["2011-01-01T16:00:00"] = 2.0
         self.min_compare["Value_with_missing::fill"]["2011-01-01T22:00:00"] = 2.0
         self.min_compare["Value_with_missing::fill"]["2011-01-01T23:00:00"] = 2.0
+        self.min_compare = tsutils.memory_optimize(self.min_compare)
 
         self.min_compare_cli = capture.capture(tsutils._printiso, self.min_compare)
 

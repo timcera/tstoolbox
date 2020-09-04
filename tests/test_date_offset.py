@@ -8,6 +8,7 @@ from unittest import TestCase
 import pandas as pd
 from pandas.testing import assert_frame_equal
 from tstoolbox import tstoolbox
+from tstoolbox import tsutils
 
 try:
     from cStringIO import StringIO
@@ -46,6 +47,7 @@ test_sinwave = r"""Datetime,Value
 class TestDateOffset(TestCase):
     def setUp(self):
         self.ats = pd.read_csv(StringIO(test_sinwave), parse_dates=True, index_col=[0])
+        self.ats = tsutils.memory_optimize(self.ats)
 
     def test_data_offset(self):
         out = tstoolbox.date_offset(-1, "H", input_ts="tests/data_sine.csv")

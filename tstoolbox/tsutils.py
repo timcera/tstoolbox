@@ -1650,6 +1650,57 @@ def open_local(filein):
     return open(filein, "r")
 
 
+def reduce_mem_usage(props):
+    for col in props.columns:
+        try:
+            if props[col].dtype == object:  # Exclude strings
+                continue
+        except AttributeError:
+            continue
+
+        # make variables for Int, max and min
+        mx = props[col].max()
+        mn = props[col].min()
+
+        # test if column can be converted to an integer
+        try:
+            asint = props[col].astype(np.int64)
+            result = all((props[col] - asint) == 0)
+        except ValueError:
+            # Want missing values to remain missing so
+            # they need to remain float.
+            result = False
+
+        # Make Integer/unsigned Integer datatypes
+        if result is True:
+            if mn >= 0:
+                if mx < np.iinfo(np.uint8).max:
+                    props[col] = props[col].astype(np.uint8)
+                elif mx < np.iinfo(np.uint16).max:
+                    props[col] = props[col].astype(np.uint16)
+                elif mx < np.iinfo(np.uint32).max:
+                    props[col] = props[col].astype(np.uint32)
+                else:
+                    props[col] = props[col].astype(np.uint64)
+            else:
+                if mn > np.iinfo(np.int8).min and mx < np.iinfo(np.int8).max:
+                    props[col] = props[col].astype(np.int8)
+                elif mn > np.iinfo(np.int16).min and mx < np.iinfo(np.int16).max:
+                    props[col] = props[col].astype(np.int16)
+                elif mn > np.iinfo(np.int32).min and mx < np.iinfo(np.int32).max:
+                    props[col] = props[col].astype(np.int32)
+                elif mn > np.iinfo(np.int64).min and mx < np.iinfo(np.int64).max:
+                    props[col] = props[col].astype(np.int64)
+
+        else:
+            # Put here whatever I come up with for float types.
+            # Algorithm problem because just looking at limits doesn't help
+            # with precision.
+            pass
+
+    return props
+
+
 def memory_optimize(tsd):
     """Convert all columns to known types.
 
@@ -1657,7 +1708,17 @@ def memory_optimize(tsd):
     function might go away.  Kept in case want to add additional
     optimizations.
     """
+    tsd.index = pd.Index(tsd.index, dtype=None)
     tsd = tsd.infer_objects()
+    tsd = reduce_mem_usage(tsd)
+    if tsd.index.is_all_dates == False:
+        tsd.index = reduce_mem_usage(pd.DataFrame(data=tsd.index)).iloc[:, 0]
+    try:
+        tsd.index.freq = pd.infer_freq(tsd.index)
+    except (TypeError, ValueError):
+        # TypeError: Not datetime like index
+        # ValueError: Less than three rows
+        pass
     return tsd
 
 

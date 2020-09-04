@@ -331,6 +331,7 @@ a number.  Instead you have {0}.  """.format(
     ntsd = ntsd.iloc[1:-1]
     tsd.index.name = "Datetime"
     ntsd.index.name = "Datetime"
+    ntsd = tsutils.memory_optimize(ntsd)
     return tsutils.return_input(print_input, tsd, ntsd, "fill")
 
 

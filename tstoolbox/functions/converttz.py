@@ -120,6 +120,7 @@ def converttz(
         tsd = tsd.tz_localize(fromtz).tz_convert(totz)
     except TypeError:
         tsd = tsd.tz_convert(totz)
+    tsd = tsutils.memory_optimize(tsd)
     return tsd
 
 

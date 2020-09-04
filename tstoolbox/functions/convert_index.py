@@ -330,8 +330,7 @@ def convert_index(
                 tsd.index.to_julian_date() - epoch_date.to_julian_date()
             ) * frac
 
-        if any(tsd.index != tsd.index.astype("int64")) is False:
-            tsd.index = tsd.index.astype("int64")
+        tsd = tsutils.memory_optimize(tsd)
 
     elif to == "datetime":
         tsd.index = pd.to_datetime(
