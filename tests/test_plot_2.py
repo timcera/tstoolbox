@@ -91,7 +91,9 @@ def test_scatter_matrix():
 @pytest.mark.mpl_image_compare(tolerance=6)
 def test_lag_plot():
     plt.close("all")
-    return tstoolbox.plot(columns=1, type="lag_plot", input_ts=df, ofilename=None)
+    return tstoolbox.plot(
+        columns=1, type="lag_plot", input_ts=df, ofilename=None, plot_styles="classic"
+    )
 
 
 # Can't have a bootstrap test since random selections are made.
