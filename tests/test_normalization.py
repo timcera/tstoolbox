@@ -40,7 +40,7 @@ class TestDescribe(TestCase):
         """Test the normalization API function using the zscore method."""
         out = tstoolbox.normalization(mode="zscore", input_ts="tests/data_sunspot.csv")
         assert_frame_equal(
-            out, self.data_zscore, check_less_precise=4, check_column_type=False
+            out, self.data_zscore, check_exact=False, check_column_type=False, atol=1e-4
         )
 
     def test_pct_rank(self):
