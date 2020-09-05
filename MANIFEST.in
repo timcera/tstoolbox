@@ -6,3 +6,4 @@ include LICENSE.txt
 include README.rst
 include tstoolbox/skill_metrics/README_SkillMetrics.txt
 include tstoolbox/skill_metrics/LICENSE_SkillMetrics.txt
+include tstoolbox/SciencePlots_styles/*
