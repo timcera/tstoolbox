@@ -41,7 +41,6 @@ install_requires = [
     "scikit-learn",
     "statsmodels",
     "setuptools",
-    "SciencePlots",
 ]
 
 setup(
@@ -77,6 +76,8 @@ setup(
         "{pkg_name}.functions".format(**locals()),
         "{pkg_name}.skill_metrics".format(**locals()),
     ],
+    package_dir={"tstoolbox": "tstoolbox"},
+    package_data={"tstoolbox": ["SciencePlots_styles/*"]},
     include_package_data=True,
     zip_safe=False,
     install_requires=install_requires,

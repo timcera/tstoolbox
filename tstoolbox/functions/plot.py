@@ -4,6 +4,7 @@
 from __future__ import absolute_import, division, print_function
 
 import itertools
+import os
 import warnings
 
 import mando
@@ -59,7 +60,16 @@ MARKER_LIST = [
     "_",
 ]
 
-COLOR_LIST = ["b", "g", "r", "c", "m", "y", "k"]
+# Colors from "bright" style.
+COLOR_LIST = [
+    "#4477AA",
+    "#EE6677",
+    "#228833",
+    "#CCBB44",
+    "#66CCEE",
+    "#AA3377",
+    "#BBBBBB",
+]
 
 LINE_LIST = ["-", "--", "-.", ":", "solid", "dashed", "dashdot", "dotted"]
 
@@ -1173,7 +1183,16 @@ The {0} setting for yaxis is ignored.
     xlim = _know_your_limits(xlim, axis=xaxis)
     ylim = _know_your_limits(ylim, axis=yaxis)
 
-    plot_styles = tsutils.make_list(plot_styles)
+    plot_styles = tsutils.make_list(plot_styles) + ["no-latex"]
+    style_loc = os.path.join(
+        os.path.dirname(__file__), os.pardir, "SciencePlots_styles"
+    )
+    plot_styles = [
+        os.path.join(style_loc, i + ".mplstyle")
+        if os.path.exists(os.path.join(style_loc, i + ".mplstyle"))
+        else i
+        for i in plot_styles
+    ]
     plt.style.use(plot_styles)
 
     figsize = tsutils.make_list(figsize, n=2)
