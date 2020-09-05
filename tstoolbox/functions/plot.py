@@ -60,17 +60,6 @@ MARKER_LIST = [
     "_",
 ]
 
-# Colors from "bright" style.
-COLOR_LIST = [
-    "#4477AA",
-    "#EE6677",
-    "#228833",
-    "#CCBB44",
-    "#66CCEE",
-    "#AA3377",
-    "#BBBBBB",
-]
-
 LINE_LIST = ["-", "--", "-.", ":", "solid", "dashed", "dashdot", "dotted"]
 
 HATCH_LIST = ["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
@@ -365,12 +354,18 @@ def plot_cli(
     colors
         [optional, default is 'auto']
 
-        The default 'auto' will cycle through matplotlib colors.  Otherwise at
-        command line supply a comma separated matplotlib color codes, or
-        within Python a list of color code strings.
+        The default 'auto' will cycle through matplotlib colors in the chosen
+        style.
 
-        Separated 'colors', 'linestyles', and 'markerstyles' instead of using
-        the 'style' keyword.
+        At the command line supply a comma separated matplotlib
+        color codes, or within Python a list of color code strings.
+
+        Can identify colors in four different ways.
+
+        1. Use 'CN' where N is a number from 0 to 9 that gets the Nth color
+        from the current style.
+
+        2. Single character code from the table below.
 
         +------+---------+
         | Code | Color   |
@@ -390,13 +385,10 @@ def plot_cli(
         | k    | black   |
         +------+---------+
 
-        +---------+-----------+
-        | Number  | Color     |
-        +=========+===========+
-        | 0.75    | 0.75 gray |
-        +---------+-----------+
-        | ...etc. |           |
-        +---------+-----------+
+        3. Number between 0 and 1 that represents the level of gray, where 0 is
+        white an 1 is black.
+
+        4. Any of the HTML color names.
 
         +------------------+
         | HTML Color Names |
