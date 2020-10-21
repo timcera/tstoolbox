@@ -230,12 +230,19 @@ consistent with other tstoolbox commands.
             except NameError:
                 tmptsd = pd.DataFrame(eval("""tsd.aggregate('{0}')""".format(method))).T
             tmptsd.index = [tsd.index[-1]]
+        elif groupby == "months_across_years":
+            tmptsd = tsd.groupby(lambda x: x.month).agg(method)
+            tmptsd.index = list(range(1, 13))
         else:
             tmptsd = eval(
                 """tsd.resample('{0}{1}').{2}()""".format(ninterval, groupby, method)
             )
         tmptsd.columns = [tsutils.renamer(i, method) for i in tmptsd.columns]
         newts = newts.join(tmptsd, how="outer")
+    if groupby == "all":
+        newts.index.name = "POR"
+    if groupby == "months_across_years":
+        newts.index.name = "Months"
     return tsutils.return_input(print_input, tsd, newts)
 
 
