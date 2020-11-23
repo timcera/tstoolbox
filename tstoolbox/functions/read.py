@@ -147,7 +147,6 @@ You game me {0}.
             ),
             start_date=start_date,
             end_date=end_date,
-            pick=columns,
             round_index=round_index,
             dropna=dropna,
             force_freq=force_freq,
@@ -170,6 +169,8 @@ You game me {0}.
 
     if append != "combine":
         result = pd.concat(result_list, axis=append)
+
+    result = tsutils._pick(result, columns)
 
     result.sort_index(inplace=True)
 

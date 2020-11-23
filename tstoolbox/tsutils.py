@@ -1292,7 +1292,10 @@ number of columns {1}.
             # Use the -1 marker to indicate index
             jtsd = pd.DataFrame(tsd.index, index=tsd.index)
         else:
-            jtsd = pd.DataFrame(tsd[tsd.columns[col]], index=tsd.index)
+            try:
+                jtsd = pd.DataFrame(tsd.iloc[:, col], index=tsd.index)
+            except IndexError:
+                jtsd = pd.DataFrame(tsd.loc[:, col], index=tsd.index)
 
         newtsd = newtsd.join(jtsd, lsuffix="_{0}".format(index), how="outer")
     return newtsd
