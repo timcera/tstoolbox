@@ -65,29 +65,43 @@ class TestFilter(TestCase):
         self.fft_highpass = self.ats.join(self.fft_highpass)
 
     def test_filter_flat(self):
-        out = tstoolbox.filter("flat", input_ts="tests/data_sine.csv", print_input=True)
+        out = tstoolbox.filter(
+            "flat",
+            "lowpass",
+            input_ts="tests/data_sine.csv",
+            print_input=True,
+            window_len=5,
+        )
         self.maxDiff = None
         assert_frame_equal(out, self.flat_3, check_column_type=False)
 
     def test_filter_hanning(self):
         out = tstoolbox.filter(
-            "hanning", input_ts="tests/data_sine.csv", print_input=True
+            "hanning",
+            "lowpass",
+            input_ts="tests/data_sine.csv",
+            print_input=True,
+            window_len=5,
         )
         self.maxDiff = None
         assert_frame_equal(out, self.hanning, check_column_type=False)
 
     def test_filter_fft_lowpass(self):
         out = tstoolbox.filter(
-            "fft_lowpass",
+            "fft",
+            "lowpass",
             input_ts="tests/data_sine.csv",
             print_input=True,
-            cutoff_period=50,
+            lowpass_cutoff=50,
+            window_len=5,
         )
         self.maxDiff = None
         assert_frame_equal(out, self.fft_lowpass, check_column_type=False)
 
     def test_small_window_len(self):
-        out = tstoolbox.filter("flat", input_ts="tests/data_sine.csv", window_len=2)
+        out = tstoolbox.filter(
+            "flat", "lowpass", input_ts="tests/data_sine.csv", window_len=2
+        )
         out1 = tstoolbox.read("tests/data_sine.csv")
         out1.columns = ["Value::filter"]
         # NOp
@@ -96,13 +110,13 @@ class TestFilter(TestCase):
     def test_large_window_len(self):
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.filter(
-                "flat", input_ts="tests/data_sine.csv", window_len=1000
+                "flat", "lowpass", input_ts="tests/data_sine.csv", window_len=1000
             )
         assert r"Input vector (length=" in str(e_info.value)
 
     def test_filter_type(self):
         with pytest.raises(ValueError) as e_info:
-            _ = tstoolbox.filter("flatter", input_ts="tests/data_sine.csv")
+            _ = tstoolbox.filter("flatter", "lowpass", input_ts="tests/data_sine.csv")
         assert r'The argument "filter_type" should be' in str(e_info.value)
 
 
