@@ -12,7 +12,8 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 from tstoolbox import tstoolbox, tsutils
 
-output_peak_detection = b"""Datetime,0,0::peak,0::valley
+output_peak_detection = tsutils.read_iso_ts(
+    b"""Datetime,0,0::peak,0::valley
 2000-01-01 00:00:00,0,,
 2000-01-01 01:00:00,0.258819,,
 2000-01-01 02:00:00,0.5,,
@@ -38,6 +39,7 @@ output_peak_detection = b"""Datetime,0,0::peak,0::valley
 2000-01-01 22:00:00,-0.5,,
 2000-01-01 23:00:00,-0.258819,,
 """
+)
 
 input_peak_detection = b"""Datetime,0
 2000-01-01 00:00:00,0.0
@@ -73,7 +75,7 @@ class TestPeakDetect(TestCase):
         self.ats = np.arange(0, 360, 15)
         self.ats = np.sin(2 * np.pi * self.ats / 360)
         self.ats = pd.DataFrame(self.ats, index=dindex)
-        self.ats = tsutils.memory_optimize(self.ats)
+        self.ats = tsutils.memory_optimize(self.ats).astype("Float64")
 
         self.compare = self.ats.copy()
         self.compare = self.compare.join(
@@ -95,14 +97,13 @@ class TestPeakDetect(TestCase):
         self.compare.loc[self.compare[0] == 1, "0::peak"] = 1
         self.compare["0::valley"] = np.nan
         self.compare.loc[self.compare[0] == -1, "0::valley"] = -1
-        self.compare = tsutils.memory_optimize(self.compare)
+        self.compare = tsutils.memory_optimize(self.compare).astype("Float64")
 
     def test_peak_rel_direct(self):
         """Test peak detection API using the default method."""
         out = tstoolbox.peak_detection(
             input_ts=self.ats, print_input=True, extrema="both"
         )
-        self.maxDiff = None
         assert_frame_equal(out, self.compare)
 
     def test_peak_minmax_direct(self):
@@ -114,7 +115,6 @@ class TestPeakDetect(TestCase):
             print_input=True,
             extrema="both",
         )
-        self.maxDiff = None
         assert_frame_equal(out, self.compare)
 
     def test_peak_zero_crossing_direct(self):
@@ -126,7 +126,6 @@ class TestPeakDetect(TestCase):
             print_input=True,
             extrema="both",
         )
-        self.maxDiff = None
         assert_frame_equal(out, self.compare)
 
     #    def test_peak_parabola_direct(self):
@@ -142,7 +141,6 @@ class TestPeakDetect(TestCase):
         out = tstoolbox.peak_detection(
             method="sine", points=9, input_ts=self.ats, print_input=True, extrema="both"
         )
-        self.maxDiff = None
         assert_frame_equal(out, self.compare)
 
     # CLI...
@@ -153,8 +151,8 @@ class TestPeakDetect(TestCase):
         out = subprocess.Popen(
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate(input=input_peak_detection)[0]
-        self.maxDiff = None
-        self.assertEqual(out, output_peak_detection)
+        out = tsutils.read_iso_ts(out)
+        assert_frame_equal(out, output_peak_detection)
 
     def test_peak_minmax_cli(self):
         """Test peak detection CLI using the minmax method."""
@@ -169,8 +167,8 @@ class TestPeakDetect(TestCase):
         out = subprocess.Popen(
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate(input=input_peak_detection)[0]
-        self.maxDiff = None
-        self.assertEqual(out, output_peak_detection)
+        out = tsutils.read_iso_ts(out)
+        assert_frame_equal(out, output_peak_detection)
 
     def test_peak_zero_crossing_cli(self):
         """Test peak detection CLI using the zero_crossing method."""
@@ -185,8 +183,8 @@ class TestPeakDetect(TestCase):
         out = subprocess.Popen(
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate(input=input_peak_detection)[0]
-        self.maxDiff = None
-        self.assertEqual(out, output_peak_detection)
+        out = tsutils.read_iso_ts(out)
+        assert_frame_equal(out, output_peak_detection)
 
     # def test_peak_parabola_cli(self):
     #     args = ('tstoolbox peak_detection '
@@ -211,8 +209,8 @@ class TestPeakDetect(TestCase):
         out = subprocess.Popen(
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate(input=input_peak_detection)[0]
-        self.maxDiff = None
-        self.assertEqual(out, output_peak_detection)
+        out = tsutils.read_iso_ts(out)
+        assert_frame_equal(out, output_peak_detection)
 
     def test_peak_type_error(self):
         with pytest.raises(ValueError) as e_info:

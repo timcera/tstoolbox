@@ -7,6 +7,7 @@ import shlex
 import subprocess
 from unittest import TestCase
 
+import io
 import numpy as np
 import pandas as pd
 from pandas.testing import assert_frame_equal
@@ -21,7 +22,7 @@ class TestEquation(TestCase):
         ts1 = pd.Series([4.5, 4.6], index=dindex)
         ts2 = pd.Series([20.0, 20.4], index=dindex)
         self.equation = pd.DataFrame(
-            {"Value": ts1, "Value::equation.0": ts2}, index=dindex, dtype="float64"
+            {"Value": ts1, "Value::equation0_": ts2}, index=dindex, dtype="float64"
         )
         self.equation.index.name = "Datetime"
         self.equation = tsutils.memory_optimize(self.equation)
@@ -40,7 +41,7 @@ class TestEquation(TestCase):
             -4.60800663972,
         ]
         self.equation_multiple_cols_01 = pd.DataFrame(
-            {"Value": ts1, "Value1": ts2, "_::equation.0": ts3},
+            {"Value": ts1, "Value1": ts2, "_::equation0_": ts3},
             index=dindex,
             dtype="float64",
         )
@@ -50,7 +51,7 @@ class TestEquation(TestCase):
         )
 
         self.equation_result = pd.DataFrame(
-            {"_::equation.0": np.array(ts2) * 10}, index=dindex, dtype="float64"
+            {"_::equation0_": np.array(ts2) * 10}, index=dindex, dtype="Float64"
         )
         self.equation_result = tsutils.memory_optimize(self.equation_result)
 
@@ -60,7 +61,7 @@ class TestEquation(TestCase):
 
         ts3 = [50.1, 95.1, 38.9, 27.7, 11.7, 8.7]
         self.equation_multiple_cols_02 = pd.DataFrame(
-            {"Value": ts1, "Value1": ts2, "_::equation.0": ts3},
+            {"Value": ts1, "Value1": ts2, "_::equation0_": ts3},
             index=dindex,
             dtype="float64",
         )
@@ -77,7 +78,7 @@ class TestEquation(TestCase):
         ts3[0] = np.nan
         ts3[-1] = np.nan
         self.equation_multiple_cols_03 = pd.DataFrame(
-            {"Value": ts1, "Value1": ts2, "_::equation.0": ts3},
+            {"Value": ts1, "Value1": ts2, "_::equation0_": ts3},
             index=dindex,
             dtype="float64",
         )
@@ -96,7 +97,7 @@ class TestEquation(TestCase):
         ts2[0] = np.nan
         ts2[-1] = np.nan
         self.equation_multiple_cols_04 = pd.DataFrame(
-            {"Value": ts1, "Value::equation.0": ts2}, index=dindex
+            {"Value": ts1, "Value::equation0_": ts2}, index=dindex
         ).infer_objects()
         self.equation_multiple_cols_04.index.name = "Datetime"
         self.equation_multiple_cols_04 = tsutils.memory_optimize(
@@ -173,8 +174,7 @@ class TestEquation(TestCase):
             append="columns",
         )
         out = tstoolbox.equation("x10*10", input_ts=input_ts)
-        self.maxDiff = None
-        assert_frame_equal(out, self.equation_result)
+        assert_frame_equal(out, self.equation_result, check_column_type=False)
 
     def test_equation_cli(self):
         """Test of equation CLI."""
@@ -201,8 +201,10 @@ class TestEquation(TestCase):
         out = subprocess.Popen(
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate()[0]
-        self.maxDiff = None
-        self.assertEqual(out, self.equation_multiple_cols_01_cli)
+        out = tsutils.read_iso_ts(out)
+        assert_frame_equal(
+            out, tstoolbox.date_slice(self.equation_multiple_cols_01_cli)
+        )
 
     def test_equation_multiple_cols_02_cli(self):
         """Test of equation CLI with multiple columns."""
@@ -215,8 +217,8 @@ class TestEquation(TestCase):
         out = subprocess.Popen(
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate()[0]
-        self.maxDiff = None
-        self.assertEqual(out, self.equation_multiple_cols_02_cli)
+        out = tsutils.read_iso_ts(out)
+        assert_frame_equal(out, self.equation_multiple_cols_02)
 
     def test_equation_multiple_cols_03_cli(self):
         """Test of equation CLI with multiple columns and time records."""
@@ -231,8 +233,8 @@ class TestEquation(TestCase):
         out = subprocess.Popen(
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate()[0]
-        self.maxDiff = None
-        self.assertEqual(out, self.equation_multiple_cols_03_cli)
+        out = tsutils.read_iso_ts(out)
+        assert_frame_equal(out, self.equation_multiple_cols_03)
 
     def test_equation_multiple_cols_04_cli(self):
         """Test of equation CLI with multiple time records."""
@@ -264,5 +266,7 @@ class TestEquation(TestCase):
         out = subprocess.Popen(
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate()[0]
-        self.maxDiff = None
-        self.assertEqual(out, self.equation_multiple_cols_04_cli)
+        assert_frame_equal(
+            tstoolbox.date_slice(input_ts=out),
+            tstoolbox.date_slice(self.equation_multiple_cols_04_cli),
+        )

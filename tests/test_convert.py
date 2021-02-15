@@ -29,7 +29,7 @@ class TestConvert(TestCase):
 2000-01-02,4.6
 """
         self.compare_cli_02 = b"""Datetime,Value::convert
-2000-01-01,11
+2000-01-01,11.0
 2000-01-02,11.2
 """
 

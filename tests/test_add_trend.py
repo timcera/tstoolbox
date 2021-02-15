@@ -75,4 +75,5 @@ class TestAddTrend(TestCase):
         args = 'tstoolbox add_trend -1 1 --input_ts="tests/data_flat.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
-        self.assertEqual(out, self.add_trend_cli)
+        out = tstoolbox.date_slice(input_ts=out)
+        assert_frame_equal(out, self.add_trend_direct)

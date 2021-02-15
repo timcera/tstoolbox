@@ -14,7 +14,7 @@ class TestRead(TestCase):
             index_col=[0],
             parse_dates=True,
             skipinitialspace=True,
-        ).astype("float64")
+        ).astype("Int64")
         base.index.name = "Datetime"
         self.cumsum = base.cumsum()
         self.cumsum.columns = [tsutils.renamer(i, "sum") for i in self.cumsum.columns]
@@ -22,7 +22,7 @@ class TestRead(TestCase):
     def test_cumsum(self):
         """Test cumsum."""
         out = tstoolbox.accumulate(input_ts="tests/data_missing.csv", dropna="any")
-        assert_frame_equal(out, self.cumsum)
+        assert_frame_equal(out, self.cumsum, check_dtype=False)
 
 
 def test_stats():

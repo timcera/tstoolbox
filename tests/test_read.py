@@ -51,10 +51,12 @@ class TestRead(TestCase):
 
         self.read_tsstep_2_daily.index.name = "Datetime"
 
-        self.read_blanks = b"""Datetime,Value::mean,Unnamed::mean,Unnamed.001::mean,Unnamed.002::mean,Unnamed.003::mean,Unnamed.004::mean,Unnamed.005::mean,Unnamed.006::mean,Unnamed.007::mean
+        self.read_blanks = tsutils.read_iso_ts(
+            b"""Datetime,Value::mean,Unnamed::mean,Unnamed.001::mean,Unnamed.002::mean,Unnamed.003::mean,Unnamed.004::mean,Unnamed.005::mean,Unnamed.006::mean,Unnamed.007::mean
 2000-01-01,2.46667,,,,,,,,
 2000-01-02,3.4,,,,,,,,
 """
+        )
 
     def test_read_direct(self):
         """Test read API for single column - daily."""
@@ -114,12 +116,14 @@ class TestRead(TestCase):
             "tstoolbox aggregate --agg_interval D --input_ts tests/data_empty_cols.csv"
         )
         args = shlex.split(args)
-        out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
-        self.assertEqual(out[0], self.read_blanks)
+        out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
+        out = tsutils.memory_optimize(tsutils.read_iso_ts(out))
+        assert_frame_equal(out, tsutils.memory_optimize(self.read_blanks))
 
     def test_read_multiple_spaces(self):
         """Test reading of files with multiple spaces in data."""
         args = "tstoolbox aggregate --agg_interval D --input_ts tests/data_spaces.csv"
         args = shlex.split(args)
-        out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
-        self.assertEqual(out[0], self.read_blanks)
+        out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
+        out = tsutils.read_iso_ts(out)
+        assert_frame_equal(out, self.read_blanks)

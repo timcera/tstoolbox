@@ -76,16 +76,16 @@ def test_boxplot():
     )
 
 
-@pytest.mark.mpl_image_compare(tolerance=6)
-def test_scatter_matrix():
-    plt.close("all")
-    return tstoolbox.plot(
-        type="scatter_matrix",
-        clean=True,
-        input_ts="tests/02234500_65_65.csv",
-        ofilename=None,
-        plot_styles="classic",
-    )
+# @pytest.mark.mpl_image_compare(tolerance=6)
+# def test_scatter_matrix():
+#     plt.close("all")
+#     return tstoolbox.plot(
+#         type="scatter_matrix",
+#         clean=True,
+#         input_ts="tests/02234500_65_65.csv",
+#         ofilename=None,
+#         plot_styles="classic",
+#     )
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)

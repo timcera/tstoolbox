@@ -26,6 +26,7 @@ class Testconvert_index(TestCase):
             epoch="1979-12-30",
         )
         out.index.name = "1979-12-30_date"
+        out.index = pd.Int64Index(out.index)
         assert_frame_equal(out, self.read_direct)
 
 
@@ -52,12 +53,23 @@ class Testconvert_index(TestCase):
     ],
 )
 def test_epoch_interval(epoch, interval, expected):
-    out = tstoolbox.convert_index(
-        "number",
-        input_ts="tests/data_gainesville_daily_precip.csv",
-        interval=interval,
-        epoch=epoch,
-    )
+    if interval is not None and (
+        (epoch == "unix" and interval != "s") or (epoch == "julian" and interval != "D")
+    ):
+        with pytest.warns(UserWarning, match="Typically the "):
+            out = tstoolbox.convert_index(
+                "number",
+                input_ts="tests/data_gainesville_daily_precip.csv",
+                interval=interval,
+                epoch=epoch,
+            )
+    else:
+        out = tstoolbox.convert_index(
+            "number",
+            input_ts="tests/data_gainesville_daily_precip.csv",
+            interval=interval,
+            epoch=epoch,
+        )
     assert out.index[1] == expected
 
 

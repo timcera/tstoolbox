@@ -9,7 +9,7 @@ import os
 import sys
 from textwrap import TextWrapper
 from functools import reduce
-from io import StringIO
+from io import StringIO, BytesIO
 from math import gcd
 from urllib.parse import urlparse
 
@@ -580,11 +580,23 @@ def b(s):
         return s
 
 
+def _handle_curly_braces_in_docstring(s, **kwargs):
+    """Replaces missing keys with a pattern."""
+    RET = "{{{}}}"
+    try:
+        return s.format(**kwargs)
+    except KeyError as e:
+        keyname = e.args[0]
+        return _handle_curly_braces_in_docstring(
+            s, **{keyname: RET.format(keyname)}, **kwargs
+        )
+
+
 def doc(fdict, **kwargs):
     """Return a decorator that formats a docstring."""
 
     def f(fn):
-        fn.__doc__ = fn.__doc__.format(**fdict)
+        fn.__doc__ = _handle_curly_braces_in_docstring(fn.__doc__, **fdict)
         # kwargs is currently always empty.
         # Could remove, but keeping in case useful in future.
         for attr in kwargs:
@@ -737,28 +749,30 @@ The list {0} for "{2}" should have {1} members according to function requirement
         pass
 
     if strorlist is None or isinstance(strorlist, (type(None))):
-        ### None -> None
-        ###
+        # None -> None
+        #
         return None
 
     if isinstance(strorlist, (int, float)):
-        ### 1      -> [1]
-        ### 1.2    -> [1.2]
-        ###
+        # 1      -> [1]
+        # 1.2    -> [1.2]
+        #
         return [strorlist]
 
-    if isinstance(strorlist, (str, bytes)) and (strorlist in ["None", ""]):
-        ### 'None' -> None
-        ### ''     -> None
-        ###
+    if isinstance(strorlist, (str, bytes)) and (
+        strorlist in ["None", "", b"None", b""]
+    ):
+        # 'None' -> None
+        # ''     -> None
+        #
         return None
 
     if isinstance(strorlist, (str, bytes)):
-        ### '1'   -> [1]
-        ### '5.7' -> [5.7]
+        # '1'   -> [1]
+        # '5.7' -> [5.7]
 
-        ### Anything other than a scalar int or float continues.
-        ###
+        # Anything other than a scalar int or float continues.
+        #
         try:
             return [int(strorlist)]
         except ValueError:
@@ -787,15 +801,15 @@ The list {0} for "{2}" should have {1} members according to function requirement
             )
         )
 
-    ### [1, 2, 3]          -> [1, 2, 3]
-    ### ['1', '2']         -> [1, 2]
+    # [1, 2, 3]          -> [1, 2, 3]
+    # ['1', '2']         -> [1, 2]
 
-    ### [1, 'er', 5.6]     -> [1, 'er', 5.6]
-    ### [1,'er',5.6]       -> [1, 'er', 5.6]
-    ### ['1','er','5.6']   -> [1, 'er', 5.6]
+    # [1, 'er', 5.6]     -> [1, 'er', 5.6]
+    # [1,'er',5.6]       -> [1, 'er', 5.6]
+    # ['1','er','5.6']   -> [1, 'er', 5.6]
 
-    ### ['1','','5.6']     -> [1, None, 5.6]
-    ### ['1','None','5.6'] -> [1, None, 5.6]
+    # ['1','','5.6']     -> [1, None, 5.6]
+    # ['1','None','5.6'] -> [1, None, 5.6]
 
     ret = []
     for each in strorlist:
@@ -817,7 +831,6 @@ The list {0} for "{2}" should have {1} members according to function requirement
 
 def make_iloc(columns, col_list):
     """Imitates the .ix option with subtracting one to convert."""
-
     # ["1", "Value2"]    ->    [0, "Value2"]
     # [1, 2, 3]          ->    [0, 1, 2]
     col_list = make_list(col_list)
@@ -1046,8 +1059,7 @@ def validator(**argchecks):  # validate ranges for both+defaults
 
 def _normalize_units(ntsd, source_units, target_units):
     """
-
-    The following is aspirational and may not reflect the code.
+    Following is aspirational and may not reflect the code.
 
     +--------------+--------------+--------------+--------------+--------------+
     | INPUT        | INPUT        | INPUT        | RETURN       | RETURN       |
@@ -1071,7 +1083,6 @@ def _normalize_units(ntsd, source_units, target_units):
     +--------------+--------------+--------------+--------------+--------------+
 
     """
-
     target_units = make_list(target_units, n=len(ntsd.columns))
     source_units = make_list(source_units, n=len(ntsd.columns))
 
@@ -1146,7 +1157,7 @@ No conversion between {0} and {1}.""".format(
             ncolumns.append(":".join(words))
         ntsd.columns = ncolumns
 
-    return ntsd
+    return memory_optimize(ntsd)
 
 
 @validator(
@@ -1205,7 +1216,7 @@ def common_kwds(
 
     ntsd = _date_slice(ntsd, start_date=start_date, end_date=end_date)
 
-    if ntsd.index.is_all_dates is True:
+    if ntsd.index.inferred_type == "datetime64":
         ntsd.index.name = "Datetime"
 
     if dropna in ["any", "all"]:
@@ -1303,7 +1314,7 @@ number of columns {1}.
 
 def _date_slice(input_tsd, start_date=None, end_date=None):
     """Private function to slice time series."""
-    if input_tsd.index.is_all_dates:
+    if input_tsd.index.inferred_type == "datetime64":
         accdate = []
         for testdate in [start_date, end_date]:
             if testdate is None:
@@ -1539,10 +1550,12 @@ def return_input(
     """Print the input time series also."""
     output.columns = output_names or [renamer(i, suffix) for i in output.columns]
     if iftrue:
-        return intds.join(output, lsuffix="_1", rsuffix="_2", how="outer")
+        return memory_optimize(
+            intds.join(output, lsuffix="_1", rsuffix="_2", how="outer")
+        )
     if reverse_index is True:
-        return output.iloc[::-1]
-    return output
+        return memory_optimize(output.iloc[::-1])
+    return memory_optimize(output)
 
 
 def _apply_across_columns(func, xtsd, **kwds):
@@ -1579,7 +1592,7 @@ def _printiso(
                 tsd.index.name = "Datetime"
 
         print_index = True
-        if tsd.index.is_all_dates is True:
+        if tsd.index.inferred_type == "datetime64":
             if not tsd.index.name:
                 tsd.index.name = "Datetime"
             # Someone made the decision about the name
@@ -1654,6 +1667,10 @@ def open_local(filein):
 
 
 def reduce_mem_usage(props):
+    """Kept here, but was too aggressive in terms of setting the dtype.
+
+    Not used any longer.
+    """
     for col in props.columns:
         try:
             if props[col].dtype == object:  # Exclude strings
@@ -1707,15 +1724,12 @@ def reduce_mem_usage(props):
 def memory_optimize(tsd):
     """Convert all columns to known types.
 
-    "infer_objects" replaced some code here such that the "memory_optimize"
+    "convert_dtypes" replaced some code here such that the "memory_optimize"
     function might go away.  Kept in case want to add additional
     optimizations.
     """
     tsd.index = pd.Index(tsd.index, dtype=None)
-    tsd = tsd.infer_objects()
-    tsd = reduce_mem_usage(tsd)
-    if tsd.index.is_all_dates == False:
-        tsd.index = reduce_mem_usage(pd.DataFrame(data=tsd.index)).iloc[:, 0]
+    tsd = tsd.convert_dtypes()
     try:
         tsd.index.freq = pd.infer_freq(tsd.index)
     except (TypeError, ValueError):
@@ -1772,9 +1786,8 @@ def read_iso_ts(
         skiprows = int(skiprows)
     except (ValueError, TypeError):
         skiprows = make_list(skiprows)
-
     result = {}
-    if isinstance(indat, (str, bytes, StringIO)):
+    if isinstance(indat, (str, bytes, StringIO, BytesIO)):
         if indat in ["-", b"-"]:
             # if from stdin format must be the tstoolbox standard
             # pandas read_csv supports file like objects
@@ -1782,29 +1795,43 @@ def read_iso_ts(
             sep = None
             fpi = sys.stdin
             fname = "_"
-        elif isinstance(indat, StringIO):
-            header = "infer"
-            sep = None
-            fpi = indat
-            fname = ""
-        elif b"\n" in b(indat) or b"\r" in b(indat):
-            # a string?
-            header = "infer"
-            sep = None
-            fpi = StringIO(b(indat).decode())
-            fname = ""
+            names = None
         elif os.path.exists(indat):
             # a local file
             header = "infer"
             sep = None
             fpi = open_local(indat)
             fname = os.path.splitext(os.path.basename(indat))[0]
+            names = None
         elif is_valid_url(indat):
             # a url?
             header = "infer"
             sep = None
             fpi = indat
             fname = ""
+            names = None
+        elif isinstance(indat, (StringIO, BytesIO)):
+            header = "infer"
+            sep = None
+            fpi = indat
+            fname = ""
+            names = None
+        elif isinstance(indat, bytes):
+            if b"\n" in indat or b"\r" in indat:
+                # a string?
+                header = 0
+                sep = None
+                fpi = BytesIO(indat)
+                fname = ""
+                names = None
+        elif isinstance(indat, str):
+            if "\n" in indat or "\r" in indat:
+                # a string?
+                header = 0
+                sep = None
+                fpi = StringIO(indat)
+                fname = ""
+                names = None
         else:
             raise ValueError(
                 error_wrapper(
@@ -1833,40 +1860,39 @@ or an URL.  If you want to pull from stdin use "-" or redirection/piping.
             na_values.append(spcs)
             na_values.append(spcs + "nan")
 
-        if not result:
-            if names is not None:
-                header = 0
-                names = make_list(names)
-            if index_type == "number":
-                parse_dates = False
-            result = pd.io.parsers.read_csv(
-                fpi,
-                header=header,
-                names=names,
-                index_col=index_col,
-                infer_datetime_format=True,
-                parse_dates=parse_dates,
-                na_values=na_values,
-                keep_default_na=True,
-                sep=sep,
-                skipinitialspace=True,
-                engine="python",
-                skiprows=skiprows,
-            )
-            first = [i.split(":")[0] for i in result.columns]
-            first = [fstr.format(fname, i) for i in first]
-            first = [[i.strip()] for i in dedupIndex(first)]
+        if names is not None:
+            header = 0
+            names = make_list(names)
+        if index_type == "number":
+            parse_dates = False
+        result = pd.io.parsers.read_csv(
+            fpi,
+            header=header,
+            names=names,
+            index_col=index_col,
+            infer_datetime_format=True,
+            parse_dates=parse_dates,
+            na_values=na_values,
+            keep_default_na=True,
+            sep=sep,
+            skipinitialspace=True,
+            engine="python",
+            skiprows=skiprows,
+        )
+        first = [i.split(":")[0] for i in result.columns]
+        first = [fstr.format(fname, i) for i in first]
+        first = [[i.strip()] for i in dedupIndex(first)]
 
-            rest = [i.rstrip(".0123456789 ").split(":")[1:] for i in result.columns]
+        rest = [i.rstrip(".0123456789 ").split(":")[1:] for i in result.columns]
 
-            result.columns = [":".join(i + j) for i, j in zip(first, rest)]
+        result.columns = [":".join(i + j) for i, j in zip(first, rest)]
 
-            tmpc = result.columns.values
-            for index, i in enumerate(result.columns):
-                if "Unnamed:" in i:
-                    words = i.split(":")
-                    tmpc[index] = words[0].strip() + words[1].strip()
-            result.columns = tmpc
+        tmpc = result.columns.values
+        for index, i in enumerate(result.columns):
+            if "Unnamed:" in i:
+                words = i.split(":")
+                tmpc[index] = words[0].strip() + words[1].strip()
+        result.columns = tmpc
 
     elif isinstance(indat, pd.DataFrame):
         result = indat
@@ -1895,13 +1921,13 @@ You gave me {0}, of
 
     result = memory_optimize(result)
 
-    if result.index.is_all_dates is False:
+    if result.index.inferred_type != "datetime64":
         try:
             result.set_index(0, inplace=True)
         except KeyError:
             pass
 
-    if result.index.is_all_dates is True:
+    if result.index.inferred_type == "datetime64":
         try:
             words = result.index.name.split(":")
         except AttributeError:
@@ -1920,7 +1946,7 @@ You gave me {0}, of
         except ValueError:
             return result
 
-    if dropna in [b("any"), b("all")]:
+    if dropna in ["any", "all"]:
         result.dropna(how=dropna, inplace=True)
 
     return result
