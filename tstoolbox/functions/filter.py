@@ -8,45 +8,67 @@ import warnings
 import mando
 import numpy as np
 from mando.rst_text_formatter import RSTHelpFormatter
-
 import pandas as pd
-from scipy import signal
 
-from .. import tsutils
+from tstoolbox import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-class MisMatchedKernel(Exception):
-    """Error class for the wrong length kernel."""
-
-    def __init__(self, rk, pw):
-        """Initialize with lengths of kernel and requested length."""
-        self.rk = rk
-        self.pw = pw
-
-    def __str__(self):
-        """Return detailed error message."""
-        return """
-*
-*   Length of kernel must be {0}.
-*   Instead have {1}
-*
-""".format(
-            self.rk, self.pw
-        )
+def lpdes(fc, t, ns):
+    """Subroutine LPDES evaluates the coefficients for a low pass filter."""
+    a = np.zeros(ns)
+    b = np.zeros(ns)
+    c = np.zeros(ns)
+    wcp = np.sin(fc * np.pi * t) / np.cos(fc * np.pi * t)
+    for k in range(ns):
+        cs = np.cos(float(2 * (k + ns) - 1) * np.pi / float(4 * ns))
+        x = 1.0 / (1.0 + wcp * wcp - 2.0 * wcp * cs)
+        a[k] = wcp * wcp * x
+        b[k] = 2.0 * (wcp * wcp - 1.0) * x
+        c[k] = (1.0 + wcp * wcp + 2.0 * wcp * cs) * x
+    return a, b, c
 
 
-class BadKernelValues(Exception):
-    """Error class for the negative pad width."""
+def hpdes(fc, t, ns):
+    """Subroutine HPDES evaluates the coefficients for a high pass filter."""
+    a = np.zeros(ns)
+    b = np.zeros(ns)
+    c = np.zeros(ns)
+    pi = 3.1415926536
+    wcp = np.sin(fc * pi * t) / np.cos(fc * pi * t)
+    for k in range(ns):
+        cs = np.cos(float(2 * (k + ns) - 1) * pi / float(4 * ns))
+        a[k] = 1.0 / (1.0 + wcp * wcp - 2.0 * wcp * cs)
+        b[k] = 2.0 * (wcp * wcp - 1.0) * a[k]
+        c[k] = (1.0 + wcp * wcp + 2.0 * wcp * cs) * a[k]
+    return a, b, c
 
-    def __str__(self):
-        """Return detailed error message."""
-        return """
-*
-*   Should only have positive values.
-*
-"""
+
+def bpdes(f1, f2, t, ns):
+    """Subroutine BPDES evaluates the coefficients for a band pass filter."""
+    a = np.zeros(ns)
+    b = np.zeros(ns)
+    c = np.zeros(ns)
+    d = np.zeros(ns)
+    e = np.zeros(ns)
+    pi = 3.1415926536
+    w1 = np.sin(f1 * pi * t) / np.cos(f1 * pi * t)
+    w2 = np.sin(f2 * pi * t) / np.cos(f2 * pi * t)
+    wc = w2 - w1
+    q = wc * wc + 2.0 * w1 * w2
+    s = w1 * w1 * w2 * w2
+    for k in range(ns):
+        cs = np.cos(float(2 * (k + ns) - 1) * pi / float(4 * ns))
+        p = -2.0 * wc * cs
+        r = p * w1 * w2
+        x = 1.0 + p + q + r + s
+        a[k] = wc * wc / x
+        b[k] = (-4.0 - 2.0 * p + 2.0 * r + 4.0 * s) / x
+        c[k] = (6.0 - 2.0 * q + 6.0 * s) / x
+        d[k] = (-4.0 + 2.0 * p - 2.0 * r + 4.0 * s) / x
+        e[k] = (1.0 - p + q - r + s) / x
+        return a, b, c, d, e
 
 
 def _transform(vector, filter_pass, lowpass_cutoff, highpass_cutoff, window_len):
@@ -77,7 +99,11 @@ def _transform(vector, filter_pass, lowpass_cutoff, highpass_cutoff, window_len)
             freq < 1.0 / float(lowpass_cutoff) and freq > 1.0 / float(highpass_cutoff)
         ] = 0.0
 
-    factor = np.pad(factor, window_len + 1, mode="edge",)
+    factor = np.pad(
+        factor,
+        window_len + 1,
+        mode="edge",
+    )
 
     factor = np.convolve(factor, [1.0 / window_len] * window_len, mode=1)
     factor = factor[window_len + 1 : -(window_len + 1)]
@@ -94,7 +120,7 @@ def _transform(vector, filter_pass, lowpass_cutoff, highpass_cutoff, window_len)
 def filter_cli(
     filter_type,
     filter_pass,
-    butterworth_order=1,
+    butterworth_stages=1,
     reverse_second_stage=True,
     lowpass_cutoff=None,
     highpass_cutoff=None,
@@ -121,36 +147,46 @@ def filter_cli(
     Parameters
     ----------
     filter_type: str
-        One of 'fft', or 'butterworth' filter types.
-        
-        The 'fft' and 'butterworth' types are defined by cutoff frequencies.
+        OneOf("fft", "butterworth")
+
+        The "fft" and "butterworth" types are defined by cutoff frequencies.
     filter_pass: str
-        One of 'lowpass', 'highpass', 'bandpass', or 'bandstop'.  Indicates which what frequencies to 
-        block.
+        OneOf("lowpass", "highpass", "bandpass", "bandstop")
+
+        Indicates what frequencies to block.
     cutoff_period
         [optional, default is None]
 
-        DEPRECATED: Use `lowpass_cutoff` if `filter_pass` equals "lowpass" and `highpass_cutoff` if `filter_pass` equals "highpass".
+        DEPRECATED: Use `lowpass_cutoff` if `filter_pass` equals "lowpass"
+        and `highpass_cutoff` if `filter_pass` equals "highpass".
     lowpass_cutoff: float
-        [optional, default is None, used only if `filter_pass` equals "lowpass", "bandpass" or "bandstop"]
-        
-        The low frequency cutoff when `filter_pass` equals "vertical", "bandpass", or "bandstop".
+        [optional, default is None, used only if `filter_pass` equals
+         "lowpass", "bandpass" or "bandstop"]
+
+        The low frequency cutoff when `filter_pass` equals "vertical",
+        "bandpass", or "bandstop".
     highpass_cutoff: float
-        [optional, default is None, used only if `filter_pass` equals "highpass", "bandpass" or "bandstop"]
-        
-        The high frequency cutoff when `filter_pass` equals "highpass", "bandpass", or "bandstop".
+        [optional, default is None, used only if `filter_pass` equals
+         "highpass", "bandpass" or "bandstop"]
+
+        The high frequency cutoff when `filter_pass` equals "highpass",
+        "bandpass", or "bandstop".
     window_len: int
         [optional, default is 3]
-        
-        Will soften the edges of the "fft" filter in the frequency domain.  The larger the number the softer the filter edges.  A value of 1 will have a brick wall step function which may introduce frequencies into the filtered output.
+
+        Will soften the edges of the "fft" filter in the frequency domain.
+        The larger the number the softer the filter edges.  A value of 1
+        will have a brick wall step function which may introduce
+        frequencies into the filtered output.
     butterworth_order: int
         [optional, default is 1]
-        
+
         The order of the butterworth filter.
     reverse_second_stage: bool
         [optional, default is True]
-        
-        Will perform a second filter in reverse to eliminate shifting in time caused by the first filter.
+
+        Will perform a second filter in reverse to eliminate shifting
+        in time caused by the first filter.
     {input_ts}
     {start_date}
     {end_date}
@@ -172,7 +208,7 @@ def filter_cli(
         filter(
             filter_type,
             filter_pass,
-            butterworth_order=butterworth_order,
+            butterworth_stages=butterworth_stages,
             reverse_second_stage=reverse_second_stage,
             lowpass_cutoff=lowpass_cutoff,
             highpass_cutoff=highpass_cutoff,
@@ -214,19 +250,26 @@ def filter_cli(
         ],
         1,
     ],
-    filter_pass=[str, ["domain", ["lowpass", "highpass", "bandpass", "bandstop"],], 1,],
+    filter_pass=[
+        str,
+        [
+            "domain",
+            ["lowpass", "highpass", "bandpass", "bandstop"],
+        ],
+        1,
+    ],
     window_len=[int, ["range", [1, None]], 1],
     cutoff_period=[float, ["range", [0, None]], 1],
     lowpass_cutoff=[float, ["range", [0, None]], 1],
     highpass_cutoff=[float, ["range", [0, None]], 1],
-    butterworth_order=[int, ["range", [1, None]], 1],
-    reverse_second_stage=[bool, ["domain", [True, False],], 1,],
+    butterworth_stages=[int, ["range", [1, 3]], 1],
+    butterworth_reverse_second_stage=[bool, ["domain", [True, False]], 1],
 )
 def filter(
     filter_type,
     filter_pass,
-    butterworth_order=1,
-    reverse_second_stage=True,
+    butterworth_stages=1,
+    butterworth_reverse_second_stage=True,
     input_ts="-",
     columns=None,
     start_date=None,
@@ -275,7 +318,9 @@ Input vector (length={0}) needs to be bigger than window size ({1}).
         warnings.warn(
             tsutils.error_wrapper(
                 """
-DEPRECATED: The `filter_type`s "flat", "hanning", "hamming", "bartlett", and "blackman" are implemented with greater capabilities in the "rolling_window" function in tstoolbox.  Eventually they will be removed from the "filter" function."""
+DEPRECATED: The `filter_type`s "flat", "hanning", "hamming", "bartlett", and
+"blackman" are implemented with greater capabilities in the "rolling_window"
+function in tstoolbox.  Eventually they will be removed from the "filter" function."""
             )
         )
         # Inelegant - but works.  If any rolling_window filters then just set
@@ -294,8 +339,13 @@ DEPRECATED: The `filter_type`s "flat", "hanning", "hamming", "bartlett", and "bl
         warnings.warn(
             tsutils.error_wrapper(
                 """
-The `cutoff_period` is deprecated in favor of using `lowpass_cutoff` if `filter_pass` is "lowpass", "bandpass" or "bandstop" and `highpass_cutoff` if `filter_pass` is "highpass", "bandpass", or "bandstop".  The `lowpass_cutoff` or `highpass_cutoff` options are set to `cutoff_period` according to `filter_pass`."""
-            )
+The `cutoff_period` is deprecated in favor of using `lowpass_cutoff` if
+`filter_pass` is "lowpass", "bandpass" or "bandstop" and `highpass_cutoff`
+if `filter_pass` is "highpass", "bandpass", or "bandstop".  The
+`lowpass_cutoff` or `highpass_cutoff` options are set to `cutoff_period`
+according to `filter_pass`."""
+            ),
+            DeprecationWarning,
         )
         if filter_pass == "lowpass" and lowpass_cutoff is None:
             lowpass_cutoff = cutoff_period
@@ -307,7 +357,10 @@ The `cutoff_period` is deprecated in favor of using `lowpass_cutoff` if `filter_
             raise ValueError(
                 tsutils.error_wrapper(
                     """
-The "bandpass" and "bandstop" options for `filter_pass` require values for the `lowpass_cutoff` and `highpass_cutoff` keywords.  You have "{lowpass_cutoff}" for `lowpass_cutoff` and "{highpass_cutoff}" for `highpass_cutoff`.""".format(
+The "bandpass" and "bandstop" options for `filter_pass` require values
+for the `lowpass_cutoff` and `highpass_cutoff` keywords.  You have
+"{lowpass_cutoff}" for `lowpass_cutoff` and "{highpass_cutoff}" for
+`highpass_cutoff`.""".format(
                         **locals()
                     )
                 )
@@ -318,7 +371,8 @@ The "bandpass" and "bandstop" options for `filter_pass` require values for the `
             raise ValueError(
                 tsutils.error_wrapper(
                     """
-The "lowpass" option for `filter_pass` requires a value for `lowpass_cutoff`.  You have "{lowpass_cutoff}".""".format(
+The "lowpass" option for `filter_pass` requires a value for
+`lowpass_cutoff`.  You have "{lowpass_cutoff}".""".format(
                         **locals()
                     )
                 )
@@ -327,7 +381,8 @@ The "lowpass" option for `filter_pass` requires a value for `lowpass_cutoff`.  Y
             warnings.warn(
                 tsutils.error_wrapper(
                     """
-The `highpass_cutoff` value of {highpass_cutoff} is ignored it `filter_pass` is "lowpass".""".format(
+The `highpass_cutoff` value of {highpass_cutoff} is ignored it
+`filter_pass` is "lowpass".""".format(
                         **locals()
                     )
                 )
@@ -338,7 +393,8 @@ The `highpass_cutoff` value of {highpass_cutoff} is ignored it `filter_pass` is 
             raise ValueError(
                 tsutils.error_wrapper(
                     """
-The "highpass" option for `filter_pass` requires a value for `highpass_cutoff`.  You have "{highpass_cutoff}".""".format(
+The "highpass" option for `filter_pass` requires a value for
+`highpass_cutoff`.  You have "{highpass_cutoff}".""".format(
                         **locals()
                     )
                 )
@@ -347,42 +403,108 @@ The "highpass" option for `filter_pass` requires a value for `highpass_cutoff`. 
             warnings.warn(
                 tsutils.error_wrapper(
                     """
-The `lowpass_cutoff` value of {lowpass_cutoff} is ignored it `filter_pass` is "highpass".""".format(
+The `lowpass_cutoff` value of {lowpass_cutoff} is ignored it
+`filter_pass` is "highpass".""".format(
                         **locals()
                     )
                 )
             )
 
-    # Trying to save some memory
-    if print_input:
-        otsd = tsd.copy()
+    if print_input is True:
+        ntsd = tsutils.asbestfreq(tsd.copy())
     else:
-        otsd = pd.DataFrame()
+        ntsd = tsutils.asbestfreq(tsd)
+
+    tdelt = pd.to_timedelta(ntsd.index.freq).delta / 86400000000000
 
     for col in tsd.columns:
         if filter_type == "fft":
-            tsd[col].values[:] = _transform(
-                tsd[col].values,
+            ntsd[col] = _transform(
+                tsd[col],
                 filter_pass,
                 lowpass_cutoff,
                 highpass_cutoff,
                 window_len,
             )
         elif filter_type == "butterworth":
+            rval = np.zeros(9)
             if filter_pass == "lowpass":
-                wn = lowpass_cutoff
+                if lowpass_cutoff >= 0.5 / tdelt:
+                    raise ValueError(
+                        tsutils.error_wrapper(
+                            """
+The "lowpass_cutoff" must be greater than 0.5/interval_in_days."""
+                        )
+                    )
+                a, b, c = lpdes(lowpass_cutoff, tdelt, butterworth_stages)
             elif filter_pass == "highpass":
-                wn = highpass_cutoff
-            else:
-                wn = [lowpass_cutoff, highpass_cutoff]
-            if reverse_second_stage is True:
-                b, a = signal.butter(butterworth_order, wn, btype=filter_pass)
-                tsd[col].values[:] = signal.filtfilt(b, a, tsd[col].values)
-            else:
-                sos = signal.butter(
-                    butterworth_order, wn, btype=filter_pass, output="sos"
+                if highpass_cutoff >= 0.5 / tdelt:
+                    raise ValueError(
+                        tsutils.error_wrapper(
+                            """
+The "highpass_cutoff" must be greater than 0.5/interval_in_days."""
+                        )
+                    )
+                a, b, c = hpdes(highpass_cutoff, tdelt, butterworth_stages)
+            elif filter_pass == "bandpass":
+                if lowpass_cutoff >= 0.5 / tdelt or highpass_cutoff >= 0.5 / tdelt:
+                    raise ValueError(
+                        tsutils.error_wrapper(
+                            """
+The "lowpass_cutoff" and "highpass_cutoff" must be greater than 0.5/interval_in_days."""
+                        )
+                    )
+                a, b, c, d, e = bpdes(
+                    lowpass_cutoff, highpass_cutoff, tdelt, butterworth_stages
                 )
-                tsd[col].values[:] = signal.sosfilt(sos, tsd[col].values[:])
+
+            rval = np.pad(tsd[col].values, (4, 0), mode="edge")
+            for k in range(butterworth_stages):
+                af = a[k]
+                bf = b[k]
+                cf = c[k]
+                if (k == 1) and (butterworth_reverse_second_stage is True):
+                    af = a[0]
+                    bf = b[0]
+                    cf = c[0]
+                if filter_pass == "bandpass":
+                    df = d[k]
+                    ef = e[k]
+                if filter_pass == "lowpass":
+                    gval = rval
+                else:
+                    gval = rval
+                    gval[:4] = 0.0
+                if filter_pass == "lowpass":
+                    gval[4:] = (
+                        af * (rval[4:] + 2.0 * rval[3:-1] + rval[2:-2])
+                        - bf * gval[3:-1]
+                        - cf * gval[2:-2]
+                    )
+                elif filter_pass == "highpass":
+                    gval[4:] = (
+                        af * (rval[4:] - 2.0 * rval[3:-1] + rval[2:-2])
+                        - bf * gval[3:-1]
+                        - cf * gval[2:-2]
+                    )
+                elif filter_pass == "bandpass":
+                    gval[4:] = (
+                        af * (rval[4:] - 2.0 * rval[2:-2] + rval[:-4])
+                        - bf * gval[3:-1]
+                        - cf * gval[2:-2]
+                        - df * gval[1:-3]
+                        - ef * gval[:-4]
+                    )
+                gval = gval[4:]
+                if k + 1 != butterworth_stages:
+                    if k == 0 and butterworth_reverse_second_stage is True:
+                        rval = np.flip(gval)
+                    else:
+                        rval = gval
+                elif butterworth_reverse_second_stage is True:
+                    gval = np.flip(gval)
+            ntsd[col] = gval
+
         elif filter_type in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
             if window_len < 3:
                 continue
@@ -392,9 +514,26 @@ The `lowpass_cutoff` value of {lowpass_cutoff} is ignored it `filter_pass` is "h
                 w = np.ones(window_len, "d")
             else:
                 w = eval("np." + filter_type + "(window_len)")
-            tsd[col].values[:] = np.convolve(w / w.sum(), s, mode="valid")
+            ntsd[col] = np.convolve(w / w.sum(), s, mode="valid")
 
-    return tsutils.return_input(print_input, otsd, tsd, "filter")
+    return tsutils.return_input(print_input, tsd, ntsd, "filter")
 
 
 filter.__doc__ = filter_cli.__doc__
+
+if __name__ == "__main__":
+    from tstoolbox import tstoolbox
+
+    df = tstoolbox.read("../../tests/02325000_flow.csv")
+    filt_fft_high = filter(
+        "fft", "highpass", print_input=True, input_ts=df, highpass_cutoff=10
+    )
+    filt_fft_low = filter(
+        "fft", "lowpass", print_input=True, input_ts=df, lowpass_cutoff=10
+    )
+    filt_butter_high = filter(
+        "butterworth", "highpass", print_input=True, input_ts=df, highpass_cutoff=0.4
+    )
+    filt_butter_low = filter(
+        "butterworth", "lowpass", print_input=True, input_ts=df, lowpass_cutoff=0.4
+    )

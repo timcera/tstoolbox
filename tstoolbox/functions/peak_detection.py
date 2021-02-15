@@ -62,7 +62,7 @@ def _boolrelextrema(data, comparator, axis=0, order=1, mode="clip"):
     locs = np.arange(0, datalen)
 
     results = np.ones(data.shape, dtype=bool)
-    main = data.take(locs, axis=axis)
+    main = data.take(locs)
     for shift in range(1, order + 1):
         plus = np.take(data, locs + shift, axis=axis, mode=mode)
         results &= comparator(main, plus)

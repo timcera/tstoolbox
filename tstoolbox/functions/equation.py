@@ -254,21 +254,21 @@ def equation(
         tsearch, nsearch, testeval, nequation = _parse_equation(eqn)
         if tsearch and nsearch:
             y = pd.DataFrame(
-                pd.Series(index=x.index, dtype="float64"),
+                pd.Series(index=x.index, dtype="Float64"),
                 columns=["_"],
-                dtype="float64",
+                dtype="Float64",
             )
             for t in range(len(x)):
                 y.iloc[t, 0] = returnval(t, x, testeval, nequation)
         elif tsearch:
-            y = x.copy()
+            y = x.astype("Float64")
             for t in range(len(x)):
                 y.iloc[t, :] = returnval(t, x, testeval, nequation)
         elif nsearch:
             y = pd.DataFrame(
-                pd.Series(index=x.index, dtype="float64"),
+                pd.Series(index=x.index, dtype="Float64"),
                 columns=["_"],
-                dtype="float64",
+                dtype="Float64",
             )
             try:
                 y.iloc[:, 0] = eval(nequation)
@@ -286,7 +286,7 @@ def equation(
 
         else:
             y = eval(eqn)
-        y.columns = [tsutils.renamer(i, "equation.{0}".format(cnt)) for i in y.columns]
+        y.columns = [tsutils.renamer(i, "equation{0}_".format(cnt)) for i in y.columns]
         newy = newy.join(y, how="outer")
 
     newy = tsutils.memory_optimize(newy)

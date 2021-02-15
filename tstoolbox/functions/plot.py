@@ -189,13 +189,23 @@ def plot_cli(
     target_units=None,
     lag_plot_lag=1,
     plot_styles="bright",
+    hlines_y=None,
+    hlines_xmin=None,
+    hlines_xmax=None,
+    hlines_colors="auto",
+    hlines_linestyles="auto",
+    vlines_x=None,
+    vlines_ymin=None,
+    vlines_ymax=None,
+    vlines_colors="auto",
+    vlines_linestyles="auto",
 ):
     r"""Plot data.
 
     Parameters
     ----------
     {input_ts}
-    ofilename : str
+    ofilename : str, optional
         [optional, defaults to 'plot.png']
 
         Output filename for the plot.  Extension defines
@@ -204,7 +214,12 @@ def plot_cli(
         If used within Python, and `ofilename` is None will return the
         Matplotlib figure that can then be changed or added to as
         needed.
-    type : str
+    type : {'time', 'xy', 'double_mass', 'bloxplot', 'scatter_matrix',
+            'lag_plot', 'autocorrelation', 'bootstrap', 'histogram', 'kde',
+            'kde_time', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
+            'heatmap', 'norm_xaxis', 'norm_yaxis', 'lognorm_xaxis',
+            'lognorm_yaxis', 'weibull_xaxis', 'weibull_yaxis', 'taylor',
+            'target'}, optional
         [optional, defaults to 'time']
 
         The plot type.
@@ -308,7 +323,7 @@ def plot_cli(
             calculated and displayed are bias, root mean square deviation, and
             centered root mean square deviation.  The data columns have to be
             organized as 'observed,simulated1,simulated2,simulated3,...etc.'
-    lag_plot_lag
+    lag_plot_lag : int, optional
         [optional, default to 1]
 
         The lag used if ``type`` "lag_plot" is chosen.
@@ -489,7 +504,7 @@ def plot_cli(
         +-------+----------------+
         | d     | thin diamond   |
         +-------+----------------+
-        | _     | hline          |
+        | _     | hlines_y       |
         +-------+----------------+
         | None  | nothing        |
         +-------+----------------+
@@ -702,7 +717,71 @@ def plot_cli(
         SciencePlots styles:
             https://github.com/garrettj403/SciencePlots
 
-        """
+    hlines_y:
+        [optional, defaults to None]
+
+        Number or list of y values where to place a horizontal line.
+    hlines_xmin:
+        [optional, defaults to None]
+
+        List of minimum x values to start the horizontal line.  If a list must
+        be same length as `hlines_y`.  If a single number will be used as the
+        minimum x values for all horizontal lines.  A missing value or None
+        will start at the minimum x value for the entire plot.
+    hlines_xmax:
+        [optional, defaults to None]
+
+        List of maximum x values to end each horizontal line.  If a list must
+        be same length as `hlines_y`.  If a single number will be the maximum
+        x value for all horizontal lines.  A missing value or None will end at
+        the maximum x value for the entire plot.
+    hlines_colors:
+        [optional, defaults to None]
+
+        List of colors for the horizontal lines.  If a single color then will
+        be used as the color for all horizontal lines.  If a list must be same
+        length as `hlines_y`.  If None will take from the color pallette in the
+        current plot style.
+    hlines_linestyles:
+        [optional, defaults to None]
+
+        List of linestyles for the horizontal lines.  If a single linestyle
+        then will be used as the linestyle for all horizontal lines.  If a list
+        must be same length as `hlines_y`.  If None will take for the standard
+        linestyles list.
+    vlines_x:
+        [optional, defaults to None]
+
+        List of x values where to place a vertical line.
+    vlines_ymin:
+        [optional, defaults to None]
+
+        List of minimum y values to start the vertical line.  If a list must be
+        same length as `vlines_x`.  If a single number will be used as the
+        minimum x values for all vertical lines.  A missing value or None will
+        start at the minimum x value for the entire plot.
+    vlines_ymax:
+        [optional, defaults to None]
+
+        List of maximum x values to end each vertical line.  If a list must be
+        same length as `vlines_x`.  If a single number will be the maximum
+        x value for all vertical lines.  A missing value or None will end at
+        the maximum x value for the entire plot.
+    vlines_colors:
+        [optional, defaults to None]
+
+        List of colors for the vertical lines.  If a single color then will be
+        used as the color for all vertical lines.  If a list must be same
+        length as `vlines_x`.  If None will take from the color pallette in the
+        current plot style.
+    vlines_linestyles:
+        [optional, defaults to None]
+
+        List of linestyles for the vertical lines.  If a single linestyle then
+        will be used as the linestyle for all vertical lines.  If a list must
+        be same length as `vlines_x`.  If None will take for the standard
+        linestyles list.
+    """
     plt = plot(
         input_ts=input_ts,
         columns=columns,
@@ -759,6 +838,16 @@ def plot_cli(
         target_units=target_units,
         lag_plot_lag=lag_plot_lag,
         plot_styles=plot_styles,
+        hlines_y=hlines_y,
+        hlines_xmin=hlines_xmin,
+        hlines_xmax=hlines_xmax,
+        hlines_colors=hlines_colors,
+        hlines_linestyles=hlines_linestyles,
+        vlines_x=vlines_x,
+        vlines_ymin=vlines_ymin,
+        vlines_ymax=vlines_ymax,
+        vlines_colors=vlines_colors,
+        vlines_linestyles=vlines_linestyles,
     )
 
 
@@ -882,6 +971,24 @@ def plot_cli(
         ],
         None,
     ],
+    hlines_y=[float, ["pass", []], None],
+    hlines_xmin=[float, ["pass", []], None],
+    hlines_xmax=[float, ["pass", []], None],
+    hlines_colors=[str, ["pass", []], None],
+    hlines_linestyles=[
+        str,
+        ["domain", ["auto", None, "", " ", "  "] + LINE_LIST],
+        None,
+    ],
+    vlines_x=[float, ["pass", []], None],
+    vlines_ymin=[float, ["pass", []], None],
+    vlines_ymax=[float, ["pass", []], None],
+    vlines_colors=[str, ["pass", []], None],
+    vlines_linestyles=[
+        str,
+        ["domain", ["auto", None, "", " ", "  "] + LINE_LIST],
+        None,
+    ],
 )
 def plot(
     input_ts="-",
@@ -939,6 +1046,16 @@ def plot(
     target_units=None,
     lag_plot_lag=1,
     plot_styles="bright",
+    hlines_y=None,
+    hlines_xmin=None,
+    hlines_xmax=None,
+    hlines_colors="auto",
+    hlines_linestyles="auto",
+    vlines_x=None,
+    vlines_ymin=None,
+    vlines_ymax=None,
+    vlines_colors="auto",
+    vlines_linestyles="auto",
 ):
     r"""Plot data."""
     # Need to work around some old option defaults with the implementation of
@@ -1244,7 +1361,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
         }
 
     if type == "time":
-        ax = tsd.plot(
+        tsd.plot(
             legend=legend,
             subplots=subplots,
             sharex=sharex,
@@ -1257,6 +1374,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             mark_right=mark_right,
             figsize=figsize,
             drawstyle=drawstyle,
+            ax=ax,
         )
         for index, line in enumerate(ax.lines):
             if icolors is not None:
@@ -1318,12 +1436,14 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             else:
                 ndf = tsd.iloc[:, colindex * 2 : colindex * 2 + 2]
 
+            ndf = ndf.dropna()
+
             if type == "double_mass":
-                ndf = ndf.dropna()
                 ndf.iloc[:, 0] = ndf.iloc[:, 0].cumsum()
                 ndf.iloc[:, 1] = ndf.iloc[:, 1].cumsum()
-            oxdata = np.array(ndf.iloc[:, 0])
-            oydata = np.array(ndf.iloc[:, 1])
+
+            oxdata = np.squeeze(ndf.iloc[:, 0].values)
+            oydata = np.squeeze(ndf.iloc[:, 1].values)
 
             if icolors is not None:
                 c = next(icolors)
@@ -1368,6 +1488,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             elif prob_plot_sort_values == "descending":
                 oydata = np.sort(oydata)[::-1]
             n = len(oydata)
+
             norm_axis = ax.xaxis
             oxdata = ppf(tsutils.set_plotting_position(n, plotting_position))
             if type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
@@ -1540,6 +1661,8 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
     elif type == "scatter_matrix":
         from pandas.plotting import scatter_matrix
 
+        tsd = tsd.dropna()
+
         if scatter_matrix_diagonal == "probablity_density":
             scatter_matrix_diagonal = "kde"
         scatter_matrix(tsd, diagonal=scatter_matrix_diagonal, figsize=figsize)
@@ -1576,7 +1699,7 @@ The "heatmap" plot type can only work with daily time series.
         dr = pd.date_range(
             "{0}-01-01".format(byear), "{0}-12-31".format(eyear), freq="D"
         )
-        ntsd = tsd.reindex(index=dr)
+        ntsd = tsd.reindex(index=dr).astype("Float64")
         groups = ntsd.iloc[:, 0].groupby(pd.Grouper(freq="A"))
         years = pd.DataFrame()
         for name, group in groups:
@@ -1609,10 +1732,10 @@ The "heatmap" plot type can only work with daily time series.
         grid = False
     elif type in ("bar", "bar_stacked", "barh", "barh_stacked"):
         stacked = False
-        if type[-7:] == "stacked":
+        if "stacked" in type:
             stacked = True
         kind = "bar"
-        if type[:4] == "barh":
+        if "barh" in type:
             kind = "barh"
         if icolors is not None:
             c = [next(icolors) for i in range(len(tsd.columns))]
@@ -1627,7 +1750,6 @@ The "heatmap" plot type can only work with daily time series.
             logy=logy,
             xlim=xlim,
             ylim=ylim,
-            figsize=figsize,
             linestyle=None,
             color=c,
         )
@@ -1666,7 +1788,77 @@ The "heatmap" plot type can only work with daily time series.
     elif type == "histogram":
         tsd.hist(figsize=figsize, sharey=sharey, sharex=sharex)
 
-    if xy_match_line:
+    #    if hlines_y is not None:
+    #        hlines_y = tsutils.make_list(hlines_y)
+    #        hlines_xmin = tsutils.make_list(hlines_xmin)
+    #        hlines_xmax = tsutils.make_list(hlines_xmax)
+    #        hlines_colors = tsutils.make_list(hlines_colors)
+    #        hlines_linestyles = tsutils.make_list(hlines_colors)
+    #    if vlines_x is not None:
+    #        vlines_x = tsutils.make_list(vlines_x)
+    #        vlines_ymin = tsutils.make_list(vlines_ymin)
+    #        vlines_ymax = tsutils.make_list(vlines_ymax)
+    #        vlines_colors = tsutils.make_list(vlines_colors)
+    #        vlines_linestyles = tsutils.make_list(vlines_colors)
+    if type in [
+        "time",
+        "xy",
+        "bar",
+        "bar_stacked",
+        "histogram",
+        "norm_xaxis",
+        "lognorm_xaxis",
+        "weibull_xaxis",
+        "norm_yaxis",
+        "lognorm_yaxis",
+        "weibull_yaxis",
+    ]:
+        if hlines_y is not None:
+            if type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
+                hlines_y = ppf(tsutils.make_list(hlines_y))
+            else:
+                hlines_y = tsutils.make_list(hlines_y)
+            if hlines_xmin is None:
+                hlines_xmin = ax.get_xlim()[0]
+            hlines_xmin = tsutils.make_list(hlines_xmin)
+            if hlines_xmax is None:
+                hlines_xmax = ax.get_xlim()[1]
+            hlines_xmax = tsutils.make_list(hlines_xmax)
+            if hlines_colors == "auto":
+                hlines_colors = icolors
+            else:
+                hlines_colors = itertools.cycle(tsutils.make_list(hlines_colors))
+            if hlines_linestyles == "auto":
+                hlines_linestyles = ax._get_lines.prop_cycler
+            else:
+                hlines_linestyles = itertools.cycle(
+                    tsutils.make_list(hlines_linestyles)
+                )
+            for index, line in enumerate(hlines_y):
+                try:
+                    val = hlines_xmin[index]
+                except KeyError:
+                    hlines_xmin.append(hlines_xmin[-1])
+                try:
+                    val = hlines_xmax[index]
+                except KeyError:
+                    hlines_xmax.append(hlines_xmax[-1])
+            for l, xmin, xmax, c, ls in zip(
+                hlines_y, hlines_xmin, hlines_xmax, hlines_colors, hlines_linestyles
+            ):
+                ax.plot([xmin, l], [xmax, l], colors=c, linestyles=l)
+        if vlines_x is not None:
+            if type in ["norm_xaxis", "lognorm_xaxis", "weibull_xaxis"]:
+                vlines_x = ppf(tsutils.make_list(vlines_x))
+            plt.vlines(
+                vlines_x,
+                vlines_ymin,
+                vlines_ymax,
+                colors=vlines_colors,
+                linestyles=vlines_linestyles,
+            )
+
+    if type == "xy" and xy_match_line:
         if isinstance(xy_match_line, str):
             xymsty = xy_match_line
         else:

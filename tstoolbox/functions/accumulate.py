@@ -37,13 +37,13 @@ def accumulate_cli(
 
     Parameters
     ----------
-    statistic : str
-        [optional, default is 'sum', transformation]
+    statistic : Union(str, list(str))
+        [optional, default is "sum", transformation]
 
-        Any of 'sum', 'max', 'min', 'prod' or list of same.
+        OneOrMore("sum", "max", "min", "prod")
 
         Python example::
-            statistic=['sum', 'max']
+            statistic=["sum", "max"]
 
         Command line example::
             --statistic=sum,max

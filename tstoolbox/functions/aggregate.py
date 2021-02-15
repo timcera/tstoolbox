@@ -36,6 +36,7 @@ def aggregate_cli(
     target_units=None,
     print_input=False,
     tablefmt="csv",
+    skipna=True,
 ):
     """Take a time series and aggregate to specified frequency.
 
@@ -74,6 +75,12 @@ def aggregate_cli(
     {target_units}
     {print_input}
     {tablefmt}
+    skipna : bool
+        [optional, defaults to True, transformation]
+
+        If False will return a NaN for any aggregation group that has a NaN.
+        If True will fill all NaNs with 0 before aggregation.  Ignored if
+        `groupby` is "all" or `groupby` is "months_across_years".
     agg_interval :
         DEPRECATED:
         Use the 'groupby' option instead.
@@ -100,6 +107,7 @@ def aggregate_cli(
             source_units=source_units,
             target_units=target_units,
             print_input=print_input,
+            skipna=skipna,
         ),
         tablefmt=tablefmt,
     )
@@ -144,6 +152,7 @@ def aggregate(
     source_units=None,
     target_units=None,
     print_input=False,
+    skipna=True,
 ):
     """Take a time series and aggregate to specified frequency."""
     aggd = {"hourly": "H", "daily": "D", "monthly": "M", "yearly": "A", "all": "all"}
@@ -235,7 +244,9 @@ consistent with other tstoolbox commands.
             tmptsd.index = list(range(1, 13))
         else:
             tmptsd = eval(
-                """tsd.resample('{0}{1}').{2}()""".format(ninterval, groupby, method)
+                """tsd.resample('{0}{1}').agg(pd.Series.{2}, skipna={3})""".format(
+                    ninterval, groupby, method, skipna
+                )
             )
         tmptsd.columns = [tsutils.renamer(i, method) for i in tmptsd.columns]
         newts = newts.join(tmptsd, how="outer")

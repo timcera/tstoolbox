@@ -85,5 +85,5 @@ setup(
         "console_scripts": ["{pkg_name}={pkg_name}.{pkg_name}:main".format(**locals())]
     },
     test_suite="tests",
-    python_requires=">=3.6",
+    python_requires=">=3.7.1",
 )

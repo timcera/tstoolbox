@@ -116,7 +116,7 @@ def date_offset(
         clean=clean,
     )
 
-    return tsd.tshift(intervals, offset)
+    return tsd.shift(intervals, offset)
 
 
 date_offset.__doc__ = date_offset_cli.__doc__
