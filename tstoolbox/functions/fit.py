@@ -2,6 +2,11 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import List
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import warnings
 
@@ -10,6 +15,7 @@ import pandas as pd
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from mando.rst_text_formatter import RSTHelpFormatter
 import mando
+import typic
 
 from .. import tsutils
 
@@ -87,13 +93,11 @@ def fit_cli(
     )
 
 
-@tsutils.validator(
-    method=[str, ["domain", ["lowess", "linear"]], None],
-    lowess_frac=[float, ["range", [0, 1]], None],
-)
+@tsutils.transform_args(method=tsutils.make_list)
+@typic.al
 def fit(
-    method,
-    lowess_frac=0.01,
+    method: List[Literal["lowess", "linear"]],
+    lowess_frac: tsutils.FloatBetweenZeroAndOne = 0.01,
     input_ts="-",
     columns=None,
     start_date=None,
@@ -122,7 +126,6 @@ def fit(
         target_units=target_units,
         clean=clean,
     )
-    method = tsutils.make_list(method)
 
     ntsd = pd.DataFrame()
     tmptsd = pd.DataFrame()

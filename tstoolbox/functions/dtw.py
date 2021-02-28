@@ -10,6 +10,7 @@ from mando.rst_text_formatter import RSTHelpFormatter
 
 import numpy as np
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -117,7 +118,7 @@ def dtw_cli(
     )
 
 
-@tsutils.validator(window=[int, ["pass", []], 1])
+@typic.al
 def dtw(
     input_ts="-",
     columns=None,
@@ -129,7 +130,7 @@ def dtw(
     index_type="datetime",
     names=None,
     clean=False,
-    window=10000,
+    window: int = 10000,
     source_units=None,
     target_units=None,
 ):

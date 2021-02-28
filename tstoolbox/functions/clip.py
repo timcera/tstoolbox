@@ -10,6 +10,7 @@ from mando.rst_text_formatter import RSTHelpFormatter
 
 import numpy as np
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -88,7 +89,7 @@ def clip_cli(
     )
 
 
-@tsutils.validator(a_min=[float, ["pass", []], 1], a_max=[float, ["pass", []], 1])
+@typic.al
 def clip(
     input_ts="-",
     start_date=None,
@@ -99,8 +100,8 @@ def clip(
     skiprows=None,
     index_type="datetime",
     names=None,
-    a_min=None,
-    a_max=None,
+    a_min: float = None,
+    a_max: float = None,
     round_index=None,
     source_units=None,
     target_units=None,

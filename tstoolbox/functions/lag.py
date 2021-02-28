@@ -2,11 +2,13 @@
 """A lag routine."""
 
 from __future__ import absolute_import, print_function
+from typing import List
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -70,9 +72,15 @@ def lag_cli(
     )
 
 
-@tsutils.validator(lags=[int, ["pass", []], 1])
+@typic.constrained(ge=0)
+class Lags(int):
+    """'lags' constraint"""
+
+
+@tsutils.transform_args(lags=tsutils.make_list)
+@typic.al
 def lag(
-    lags,
+    lags: List[Lags],
     input_ts="-",
     print_input=False,
     start_date=None,
@@ -101,7 +109,6 @@ def lag(
         target_units=target_units,
         clean=clean,
     )
-    lags = tsutils.make_list(lags)
     if len(lags) == 1:
         lags = lags[0]
     try:

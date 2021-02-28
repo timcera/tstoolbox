@@ -2,11 +2,13 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import List
 
 import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import typic
 
 from .. import tsutils
 
@@ -84,12 +86,11 @@ def replace_cli(
     )
 
 
-@tsutils.validator(
-    from_values=[float, ["pass", []], None], to_values=[float, ["pass", []], None]
-)
+@tsutils.transform_args(from_values=tsutils.make_list, to_values=tsutils.make_list)
+@typic.al
 def replace(
-    from_values,
-    to_values,
+    from_values: List[float],
+    to_values: List[float],
     round_index=None,
     input_ts="-",
     columns=None,
@@ -119,11 +120,7 @@ def replace(
         clean=clean,
     )
 
-    nfrom_values = tsutils.make_list(from_values)
-
-    nto_values = tsutils.make_list(to_values)
-
-    ntsd = tsd.replace(nfrom_values, nto_values)
+    ntsd = tsd.replace(from_values, to_values)
 
     return tsutils.return_input(print_input, tsd, ntsd, "replace")
 

@@ -9,6 +9,7 @@ import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -81,13 +82,10 @@ def calculate_kde_cli(
     )
 
 
-@tsutils.validator(
-    ascending=[bool, ["domain", [True, False]], 1],
-    evaluate=[bool, ["domain", [True, False]], 1],
-)
+@typic.al
 def calculate_kde(
-    ascending=True,
-    evaluate=False,
+    ascending: bool = True,
+    evaluate: bool = False,
     input_ts="-",
     columns=None,
     start_date=None,

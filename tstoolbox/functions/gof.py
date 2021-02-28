@@ -2,11 +2,17 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import List
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import typic
 
 from .. import tsutils
 
@@ -178,40 +184,32 @@ def gof_cli(
     )
 
 
-@tsutils.validator(
-    kge09=[float, ["pass", []], 1],
-    kge12=[float, ["pass", []], 1],
-    stats=[
-        str,
-        [
-            "domain",
-            [
-                "bias",
-                "pc_bias",
-                "apc_bias",
-                "rmsd",
-                "crmsd",
-                "corrcoef",
-                "coefdet",
-                "murphyss",
-                "nse",
-                "kge",
-                "kge09",
-                "kge12",
-                "index_agreement",
-                "brierss",
-                "mae",
-                "mean",
-                "stdev",
-                "all",
-            ],
-        ],
-        None,
-    ],
-)
+@tsutils.transform_args(stats=tsutils.make_list)
+@typic.al
 def gof(
     input_ts="-",
-    stats="all",
+    stats: List[
+        Literal[
+            "bias",
+            "pc_bias",
+            "apc_bias",
+            "rmsd",
+            "crmsd",
+            "corrcoef",
+            "coefdet",
+            "murphyss",
+            "nse",
+            "kge",
+            "kge09",
+            "kge12",
+            "index_agreement",
+            "brierss",
+            "mae",
+            "mean",
+            "stdev",
+            "all",
+        ]
+    ] = "all",
     columns=None,
     start_date=None,
     end_date=None,
@@ -222,13 +220,13 @@ def gof(
     source_units=None,
     target_units=None,
     skiprows=None,
-    kge_sr=1.0,
-    kge09_salpha=1.0,
-    kge_sbeta=1.0,
-    kge12_sgamma=1.0,
+    kge_sr: float = 1.0,
+    kge09_salpha: float = 1.0,
+    kge_sbeta: float = 1.0,
+    kge12_sgamma: float = 1.0,
 ):
     """Will calculate goodness of fit statistics between two time-series."""
-    if stats == "all":
+    if "all" in stats:
         stats = [
             "bias",
             "pc_bias",
@@ -247,11 +245,6 @@ def gof(
             "mean",
             "stdev",
         ]
-    else:
-        try:
-            stats = tsutils.make_list(stats)
-        except AttributeError:
-            pass
 
     # Use dropna='no' to get the lengths of both time-series.
     tsd = tsutils.common_kwds(

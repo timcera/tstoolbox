@@ -2,6 +2,7 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import Optional
 
 import warnings
 
@@ -186,36 +187,33 @@ def rolling_window_cli(
     )
 
 
-@tsutils.validator(
-    statistic=[
-        str,
-        [
-            "domain",
-            [
-                "corr",
-                "count",
-                "cov",
-                "kurt",
-                "max",
-                "mean",
-                "median",
-                "min",
-                "quantile",
-                "skew",
-                "std",
-                "sum",
-                "var",
-            ],
-        ],
-        1,
-    ],
-    window=[int, ["range", [0, None]], None],
-    min_periods=[int, ["range", [0, None]], 1],
-    center=[bool, ["domain", [True, False]], 1],
-    win_type=[str, ["pass", []], 1],
-    on=[str, ["pass", []], 1],
-    closed=[str, ["domain", ["right", "left", "both", "neither"]], 1],
-)
+# @tsutils.validator(
+#    statistic=[
+#        str,
+#        [
+#            "domain",
+#            [
+#                "corr",
+#                "count",
+#                "cov",
+#                "kurt",
+#                "max",
+#                "mean",
+#                "median",
+#                "min",
+#                "quantile",
+#                "skew",
+#                "std",
+#                "sum",
+#                "var",
+#            ],
+#        ],
+#        1,
+#    ],
+#    window=[int, ["range", [0, None]], None],
+#    min_periods=[int, ["range", [0, None]], 1],
+#    closed=[str, ["domain", ["right", "left", "both", "neither"]], 1],
+# )
 def rolling_window(
     statistic,
     groupby=None,
@@ -231,9 +229,9 @@ def rolling_window(
     clean=False,
     span=None,
     min_periods=None,
-    center=False,
-    win_type=None,
-    on=None,
+    center: bool = False,
+    win_type: Optional[str] = None,
+    on: Optional[str] = None,
     closed=None,
     source_units=None,
     target_units=None,

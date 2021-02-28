@@ -2,6 +2,10 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import warnings
 
@@ -9,6 +13,7 @@ import mando
 import numpy as np
 from mando.rst_text_formatter import RSTHelpFormatter
 import pandas as pd
+import typic
 
 from tstoolbox import tsutils
 
@@ -233,43 +238,35 @@ def filter_cli(
     )
 
 
-@tsutils.validator(
-    filter_type=[
-        str,
-        [
-            "domain",
-            [
-                "flat",
-                "hanning",
-                "hamming",
-                "bartlett",
-                "blackman",
-                "fft",
-                "butterworth",
-            ],
-        ],
-        1,
-    ],
-    filter_pass=[
-        str,
-        [
-            "domain",
-            ["lowpass", "highpass", "bandpass", "bandstop"],
-        ],
-        1,
-    ],
-    window_len=[int, ["range", [1, None]], 1],
-    cutoff_period=[float, ["range", [0, None]], 1],
-    lowpass_cutoff=[float, ["range", [0, None]], 1],
-    highpass_cutoff=[float, ["range", [0, None]], 1],
-    butterworth_stages=[int, ["range", [1, 3]], 1],
-    butterworth_reverse_second_stage=[bool, ["domain", [True, False]], 1],
-)
+@typic.constrained(ge=1)
+class IntGreaterThanOrEqualToOne(int):
+    """Integer greater than zero."""
+
+
+@typic.constrained(ge=1, le=3)
+class IntBetweenOneAndThree(int):
+    """Integer between 1 and 3 inclusive."""
+
+
+@typic.constrained(ge=0)
+class FloatGreaterThanOrEqualToZero(float):
+    """Positive float value."""
+
+
+@typic.al
 def filter(
-    filter_type,
-    filter_pass,
-    butterworth_stages=1,
-    butterworth_reverse_second_stage=True,
+    filter_type: Literal[
+        "flat",
+        "hanning",
+        "hamming",
+        "bartlett",
+        "blackman",
+        "fft",
+        "butterworth",
+    ],
+    filter_pass: Literal["lowpass", "highpass", "bandpass", "bandstop"],
+    butterworth_stages: IntBetweenOneAndThree = 1,
+    butterworth_reverse_second_stage: bool = True,
     input_ts="-",
     columns=None,
     start_date=None,
@@ -280,10 +277,10 @@ def filter(
     names=None,
     clean=False,
     print_input=False,
-    lowpass_cutoff=None,
-    highpass_cutoff=None,
-    cutoff_period=None,
-    window_len=3,
+    lowpass_cutoff: FloatGreaterThanOrEqualToZero = None,
+    highpass_cutoff: FloatGreaterThanOrEqualToZero = None,
+    cutoff_period: FloatGreaterThanOrEqualToZero = None,
+    window_len: IntGreaterThanOrEqualToOne = 3,
     source_units=None,
     target_units=None,
     round_index=None,

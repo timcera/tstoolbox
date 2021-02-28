@@ -3,6 +3,11 @@
 
 from __future__ import absolute_import, division, print_function
 
+from typing import Union
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 import warnings
 
 import mando
@@ -11,6 +16,7 @@ from mando.rst_text_formatter import RSTHelpFormatter
 import numpy as np
 import pandas as pd
 from pandas.tseries.frequencies import to_offset
+import typic
 
 from .. import tsutils
 
@@ -161,37 +167,27 @@ def convert_index_cli(
     tsutils.printiso(tsd, tablefmt=tablefmt)
 
 
-@tsutils.validator(
-    to=[str, ["domain", ["datetime", "number"]], 1],
-    epoch=[
-        [
-            str,
-            [
-                "domain",
-                [
-                    "julian",
-                    "reduced",
-                    "modified",
-                    "truncated",
-                    "dublin",
-                    "cnes",
-                    "ccsds",
-                    "lop",
-                    "lilian",
-                    "rata_die",
-                    "mars_sol",
-                    "unix",
-                ],
-            ],
-            1,
-        ],
-        [tsutils.parsedate, ["pass", []], 1],
-    ],
-)
+@typic.al
 def convert_index(
-    to,
+    to: Literal["datetime", "number"],
     interval=None,
-    epoch="julian",
+    epoch: Union[
+        Literal[
+            "julian",
+            "reduced",
+            "modified",
+            "truncated",
+            "dublin",
+            "cnes",
+            "ccsds",
+            "lop",
+            "lilian",
+            "rata_die",
+            "mars_sol",
+            "unix",
+        ],
+        pd._typing.TimestampConvertibleTypes,
+    ] = "julian",
     input_ts="-",
     columns=None,
     start_date=None,

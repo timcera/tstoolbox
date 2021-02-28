@@ -12,6 +12,8 @@ from functools import reduce
 from io import StringIO, BytesIO
 from math import gcd
 from urllib.parse import urlparse
+from functools import wraps
+import inspect
 
 import dateparser
 import numpy as np
@@ -21,18 +23,30 @@ from scipy.stats.distributions import norm
 from scipy.stats.distributions import lognorm
 from tabulate import simple_separated_format
 from tabulate import tabulate as tb
+from numpy import ndarray
+from pandas.core.frame import DataFrame
+from numpy import int64
+from pandas._libs.tslibs.timestamps import Timestamp
+from pandas.core.indexes.base import Index
+from _io import TextIOWrapper
+from typing import Optional, Any, List, Tuple, Callable, Union
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
+import typic
 
 UREG = UnitRegistry()
 
 
-WRAPPER = TextWrapper(initial_indent="*   ", subsequent_indent="*   ")
-
-
-def error_wrapper(estr):
-    """ Wrap estr into error format used by toolboxes. """
+@typic.al
+def error_wrapper(estr: str) -> str:
+    """Wrap estr into error format used by toolboxes."""
+    wrapper = TextWrapper(initial_indent="*   ", subsequent_indent="*   ")
     nestr = ["", "*"]
     for paragraph in estr.split("\n\n"):
-        nestr.append("\n".join(WRAPPER.wrap(paragraph.strip())))
+        nestr.append("\n".join(wrapper.wrap(paragraph.strip())))
         nestr.append("*")
     nestr.append("")
     return "\n".join(nestr)
@@ -507,7 +521,43 @@ docstrings = {
 # docstrings["pandas_offset_codes"] = codes_table
 
 
-def stride_and_unit(sunit):
+@typic.constrained(gt=0, lt=1)
+class FloatBetweenZeroAndOne(float):
+    """ 0.0 < float < 1.0 """
+
+
+@typic.constrained(ge=0, le=1)
+class FloatBetweenZeroAndOneInclusive(float):
+    """ 0.0 <= float <= 1.0 """
+
+
+@typic.constrained(ge=0)
+class FloatGreaterEqualToZero(float):
+    """ float >= 0.0 """
+
+
+@typic.constrained(ge=1)
+class FloatGreaterEqualToOne(float):
+    """ float >= 1.0 """
+
+
+@typic.constrained(ge=0)
+class IntGreaterEqualToZero(int):
+    """ int >= 0 """
+
+
+@typic.constrained(ge=1)
+class IntGreaterEqualToOne(int):
+    """ int >= 1 """
+
+
+@typic.constrained(ge=1, le=3)
+class IntBetweenOneAndThree(int):
+    """ 1 <= int <= 3 """
+
+
+@typic.al
+def stride_and_unit(sunit: str) -> Tuple[int, str]:
     """Split a stride/unit combination into component parts."""
     if sunit is None:
         return sunit
@@ -520,7 +570,8 @@ def stride_and_unit(sunit):
     return unit, stride
 
 
-def set_ppf(ptype):
+@typic.al
+def set_ppf(ptype: Optional[Literal["norm", "lognorm", "weibull"]]) -> Callable:
     """Return correct Percentage Point Function for `ptype`."""
     if ptype == "norm":
         return norm.ppf
@@ -528,20 +579,21 @@ def set_ppf(ptype):
         return lognorm.freeze(0.5, loc=0).ppf
     elif ptype == "weibull":
 
-        def ppf(y):
+        def ppf(y: Union[List[float], ndarray]) -> ndarray:
             """Percentage Point Function for the weibull distibution."""
             return np.log(-np.log((1 - np.array(y))))
 
         return ppf
     elif ptype is None:
 
-        def ppf(y):
+        def ppf(y: ndarray) -> ndarray:
             return y
 
         return ppf
 
 
-def _plotting_position_equation(i, n, a):
+@typic.al
+def _plotting_position_equation(i: ndarray, n: Union[int, int64], a: float) -> ndarray:
     """Parameterized, generic plotting position equation."""
     return (i - a) / float(n + 1 - 2 * a)
 
@@ -561,7 +613,24 @@ PPDICT = {
 }
 
 
-def set_plotting_position(n, plotting_position="weibull"):
+@typic.al
+def set_plotting_position(
+    n: Union[int, int64], plotting_position: Union[float, Literal[
+                     "weibull",
+                     "benard",
+                     "bos-levenbach",
+                     "filliben",
+                     "yu",
+                     "tukey",
+                     "blom",
+                     "cunnane",
+                     "gringorton",
+                     "hazen",
+                     "larsen",
+                     "gumbel",
+                     "california",
+                 ]]= "weibull"
+) -> ndarray:
     """Create plotting position 1D array using linspace."""
     if plotting_position == "california":
         return np.linspace(1.0 / n, 1.0, n)
@@ -580,8 +649,9 @@ def b(s):
         return s
 
 
-def _handle_curly_braces_in_docstring(s, **kwargs):
-    """Replaces missing keys with a pattern."""
+@typic.al
+def _handle_curly_braces_in_docstring(s: str, **kwargs) -> str:
+    """Replace missing keys with a pattern."""
     RET = "{{{}}}"
     try:
         return s.format(**kwargs)
@@ -592,7 +662,8 @@ def _handle_curly_braces_in_docstring(s, **kwargs):
         )
 
 
-def doc(fdict, **kwargs):
+@typic.al
+def doc(fdict: dict, **kwargs) -> Callable:
     """Return a decorator that formats a docstring."""
 
     def f(fn):
@@ -615,7 +686,10 @@ def convert_keyword_to_postional(keyword_name, *args, **kwargs):
     return f
 
 
-def parsedate(dstr, strftime=None, settings=None):
+@typic.al
+def parsedate(
+    dstr: str, strftime: Optional[Any] = None, settings: Optional[Any] = None
+) -> Timestamp:
     """Use dateparser to parse a wide variety of dates.
 
     Used for start and end dates.
@@ -686,7 +760,7 @@ def about(name):
     print("platform version = {0}".format(platform.version()))
 
 
-def _round_index(ntsd, round_index=None):
+def _round_index(ntsd: DataFrame, round_index: Optional[str] = None) -> DataFrame:
     """Round the index, typically time, to the nearest interval."""
     if round_index is None:
         return ntsd
@@ -703,7 +777,7 @@ def _pick_column_or_value(tsd, var):
     return var
 
 
-def make_list(*strorlist, **kwds):
+def make_list(*strorlist: Any, **kwds: Any) -> Any:
     """Normalize strings, converting to numbers or lists."""
     try:
         n = kwds.pop("n")
@@ -868,196 +942,9 @@ def make_iloc(columns, col_list):
 #                         --wind_speed 2.4,3.1 < df.csv
 
 
-def Coerce(ntype, msg=None):
-    """Coerce a value to a type.
-
-    float:
-        1     -> 1.0
-        '1.1' -> 1.1
-        '1,'  -> [1.0, None]
-    int:
-        1     -> 1
-        '1'   -> 1
-        '1,'  -> [1, None]
-    str:
-        1     -> '1'
-        '1'   -> '1'
-        '1,'  -> ['1', None]
-    bool:
-        True  -> True
-        False -> False
-        1     -> True
-        0     -> False
-        ''    -> False
-        'a'   -> True
-        '1,'  -> [True, False]
-    """
-
-    def f(v):
-        if v is None or v == "":
-            return None
-        if isinstance(v, str):
-            if "," in v:
-                v = v.split(",")
-        try:
-            if isinstance(v, (list, tuple)):
-                rl = []
-                for i in v:
-                    if i is None or i == "":
-                        rl.append(i)
-                    else:
-                        rl.append(ntype(i))
-                return rl
-            return ntype(v)
-        except ValueError:
-            raise ValueError(msg or ("Cannot coerce {0} to {1}.".format(v, ntype)))
-
-    return f
-
-
-def _vhead(funcname, argname, nargs, nvar, vlen):
-    if not isinstance(nvar, list):
-        nvar = [nvar]
-    if vlen is not None and len(nvar) != vlen:
-        items = "item" if vlen == 1 else "items"
-        raise ValueError(
-            error_wrapper(
-                """
-The argument {argname} can only be {vlen} {items} long.
-
-You gave {nvar}.
-""".format(
-                    **locals()
-                )
-            )
-        )
-    return nvar
-
-
-def _vdomain(funcname, argname, nargs, nvar, vlen):
-    nvar = _vhead(funcname, argname, nargs, nvar, vlen)
-    for i in nvar:
-        if i is None:
-            continue
-        if i not in nargs:
-            raise ValueError(
-                error_wrapper(
-                    """
-The argument "{argname}" should be one of the terms in {nargs}.
-
-You gave "{i}".
-""".format(
-                        **locals()
-                    )
-                )
-            )
-
-
-def _vrange(funcname, argname, nargs, nvar, vlen):
-    nvar = _vhead(funcname, argname, nargs, nvar, vlen)
-    for i in nvar:
-        if i is None:
-            continue
-        if nargs[0] is None:
-            if i > nargs[1]:
-                raise ValueError(
-                    error_wrapper(
-                        """
-The argument "{1}" should be less than or equal to {4}.
-
-You gave "{2}".
-""".format(
-                            funcname, argname, i, nargs[0], nargs[1]
-                        )
-                    )
-                )
-            continue
-        if nargs[1] is None:
-            if i < nargs[0]:
-                raise ValueError(
-                    error_wrapper(
-                        """
-The argument "{1}" should be greater than or equal to {3}.
-
-You gave "{2}".
-""".format(
-                            funcname, argname, i, nargs[0], nargs[1]
-                        )
-                    )
-                )
-            continue
-        if i < nargs[0] or i > nargs[1]:
-            raise ValueError(
-                error_wrapper(
-                    """
-The argument "{1}" should be between {3} to {4}, inclusive.
-
-You gave "{2}".
-""".format(
-                        funcname, argname, i, nargs[0], nargs[1]
-                    )
-                )
-            )
-
-
-def _vpass(funcname, argname, nargs, nvar, vlen):
-    pass
-
-
-validator_func = {"domain": _vdomain, "range": _vrange, "pass": _vpass}
-
-
-def validator(**argchecks):  # validate ranges for both+defaults
-    def onDecorator(func):  # onCall remembers func and argchecks
-        if not __debug__:  # True if "python -O main.py args.."
-            return func  # wrap if debugging else use original
-        code = func.__code__
-        allargs = code.co_varnames[: code.co_argcount]
-        funcname = func.__name__
-
-        def onCall(*pargs, **kargs):
-            # all pargs match first N args by position
-            # the rest must be in kargs or omitted defaults
-            positionals = list(allargs)
-            positionals = positionals[: len(pargs)]
-
-            for (argname, comb) in argchecks.items():
-                collect_errors = []
-                incomb = comb
-                if callable(comb[0]):
-                    incomb = [comb]
-                for ctype, (valid, (nargs)), vlen in incomb:
-                    # for all args to be checked
-                    iffinally = True
-                    if argname in kargs:
-                        # was passed by name
-                        cval = kargs[argname]
-                    elif argname in positionals:
-                        # was passed by position
-                        position = positionals.index(argname)
-                        cval = pargs[position]
-                    else:
-                        iffinally = False
-
-                    if iffinally is True:
-                        try:
-                            nvar = Coerce(ctype)(cval)
-                            validator_func[valid](funcname, argname, nargs, nvar, vlen)
-                            collect_errors.append(None)
-                            break
-                        except ValueError as e:
-                            collect_errors.append(str(e))
-                if len(collect_errors) > 0 and all(collect_errors) is True:
-                    raise ValueError("\n\n".join(collect_errors))
-
-            return func(*pargs, **kargs)  # okay: run original call
-
-        return onCall
-
-    return onDecorator
-
-
-def _normalize_units(ntsd, source_units, target_units):
+def _normalize_units(
+    ntsd: DataFrame, source_units: Optional[str], target_units: Optional[str]
+) -> DataFrame:
     """
     Following is aspirational and may not reflect the code.
 
@@ -1160,31 +1047,55 @@ No conversion between {0} and {1}.""".format(
     return memory_optimize(ntsd)
 
 
-@validator(
-    start_date=[parsedate, ["pass", []], 1],
-    end_date=[parsedate, ["pass", []], 1],
-    force_freq=[str, ["pass", []], 1],
-    groupby=[str, ["pass", []], 1],
-    dropna=[str, ["domain", ["no", "any", "all"]], 1],
-    round_index=[str, ["pass", []], 1],
-    clean=[bool, ["domain", [True, False]], 1],
-    target_units=[str, ["pass", []], None],
-    source_units=[str, ["pass", []], None],
-    bestfreq=[bool, ["domain", [True, False]], 1],
-)
+def get_default_args(func):
+    signature = inspect.signature(func)
+    return {
+        k: v.default
+        for k, v in signature.parameters.items()
+        if v.default is not inspect.Parameter.empty
+    }
+
+
+def transform_args(**trans_func_for_arg):
+    """
+    Make a decorator that transforms function arguments before calling the function.
+    Works with plain functions and bounded methods.
+    """
+
+    def transform_args_decorator(func):
+        sig = inspect.signature(func)
+        @wraps(func)
+        def transform_args_wrapper(*args, **kwargs):
+            # get a {argname: argval, ...} dict from *args and **kwargs
+            # Note: Didn't really need an if/else here but I am assuming that...
+            # Note: ... getcallargs gives us an overhead that can be avoided if there's only keyword args.
+            val_of_argname = sig.bind(*args, **kwargs)
+            val_of_argname.apply_defaults()
+            for argname, trans_func in trans_func_for_arg.items():
+                val_of_argname.arguments[argname] = trans_func(val_of_argname.arguments[argname])
+            # apply transform functions to argument values
+            return func(*val_of_argname.args, **val_of_argname.kwargs)
+
+        return transform_args_wrapper
+
+    return transform_args_decorator
+
+
+@transform_args(pick=make_list)
+@typic.al
 def common_kwds(
     input_tsd=None,
-    start_date=None,
-    end_date=None,
-    pick=None,
+    start_date: Optional[pd._typing.TimestampConvertibleTypes] = None,
+    end_date: Optional[pd._typing.TimestampConvertibleTypes] = None,
+    pick: Optional[List[Union[int, str]]] = None,
     force_freq=None,
     groupby=None,
-    dropna="no",
-    round_index=None,
-    clean=False,
+    dropna: Optional[Literal["no", "any", "all"]] = "no",
+    round_index: str = None,
+    clean: bool = False,
     target_units=None,
     source_units=None,
-    bestfreq=True,
+    bestfreq: bool = True,
 ):
     """Process all common_kwds across sub-commands into single function.
 
@@ -1235,7 +1146,7 @@ def common_kwds(
     return ntsd
 
 
-def _pick(tsd, columns):
+def _pick(tsd: DataFrame, columns: Any) -> DataFrame:
     columns = make_list(columns)
     if columns is None:
         return tsd
@@ -1312,7 +1223,11 @@ number of columns {1}.
     return newtsd
 
 
-def _date_slice(input_tsd, start_date=None, end_date=None):
+def _date_slice(
+    input_tsd: DataFrame,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+) -> DataFrame:
     """Private function to slice time series."""
     if input_tsd.index.inferred_type == "datetime64":
         accdate = []
@@ -1357,7 +1272,7 @@ _ANNUALS = {
 _WEEKLIES = {0: "MON", 1: "TUE", 2: "WED", 3: "THU", 4: "FRI", 5: "SAT", 6: "SUN"}
 
 
-def asbestfreq(data, force_freq=None):
+def asbestfreq(data: DataFrame, force_freq: Optional[str] = None) -> DataFrame:
     """Test to determine best frequency to represent data.
 
     This uses several techniques.
@@ -1484,7 +1399,9 @@ record {1} (start count at 0):
     return data
 
 
-def dedupIndex(idx, fmt=None, ignoreFirst=True):
+def dedupIndex(
+    idx: List[str], fmt: Optional[Any] = None, ignoreFirst: bool = True
+) -> Index:
     # fmt:          A string format that receives two arguments:
     #               name and a counter. By default: fmt='%s.%03d'
     # ignoreFirst:  Disable/enable postfixing of first element.
@@ -1501,7 +1418,7 @@ def dedupIndex(idx, fmt=None, ignoreFirst=True):
     return pd.Index(idx)
 
 
-def renamer(xloc, suffix=""):
+def renamer(xloc: Union[int, str], suffix: Optional[str] = "") -> str:
     """Print the suffix into the third ":" separated field of the header."""
     if suffix is None:
         suffix = ""
@@ -1545,8 +1462,13 @@ def print_input(
 
 
 def return_input(
-    iftrue, intds, output, suffix="", reverse_index=False, output_names=[]
-):
+    iftrue: Union[bool, str],
+    intds: DataFrame,
+    output: DataFrame,
+    suffix: Optional[str] = "",
+    reverse_index: bool = False,
+    output_names: List = [],
+) -> DataFrame:
     """Print the input time series also."""
     output.columns = output_names or [renamer(i, suffix) for i in output.columns]
     if iftrue:
@@ -1566,14 +1488,14 @@ def _apply_across_columns(func, xtsd, **kwds):
 
 
 def _printiso(
-    tsd,
-    date_format=None,
-    sep=",",
-    float_format="g",
-    showindex="never",
-    headers="keys",
-    tablefmt="csv",
-):
+    tsd: DataFrame,
+    date_format: Optional[Any] = None,
+    sep: str = ",",
+    float_format: str = "g",
+    showindex: str = "never",
+    headers: str = "keys",
+    tablefmt: str = "csv",
+) -> None:
     """Separate so can use in tests."""
     if isinstance(tsd, (pd.DataFrame, pd.Series)):
         if isinstance(tsd, pd.Series):
@@ -1651,7 +1573,7 @@ def _printiso(
 printiso = _printiso
 
 
-def open_local(filein):
+def open_local(filein: str) -> TextIOWrapper:
     """
     Open the given input file.
 
@@ -1721,7 +1643,7 @@ def reduce_mem_usage(props):
     return props
 
 
-def memory_optimize(tsd):
+def memory_optimize(tsd: DataFrame) -> DataFrame:
     """Convert all columns to known types.
 
     "convert_dtypes" replaced some code here such that the "memory_optimize"
@@ -1739,7 +1661,7 @@ def memory_optimize(tsd):
     return tsd
 
 
-def is_valid_url(url, qualifying=None):
+def is_valid_url(url: bytes, qualifying: Optional[Any] = None) -> bool:
     """Return whether "url" is valid."""
     min_attributes = ("scheme", "netloc")
     qualifying = min_attributes if qualifying is None else qualifying
@@ -1747,24 +1669,16 @@ def is_valid_url(url, qualifying=None):
     return all((getattr(token, qualifying_attr) for qualifying_attr in qualifying))
 
 
-@validator(
-    parse_dates=[bool, ["domain", [True, False]], 1],
-    extended_columns=[bool, ["domain", [True, False]], 1],
-    dropna=[str, ["domain", ["no", "any", "all"]], 1],
-    force_freq=[str, ["pass", []], 1],
-    index_type=[str, ["domain", ["datetime", "number"]], 1],
-    names=[str, ["pass", []], 1],
-    skiprows=[int, ["pass", []], 1],
-)
+@typic.al
 def read_iso_ts(
     indat,
-    parse_dates=True,
-    extended_columns=False,
-    dropna=None,
-    force_freq=None,
-    skiprows=None,
-    index_type="datetime",
-    names=None,
+    parse_dates: bool = True,
+    extended_columns: bool = False,
+    dropna: Literal["no", "any", "all"] = None,
+    force_freq: Optional[str]=None,
+    skiprows: Optional[Union[int, List[int]]] = None,
+    index_type: Literal["datetime", "number"] = "datetime",
+    names: Optional[str]=None,
 ):
     """Read the format printed by 'printiso' and maybe other formats.
 

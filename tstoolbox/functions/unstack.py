@@ -2,11 +2,13 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import Union
 
 import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import typic
 
 from .. import tsutils
 
@@ -96,8 +98,9 @@ def unstack_cli(
     )
 
 
+@typic.al
 def unstack(
-    column_names,
+    column_names: Union[int, str],
     input_ts="-",
     columns=None,
     start_date=None,

@@ -221,8 +221,8 @@ class TestPeakDetect(TestCase):
                 print_input=True,
                 extrema="booth",
             )
+        assert "Given value <'booth'> fails constraints:" in str(e_info.value)
 
-        assert 'The argument "extrema" should be one' in str(e_info.value)
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.peak_detection(
                 method="sin",
@@ -231,4 +231,4 @@ class TestPeakDetect(TestCase):
                 print_input=True,
                 extrema="both",
             )
-        assert 'The argument "method" should be one' in str(e_info.value)
+        assert "Given value <'sin'> fails constraints:" in str(e_info.value)

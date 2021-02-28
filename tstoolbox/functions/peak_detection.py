@@ -2,12 +2,17 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import warnings
 
 import mando
 import numpy as np
 from mando.rst_text_formatter import RSTHelpFormatter
+import typic
 
 from .. import tsutils
 
@@ -904,14 +909,7 @@ def peak_detection_cli(
     )
 
 
-@tsutils.validator(
-    extrema=[str, ["domain", ["peak", "valley", "both"]], 1],
-    method=[str, ["domain", ["rel", "minmax", "zero_crossing", "parabola", "sine"]], 1],
-    window=[int, ["range", [0, None]], 1],
-    pad_len=[int, ["range", [0, None]], 1],
-    points=[int, ["range", [0, None]], 1],
-    lock_frequency=[bool, ["domain", [True, False]], 1],
-)
+@typic.al
 def peak_detection(
     input_ts="-",
     columns=None,
@@ -922,12 +920,12 @@ def peak_detection(
     index_type="datetime",
     names=None,
     clean=False,
-    method="rel",
-    extrema="peak",
-    window=24,
-    pad_len=5,
-    points=9,
-    lock_frequency=False,
+    method: Literal["rel", "minmax", "zero_crossing", "parabola", "sine"] = "rel",
+    extrema: Literal["peak", "valley", "both"] = "peak",
+    window: tsutils.IntGreaterEqualToOne = 24,
+    pad_len: tsutils.IntGreaterEqualToOne = 5,
+    points: tsutils.IntGreaterEqualToOne = 9,
+    lock_frequency: bool = False,
     round_index=None,
     source_units=None,
     target_units=None,

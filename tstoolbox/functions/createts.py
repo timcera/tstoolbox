@@ -2,6 +2,7 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import Union
 
 import warnings
 
@@ -9,6 +10,7 @@ import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -72,10 +74,10 @@ def createts_cli(
     )
 
 
-@tsutils.validator(freq=[str, ["pass", []], 1])
+@typic.al
 def createts(
-    freq=None,
-    fillvalue=None,
+    freq: str = None,
+    fillvalue: Union[float, int] = None,
     input_ts=None,
     index_type="datetime",
     start_date=None,

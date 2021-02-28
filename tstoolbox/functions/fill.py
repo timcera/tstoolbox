@@ -2,12 +2,18 @@
 """A collection of filling routines."""
 
 from __future__ import absolute_import, print_function
+from typing import List, Optional, Union
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 import numpy as np
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -182,52 +188,44 @@ def fill_cli(
     )
 
 
-@tsutils.validator(
-    method=[
-        [
-            str,
-            [
-                "domain",
-                [
-                    "ffill",
-                    "bfill",
-                    "linear",
-                    "index",
-                    "values",
-                    "nearest",
-                    "zero",
-                    "slinear",
-                    "quadratic",
-                    "cubic",
-                    "spline",
-                    "polynomial",
-                    "barycentric",
-                    "mean",
-                    "median",
-                    "max",
-                    "min",
-                    "from",
-                    "time",
-                    "krogh",
-                    "piecewise_polynomial",
-                    "from_derivatives",
-                    "pchip",
-                    "akima",
-                ],
-            ],
-            1,
-        ],
-        [float, ["pass", []], 1],
-    ],
-    from_columns=[str, ["pass", []], 1],
-    to_columns=[str, ["pass", []], 1],
-    limit=[int, ["range", [0,]], 1],
-    order=[int, ["range", [0,]], 1],
-    force_freq=[str, ["pass", []], 1],
-)
+@typic.constrained(ge=0)
+class IntGreaterThanOrEqualToZero(int):
+    """Simple constraint."""
+
+
+@tsutils.transform_args(from_columns=tsutils.make_list, to_columns=tsutils.make_list)
+@typic.al
 def fill(
     input_ts="-",
-    method="ffill",
+    method: Union[
+        Literal[
+            "ffill",
+            "bfill",
+            "linear",
+            "index",
+            "values",
+            "nearest",
+            "zero",
+            "slinear",
+            "quadratic",
+            "cubic",
+            "spline",
+            "polynomial",
+            "barycentric",
+            "mean",
+            "median",
+            "max",
+            "min",
+            "from",
+            "time",
+            "krogh",
+            "piecewise_polynomial",
+            "from_derivatives",
+            "pchip",
+            "akima",
+        ],
+        float,
+    ] = "ffill",
     print_input=False,
     start_date=None,
     end_date=None,
@@ -238,11 +236,11 @@ def fill(
     source_units=None,
     target_units=None,
     skiprows=None,
-    from_columns=None,
-    to_columns=None,
-    limit=None,
-    order=None,
-    force_freq=None,
+    from_columns: Optional[List[Union[int, str]]] = None,
+    to_columns: Optional[List[Union[int, str]]] = None,
+    limit: Optional[tsutils.IntGreaterEqualToZero]= None,
+    order: Optional[tsutils.IntGreaterEqualToZero]= None,
+    force_freq: str = None,
 ):
     """Fill missing values (NaN) with different methods."""
     tsd = tsutils.common_kwds(
@@ -313,21 +311,7 @@ def fill(
                     break
                 ntsd.loc[mask, to] = ntsd.loc[mask, fro]
     else:
-        try:
-            ntsd = ntsd.fillna(value=float(method), limit=limit)
-        except ValueError:
-            raise ValueError(
-                tsutils.error_wrapper(
-                    """
-The allowable values for 'method' are 'ffill', 'bfill', 'linear',
-'index', 'values', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic',
-'spline', 'polynomial', 'barycentric', 'mean', 'median', 'max', 'min', 'from',
-'krogh', 'piecewise_polynomial', 'from_derivatives', 'pchip', 'akima', or
-a number.  Instead you have {0}.  """.format(
-                        method
-                    )
-                )
-            )
+        ntsd = ntsd.fillna(value=float(method), limit=limit)
     ntsd = ntsd.iloc[1:-1]
     tsd.index.name = "Datetime"
     ntsd.index.name = "Datetime"

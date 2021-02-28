@@ -5,6 +5,7 @@ from __future__ import absolute_import, division, print_function
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import typic
 
 from .. import tsutils
 
@@ -70,7 +71,7 @@ def pca_cli(
     )
 
 
-@tsutils.validator(n_components=[int, ["range", [1, None]], 1])
+@typic.al
 def pca(
     input_ts="-",
     columns=None,
@@ -80,7 +81,7 @@ def pca(
     skiprows=None,
     index_type="datetime",
     names=None,
-    n_components=None,
+    n_components: tsutils.IntGreaterEqualToOne = None,
     source_units=None,
     target_units=None,
     round_index=None,

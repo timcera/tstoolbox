@@ -11,6 +11,7 @@ from mando.rst_text_formatter import RSTHelpFormatter
 import numpy as np
 
 from .. import tsutils
+import typic
 
 warnings.filterwarnings("ignore")
 
@@ -103,17 +104,12 @@ def add_trend_cli(
     )
 
 
-@tsutils.validator(
-    start_offset=[float, ["pass", []], 1],
-    end_offset=[float, ["pass", []], 1],
-    start_index=[int, ["pass", []], 1],
-    end_index=[int, ["pass", []], 1],
-)
+@typic.al
 def add_trend(
-    start_offset,
-    end_offset,
-    start_index=0,
-    end_index=-1,
+    start_offset: float,
+    end_offset: float,
+    start_index: int = 0,
+    end_index: int = -1,
     input_ts="-",
     columns=None,
     clean=False,

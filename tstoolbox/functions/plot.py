@@ -2,6 +2,11 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import List, Optional, Tuple
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import itertools
 import os
@@ -9,6 +14,7 @@ import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import typic
 
 import numpy as np
 import pandas as pd
@@ -851,145 +857,40 @@ def plot_cli(
     )
 
 
-@tsutils.validator(
-    ofilename=[str, ["pass", []], 1],
-    type=[
-        str,
-        [
-            "domain",
-            [
-                "time",
-                "xy",
-                "double_mass",
-                "boxplot",
-                "scatter_matrix",
-                "lag_plot",
-                "autocorrelation",
-                "bootstrap",
-                "histogram",
-                "kde",
-                "kde_time",
-                "bar",
-                "barh",
-                "bar_stacked",
-                "barh_stacked",
-                "heatmap",
-                "norm_xaxis",
-                "norm_yaxis",
-                "lognorm_yaxis",
-                "lognorm_xaxis",
-                "weibull_xaxis",
-                "weibull_yaxis",
-                "taylor",
-                "target",
-                "probability_density",
-            ],
-        ],
-        1,
-    ],
-    lag_plot_lag=[int, ["range", [1, None]], 1],
-    xtitle=[str, ["pass", []], 1],
-    ytitle=[str, ["pass", []], 1],
-    title=[str, ["pass", []], 1],
-    figsize=[float, ["range", [0, None]], 2],
-    legend=[bool, ["domain", [True, False]], 1],
-    legend_names=[str, ["pass", []], 1],
-    subplots=[bool, ["domain", [True, False]], 1],
-    sharex=[bool, ["domain", [True, False]], 1],
-    sharey=[bool, ["domain", [True, False]], 1],
-    colors=[str, ["pass", []], None],
-    linestyles=[str, ["domain", ["auto", None, "", " ", "  "] + LINE_LIST], None],
-    markerstyles=[str, ["domain", ["auto", None, "", " ", "  "] + MARKER_LIST], None],
-    bar_hatchstyles=[str, ["domain", ["auto", None, "", " ", "  "] + HATCH_LIST], None],
-    style=[str, ["pass", []], None],
-    xlim=[float, ["pass", []], 2],
-    ylim=[float, ["pass", []], 2],
-    xaxis=[str, ["domain", ["arithmetic", "log"]], 1],
-    yaxis=[str, ["domain", ["arithmetic", "log"]], 1],
-    secondary_y=[bool, ["domain", [True, False]], 1],
-    mark_right=[bool, ["domain", [True, False]], 1],
-    scatter_matrix_diagonal=[str, ["domain", ["kde", "hist"]], 1],
-    bootstrap_size=[int, ["range", [0, None]], 1],
-    xy_match_line=[str, ["pass", []], 1],
-    grid=[bool, ["domain", [True, False]], 1],
-    label_rotation=[float, ["pass", []], 1],
-    label_skip=[int, ["range", [1, None]], 1],
-    drawstyle=[str, ["pass", []], 1],
-    por=[bool, ["domain", [True, False]], 1],
-    invert_xaxis=[bool, ["domain", [True, False]], 1],
-    invert_yaxis=[bool, ["domain", [True, False]], 1],
-    plotting_position=[
-        str,
-        [
-            "domain",
-            ["weibull", "benard", "tukey", "gumbel", "hazen", "cunnane", "california"],
-        ],
-        1,
-    ],
-    prob_plot_sort_values=[str, ["domain", ["ascending", "descending"]], 1],
-    plot_styles=[
-        str,
-        [
-            "domain",
-            [
-                "classic",
-                "Solarize_Light2",
-                "bmh",
-                "dark_background",
-                "fast",
-                "fivethirtyeight",
-                "ggplot",
-                "grayscale",
-                "seaborn",
-                "seaborn-bright",
-                "seaborn-colorblind",
-                "seaborn-dark",
-                "seaborn-dark-palette",
-                "seaborn-darkgrid",
-                "seaborn-deep",
-                "seaborn-muted",
-                "seaborn-notebook",
-                "seaborn-paper",
-                "seaborn-pastel",
-                "seaborn-poster",
-                "seaborn-talk",
-                "seaborn-ticks",
-                "seaborn-white",
-                "seaborn-whitegrid",
-                "tableau-colorblind10",
-                "science",
-                "grid",
-                "ieee",
-                "scatter",
-                "notebook",
-                "high-vis",
-                "bright",
-                "vibrant",
-                "muted",
-                "retro",
-            ],
-        ],
-        None,
-    ],
-    hlines_y=[float, ["pass", []], None],
-    hlines_xmin=[float, ["pass", []], None],
-    hlines_xmax=[float, ["pass", []], None],
-    hlines_colors=[str, ["pass", []], None],
-    hlines_linestyles=[
-        str,
-        ["domain", ["auto", None, "", " ", "  "] + LINE_LIST],
-        None,
-    ],
-    vlines_x=[float, ["pass", []], None],
-    vlines_ymin=[float, ["pass", []], None],
-    vlines_ymax=[float, ["pass", []], None],
-    vlines_colors=[str, ["pass", []], None],
-    vlines_linestyles=[
-        str,
-        ["domain", ["auto", None, "", " ", "  "] + LINE_LIST],
-        None,
-    ],
+#    linestyles=[str, ["domain", ["auto", None, "", " ", "  "] + LINE_LIST], None],
+#    markerstyles=[str, ["domain", ["auto", None, "", " ", "  "] + MARKER_LIST], None],
+#    bar_hatchstyles=[str, ["domain", ["auto", None, "", " ", "  "] + HATCH_LIST], None],
+#    hlines_linestyles=[
+#        str,
+#        ["domain", ["auto", None, "", " ", "  "] + LINE_LIST],
+#        None,
+#    ],
+#    vlines_linestyles=[
+#        str,
+#        ["domain", ["auto", None, "", " ", "  "] + LINE_LIST],
+#        None,
+#    ],
+@tsutils.transform_args(
+    legend_names=tsutils.make_list,
+    markerstyles=tsutils.make_list,
+    colors=tsutils.make_list,
+    linestyles=tsutils.make_list,
+    bar_hatchstyles=tsutils.make_list,
+    style=tsutils.make_list,
+    figsize=tsutils.make_list,
+    hlines_y=tsutils.make_list,
+    hlines_xmin=tsutils.make_list,
+    hlines_xmax=tsutils.make_list,
+    hlines_colors=tsutils.make_list,
+    hlines_linestyles=tsutils.make_list,
+    vlines_x=tsutils.make_list,
+    vlines_ymin=tsutils.make_list,
+    vlines_ymax=tsutils.make_list,
+    vlines_colors=tsutils.make_list,
+    vlines_linestyles=tsutils.make_list,
+    plot_styles=tsutils.make_list,
 )
+@typic.al
 def plot(
     input_ts="-",
     columns=None,
@@ -999,63 +900,129 @@ def plot(
     skiprows=None,
     index_type="datetime",
     names=None,
-    ofilename="plot.png",
-    type="time",
-    xtitle="",
-    ytitle="",
-    title="",
-    figsize="10,6.0",
-    legend=None,
-    legend_names=None,
-    subplots=False,
-    sharex=True,
-    sharey=False,
-    colors="auto",
-    linestyles="auto",
-    markerstyles=" ",
-    bar_hatchstyles="auto",
-    style="auto",
-    logx=False,
-    logy=False,
-    xaxis="arithmetic",
-    yaxis="arithmetic",
-    xlim=None,
-    ylim=None,
-    secondary_y=False,
-    mark_right=True,
-    scatter_matrix_diagonal="kde",
-    bootstrap_size=50,
-    bootstrap_samples=500,
-    norm_xaxis=False,
-    norm_yaxis=False,
-    lognorm_xaxis=False,
-    lognorm_yaxis=False,
-    xy_match_line="",
-    grid=False,
-    label_rotation=None,
-    label_skip=1,
-    force_freq=None,
-    drawstyle="default",
-    por=False,
-    invert_xaxis=False,
-    invert_yaxis=False,
+    ofilename: Optional[str] = "plot.png",
+    type: Literal[
+        "time",
+        "xy",
+        "double_mass",
+        "boxplot",
+        "scatter_matrix",
+        "lag_plot",
+        "autocorrelation",
+        "bootstrap",
+        "histogram",
+        "kde",
+        "kde_time",
+        "bar",
+        "barh",
+        "bar_stacked",
+        "barh_stacked",
+        "heatmap",
+        "norm_xaxis",
+        "norm_yaxis",
+        "lognorm_yaxis",
+        "lognorm_xaxis",
+        "weibull_xaxis",
+        "weibull_yaxis",
+        "taylor",
+        "target",
+        "probability_density",
+    ] = "time",
+    xtitle: str = "",
+    ytitle: str = "",
+    title: str = "",
+    figsize: Tuple[float, float] = "10,6.0",
+    legend: Optional[bool] = None,
+    legend_names: Optional[List[str]] = None,
+    subplots: bool = False,
+    sharex: bool = True,
+    sharey: bool = False,
+    colors: Optional[List[Optional[str]]] = "auto",
+    linestyles: Optional[List[Optional[str]]] = "auto",
+    markerstyles: Optional[List[Optional[str]]] = " ",
+    bar_hatchstyles: Optional[List[Optional[str]]] = "auto",
+    style: Optional[List[str]] = "auto",
+    logx: bool = False,
+    logy: bool = False,
+    xaxis: Literal["arithmetic", "log"] = "arithmetic",
+    yaxis: Literal["arithmetic", "log"] = "arithmetic",
+    xlim: Optional[Tuple[float, float]] = None,
+    ylim: Optional[Tuple[float, float]] = None,
+    secondary_y: bool = False,
+    mark_right: bool = True,
+    scatter_matrix_diagonal: Literal["kde", "hist"] = "kde",
+    bootstrap_size: tsutils.IntGreaterEqualToOne = 50,
+    bootstrap_samples: tsutils.IntGreaterEqualToOne = 500,
+    norm_xaxis: bool = False,
+    norm_yaxis: bool = False,
+    lognorm_xaxis: bool = False,
+    lognorm_yaxis: bool = False,
+    xy_match_line: str = "",
+    grid: bool = False,
+    label_rotation: Optional[float] = None,
+    label_skip: tsutils.IntGreaterEqualToOne = 1,
+    force_freq: Optional[str] = None,
+    drawstyle: str = "default",
+    por: bool = False,
+    invert_xaxis: bool = False,
+    invert_yaxis: bool = False,
     round_index=None,
-    plotting_position="weibull",
-    prob_plot_sort_values="descending",
+    plotting_position: Literal[
+        "weibull", "benard", "tukey", "gumbel", "hazen", "cunnane", "california"
+    ] = "weibull",
+    prob_plot_sort_values: Literal["ascending", "descending"] = "descending",
     source_units=None,
     target_units=None,
-    lag_plot_lag=1,
-    plot_styles="bright",
-    hlines_y=None,
-    hlines_xmin=None,
-    hlines_xmax=None,
-    hlines_colors="auto",
-    hlines_linestyles="auto",
-    vlines_x=None,
-    vlines_ymin=None,
-    vlines_ymax=None,
-    vlines_colors="auto",
-    vlines_linestyles="auto",
+    lag_plot_lag: tsutils.IntGreaterEqualToOne = 1,
+    plot_styles: List[
+        Literal[
+            "classic",
+            "Solarize_Light2",
+            "bmh",
+            "dark_background",
+            "fast",
+            "fivethirtyeight",
+            "ggplot",
+            "grayscale",
+            "seaborn",
+            "seaborn-bright",
+            "seaborn-colorblind",
+            "seaborn-dark",
+            "seaborn-dark-palette",
+            "seaborn-darkgrid",
+            "seaborn-deep",
+            "seaborn-muted",
+            "seaborn-notebook",
+            "seaborn-paper",
+            "seaborn-pastel",
+            "seaborn-poster",
+            "seaborn-talk",
+            "seaborn-ticks",
+            "seaborn-white",
+            "seaborn-whitegrid",
+            "tableau-colorblind10",
+            "science",
+            "grid",
+            "ieee",
+            "scatter",
+            "notebook",
+            "high-vis",
+            "bright",
+            "vibrant",
+            "muted",
+            "retro",
+        ]
+    ] = "bright",
+    hlines_y: Optional[List[float]] = None,
+    hlines_xmin: Optional[List[float]] = None,
+    hlines_xmax: Optional[List[float]] = None,
+    hlines_colors: List[str] = "auto",
+    hlines_linestyles: List[Optional[str]] = "auto",
+    vlines_x: Optional[List[float]] = None,
+    vlines_ymin: Optional[List[float]] = None,
+    vlines_ymax: Optional[List[float]] = None,
+    vlines_colors: List[str] = "auto",
+    vlines_linestyles: List[Optional[str]] = "auto",
 ):
     r"""Plot data."""
     # Need to work around some old option defaults with the implementation of
@@ -1123,7 +1090,7 @@ The DataFrame that you supplied has {0} time-series.
         short_freq = ""
 
     if legend_names:
-        lnames = tsutils.make_list(legend_names)
+        lnames = legend_names
         if len(lnames) != len(set(lnames)):
             raise ValueError(
                 tsutils.error_wrapper(
@@ -1159,31 +1126,29 @@ l1,l2,l3,...  where l1 is the legend for x1,y1, l2 is the legend for x2,y2,
     else:
         lnames = tsd.columns
 
-    if colors == "auto":
-        colors = None
-    else:
-        colors = tsutils.make_list(colors)
+    if colors is not None:
+        if "auto" in colors:
+            colors = None
 
-    if linestyles == "auto":
+    if linestyles is None:
+        linestyles = " "
+    elif "auto" in linestyles:
         linestyles = LINE_LIST
-    else:
-        linestyles = tsutils.make_list(linestyles)
 
-    if bar_hatchstyles == "auto":
+    if bar_hatchstyles is None:
+        bar_hatchstyles = " "
+    elif "auto" in bar_hatchstyles:
         bar_hatchstyles = HATCH_LIST
-    else:
-        bar_hatchstyles = tsutils.make_list(bar_hatchstyles)
 
-    if markerstyles == "auto":
+    print(markerstyles)
+    if markerstyles is None:
+        markerstyles = " "
+    elif "auto" in markerstyles:
         markerstyles = MARKER_LIST
-    else:
-        markerstyles = tsutils.make_list(markerstyles)
-        if markerstyles is None:
-            markerstyles = " "
 
-    if style != "auto":
+    if "auto" not in style:
 
-        nstyle = tsutils.make_list(style)
+        nstyle = style
         if len(nstyle) != len(tsd.columns):
             raise ValueError(
                 tsutils.error_wrapper(
@@ -1291,8 +1256,7 @@ The {0} setting for yaxis is ignored.
 
     xlim = _know_your_limits(xlim, axis=xaxis)
     ylim = _know_your_limits(ylim, axis=yaxis)
-
-    plot_styles = tsutils.make_list(plot_styles) + ["no-latex"]
+    plot_styles = plot_styles + ["no-latex"]
     style_loc = os.path.join(
         os.path.dirname(__file__), os.pardir, "SciencePlots_styles"
     )
@@ -1304,7 +1268,6 @@ The {0} setting for yaxis is ignored.
     ]
     plt.style.use(plot_styles)
 
-    figsize = tsutils.make_list(figsize, n=2)
     _, ax = plt.subplots(figsize=figsize)
 
     if not isinstance(tsd.index, pd.DatetimeIndex):
@@ -1815,25 +1778,19 @@ The "heatmap" plot type can only work with daily time series.
     ]:
         if hlines_y is not None:
             if type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
-                hlines_y = ppf(tsutils.make_list(hlines_y))
-            else:
-                hlines_y = tsutils.make_list(hlines_y)
+                hlines_y = ppf(hlines_y)
             if hlines_xmin is None:
                 hlines_xmin = ax.get_xlim()[0]
-            hlines_xmin = tsutils.make_list(hlines_xmin)
             if hlines_xmax is None:
                 hlines_xmax = ax.get_xlim()[1]
-            hlines_xmax = tsutils.make_list(hlines_xmax)
             if hlines_colors == "auto":
                 hlines_colors = icolors
             else:
-                hlines_colors = itertools.cycle(tsutils.make_list(hlines_colors))
+                hlines_colors = itertools.cycle(hlines_colors)
             if hlines_linestyles == "auto":
                 hlines_linestyles = ax._get_lines.prop_cycler
             else:
-                hlines_linestyles = itertools.cycle(
-                    tsutils.make_list(hlines_linestyles)
-                )
+                hlines_linestyles = itertools.cycle(hlines_linestyles)
             for index, line in enumerate(hlines_y):
                 try:
                     val = hlines_xmin[index]
@@ -1849,7 +1806,7 @@ The "heatmap" plot type can only work with daily time series.
                 ax.plot([xmin, l], [xmax, l], colors=c, linestyles=l)
         if vlines_x is not None:
             if type in ["norm_xaxis", "lognorm_xaxis", "weibull_xaxis"]:
-                vlines_x = ppf(tsutils.make_list(vlines_x))
+                vlines_x = ppf(vlines_x)
             plt.vlines(
                 vlines_x,
                 vlines_ymin,

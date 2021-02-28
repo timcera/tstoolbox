@@ -14,18 +14,15 @@
     :alt: tstoolbox license
     :target: https://pypi.python.org/pypi/tstoolbox/
 
+.. image:: https://img.shields.io/pypi/dw/tstoolbox
+    :alt: tstoolbox downloads
+    :target: https://pypi.python.org/pypi/tstoolbox/
+
 TSToolbox - Quick Guide
 =======================
 The tstoolbox is a Python script to manipulate time-series on the command line
 or by function calls within Python.  Uses pandas (http://pandas.pydata.org/)
 or numpy (http://numpy.scipy.org) for any heavy lifting.
-
-Requirements
-------------
-* pandas - on Windows this is part scientific Python distributions like
-  Python(x,y), Anaconda, or Enthought.
-
-* mando - command line parser
 
 Installation
 ------------

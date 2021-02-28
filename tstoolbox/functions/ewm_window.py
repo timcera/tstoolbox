@@ -2,12 +2,18 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import List, Optional
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -173,16 +179,8 @@ def ewm_window_cli(
     )
 
 
-@tsutils.validator(
-    statistic=[str, ["domain", ["corr", "cov", "mean", "std", "var"]], None],
-    alpha_com=[float, ["range", [0,]], 1],
-    alpha_span=[float, ["range", [1,]], 1],
-    alpha_halflife=[float, ["range", [0,]], 1],
-    alpha=[float, ["range", [0, 1]], 1],
-    min_periods=[int, ["range", [0, None]], 1],
-    adjust=[bool, ["domain", [True, False]], 1],
-    ignore_na=[bool, ["domain", [True, False]], 1],
-)
+@tsutils.transform_args(statistic=tsutils.make_list)
+@typic.al
 def ewm_window(
     input_ts="-",
     columns=None,
@@ -193,14 +191,14 @@ def ewm_window(
     index_type="datetime",
     names=None,
     clean=False,
-    statistic="",
-    alpha_com=None,
-    alpha_span=None,
-    alpha_halflife=None,
-    alpha=None,
-    min_periods=0,
-    adjust=True,
-    ignore_na=False,
+    statistic: List[Optional[Literal["corr", "cov", "mean", "std", "var"]]] = "mean",
+    alpha_com: Optional[tsutils.FloatGreaterEqualToZero] = None,
+    alpha_span: Optional[tsutils.FloatGreaterEqualToOne] = None,
+    alpha_halflife: Optional[tsutils.FloatGreaterEqualToZero] = None,
+    alpha: Optional[tsutils.FloatBetweenZeroAndOneInclusive] = None,
+    min_periods: Optional[tsutils.IntGreaterEqualToZero] = 0,
+    adjust: bool = True,
+    ignore_na: bool = False,
     source_units=None,
     target_units=None,
     print_input=False,
@@ -231,7 +229,7 @@ def ewm_window(
 
     if statistic:
         nntsd = pd.DataFrame()
-        for stat in tsutils.make_list(statistic):
+        for stat in statistic:
             ntsd = eval("ntsd.{0}()".format(stat))
             ntsd = [tsutils.renamer(i, "ewm.{0}".format(stat)) for i in ntsd.columns]
             nntsd = nntsd.join(ntsd, how="outer")

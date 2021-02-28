@@ -2,11 +2,16 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -136,12 +141,7 @@ def rank_cli(
     )
 
 
-@tsutils.validator(
-    method=[str, ["domain", ["average", "min", "max", "first", "dense"]], 1],
-    na_option=[str, ["domain", ["keep", "top", "bottom"]], 1],
-    ascending=[bool, ["domain", [True, False]], 1],
-    pct=[bool, ["domain", [True, False]], 1],
-)
+@typic.al
 def rank(
     input_ts="-",
     columns=None,
@@ -152,12 +152,12 @@ def rank(
     index_type="datetime",
     names=None,
     clean=False,
-    axis=0,
-    method="average",
-    numeric_only=None,
-    na_option="keep",
-    ascending=True,
-    pct=False,
+    axis: tsutils.IntGreaterEqualToZero = 0,
+    method: Literal["average", "min", "max", "first", "dense"] = "average",
+    numeric_only: bool = False,
+    na_option: Literal["keep", "top", "bottom"] = "keep",
+    ascending: bool = True,
+    pct: bool = False,
     print_input=False,
     source_units=None,
     target_units=None,

@@ -41,6 +41,8 @@ install_requires = [
     "scikit-learn",
     "statsmodels",
     "setuptools",
+    "typical",
+    "typing-extensions",
 ]
 
 setup(

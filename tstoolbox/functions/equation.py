@@ -2,6 +2,7 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import List
 
 import re
 import warnings
@@ -9,6 +10,7 @@ import warnings
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 from numpy import *
+import typic
 
 import numpy as np
 import pandas as pd
@@ -100,7 +102,7 @@ def equation_cli(
     tablefmt="csv",
     output_names="",
 ):
-    """Apply <equation_str> to the time series data.
+    """Apply <equation_str> cto the time series data.
 
     The <equation_str> argument is a string contained in single quotes
     with 'x', 'x[t]', or 'x1', 'x2', 'x3', ...etc. used as the variable
@@ -178,7 +180,6 @@ def equation_cli(
     {output_names}
 
     """
-    output_names = tsutils.make_list(output_names)
     tsutils.printiso(
         equation(
             equation_str,
@@ -202,9 +203,10 @@ def equation_cli(
     )
 
 
-@tsutils.validator(equation_str=[str, ["pass", []], None])
+@tsutils.transform_args(output_names=tsutils.make_list)
+@typic.al
 def equation(
-    equation_str,
+    equation_str: str,
     input_ts="-",
     columns=None,
     start_date=None,
@@ -218,7 +220,7 @@ def equation(
     round_index=None,
     source_units=None,
     target_units=None,
-    output_names=[],
+    output_names: List[str] = [],
 ):
     """Apply <equation_str> to the time series data."""
     x = tsutils.common_kwds(

@@ -3,19 +3,23 @@
 
 from __future__ import absolute_import, division, print_function
 
+from argparse import RawTextHelpFormatter
 import warnings
 
 import mando
-from mando.rst_text_formatter import RSTHelpFormatter
-
 import pandas as pd
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+import typic
 
 from .. import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@mando.command("read", formatter_class=RSTHelpFormatter, doctype="numpy")
+@mando.command("read", formatter_class=RawTextHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def read_cli(
     force_freq=None,
@@ -98,15 +102,11 @@ def read_cli(
     )
 
 
-@tsutils.validator(
-    filenames=[str, ["pass", []], None],
-    append=[str, ["domain", ["columns", "rows", "combine"]], 1],
-    force_freq=[str, ["pass", []], 1],
-)
+@typic.al
 def read(
     *filenames,
     force_freq=None,
-    append="columns",
+    append: Literal["columns", "rows", "combine"] = "columns",
     columns=None,
     start_date=None,
     end_date=None,
@@ -120,19 +120,6 @@ def read(
     round_index=None,
 ):
     """Collect time series from a list of pickle or csv files."""
-    if append not in ["combine", "rows", "columns"]:
-        raise ValueError(
-            tsutils.error_wrapper(
-                """
-The "append" keyword must be "combine", "rows", or "columns".
-
-You game me {0}.
-""".format(
-                    append
-                )
-            )
-        )
-
     if force_freq is not None:
         dropna = "no"
 

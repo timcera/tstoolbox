@@ -7,6 +7,7 @@ import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import typic
 
 from .. import tsutils
 
@@ -66,7 +67,7 @@ def describe_cli(
     )
 
 
-@tsutils.validator(transpose=[bool, ["domain", [True, False]], 1])
+@typic.al
 def describe(
     input_ts="-",
     columns=None,
@@ -77,7 +78,7 @@ def describe(
     index_type="datetime",
     names=None,
     clean=False,
-    transpose=False,
+    transpose: bool = False,
 ):
     """Print out statistics for the time-series."""
     tsd = tsutils.common_kwds(

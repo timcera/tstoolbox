@@ -3,12 +3,18 @@
 
 from __future__ import absolute_import, division, print_function
 
+from typing import List
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -75,7 +81,7 @@ def aggregate_cli(
     {target_units}
     {print_input}
     {tablefmt}
-    skipna : bool
+    skipna :
         [optional, defaults to True, transformation]
 
         If False will return a NaN for any aggregation group that has a NaN.
@@ -113,31 +119,16 @@ def aggregate_cli(
     )
 
 
-@tsutils.validator(
-    statistic=[
-        str,
-        [
-            "domain",
-            [
-                "mean",
-                "sum",
-                "std",
-                "sem",
-                "max",
-                "min",
-                "median",
-                "first",
-                "last",
-                "ohlc",
-            ],
-        ],
-        None,
-    ]
-)
+@tsutils.transform_args(statistic=tsutils.make_list)
+@typic.al
 def aggregate(
     input_ts="-",
     groupby=None,
-    statistic="mean",
+    statistic: List[
+        Literal[
+            "mean", "sum", "std", "sem", "max", "min", "median", "first", "last", "ohlc"
+        ]
+    ] = "mean",
     columns=None,
     start_date=None,
     end_date=None,
@@ -152,7 +143,7 @@ def aggregate(
     source_units=None,
     target_units=None,
     print_input=False,
-    skipna=True,
+    skipna: bool = True,
 ):
     """Take a time series and aggregate to specified frequency."""
     aggd = {"hourly": "H", "daily": "D", "monthly": "M", "yearly": "A", "all": "all"}
@@ -230,9 +221,8 @@ consistent with other tstoolbox commands.
         target_units=target_units,
         clean=clean,
     )
-    methods = tsutils.make_list(statistic)
     newts = pd.DataFrame()
-    for method in methods:
+    for method in statistic:
         if groupby == "all":
             try:
                 tmptsd = pd.DataFrame(eval("""tsd.aggregate({0})""".format(method))).T

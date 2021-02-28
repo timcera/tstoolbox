@@ -2,10 +2,16 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import List, Optional
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -112,12 +118,21 @@ def expanding_window_cli(
     )
 
 
-@tsutils.validator(
-    statistic=[
-        str,
-        [
-            "domain",
-            [
+@tsutils.transform_args(statistic=tsutils.make_list)
+@typic.al
+def expanding_window(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    clean=False,
+    statistic: Optional[
+        List[
+            Literal[
                 "corr",
                 "count",
                 "cov",
@@ -130,26 +145,11 @@ def expanding_window_cli(
                 "std",
                 "sum",
                 "var",
-            ],
-        ],
-        None,
-    ],
-    min_periods=[int, ["range", [0,]], 1],
-    center=[bool, ["domain", [True, False]], 1],
-)
-def expanding_window(
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    statistic="",
-    min_periods=1,
-    center=False,
+            ]
+        ]
+    ] = None,
+    min_periods: tsutils.IntGreaterEqualToZero = 1,
+    center: bool = False,
     source_units=None,
     target_units=None,
     print_input=False,
@@ -172,7 +172,7 @@ def expanding_window(
 
     if statistic:
         nntsd = pd.DataFrame()
-        for stat in tsutils.make_list(statistic):
+        for stat in statistic:
             ntsd = eval("ntsd.{0}()".format(stat))
             ntsd.columns = [
                 tsutils.renamer(i, "expanding.{0}".format(stat)) for i in ntsd.columns

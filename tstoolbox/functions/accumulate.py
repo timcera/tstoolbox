@@ -3,11 +3,18 @@
 
 from __future__ import absolute_import, division, print_function
 
+from typing import List
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
 import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -84,7 +91,8 @@ def accumulate_cli(
     )
 
 
-@tsutils.validator(statistic=[str, ["domain", ["sum", "max", "min", "prod"]], None])
+@tsutils.transform_args(statistic=tsutils.make_list)
+@typic.al
 def accumulate(
     input_ts="-",
     columns=None,
@@ -92,7 +100,7 @@ def accumulate(
     end_date=None,
     dropna="no",
     clean=False,
-    statistic="sum",
+    statistic: List[Literal["sum", "max", "min", "prod"]] = "sum",
     round_index=None,
     skiprows=None,
     index_type="datetime",
@@ -115,9 +123,8 @@ def accumulate(
         target_units=target_units,
         clean=clean,
     )
-    statistic = tsutils.make_list(statistic)
-
     ntsd = pd.DataFrame()
+
     for stat in statistic:
         tmptsd = eval("tsd.cum{0}()".format(stat))
         tmptsd.columns = [tsutils.renamer(i, stat) for i in tmptsd.columns]

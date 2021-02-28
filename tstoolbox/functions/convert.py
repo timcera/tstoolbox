@@ -3,6 +3,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import typic
 import warnings
 
 import mando
@@ -89,7 +90,7 @@ def convert_cli(
     )
 
 
-@tsutils.validator(factor=[float, ["pass", []], 1], offset=[float, ["pass", []], 1])
+@typic.al
 def convert(
     input_ts="-",
     columns=None,
@@ -100,13 +101,13 @@ def convert(
     skiprows=None,
     index_type="datetime",
     names=None,
-    factor=1.0,
-    offset=0.0,
+    factor: float = 1.0,
+    offset: float = 0.0,
     print_input=False,
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="g",
+    float_format: str = "g",
 ):
     """Convert values of a time series by applying a factor and offset."""
     tsd = tsutils.common_kwds(

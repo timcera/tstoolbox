@@ -2,11 +2,17 @@
 """A correlation routine."""
 
 from __future__ import absolute_import, print_function
+from typing import List
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 import numpy as np
 import pandas as pd
+import typic
 
 from .. import tsutils
 from . import lag
@@ -45,7 +51,7 @@ def correlation_cli(
     skiprows=None,
     tablefmt="csv",
     round_index=None,
-    dropna=None,
+    dropna="no",
 ):
     """Develop a correlation between time-series and potentially lags.
 
@@ -118,13 +124,11 @@ def correlation_cli(
     )
 
 
-@tsutils.validator(
-    lags=[int, ["range", [0, None]], None],
-    method=[str, ["domain", ["pearson", "kendall", "spearman"]], 1],
-)
+@tsutils.transform_args(lags=tsutils.make_list)
+@typic.al
 def correlation(
-    lags,
-    method="pearson",
+    lags: List[tsutils.IntGreaterEqualToZero],
+    method: Literal["pearson", "kendall", "spearman"] = "pearson",
     input_ts="-",
     print_input=False,
     start_date=None,
@@ -153,7 +157,6 @@ def correlation(
         target_units=target_units,
         clean=clean,
     )
-    lags = tsutils.make_list(lags)
 
     if len(lags) == 1 and int(lags[0]) == 0:
         ntsd = pd.DataFrame()
@@ -169,7 +172,10 @@ def correlation(
         ntsd.index = x
         return ntsd
 
-    ntsd = lag.lag(lags, input_ts=tsd,)
+    ntsd = lag.lag(
+        lags,
+        input_ts=tsd,
+    )
     return ntsd.corr(method=method)
 
 

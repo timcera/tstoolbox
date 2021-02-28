@@ -2,9 +2,14 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import typic
 
 import pandas as pd
 
@@ -135,16 +140,7 @@ def normalization_cli(
     )
 
 
-@tsutils.validator(
-    mode=[
-        str,
-        ["domain", ["minmax", "zscore", "pct_rank", "maxabs", "normal", "robust"]],
-        1,
-    ],
-    min_limit=[float, ["pass", []], 1],
-    max_limit=[float, ["pass", []], 1],
-    pct_rank_method=[str, ["domain", ["average", "min", "max", "first", "dense"]], 1],
-)
+@typic.al
 def normalization(
     input_ts="-",
     columns=None,
@@ -155,10 +151,12 @@ def normalization(
     index_type="datetime",
     names=None,
     clean=False,
-    mode="minmax",
-    min_limit=0,
-    max_limit=1,
-    pct_rank_method="average",
+    mode: Literal[
+        "minmax", "zscore", "pct_rank", "maxabs", "normal", "robust"
+    ] = "minmax",
+    min_limit: float = 0,
+    max_limit: float = 1,
+    pct_rank_method: Literal["average", "min", "max", "first", "dense"] = "average",
     print_input=False,
     round_index=None,
     source_units=None,

@@ -2,11 +2,13 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import List, Optional, Union
 
 import warnings
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import typic
 
 import pandas as pd
 from sklearn import linear_model
@@ -227,12 +229,20 @@ def regression_cli(
     )
 
 
-@tsutils.validator(method=[str, ["domain", _FUNCS.keys()], None],)
+# @tsutils.validator(
+#    method=[str, ["domain", _FUNCS.keys()], None],
+# )
+@tsutils.transform_args(
+    x_train_cols=tsutils.make_list,
+    y_train_cols=tsutils.make_list,
+    x_pred_cols=tsutils.make_list,
+)
+@typic.al
 def regression(
     method,
-    x_train_cols,
-    y_train_col,
-    x_pred_cols=None,
+    x_train_cols: List[Union[str, int]],
+    y_train_col: List[Union[str, int]],
+    x_pred_cols: Optional[List[Union[str, int]]] = None,
     input_ts="-",
     columns=None,
     start_date=None,
@@ -246,8 +256,6 @@ def regression(
     print_input=False,
 ):
     """Regression of data."""
-    x_train_cols = tsutils.make_list(x_train_cols)
-    y_train_col = tsutils.make_list(y_train_col)
     for to in y_train_col:
         for fro in x_train_cols:
             if to == fro:

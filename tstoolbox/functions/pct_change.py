@@ -2,11 +2,17 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import Optional
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -99,12 +105,7 @@ def pct_change_cli(
     )
 
 
-@tsutils.validator(
-    periods=[int, ["range", [1, None]], 1],
-    fill_method=[str, ["domain", ["backfill", "bfill", "ffill", "pad"]], 1],
-    limit=[int, ["range", [0, None]], 1],
-    freq=[str, ["pass", []], 1],
-)
+@typic.al
 def pct_change(
     input_ts="-",
     columns=None,
@@ -115,10 +116,10 @@ def pct_change(
     index_type="datetime",
     names=None,
     clean=False,
-    periods=1,
-    fill_method="pad",
-    limit=None,
-    freq=None,
+    periods: tsutils.IntGreaterEqualToOne = 1,
+    fill_method: Literal["backfill", "bfill", "ffill", "pad"] = "pad",
+    limit: Optional[tsutils.IntGreaterEqualToZero] = None,
+    freq: str = None,
     print_input=False,
     round_index=None,
     source_units=None,

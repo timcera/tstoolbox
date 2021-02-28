@@ -2,9 +2,11 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+from typing import List
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import typic
 
 from .. import tsutils
 
@@ -84,10 +86,14 @@ def date_offset_cli(
     )
 
 
-@tsutils.validator(intervals=[int, ["pass", []], 1], offset=[str, ["pass", []], 1])
+@typic.constrained(ge=1)
+class Intervals(int):
+    """Intervals should be positive."""
+
+
 def date_offset(
-    intervals,
-    offset,
+    intervals: tsutils.IntGreaterEqualToOne,
+    offset: str,
     columns=None,
     dropna="no",
     clean=False,

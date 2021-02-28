@@ -121,7 +121,7 @@ class TestFilter(TestCase):
     def test_filter_type(self):
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.filter("flatter", "lowpass", input_ts="tests/data_sine.csv")
-        assert r'The argument "filter_type" should be' in str(e_info.value)
+        assert r"Given value <'flatter'> fails constraints:" in str(e_info.value)
 
 
 #    def test_filter_fft_highpass(self):

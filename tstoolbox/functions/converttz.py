@@ -5,6 +5,7 @@ from __future__ import absolute_import, division, print_function
 
 import mando
 from mando.rst_text_formatter import RSTHelpFormatter
+import typic
 
 from .. import tsutils
 
@@ -81,10 +82,10 @@ def converttz_cli(
     )
 
 
-@tsutils.validator(fromtz=[str, ["pass", []], 1], totz=[str, ["pass", []], 1])
+@typic.al
 def converttz(
-    fromtz,
-    totz,
+    fromtz: str,
+    totz: str,
     input_ts="-",
     columns=None,
     start_date=None,

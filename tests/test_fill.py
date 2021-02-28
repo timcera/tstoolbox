@@ -217,7 +217,7 @@ class TestFill(TestCase):
         """Test fill with value API."""
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.fill(method="a", input_ts="tests/data_missing.csv")
-        assert r'The argument "method" should be one of the terms in' in str(
+        assert r"could not convert string to float: 'a'" in str(
             e_info.value
         )
 

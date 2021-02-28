@@ -3,6 +3,10 @@
 
 from __future__ import absolute_import, division, print_function
 
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 import warnings
 
 import mando
@@ -10,6 +14,7 @@ from mando.rst_text_formatter import RSTHelpFormatter
 
 from scipy.stats import t
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -140,39 +145,7 @@ def calculate_fdc_cli(
     )
 
 
-@tsutils.validator(
-    percent_point_function=[str, ["domain", ["norm", "lognorm", "weibull"]], 1],
-    plotting_position=[
-        [
-            str,
-            [
-                "domain",
-                [
-                    "weibull",
-                    "benard",
-                    "bos-levenbach",
-                    "filliben",
-                    "yu",
-                    "tukey",
-                    "blom",
-                    "cunnane",
-                    "gringorton",
-                    "hazen",
-                    "larsen",
-                    "gumbel",
-                    "california",
-                ],
-            ],
-            1,
-        ],
-        [float, ["range", [0, 1]], 1],
-    ],
-    sort_values=[str, ["domain", ["ascending", "descending"]], 1],
-    sort_index=[str, ["domain", ["ascending", "descending"]], 1],
-    include_sd=[bool, ["domain", [True, False]], 1],
-    include_cl=[bool, ["domain", [True, False]], 1],
-    ci=[float, ["range", [0, 1]], 1],
-)
+@typic.al
 def calculate_fdc(
     input_ts="-",
     columns=None,
@@ -186,12 +159,12 @@ def calculate_fdc(
     plotting_position="weibull",
     source_units=None,
     target_units=None,
-    sort_values="ascending",
-    sort_index="ascending",
-    add_index=False,
-    include_sd=False,
-    include_cl=False,
-    ci=0.9,
+    sort_values: Literal["ascending", "descending"] = "ascending",
+    sort_index: Literal["ascending", "descending"] = "ascending",
+    add_index: bool = False,
+    include_sd: bool = False,
+    include_cl: bool = False,
+    ci: tsutils.FloatBetweenZeroAndOne = 0.9,
 ):
     """Return the frequency distribution curve."""
     sort_values = bool(sort_values == "ascending")
