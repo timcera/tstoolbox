@@ -3,6 +3,7 @@
 
 from __future__ import absolute_import, print_function
 from typing import List, Optional, Union
+
 try:
     from typing import Literal
 except ImportError:
@@ -238,8 +239,8 @@ def fill(
     skiprows=None,
     from_columns: Optional[List[Union[int, str]]] = None,
     to_columns: Optional[List[Union[int, str]]] = None,
-    limit: Optional[tsutils.IntGreaterEqualToZero]= None,
-    order: Optional[tsutils.IntGreaterEqualToZero]= None,
+    limit: Optional[tsutils.IntGreaterEqualToZero] = None,
+    order: Optional[tsutils.IntGreaterEqualToZero] = None,
     force_freq: str = None,
 ):
     """Fill missing values (NaN) with different methods."""

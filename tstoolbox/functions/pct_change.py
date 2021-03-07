@@ -3,6 +3,7 @@
 
 from __future__ import absolute_import, division, print_function
 from typing import Optional
+
 try:
     from typing import Literal
 except ImportError:

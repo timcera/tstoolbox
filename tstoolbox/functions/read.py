@@ -8,6 +8,7 @@ import warnings
 
 import mando
 import pandas as pd
+
 try:
     from typing import Literal
 except ImportError:

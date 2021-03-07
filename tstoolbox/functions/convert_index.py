@@ -4,6 +4,7 @@
 from __future__ import absolute_import, division, print_function
 
 from typing import Union
+
 try:
     from typing import Literal
 except ImportError:
@@ -186,7 +187,7 @@ def convert_index(
             "mars_sol",
             "unix",
         ],
-        pd._typing.TimestampConvertibleTypes,
+        pd.Timestamp,
     ] = "julian",
     input_ts="-",
     columns=None,

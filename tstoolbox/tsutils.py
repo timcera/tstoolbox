@@ -641,14 +641,6 @@ def set_plotting_position(
     return _plotting_position_equation(np.arange(1, n + 1), n, a)
 
 
-def b(s):
-    """Make sure strings are correctly represented in Python 2 and 3."""
-    try:
-        return s.encode("utf-8")
-    except AttributeError:
-        return s
-
-
 @typic.al
 def _handle_curly_braces_in_docstring(s: str, **kwargs) -> str:
     """Replace missing keys with a pattern."""
@@ -677,15 +669,6 @@ def doc(fdict: dict, **kwargs) -> Callable:
     return f
 
 
-def convert_keyword_to_postional(keyword_name, *args, **kwargs):
-    """ When complete will convert keyword_name from **kwargs to end of *args. """
-
-    def f(fn):
-        return fn
-
-    return f
-
-
 @typic.al
 def parsedate(
     dstr: str, strftime: Optional[Any] = None, settings: Optional[Any] = None
@@ -702,9 +685,6 @@ def parsedate(
         if strftime is None:
             return dstr
         return dstr.strftime(strftime)
-
-    if dstr is None:
-        return dstr
 
     try:
         pdate = pd.to_datetime(dstr)
@@ -727,7 +707,8 @@ Could not parse date string '{0}'.
     return pdate.strftime(strftime)
 
 
-def merge_dicts(*dict_args):
+@typic.al
+def merge_dicts(*dict_args: dict) -> dict:
     """Merge multiple dictionaries."""
     result = {}
     for d in dict_args:
@@ -1085,8 +1066,8 @@ def transform_args(**trans_func_for_arg):
 @typic.al
 def common_kwds(
     input_tsd=None,
-    start_date: Optional[pd._typing.TimestampConvertibleTypes] = None,
-    end_date: Optional[pd._typing.TimestampConvertibleTypes] = None,
+    start_date = None,
+    end_date = None,
     pick: Optional[List[Union[int, str]]] = None,
     force_freq=None,
     groupby=None,
