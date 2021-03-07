@@ -671,7 +671,7 @@ def doc(fdict: dict, **kwargs) -> Callable:
 
 @typic.al
 def parsedate(
-    dstr: str, strftime: Optional[Any] = None, settings: Optional[Any] = None
+    dstr: Optional[str], strftime: Optional[Any] = None, settings: Optional[Any] = None
 ) -> Timestamp:
     """Use dateparser to parse a wide variety of dates.
 
@@ -1683,15 +1683,14 @@ def read_iso_ts(
         skiprows = make_list(skiprows)
     result = {}
     if isinstance(indat, (str, bytes, StringIO, BytesIO)):
-        if indat in ["-", b"-"]:
-            # if from stdin format must be the tstoolbox standard
-            # pandas read_csv supports file like objects
-            header = 0
-            sep = None
-            fpi = sys.stdin
-            fname = "_"
-            names = None
-        elif os.path.exists(indat):
+        # if from stdin format must be the tstoolbox standard
+        # pandas read_csv supports file like objects
+        header = 0
+        sep = None
+        fpi = sys.stdin
+        fname = "_"
+        names = None
+        if os.path.exists(indat):
             # a local file
             header = "infer"
             sep = None

@@ -2,7 +2,11 @@
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
-from typing import Optional
+from typing import List, Optional
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import warnings
 
@@ -10,6 +14,7 @@ import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 import pandas as pd
+import typic
 
 from .. import tsutils
 
@@ -187,37 +192,26 @@ def rolling_window_cli(
     )
 
 
-# @tsutils.validator(
-#    statistic=[
-#        str,
-#        [
-#            "domain",
-#            [
-#                "corr",
-#                "count",
-#                "cov",
-#                "kurt",
-#                "max",
-#                "mean",
-#                "median",
-#                "min",
-#                "quantile",
-#                "skew",
-#                "std",
-#                "sum",
-#                "var",
-#            ],
-#        ],
-#        1,
-#    ],
-#    window=[int, ["range", [0, None]], None],
-#    min_periods=[int, ["range", [0, None]], 1],
-#    closed=[str, ["domain", ["right", "left", "both", "neither"]], 1],
-# )
+@typic.al
+@tsutils.transform_args(window=tsutils.make_list)
 def rolling_window(
-    statistic,
+    statistic: Literal[
+        "corr",
+        "count",
+        "cov",
+        "kurt",
+        "max",
+        "mean",
+        "median",
+        "min",
+        "quantile",
+        "skew",
+        "std",
+        "sum",
+        "var",
+    ],
     groupby=None,
-    window=None,
+    window: Optional[List[tsutils.IntGreaterEqualToZero]] = None,
     input_ts="-",
     columns=None,
     start_date=None,
@@ -228,11 +222,11 @@ def rolling_window(
     names=None,
     clean=False,
     span=None,
-    min_periods=None,
+    min_periods: Optional[tsutils.IntGreaterEqualToZero] = None,
     center: bool = False,
     win_type: Optional[str] = None,
     on: Optional[str] = None,
-    closed=None,
+    closed: Optional[Literal["right", "left", "both", "neither"]] = None,
     source_units=None,
     target_units=None,
     print_input=False,
@@ -253,11 +247,9 @@ def rolling_window(
     )
 
     if span is not None:
-        window = span
+        window = [span]
     if window is None:
-        window = 2
-
-    window = tsutils.make_list(window)
+        window = [2]
 
     ntsd = pd.DataFrame()
     for win in window:

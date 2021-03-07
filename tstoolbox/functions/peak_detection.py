@@ -20,7 +20,10 @@ from .. import tsutils
 warnings.filterwarnings("ignore")
 
 
-def _boolrelextrema(data, comparator, axis=0, order=1, mode="clip"):
+@typic.al
+def _boolrelextrema(
+    data, comparator, axis=0, order: tsutils.IntGreaterEqualToOne = 1, mode="clip"
+):
     """Calculate the relative extrema of `data`.
 
     Relative extrema are calculated by finding locations where
@@ -61,9 +64,6 @@ def _boolrelextrema(data, comparator, axis=0, order=1, mode="clip"):
     [False, False, True, False, False]
 
     """
-    if (int(order) != order) or (order < 1):
-        raise ValueError("Order must be an int >= 1")
-
     datalen = data.shape[axis]
     locs = np.arange(0, datalen)
 
@@ -201,7 +201,13 @@ def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
     return fitted_peaks
 
 
-def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
+@typic.al
+def _peakdetect(
+    y_axis,
+    x_axis=None,
+    window: tsutils.IntGreaterEqualToOne = 24,
+    delta: tsutils.IntGreaterEqualToZero = 0,
+):
     """Private peak detection algorithm.
 
     Converted from/based on a MATLAB script
@@ -243,12 +249,6 @@ def _peakdetect(y_axis, x_axis=None, window=24, delta=0):
     x_axis, y_axis = _datacheck_peakdetect(x_axis, y_axis)
     # store data length for later use
     length = len(y_axis)
-
-    # perform some checks
-    if window < 1:
-        raise ValueError('window must be "1" or above in value')
-    if not (np.isscalar(delta) and delta >= 0):
-        raise ValueError("delta must be a positive number")
 
     # maxima and minima candidates are temporarily stored in
     # mx and mn respectively
@@ -675,7 +675,12 @@ def _peakdetect_zero_crossing(y_axis, x_axis=None, window=5):
     return [max_peaks, min_peaks]
 
 
-def _smooth(x, window_len=11, window="hanning"):
+@typic.al
+def _smooth(
+    x,
+    window_len=11,
+    window: Literal["flat", "hanning", "hamming", "bartlett", "blackman"] = "hanning",
+):
     """Smooth the data using a window of the requested size.
 
     This method is based on the convolution of a scaled window on the signal.
@@ -719,9 +724,6 @@ def _smooth(x, window_len=11, window="hanning"):
 
     if window_len < 3:
         return x
-
-    if window not in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
-        raise ValueError
 
     s = np.r_[x[window_len - 1 : 0 : -1], x, x[-1:-window_len:-1]]
     # print(len(s))
