@@ -41,6 +41,22 @@ ldocstrings[
 ldocstrings[
     "yone"
 ] = """Data must be organized as 'index,y1'.  Can only plot one series."""
+ldocstrings[
+    "secondary_axis"
+] = """[optional, default is False]
+
+        * list/tuple: Give the column numbers or names to plot on secondary
+          y-axis.
+        * (string, string): The first string is the units of the primary axis,
+          the second string is the units of the secondary axis if you want just
+          unit conversion.  Use any units or combination thereof from the
+          "pint" library.
+        * (callable, callable): Functions relating relationship between
+          primary and secondary axis.  First function will be given the values
+          on primary axis and returns valueis on secondary axis.  Second function
+          will be do the inverse.  Python API only.
+        * string: One of pre-built (callable, callable) combinations.  Can be
+          one of "period"."""
 
 MARKER_LIST = [
     ".",
@@ -172,6 +188,7 @@ def plot_cli(
     xlim=None,
     ylim=None,
     secondary_y=False,
+    secondary_x=False,
     mark_right=True,
     scatter_matrix_diagonal="kde",
     bootstrap_size=50,
@@ -589,10 +606,9 @@ def plot_cli(
 
         Defines the type of the yaxis.  One of 'arithmetic', 'log'.
     secondary_y
-        [optional, default is False]
-
-        Whether to plot on the secondary y-axis. If a list/tuple, which
-        time-series to plot on secondary y-axis.
+        {secondary_axis}
+    secondary_x
+        {secondary_axis}
     mark_right
         [optional, default is True]
 
@@ -821,6 +837,7 @@ def plot_cli(
         xlim=xlim,
         ylim=ylim,
         secondary_y=secondary_y,
+        secondary_x=secondary_x,
         mark_right=mark_right,
         scatter_matrix_diagonal=scatter_matrix_diagonal,
         bootstrap_size=bootstrap_size,
@@ -872,6 +889,8 @@ def plot_cli(
 #        None,
 #    ],
 @tsutils.transform_args(
+    xlim=tsutils.make_list,
+    ylim=tsutils.make_list,
     legend_names=tsutils.make_list,
     markerstyles=tsutils.make_list,
     colors=tsutils.make_list,
@@ -947,9 +966,10 @@ def plot(
     logy: bool = False,
     xaxis: Literal["arithmetic", "log"] = "arithmetic",
     yaxis: Literal["arithmetic", "log"] = "arithmetic",
-    xlim: Optional[Tuple[float, float]] = None,
-    ylim: Optional[Tuple[float, float]] = None,
-    secondary_y: bool = False,
+    xlim: Optional[Tuple[Optional[float], Optional[float]]] = None,
+    ylim: Optional[Tuple[Optional[float], Optional[float]]] = None,
+    secondary_y=False,
+    secondary_x=False,
     mark_right: bool = True,
     scatter_matrix_diagonal: Literal["kde", "hist"] = "kde",
     bootstrap_size: tsutils.IntGreaterEqualToOne = 50,
@@ -1037,9 +1057,10 @@ def plot(
     from matplotlib.ticker import FixedLocator
 
     tsd = tsutils.common_kwds(
-        tsutils.read_iso_ts(
-            input_ts, skiprows=skiprows, names=names, index_type=index_type
-        ),
+        input_ts,
+        skiprows=skiprows,
+        names=names,
+        index_type=index_type,
         start_date=start_date,
         end_date=end_date,
         pick=columns,
@@ -1048,6 +1069,7 @@ def plot(
         source_units=source_units,
         target_units=target_units,
         clean=clean,
+        por=por,
     )
 
     if type in ["bootstrap", "heatmap", "autocorrelation", "lag_plot"]:
@@ -1062,15 +1084,6 @@ The DataFrame that you supplied has {0} time-series.
                     )
                 )
             )
-
-    if por is True:
-        tsd = tsutils.common_kwds(
-            tsutils.read_iso_ts(tsd),
-            start_date=start_date,
-            end_date=end_date,
-            round_index=round_index,
-            dropna="no",
-        )
 
     # This is to help pretty print the frequency
     try:
@@ -1334,7 +1347,6 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             logy=logy,
             xlim=xlim,
             ylim=ylim,
-            secondary_y=secondary_y,
             mark_right=mark_right,
             figsize=figsize,
             drawstyle=drawstyle,
@@ -1528,7 +1540,6 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             logy=logy,
             xlim=xlim,
             ylim=ylim,
-            secondary_y=secondary_y,
             figsize=figsize,
         )
         for index, line in enumerate(ax.lines):
@@ -1571,7 +1582,6 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             logy=logy,
             xlim=xlim,
             ylim=ylim,
-            secondary_y=secondary_y,
             mark_right=mark_right,
             figsize=figsize,
             drawstyle=drawstyle,

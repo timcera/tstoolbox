@@ -245,13 +245,11 @@ def fill(
 ):
     """Fill missing values (NaN) with different methods."""
     tsd = tsutils.common_kwds(
-        tsutils.read_iso_ts(
-            input_ts,
-            dropna="all",
-            skiprows=skiprows,
-            names=names,
-            index_type=index_type,
-        ),
+        input_ts,
+        dropna="all",
+        skiprows=skiprows,
+        names=names,
+        index_type=index_type,
         start_date=start_date,
         end_date=end_date,
         pick=columns,
@@ -342,7 +340,7 @@ def fill_by_correlation(
     :param -i, --input_ts <str>: Filename with data in 'ISOdate,value'
         format or '-' for stdin.
     """
-    tsd = tsutils.read_iso_ts(input_ts)
+    tsd = tsutils.common_kwds(input_ts)
     if print_input is True:
         ntsd = tsd.copy()
     else:

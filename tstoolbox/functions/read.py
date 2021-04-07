@@ -4,6 +4,7 @@
 from __future__ import absolute_import, division, print_function
 
 from argparse import RawTextHelpFormatter
+import os
 import warnings
 
 import mando
@@ -124,15 +125,27 @@ def read(
     if force_freq is not None:
         dropna = "no"
 
-    filenames = tsutils.make_list(filenames)
+    # Check for older style where comma delimited list of only files.
+    # If so, rework as space delimited.
+    fcheck = True
+    for fname in tsutils.make_list(filenames):
+        if not os.path.exists(fname):
+            fcheck = False
+            break
+    if fcheck is False:
+        # All filenames are real files.  Therefore old style and just make a simple
+        # list.
+        filenames = tsutils.make_list(filenames)
+
     result = pd.DataFrame()
     result_list = []
     zones = set()
     for i in filenames:
         tsd = tsutils.common_kwds(
-            tsutils.read_iso_ts(
-                i, skiprows=skiprows, names=names, index_type=index_type
-            ),
+            i,
+            skiprows=skiprows,
+            names=names,
+            index_type=index_type,
             start_date=start_date,
             end_date=end_date,
             round_index=round_index,

@@ -30,6 +30,7 @@ from pandas._libs.tslibs.timestamps import Timestamp
 from pandas.core.indexes.base import Index
 from _io import TextIOWrapper
 from typing import Optional, Any, List, Tuple, Callable, Union
+
 try:
     from typing import Literal
 except ImportError:
@@ -615,21 +616,25 @@ PPDICT = {
 
 @typic.al
 def set_plotting_position(
-    n: Union[int, int64], plotting_position: Union[float, Literal[
-                     "weibull",
-                     "benard",
-                     "bos-levenbach",
-                     "filliben",
-                     "yu",
-                     "tukey",
-                     "blom",
-                     "cunnane",
-                     "gringorton",
-                     "hazen",
-                     "larsen",
-                     "gumbel",
-                     "california",
-                 ]]= "weibull"
+    n: Union[int, int64],
+    plotting_position: Union[
+        float,
+        Literal[
+            "weibull",
+            "benard",
+            "bos-levenbach",
+            "filliben",
+            "yu",
+            "tukey",
+            "blom",
+            "cunnane",
+            "gringorton",
+            "hazen",
+            "larsen",
+            "gumbel",
+            "california",
+        ],
+    ] = "weibull",
 ) -> ndarray:
     """Create plotting position 1D array using linspace."""
     if plotting_position == "california":
@@ -1045,6 +1050,7 @@ def transform_args(**trans_func_for_arg):
 
     def transform_args_decorator(func):
         sig = inspect.signature(func)
+
         @wraps(func)
         def transform_args_wrapper(*args, **kwargs):
             # get a {argname: argval, ...} dict from *args and **kwargs
@@ -1053,7 +1059,9 @@ def transform_args(**trans_func_for_arg):
             val_of_argname = sig.bind(*args, **kwargs)
             val_of_argname.apply_defaults()
             for argname, trans_func in trans_func_for_arg.items():
-                val_of_argname.arguments[argname] = trans_func(val_of_argname.arguments[argname])
+                val_of_argname.arguments[argname] = trans_func(
+                    val_of_argname.arguments[argname]
+                )
             # apply transform functions to argument values
             return func(*val_of_argname.args, **val_of_argname.kwargs)
 
@@ -1066,8 +1074,8 @@ def transform_args(**trans_func_for_arg):
 @typic.al
 def common_kwds(
     input_tsd=None,
-    start_date = None,
-    end_date = None,
+    start_date=None,
+    end_date=None,
     pick: Optional[List[Union[int, str]]] = None,
     force_freq=None,
     groupby=None,
@@ -1077,6 +1085,13 @@ def common_kwds(
     target_units=None,
     source_units=None,
     bestfreq: bool = True,
+    parse_dates: bool = True,
+    extended_columns: bool = False,
+    skiprows: Optional[Union[int, List[int]]] = None,
+    index_type: Literal["datetime", "number"] = "datetime",
+    names: Optional[str] = None,
+    usecols: Optional[List[Union[int, str]]] = None,
+    por: bool = False,
 ):
     """Process all common_kwds across sub-commands into single function.
 
@@ -1091,7 +1106,23 @@ def common_kwds(
         DataFrame altered according to options.
 
     """
-    ntsd = input_tsd
+    # The "por" keyword is stupid, since it is a synonym for "dropna" equal
+    # to "no".  Discovered this after implementation and should deprecate
+    # and remove in the future.
+    if por is True:
+        dropna = "no"
+
+    ntsd = read_iso_ts(
+        input_tsd,
+        parse_dates=parse_dates,
+        extended_columns=extended_columns,
+        dropna=dropna,
+        force_freq=force_freq,
+        skiprows=skiprows,
+        index_type=index_type,
+        names=names,
+        usecols=usecols,
+    )
 
     ntsd = _pick(ntsd, pick)
 
@@ -1650,17 +1681,19 @@ def is_valid_url(url: bytes, qualifying: Optional[Any] = None) -> bool:
     return all((getattr(token, qualifying_attr) for qualifying_attr in qualifying))
 
 
+@transform_args(usecols=make_list)
 @typic.al
 def read_iso_ts(
     indat,
     parse_dates: bool = True,
     extended_columns: bool = False,
     dropna: Literal["no", "any", "all"] = None,
-    force_freq: Optional[str]=None,
+    force_freq: Optional[str] = None,
     skiprows: Optional[Union[int, List[int]]] = None,
     index_type: Literal["datetime", "number"] = "datetime",
-    names: Optional[str]=None,
-):
+    names: Optional[str] = None,
+    usecols: Optional[List[Union[int, str]]] = None,
+) -> pd.DataFrame:
     """Read the format printed by 'printiso' and maybe other formats.
 
     Parameters
@@ -1681,98 +1714,208 @@ def read_iso_ts(
         skiprows = int(skiprows)
     except (ValueError, TypeError):
         skiprows = make_list(skiprows)
-    result = {}
-    if isinstance(indat, (str, bytes, StringIO, BytesIO)):
-        # if from stdin format must be the tstoolbox standard
-        # pandas read_csv supports file like objects
+
+    # Would want this to be more generic...
+    na_values = []
+    for spc in range(20)[1:]:
+        spcs = " " * spc
+        na_values.append(spcs)
+        na_values.append(spcs + "nan")
+
+    fstr = "{1}"
+    if extended_columns is True:
+        fstr = "{0}.{1}"
+
+    index_col = 0
+    if parse_dates is False:
+        index_col = False
+
+    if names is not None:
         header = 0
-        sep = None
-        fpi = sys.stdin
-        fname = "_"
-        names = None
-        if os.path.exists(indat):
-            # a local file
-            header = "infer"
-            sep = None
-            fpi = open_local(indat)
-            fname = os.path.splitext(os.path.basename(indat))[0]
-            names = None
-        elif is_valid_url(indat):
-            # a url?
-            header = "infer"
-            sep = None
-            fpi = indat
-            fname = ""
-            names = None
-        elif isinstance(indat, (StringIO, BytesIO)):
-            header = "infer"
-            sep = None
-            fpi = indat
-            fname = ""
-            names = None
-        elif isinstance(indat, bytes):
-            if b"\n" in indat or b"\r" in indat:
-                # a string?
+        names = make_list(names)
+
+    if index_type == "number":
+        parse_dates = False
+
+    result = {}
+    if isinstance(indat, (str, bytes)):
+        words = indat.split(",")
+        if os.path.exists(words[0]):
+            fname = os.path.basename(words[0])
+            if words[0].lower()[-5:] == ".xlsx":
+                if len(words) == 1:
+                    sheet = 0
+                elif len(words) == 2:
+                    sheet = make_list(words[1])[0]
+                else:
+                    sheet = make_list(words[1:])
+
+                # Want to use "usecols" keyword, but "usecols" can't be None to maintain
+                # order, so make separate calls.
+                if usecols is None:
+                    result = pd.io.parsers.read_excel(
+                        words[0],
+                        sheet=sheet,
+                        header=header,
+                        names=names,
+                        index_col=index_col,
+                        parse_dates=parse_dates,
+                        na_values=na_values,
+                        keep_default_na=True,
+                        skiprows=skiprows,
+                    )
+                else:
+                    result = pd.io.parsers.read_excel(
+                        words[0],
+                        sheet=sheet,
+                        header=header,
+                        names=names,
+                        index_col=index_col,
+                        parse_dates=parse_dates,
+                        na_values=na_values,
+                        keep_default_na=True,
+                        skiprows=skiprows,
+                        usecols=set(usecols),
+                    )[usecols]
+            elif words[0].lower()[-4:] == ".hbn":
+                from hspfbintoolbox import hspfbintoolbox
+
+                if len(words) == 1:
+                    raise ValueError(
+                        error_wrapper(
+                            f"""
+To read from HSPF binary files need something of the form:
+
+filename.hbn,yearly,PERLND,101,PWATER,SURO
+
+instead you gave:
+
+{indat}"""
+                        )
+                    )
+                if len(words) == 2:
+                    labels = ",,,"
+                else:
+                    labels = make_list(words[2:])
+                result = hspfbintoolbox.extract(
+                    words[0], words[1], labels,
+                )
+            elif words[0].lower()[-4:] == ".wdm":
+                from wdmtoolbox import wdmtoolbox
+
+                dsns = [int(i) for i in words[1:]]
+
+                result = pd.DataFrame()
+                for dsn in dsns:
+                    res = wdmtoolbox.extract(words[0], dsn)
+                    result = result.join(res, rsuffix="_", how="outer")
+            elif words[0].lower()[-5:] == ".hdf5":
+                pass
+            elif words[0].lower()[-4:] == ".csv":
+                indat = words[0]
+                if len(words) == 1:
+                    usecols = None
+                else:
+                    cols = make_list(words[1:])
+                    usecols = []
+                    for c in cols:
+                        if isinstance(c, int):
+                            usecols.append(c - 1)
+                        else:
+                            usecols.append(c)
+
+        if len(result) == 0:
+            if indat == "-" or indat == b"-":
+                # if from stdin format must be the tstoolbox standard
+                # pandas read_csv supports file like objects
                 header = 0
                 sep = None
-                fpi = BytesIO(indat)
-                fname = ""
+                fpi = sys.stdin
+                fname = "_"
                 names = None
-        elif isinstance(indat, str):
-            if "\n" in indat or "\r" in indat:
-                # a string?
-                header = 0
+            elif os.path.exists(indat):
+                # a local file
+                header = "infer"
                 sep = None
-                fpi = StringIO(indat)
+                fpi = open_local(indat)
+                fname = os.path.splitext(os.path.basename(indat))[0]
+                names = None
+            elif is_valid_url(indat):
+                # a url?
+                header = "infer"
+                sep = None
+                fpi = indat
                 fname = ""
                 names = None
-        else:
-            raise ValueError(
-                error_wrapper(
-                    """
+            elif isinstance(indat, bytes):
+                if b"\n" in indat or b"\r" in indat:
+                    # a string?
+                    header = 0
+                    sep = None
+                    fpi = BytesIO(indat)
+                    fname = ""
+                    names = None
+            elif isinstance(indat, str):
+                if "\n" in indat or "\r" in indat:
+                    # a string?
+                    header = 0
+                    sep = None
+                    fpi = StringIO(indat)
+                    fname = ""
+                    names = None
+            elif isinstance(indat, (StringIO, BytesIO)):
+                header = "infer"
+                sep = None
+                fpi = indat
+                fname = ""
+                names = None
+            else:
+                raise ValueError(
+                    error_wrapper(
+                        """
 Can't figure out what "input_ts={0}" is.
 I tested if it was a string or StringIO object, DataFrame, local file,
 or an URL.  If you want to pull from stdin use "-" or redirection/piping.
 """.format(
-                        indat
+                            indat
+                        )
                     )
                 )
-            )
 
-        fstr = "{1}"
-        if extended_columns is True:
-            fstr = "{0}.{1}"
+            # Want to use "usecols" keyword, but "usecols" can't be None to maintain
+            # order, so make separate calls.
+            if usecols is None:
+                result = pd.io.parsers.read_csv(
+                    fpi,
+                    header=header,
+                    names=names,
+                    index_col=index_col,
+                    infer_datetime_format=True,
+                    parse_dates=parse_dates,
+                    na_values=na_values,
+                    keep_default_na=True,
+                    sep=sep,
+                    skipinitialspace=True,
+                    engine="python",
+                    skiprows=skiprows,
+                )
+            else:
+                result = pd.io.parsers.read_csv(
+                    fpi,
+                    header=header,
+                    names=names,
+                    index_col=index_col,
+                    infer_datetime_format=True,
+                    parse_dates=parse_dates,
+                    na_values=na_values,
+                    keep_default_na=True,
+                    sep=sep,
+                    skipinitialspace=True,
+                    engine="python",
+                    skiprows=skiprows,
+                    usecols=set(usecols),
+                )[usecols]
 
-        index_col = 0
-        if parse_dates is False:
-            index_col = False
-
-        # Would want this to be more generic...
-        na_values = []
-        for spc in range(20)[1:]:
-            spcs = " " * spc
-            na_values.append(spcs)
-            na_values.append(spcs + "nan")
-
-        if names is not None:
-            header = 0
-            names = make_list(names)
-        if index_type == "number":
-            parse_dates = False
-        result = pd.io.parsers.read_csv(
-            fpi,
-            header=header,
-            names=names,
-            index_col=index_col,
-            infer_datetime_format=True,
-            parse_dates=parse_dates,
-            na_values=na_values,
-            keep_default_na=True,
-            sep=sep,
-            skipinitialspace=True,
-            engine="python",
-            skiprows=skiprows,
-        )
         first = [i.split(":")[0] for i in result.columns]
         first = [fstr.format(fname, i) for i in first]
         first = [[i.strip()] for i in dedupIndex(first)]

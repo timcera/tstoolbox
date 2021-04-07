@@ -157,9 +157,10 @@ def expanding_window(
 ):
     """Calculate an expanding window statistic."""
     tsd = tsutils.common_kwds(
-        tsutils.read_iso_ts(
-            input_ts, skiprows=skiprows, names=names, index_type=index_type
-        ),
+        input_ts,
+        skiprows=skiprows,
+        names=names,
+        index_type=index_type,
         start_date=start_date,
         end_date=end_date,
         pick=columns,

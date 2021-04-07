@@ -3,6 +3,7 @@
 
 from __future__ import absolute_import, division, print_function
 from typing import List, Optional
+
 try:
     from typing import Literal
 except ImportError:
@@ -233,9 +234,10 @@ def rolling_window(
 ):
     """Calculate a rolling window statistic."""
     tsd = tsutils.common_kwds(
-        tsutils.read_iso_ts(
-            input_ts, skiprows=skiprows, names=names, index_type=index_type
-        ),
+        input_ts,
+        skiprows=skiprows,
+        names=names,
+        index_type=index_type,
         start_date=start_date,
         end_date=end_date,
         pick=columns,

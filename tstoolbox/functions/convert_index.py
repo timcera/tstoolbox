@@ -215,9 +215,10 @@ def convert_index(
         nround_index = round_index
 
     tsd = tsutils.common_kwds(
-        tsutils.read_iso_ts(
-            input_ts, skiprows=skiprows, names=names, index_type=index_type
-        ),
+        input_ts,
+        skiprows=skiprows,
+        names=names,
+        index_type=index_type,
         start_date=nstart_date,
         end_date=nend_date,
         pick=columns,

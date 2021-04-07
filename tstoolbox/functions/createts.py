@@ -103,7 +103,8 @@ freq = {2}
 
     if input_ts is not None:
         tsd = tsutils.common_kwds(
-            tsutils.read_iso_ts(input_ts, index_type=index_type),
+            input_ts,
+            index_type=index_type,
             start_date=start_date,
             end_date=end_date,
         )
