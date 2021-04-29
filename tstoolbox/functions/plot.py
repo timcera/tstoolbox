@@ -163,6 +163,7 @@ def plot_cli(
     end_date=None,
     clean=False,
     skiprows=None,
+    dropna="no",
     index_type="datetime",
     names=None,
     ofilename="plot.png",
@@ -696,6 +697,7 @@ def plot_cli(
     {end_date}
     {clean}
     {skiprows}
+    {dropna}
     {index_type}
     {names}
     {source_units}
@@ -805,13 +807,15 @@ def plot_cli(
         be same length as `vlines_x`.  If None will take for the standard
         linestyles list.
     """
+
     plt = plot(
-        input_ts=input_ts,
+        input_ts="-",
         columns=columns,
         start_date=start_date,
         end_date=end_date,
         clean=clean,
         skiprows=skiprows,
+        dropna=dropna,
         index_type=index_type,
         names=names,
         ofilename=ofilename,
@@ -918,6 +922,7 @@ def plot(
     end_date=None,
     clean=False,
     skiprows=None,
+    dropna="no",
     index_type="datetime",
     names=None,
     ofilename: Optional[str] = "plot.png",
@@ -1057,7 +1062,7 @@ def plot(
     from matplotlib.ticker import FixedLocator
 
     tsd = tsutils.common_kwds(
-        input_ts,
+        input_tsd=input_ts,
         skiprows=skiprows,
         names=names,
         index_type=index_type,
@@ -1065,7 +1070,7 @@ def plot(
         end_date=end_date,
         pick=columns,
         round_index=round_index,
-        dropna="all",
+        dropna=dropna,
         source_units=source_units,
         target_units=target_units,
         clean=clean,
@@ -1154,7 +1159,6 @@ l1,l2,l3,...  where l1 is the legend for x1,y1, l2 is the legend for x2,y2,
     elif "auto" in bar_hatchstyles:
         bar_hatchstyles = HATCH_LIST
 
-    print(markerstyles)
     if markerstyles is None:
         markerstyles = " "
     elif "auto" in markerstyles:
@@ -1643,13 +1647,13 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
     elif type == "lag_plot":
         from pandas.plotting import lag_plot
 
-        lag_plot(tsd, lag=lag_plot_lag, ax=ax)
+        lag_plot(tsd.dropna(), lag=lag_plot_lag, ax=ax)
         xtitle = xtitle or "y(t)"
         ytitle = ytitle or "y(t+{0})".format(short_freq or 1)
     elif type == "autocorrelation":
         from pandas.plotting import autocorrelation_plot
 
-        autocorrelation_plot(tsd, ax=ax)
+        autocorrelation_plot(tsd.dropna(), ax=ax)
         xtitle = xtitle or "Time Lag {0}".format(short_freq)
     elif type == "bootstrap":
         from pandas.plotting import bootstrap_plot

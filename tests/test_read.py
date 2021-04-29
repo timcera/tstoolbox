@@ -22,7 +22,7 @@ class TestRead(TestCase):
 
         self.read_multiple_direct = pandas.DataFrame(ts, columns=["Value"])
         self.read_multiple_direct = pandas.concat(
-            [self.read_multiple_direct, pandas.Series(ts, name="Value")], axis="columns"
+            [self.read_multiple_direct, pandas.Series(ts, name="Value_2")], axis="columns"
         )
         self.read_multiple_direct.index.name = "Datetime"
         self.read_multiple_direct = tsutils.memory_optimize(self.read_multiple_direct)
@@ -32,7 +32,7 @@ class TestRead(TestCase):
 2000-01-02,4.6
 """
 
-        self.read_multiple_cli = b"""Datetime,Value,Value
+        self.read_multiple_cli = b"""Datetime,Value,Value_2
 2000-01-01,4.5,4.5
 2000-01-02,4.6,4.6
 """
@@ -66,7 +66,7 @@ class TestRead(TestCase):
     def test_read_mulitple_direct(self):
         """Test read API for multiple columns - daily."""
         out = tstoolbox.read(
-            "tests/data_simple.csv,tests/data_simple.csv", append=r"columns"
+            "tests/data_simple.csv tests/data_simple.csv", append=r"columns"
         )
         assert_frame_equal(out, self.read_multiple_direct)
 

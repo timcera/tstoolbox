@@ -5,6 +5,7 @@ from __future__ import division, print_function
 import bz2
 import datetime
 import gzip
+import io
 import os
 import sys
 from textwrap import TextWrapper
@@ -557,6 +558,17 @@ class IntBetweenOneAndThree(int):
     """ 1 <= int <= 3 """
 
 
+def flatten(list_of_lists):
+    if isinstance(list_of_lists, (list, tuple)):
+        if len(list_of_lists) == 0:
+            return list_of_lists
+        if isinstance(list_of_lists[0], (list, tuple)):
+            return list(flatten(list_of_lists[0])) + list(flatten(list_of_lists[1:]))
+        return list(list_of_lists[:1]) + list(flatten(list_of_lists[1:]))
+    else:
+        return list_of_lists
+
+
 @typic.al
 def stride_and_unit(sunit: str) -> Tuple[int, str]:
     """Split a stride/unit combination into component parts."""
@@ -763,7 +775,7 @@ def _pick_column_or_value(tsd, var):
     return var
 
 
-def make_list(*strorlist: Any, **kwds: Any) -> Any:
+def make_list(*strorlist, **kwds: Any) -> Any:
     """Normalize strings, converting to numbers or lists."""
     try:
         n = kwds.pop("n")
@@ -784,7 +796,8 @@ def make_list(*strorlist: Any, **kwds: Any) -> Any:
 
     if isinstance(strorlist, (list, tuple)):
         # The following will fix ((tuples, in, a, tuple, problem),)
-        strorlist = list(pd.core.common.flatten(strorlist))
+        strorlist = flatten(strorlist)
+
         if len(strorlist) == 1:
             # Normalize lists and tuples of length 1 to scalar for
             # further processing.
@@ -803,10 +816,8 @@ The list {0} for "{2}" should have {1} members according to function requirement
                     )
                 )
 
-    try:
-        strorlist = strorlist.strip()
-    except AttributeError:
-        pass
+    if isinstance(strorlist, pd.DataFrame):
+        return [strorlist]
 
     if strorlist is None or isinstance(strorlist, (type(None))):
         # None -> None
@@ -840,11 +851,23 @@ The list {0} for "{2}" should have {1} members according to function requirement
                 return [float(strorlist)]
             except ValueError:
                 pass
+        # Deal with a str or bytes.
+        strorlist = strorlist.strip()
 
-    try:
-        strorlist = strorlist.split(sep)
-    except AttributeError:
-        pass
+        if isinstance(strorlist, str):
+            if "\r" in strorlist or "\n" in strorlist:
+                return [io.StringIO(strorlist)]
+            else:
+                strorlist = strorlist.split(str(sep))
+
+        if isinstance(strorlist, bytes):
+            if b"\r" in strorlist or b"\n" in strorlist:
+                return [io.BytesIO(strorlist)]
+            else:
+                strorlist = strorlist.split(bytes(sep, encoding="utf8"))
+
+    if isinstance(strorlist, (io.StringIO, io.BytesIO)):
+        return strorlist
 
     if n is None:
         n = len(strorlist)
@@ -1112,17 +1135,20 @@ def common_kwds(
     if por is True:
         dropna = "no"
 
-    ntsd = read_iso_ts(
-        input_tsd,
-        parse_dates=parse_dates,
-        extended_columns=extended_columns,
-        dropna=dropna,
-        force_freq=force_freq,
-        skiprows=skiprows,
-        index_type=index_type,
-        names=names,
-        usecols=usecols,
-    )
+    if isinstance(input_tsd, pd.DataFrame):
+        ntsd = input_tsd
+    else:
+        ntsd = read_iso_ts(
+            input_tsd,
+            parse_dates=parse_dates,
+            extended_columns=extended_columns,
+            dropna=dropna,
+            force_freq=force_freq,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            usecols=usecols,
+        )
 
     ntsd = _pick(ntsd, pick)
 
@@ -1592,12 +1618,12 @@ def open_local(filein: str) -> TextIOWrapper:
     It can decode various formats too, such as gzip and bz2.
 
     """
-    ext = os.path.splitext(filein)[1]
+    base, ext = os.path.splitext(os.path.basename(filein))
     if ext in [".gz", ".GZ"]:
-        return gzip.open(filein, "rb")
+        return gzip.open(filein, "rb"), base
     if ext in [".bz", ".bz2"]:
-        return bz2.BZ2File(filein, "rb")
-    return open(filein, "r")
+        return bz2.BZ2File(filein, "rb"), base
+    return open(filein, "r"), os.path.basename(filein)
 
 
 def reduce_mem_usage(props):
@@ -1681,24 +1707,34 @@ def is_valid_url(url: bytes, qualifying: Optional[Any] = None) -> bool:
     return all((getattr(token, qualifying_attr) for qualifying_attr in qualifying))
 
 
-@transform_args(usecols=make_list)
+def read_csv(fname, *args, **kwds):
+    if fname == "-":
+        fpi = sys.stdin
+
+
 @typic.al
 def read_iso_ts(
-    indat,
-    parse_dates: bool = True,
-    extended_columns: bool = False,
+    *inindat,
     dropna: Literal["no", "any", "all"] = None,
     force_freq: Optional[str] = None,
+    extended_columns: bool = False,
+    parse_dates: bool = True,
     skiprows: Optional[Union[int, List[int]]] = None,
     index_type: Literal["datetime", "number"] = "datetime",
     names: Optional[str] = None,
-    usecols: Optional[List[Union[int, str]]] = None,
+    header: Optional[str] = "infer",
+    sep: Optional[str] = ",",
+    index_col=0,
+    usecols=None,
+    **kwds,
+    # skiprows: Optional[Union[int, List[int]]] = None,
+    # usecols: Optional[List[Union[int, str]]] = None,
 ) -> pd.DataFrame:
     """Read the format printed by 'printiso' and maybe other formats.
 
     Parameters
     ----------
-    indat: str, bytes, StringIO, file pointer, file name, DataFrame,
+    inindat: str, bytes, StringIO, file pointer, file name, DataFrame,
            Series, tuple, list, dict
 
         The input data.
@@ -1710,10 +1746,40 @@ def read_iso_ts(
         Returns a DataFrame.
 
     """
-    try:
-        skiprows = int(skiprows)
-    except (ValueError, TypeError):
-        skiprows = make_list(skiprows)
+    # inindat
+    # -                               [["-"]]
+    #                                     all columns from standard input
+    #
+    # 1,2,Value                       [["-", 1, 2, "Value"]]
+    #                                     extract columns from standard input
+    #
+    # fn.csv,skiprows=4               [["fn.csv", "skiprows=4"]]
+    #                                     all columns from "fn.csv"
+    #                                     skipping the 5th row
+    #
+    # fn.csv,1,4,Val                  [["fn.csv", 1, 4, "Val"]]
+    #                                     extract columns from fn.csv
+    #
+    # fn.wdm,1002,20000               [["fn.wdm", 1002, 20000]]
+    #                                     WDM files MUST have DSNs
+    #                                     extract DSNs from "fn.wdm"
+    #
+    # fn.csv,Val1,Q,4 fn.wdm,101,201  [["fn.csv", "Val1", "Q", 4], ["fn.wdm", 101, 201]]
+    #                                     extract columns from fn.csv
+    #                                     extract DSNs from fn.wdm
+    newkwds = {}
+    # Olde global way that applies to all sources.
+    # usecols = kwds.get("usecols", None)
+    # skiprows = kwds.get("skiprows", None)
+    # index_col = kwds.get("index_col", 0)
+    # parse_dates = kwds.get("parse_dates", True)
+    # names = kwds.get("names", None)
+    # index_type = kwds.get("index_type", "datetime")
+    # sep = kwds.get("sep", ",")
+    # header = kwds.get("header", 0)
+
+    if not inindat:
+        inindat = "-"
 
     # Would want this to be more generic...
     na_values = []
@@ -1726,10 +1792,6 @@ def read_iso_ts(
     if extended_columns is True:
         fstr = "{0}.{1}"
 
-    index_col = 0
-    if parse_dates is False:
-        index_col = False
-
     if names is not None:
         header = 0
         names = make_list(names)
@@ -1737,253 +1799,235 @@ def read_iso_ts(
     if index_type == "number":
         parse_dates = False
 
-    result = {}
-    if isinstance(indat, (str, bytes)):
-        words = indat.split(",")
-        if os.path.exists(words[0]):
-            fname = os.path.basename(words[0])
-            if words[0].lower()[-5:] == ".xlsx":
-                if len(words) == 1:
-                    sheet = 0
-                elif len(words) == 2:
-                    sheet = make_list(words[1])[0]
-                else:
-                    sheet = make_list(words[1:])
+    sources = make_list(inindat)
 
-                # Want to use "usecols" keyword, but "usecols" can't be None to maintain
-                # order, so make separate calls.
-                if usecols is None:
-                    result = pd.io.parsers.read_excel(
-                        words[0],
-                        sheet=sheet,
-                        header=header,
-                        names=names,
-                        index_col=index_col,
-                        parse_dates=parse_dates,
-                        na_values=na_values,
-                        keep_default_na=True,
-                        skiprows=skiprows,
-                    )
-                else:
-                    result = pd.io.parsers.read_excel(
-                        words[0],
-                        sheet=sheet,
-                        header=header,
-                        names=names,
-                        index_col=index_col,
-                        parse_dates=parse_dates,
-                        na_values=na_values,
-                        keep_default_na=True,
-                        skiprows=skiprows,
-                        usecols=set(usecols),
-                    )[usecols]
-            elif words[0].lower()[-4:] == ".hbn":
-                from hspfbintoolbox import hspfbintoolbox
+    if not isinstance(sources, (list, tuple)):
+        sources = [sources]
 
-                if len(words) == 1:
-                    raise ValueError(
-                        error_wrapper(
-                            f"""
-To read from HSPF binary files need something of the form:
+    lresult_list = []
+    zones = set()
+    result = pd.DataFrame()
 
-filename.hbn,yearly,PERLND,101,PWATER,SURO
+    for source in sources:
+        res = pd.DataFrame()
+        parameters = make_list(source, sep=",")
+        if isinstance(parameters, list) and len(parameters) > 0:
+            fname = parameters.pop(0)
+        else:
+            fname = parameters
+            parameters = []
 
-instead you gave:
+        # Python API
+        if isinstance(fname, pd.DataFrame):
+            if len(parameters) > 0:
+                res = fname[parameters]
+            else:
+                res = fname
 
-{indat}"""
-                        )
-                    )
-                if len(words) == 2:
-                    labels = ",,,"
-                else:
-                    labels = make_list(words[2:])
-                result = hspfbintoolbox.extract(
-                    words[0], words[1], labels,
-                )
-            elif words[0].lower()[-4:] == ".wdm":
-                from wdmtoolbox import wdmtoolbox
+        elif isinstance(fname, (pd.Series, dict)):
+            res = pd.DataFrame(inindat)
 
-                dsns = [int(i) for i in words[1:]]
+        elif isinstance(fname, (tuple, list)):
+            res = pd.DataFrame({"values": inindat})
 
-                result = pd.DataFrame()
-                for dsn in dsns:
-                    res = wdmtoolbox.extract(words[0], dsn)
-                    result = result.join(res, rsuffix="_", how="outer")
-            elif words[0].lower()[-5:] == ".hdf5":
-                pass
-            elif words[0].lower()[-4:] == ".csv":
-                indat = words[0]
-                if len(words) == 1:
-                    usecols = None
-                else:
-                    cols = make_list(words[1:])
-                    usecols = []
-                    for c in cols:
-                        if isinstance(c, int):
-                            usecols.append(c - 1)
-                        else:
-                            usecols.append(c)
+        elif isinstance(fname, (int, float)):
+            res = pd.DataFrame({"values": inindat}, index=[0])
 
-        if len(result) == 0:
-            if indat == "-" or indat == b"-":
+        if len(res) == 0:
+            # Store keywords for each source.
+            newkwds = {}
+
+            pars = [str(i) for i in parameters]
+            pars = [i for i in pars if "=" in i]
+            pars = [i.split("=") for i in pars]
+            for key, val in pars:
+                newkwds[key] = val
+
+            parameters = [i for i in parameters if "=" not in str(i)]
+
+            # Command line API
+            # Uses wdmtoolbox, hspfbintoolbox, or pd.read_* functions.
+            fpi = None
+            if fname == "-" or fname == b"-":
                 # if from stdin format must be the tstoolbox standard
                 # pandas read_csv supports file like objects
+                if "header" not in kwds:
+                    kwds["header"] = 0
                 header = 0
-                sep = None
                 fpi = sys.stdin
-                fname = "_"
-                names = None
-            elif os.path.exists(indat):
+                dname = "_"
+            elif isinstance(fname, (io.StringIO, io.BytesIO)):
+                fpi = fname
+                header = 0
+            elif os.path.exists(fname):
                 # a local file
+                # Read all wdm, hdf5, and, xls* files here
                 header = "infer"
-                sep = None
-                fpi = open_local(indat)
-                fname = os.path.splitext(os.path.basename(indat))[0]
-                names = None
-            elif is_valid_url(indat):
+                sep = ","
+                index_col = 0
+                usecols = None
+                fpi, _ = open_local(fname)
+                _, ext = os.path.splitext(fname)
+                if ext.lower() == ".wdm":
+                    from wdmtoolbox import wdmtoolbox
+
+                    nres = []
+                    for par in parameters:
+                        nres.append(wdmtoolbox.extract(",".join([fname] + [str(par)])))
+                    res = pd.concat(nres, axis="columns")
+                elif ext.lower() == ".hdf5":
+                    if len(parameters) == 0:
+                        res = pd.read_hdf(fpi, **newkwds)
+                    else:
+                        res = pd.DataFrame()
+                        for i in parameters:
+                            res = res.join(
+                                pd.read_hdf(fname, key=i, **newkwds), how="outer"
+                            )
+                elif ext.lower() in [
+                    ".xls",
+                    ".xlsx",
+                    ".xlsm",
+                    ".xlsb",
+                    ".odf",
+                    ".ods",
+                    ".odt",
+                ]:
+                    if len(parameters) == 0:
+                        sheet = [0]
+                    elif len(parameters) == 1:
+                        sheet = parameters[0]
+                    else:
+                        sheet = make_list(parameters)
+
+                    res = pd.io.parsers.read_excel(
+                        fname,
+                        sheet=sheet,
+                        **newkwds,
+                    )
+            elif is_valid_url(fname):
                 # a url?
                 header = "infer"
-                sep = None
-                fpi = indat
-                fname = ""
-                names = None
-            elif isinstance(indat, bytes):
-                if b"\n" in indat or b"\r" in indat:
+                fpi = fname
+                dname = ""
+            elif isinstance(fname, bytes):
+                # Python API
+                if b"\n" in fname or b"\r" in fname:
                     # a string?
                     header = 0
-                    sep = None
-                    fpi = BytesIO(indat)
-                    fname = ""
-                    names = None
-            elif isinstance(indat, str):
-                if "\n" in indat or "\r" in indat:
+                    fpi = BytesIO(fname)
+                    dname = ""
+            elif isinstance(fname, str):
+                # Python API
+                if "\n" in fname or "\r" in fname:
                     # a string?
                     header = 0
-                    sep = None
-                    fpi = StringIO(indat)
-                    fname = ""
-                    names = None
-            elif isinstance(indat, (StringIO, BytesIO)):
+                    fpi = StringIO(fname)
+                    dname = ""
+            elif isinstance(fname, (StringIO, BytesIO)):
+                # Python API
                 header = "infer"
-                sep = None
-                fpi = indat
-                fname = ""
-                names = None
+                fpi = fname
+                dname = ""
             else:
-                raise ValueError(
-                    error_wrapper(
-                        """
-Can't figure out what "input_ts={0}" is.
-I tested if it was a string or StringIO object, DataFrame, local file,
-or an URL.  If you want to pull from stdin use "-" or redirection/piping.
-""".format(
-                            indat
-                        )
-                    )
-                )
+                # Maybe fname and parameters are actual column names of standard input.
+                parameters.insert(0, fname)
+                fname = "-"
+                header = 0
+                fpi = sys.stdin
+                dname = "_"
 
-            # Want to use "usecols" keyword, but "usecols" can't be None to maintain
-            # order, so make separate calls.
-            if usecols is None:
-                result = pd.io.parsers.read_csv(
+            if len(res) == 0:
+                res = pd.io.parsers.read_csv(
                     fpi,
+                    engine="python",
+                    infer_datetime_format=True,
+                    keep_default_na=True,
+                    skipinitialspace=True,
                     header=header,
                     names=names,
-                    index_col=index_col,
-                    infer_datetime_format=True,
-                    parse_dates=parse_dates,
-                    na_values=na_values,
-                    keep_default_na=True,
                     sep=sep,
-                    skipinitialspace=True,
-                    engine="python",
+                    na_values=na_values,
+                    index_col=index_col,
+                    usecols=usecols,
+                    parse_dates=parse_dates,
                     skiprows=skiprows,
+                    **newkwds,
                 )
-            else:
-                result = pd.io.parsers.read_csv(
-                    fpi,
-                    header=header,
-                    names=names,
-                    index_col=index_col,
-                    infer_datetime_format=True,
-                    parse_dates=parse_dates,
-                    na_values=na_values,
-                    keep_default_na=True,
-                    sep=sep,
-                    skipinitialspace=True,
-                    engine="python",
-                    skiprows=skiprows,
-                    usecols=set(usecols),
-                )[usecols]
 
-        first = [i.split(":")[0] for i in result.columns]
+            # Some of the techniques above return columns in arbitrary order.
+            bresult = pd.DataFrame()
+            if usecols is not None:
+                for use in usecols:
+                    try:
+                        nresult = res.iloc[use]
+                    except (TypeError, ValueError):
+                        ind = [res.columns.to_list().index(i) for i in use]
+                        nresult = res.iloc[ind]
+                    bresult = bresult.join(nresult, how="outer")
+                res = bresult
+
+        first = [i.split(":")[0] for i in res.columns]
         first = [fstr.format(fname, i) for i in first]
         first = [[i.strip()] for i in dedupIndex(first)]
 
-        rest = [i.rstrip(".0123456789 ").split(":")[1:] for i in result.columns]
+        rest = [i.rstrip(".0123456789 ").split(":")[1:] for i in res.columns]
 
-        result.columns = [":".join(i + j) for i, j in zip(first, rest)]
+        res.columns = [":".join(i + j) for i, j in zip(first, rest)]
 
-        tmpc = result.columns.values
-        for index, i in enumerate(result.columns):
+        tmpc = res.columns.values
+        for index, i in enumerate(res.columns):
             if "Unnamed:" in i:
                 words = i.split(":")
                 tmpc[index] = words[0].strip() + words[1].strip()
-        result.columns = tmpc
+        res.columns = tmpc
+        res = memory_optimize(res)
 
-    elif isinstance(indat, pd.DataFrame):
-        result = indat
+        if res.index.inferred_type != "datetime64":
+            try:
+                res.set_index(0, inplace=True)
+            except KeyError:
+                pass
 
-    elif isinstance(indat, (pd.Series, dict)):
-        result = pd.DataFrame(indat)
+        if res.index.inferred_type == "datetime64":
+            try:
+                words = res.index.name.split(":")
+            except AttributeError:
+                words = ""
+            if len(words) > 1:
+                try:
+                    res.index = res.index.tz_localize(words[1])
+                except TypeError:
+                    pass
+                res.index.name = "Datetime:{0}".format(words[1])
+            else:
+                res.index.name = "Datetime"
 
-    elif isinstance(indat, (tuple, list)):
-        result = pd.DataFrame({"values": indat})
+            try:
+                res = asbestfreq(res, force_freq=force_freq)
+            except ValueError:
+                pass
 
-    elif isinstance(indat, (int, float)):
-        result = pd.DataFrame({"values": indat}, index=[0])
+        if dropna in ["any", "all"]:
+            res.dropna(how=dropna, inplace=True)
 
-    else:
-        raise ValueError(
-            error_wrapper(
-                """
-Can't figure out what was passed to read_iso_ts.
-You gave me {0}, of
-{1}.
-""".format(
-                    indat, type(indat)
-                )
-            )
-        )
-
-    result = memory_optimize(result)
-
-    if result.index.inferred_type != "datetime64":
+        lresult_list.append(res)
         try:
-            result.set_index(0, inplace=True)
-        except KeyError:
+            zones.add(res.index.tzinfo)
+        except AttributeError:
             pass
 
-    if result.index.inferred_type == "datetime64":
-        try:
-            words = result.index.name.split(":")
-        except AttributeError:
-            words = ""
-        if len(words) > 1:
+    for res in lresult_list:
+        if len(zones) != 1:
             try:
-                result.index = result.index.tz_localize(words[1])
-            except TypeError:
+                res.index = res.index.tz_convert(None)
+            except (TypeError, AttributeError):
                 pass
-            result.index.name = "Datetime:{0}".format(words[1])
-        else:
-            result.index.name = "Datetime"
 
-        try:
-            return asbestfreq(result, force_freq=force_freq)
-        except ValueError:
-            return result
+    result = pd.DataFrame()
+    for df in lresult_list:
+        result = result.join(df, how="outer", rsuffix="_2")
 
-    if dropna in ["any", "all"]:
-        result.dropna(how=dropna, inplace=True)
+    result.sort_index(inplace=True)
 
     return result

@@ -166,11 +166,7 @@ class TestEquation(TestCase):
     def test_equation_cols_over_nine(self):
         """Test of using equation API with columns over 9."""
         input_ts = tstoolbox.read(
-            "tests/data_multiple_cols.csv,"
-            "tests/data_multiple_cols.csv,"
-            "tests/data_multiple_cols.csv,"
-            "tests/data_multiple_cols.csv,"
-            "tests/data_multiple_cols.csv",
+            "tests/data_multiple_cols.csv tests/data_multiple_cols.csv tests/data_multiple_cols.csv tests/data_multiple_cols.csv tests/data_multiple_cols.csv",
             append="columns",
         )
         out = tstoolbox.equation("x10*10", input_ts=input_ts)

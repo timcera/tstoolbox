@@ -125,57 +125,36 @@ def read(
     if force_freq is not None:
         dropna = "no"
 
-    # Check for older style where comma delimited list of only files.
-    # If so, rework as space delimited.
-    fcheck = True
-    for fname in tsutils.make_list(filenames):
-        if not os.path.exists(fname):
-            fcheck = False
-            break
-    if fcheck is False:
-        # All filenames are real files.  Therefore old style and just make a simple
-        # list.
-        filenames = tsutils.make_list(filenames)
+    # # Check for older style where comma delimited list of only files.
+    # # If so, rework as space delimited.
+    # fcheck = True
+    # for fname in tsutils.make_list(filenames):
+    #     if not os.path.exists(fname):
+    #         fcheck = False
+    #         break
+    # if fcheck is False:
+    #     # All filenames are real files.  Therefore old style and just make a simple
+    #     # list.
+    #     filenames = tsutils.make_list(filenames)
+    filenames = tsutils.make_list(filenames, sep=" ")
 
-    result = pd.DataFrame()
-    result_list = []
-    zones = set()
-    for i in filenames:
-        tsd = tsutils.common_kwds(
-            i,
-            skiprows=skiprows,
-            names=names,
-            index_type=index_type,
-            start_date=start_date,
-            end_date=end_date,
-            round_index=round_index,
-            dropna=dropna,
-            force_freq=force_freq,
-            clean=clean,
-            source_units=source_units,
-            target_units=target_units,
-        )
-        result_list.append(tsd)
-        zones.add(tsd.index.tzinfo)
+    tsd = tsutils.common_kwds(
+        input_tsd=filenames,
+        skiprows=skiprows,
+        names=names,
+        index_type=index_type,
+        start_date=start_date,
+        end_date=end_date,
+        round_index=round_index,
+        dropna=dropna,
+        force_freq=force_freq,
+        clean=clean,
+        source_units=source_units,
+        target_units=target_units,
+        usecols=columns,
+    )
 
-    for res in result_list:
-        if len(zones) != 1:
-            try:
-                res.index = res.index.tz_convert(None)
-            except TypeError:
-                pass
-
-        if append == "combine":
-            result = result.combine_first(res)
-
-    if append != "combine":
-        result = pd.concat(result_list, axis=append)
-
-    result = tsutils._pick(result, columns)
-
-    result.sort_index(inplace=True)
-
-    return result
+    return tsd
 
 
 read.__doc__ = read_cli.__doc__

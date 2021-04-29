@@ -22,7 +22,7 @@ class Testround_index(TestCase):
 
         self.round_index_multiple_direct = pandas.DataFrame(ts, columns=["Value"])
         self.round_index_multiple_direct = pandas.concat(
-            [self.round_index_multiple_direct, pandas.Series(ts, name="Value")],
+            [self.round_index_multiple_direct, pandas.Series(ts, name="Value_2")],
             axis="columns",
         )
         self.round_index_multiple_direct.index.name = "Datetime"
@@ -35,7 +35,7 @@ class Testround_index(TestCase):
 2000-01-02,4.6
 """
 
-        self.round_index_multiple_cli = b"""Datetime,Value,Value
+        self.round_index_multiple_cli = b"""Datetime,Value,Value_2
 2000-01-01,4.5,4.5
 2000-01-02,4.6,4.6
 """
@@ -69,7 +69,7 @@ class Testround_index(TestCase):
     def test_round_index_mulitple_direct(self):
         """Test round_index API for multiple columns - daily."""
         out = tstoolbox.read(
-            "tests/data_simple.csv,tests/data_simple.csv",
+            "tests/data_simple.csv tests/data_simple.csv",
             append="columns",
             round_index="D",
         )
@@ -89,7 +89,7 @@ class Testround_index(TestCase):
 
     def test_round_index_multiple_cli(self):
         """Test round_index CLI for multiple columns - daily."""
-        args = 'tstoolbox read --round_index="D" tests/data_simple.csv,tests/data_simple.csv'
+        args = 'tstoolbox read --round_index="D" tests/data_simple.csv tests/data_simple.csv'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.round_index_multiple_cli)
