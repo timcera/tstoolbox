@@ -17,6 +17,7 @@ from functools import wraps
 import inspect
 
 import dateparser
+from pandas.tseries.frequencies import to_offset
 import numpy as np
 from pint import UnitRegistry
 import pandas as pd
@@ -172,6 +173,13 @@ _CODES["ANNUAL"]: {
 }
 
 docstrings = {
+    "lat": r"""lat
+        The latitude of the point. North hemisphere is positive from 0 to 90. South
+        hemisphere is negative from 0 to -90.""",
+    "lon": r"""lon
+        The longitude of the point.  Western hemisphere (west of Greenwich Prime
+        Meridian) is negative 0 to -180.  The eastern hemisphere (east of the Greenwich
+        Prime Meridian) is positive 0 to 180.""",
     "target_units": r"""target_units: str
         [optional, default is None, transformation]
 
@@ -1172,7 +1180,8 @@ def common_kwds(
         ntsd = ntsd.dropna(axis="index", how=dropna)
     else:
         try:
-            ntsd = asbestfreq(ntsd)
+            if bestfreq is True:
+                ntsd = asbestfreq(ntsd, force_freq=force_freq)
         except ValueError:
             pass
 
@@ -1186,7 +1195,7 @@ def common_kwds(
 
 def _pick(tsd: DataFrame, columns: Any) -> DataFrame:
     columns = make_list(columns)
-    if columns is None:
+    if not columns:
         return tsd
     ncolumns = []
 
@@ -1231,7 +1240,7 @@ First data column is 1, index is column 0.
             raise ValueError(
                 error_wrapper(
                     """
-The request column index {0} must be less than the
+The request column index {0} must be less than or equal to the
 number of columns {1}.
 """.format(
                         i, len(tsd.columns)
@@ -1329,6 +1338,9 @@ def asbestfreq(data: DataFrame, force_freq: Optional[str] = None) -> DataFrame:
 
     if force_freq is not None:
         return data.asfreq(force_freq)
+
+    data = data.sort_index()
+    data = data[~data.index.duplicated()]
 
     ndiff = (
         data.index.values.astype("int64")[1:] - data.index.values.astype("int64")[:-1]
@@ -1707,11 +1719,6 @@ def is_valid_url(url: bytes, qualifying: Optional[Any] = None) -> bool:
     return all((getattr(token, qualifying_attr) for qualifying_attr in qualifying))
 
 
-def read_csv(fname, *args, **kwds):
-    if fname == "-":
-        fpi = sys.stdin
-
-
 @typic.al
 def read_iso_ts(
     *inindat,
@@ -1799,7 +1806,7 @@ def read_iso_ts(
     if index_type == "number":
         parse_dates = False
 
-    sources = make_list(inindat)
+    sources = make_list(inindat, sep=" ")
 
     if not isinstance(sources, (list, tuple)):
         sources = [sources]
@@ -1900,11 +1907,26 @@ def read_iso_ts(
                     else:
                         sheet = make_list(parameters)
 
-                    res = pd.io.parsers.read_excel(
+                    res = pd.read_excel(
                         fname,
-                        sheet=sheet,
+                        sheet_name=sheet,
+                        keep_default_na=True,
+                        header=header,
+                        names=names,
+                        na_values=na_values,
+                        index_col=index_col,
+                        usecols=usecols,
+                        parse_dates=parse_dates,
+                        skiprows=skiprows,
                         **newkwds,
                     )
+                    if isinstance(res, dict):
+                        res = pd.concat(res, axis="columns")
+                        # Collapse columns MultiIndex
+                        fi = res.columns.to_flat_index()
+                        fi = ["_".join((str(i[0]), str(i[1]))) for i in fi]
+                        res.columns = fi
+
             elif is_valid_url(fname):
                 # a url?
                 header = "infer"
@@ -1938,7 +1960,7 @@ def read_iso_ts(
                 dname = "_"
 
             if len(res) == 0:
-                res = pd.io.parsers.read_csv(
+                res = pd.read_csv(
                     fpi,
                     engine="python",
                     infer_datetime_format=True,
@@ -1949,29 +1971,17 @@ def read_iso_ts(
                     sep=sep,
                     na_values=na_values,
                     index_col=index_col,
-                    usecols=usecols,
                     parse_dates=parse_dates,
                     skiprows=skiprows,
                     **newkwds,
                 )
+                res = _pick(res, parameters)
 
-            # Some of the techniques above return columns in arbitrary order.
-            bresult = pd.DataFrame()
-            if usecols is not None:
-                for use in usecols:
-                    try:
-                        nresult = res.iloc[use]
-                    except (TypeError, ValueError):
-                        ind = [res.columns.to_list().index(i) for i in use]
-                        nresult = res.iloc[ind]
-                    bresult = bresult.join(nresult, how="outer")
-                res = bresult
-
-        first = [i.split(":")[0] for i in res.columns]
+        first = [str(i).split(":")[0] for i in res.columns]
         first = [fstr.format(fname, i) for i in first]
         first = [[i.strip()] for i in dedupIndex(first)]
 
-        rest = [i.rstrip(".0123456789 ").split(":")[1:] for i in res.columns]
+        rest = [str(i).rstrip(".0123456789 ").split(":")[1:] for i in res.columns]
 
         res.columns = [":".join(i + j) for i, j in zip(first, rest)]
 
@@ -1988,8 +1998,7 @@ def read_iso_ts(
                 res.set_index(0, inplace=True)
             except KeyError:
                 pass
-
-        if res.index.inferred_type == "datetime64":
+        else:
             try:
                 words = res.index.name.split(":")
             except AttributeError:
@@ -2003,10 +2012,7 @@ def read_iso_ts(
             else:
                 res.index.name = "Datetime"
 
-            try:
-                res = asbestfreq(res, force_freq=force_freq)
-            except ValueError:
-                pass
+            # res = asbestfreq(res, force_freq=force_freq)
 
         if dropna in ["any", "all"]:
             res.dropna(how=dropna, inplace=True)
@@ -2017,17 +2023,32 @@ def read_iso_ts(
         except AttributeError:
             pass
 
-    for res in lresult_list:
-        if len(zones) != 1:
-            try:
-                res.index = res.index.tz_convert(None)
-            except (TypeError, AttributeError):
-                pass
+    if len(lresult_list) > 1:
+        epoch = pd.to_datetime("2000-01-01")
+        moffset = epoch + to_offset("A")
+        offset_set = set()
+        for res in lresult_list:
+            if len(zones) != 1:
+                try:
+                    res.index = res.index.tz_convert(None)
+                except (TypeError, AttributeError):
+                    pass
+            if res.index.inferred_freq is not None and moffset > epoch + to_offset(
+                res.index.inferred_freq
+            ):
+                moffset = epoch + to_offset(res.index.inferred_freq)
+                offset_set.add(moffset)
 
-    result = pd.DataFrame()
-    for df in lresult_list:
-        result = result.join(df, how="outer", rsuffix="_2")
+        result = pd.DataFrame()
+        for df in lresult_list:
+            if len(offset_set) < 2:
+                result = result.join(df, how="outer", rsuffix="_r")
+            else:
+                result = result.join(
+                    df.asfreq(moffset - epoch), how="outer", rsuffix="_r"
+                )
+    else:
+        result = lresult_list[0]
 
     result.sort_index(inplace=True)
-
     return result

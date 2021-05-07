@@ -44,6 +44,8 @@ install_requires = [
     "typical",
     "typing-extensions",
     "pyaf",
+    "xlrd >= 1.0.0",
+    "openpyxl",
 ]
 
 setup(

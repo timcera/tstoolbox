@@ -122,6 +122,7 @@ def unstack(
         index_type=index_type,
         pick=columns,
         bestfreq=False,
+        clean=False,
     )
 
     try:
@@ -158,7 +159,7 @@ Found these duplicate indices:
         start_date=start_date,
         end_date=end_date,
         dropna=dropna,
-        clean=clean,
+        clean=False,
         source_units=source_units,
         target_units=target_units,
         round_index=round_index,

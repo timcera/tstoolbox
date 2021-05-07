@@ -22,7 +22,7 @@ class Testround_index(TestCase):
 
         self.round_index_multiple_direct = pandas.DataFrame(ts, columns=["Value"])
         self.round_index_multiple_direct = pandas.concat(
-            [self.round_index_multiple_direct, pandas.Series(ts, name="Value_2")],
+            [self.round_index_multiple_direct, pandas.Series(ts, name="Value_r")],
             axis="columns",
         )
         self.round_index_multiple_direct.index.name = "Datetime"
@@ -35,7 +35,7 @@ class Testround_index(TestCase):
 2000-01-02,4.6
 """
 
-        self.round_index_multiple_cli = b"""Datetime,Value,Value_2
+        self.round_index_multiple_cli = b"""Datetime,Value,Value_r
 2000-01-01,4.5,4.5
 2000-01-02,4.6,4.6
 """

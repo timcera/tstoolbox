@@ -22,7 +22,8 @@ class TestRead(TestCase):
 
         self.read_multiple_direct = pandas.DataFrame(ts, columns=["Value"])
         self.read_multiple_direct = pandas.concat(
-            [self.read_multiple_direct, pandas.Series(ts, name="Value_2")], axis="columns"
+            [self.read_multiple_direct, pandas.Series(ts, name="Value_r")],
+            axis="columns",
         )
         self.read_multiple_direct.index.name = "Datetime"
         self.read_multiple_direct = tsutils.memory_optimize(self.read_multiple_direct)
@@ -32,7 +33,7 @@ class TestRead(TestCase):
 2000-01-02,4.6
 """
 
-        self.read_multiple_cli = b"""Datetime,Value,Value_2
+        self.read_multiple_cli = b"""Datetime,Value,Value_r
 2000-01-01,4.5,4.5
 2000-01-02,4.6,4.6
 """
@@ -91,7 +92,7 @@ class TestRead(TestCase):
 
     def test_read_multiple_cli(self):
         """Test read CLI for multiple columns - daily."""
-        args = "tstoolbox read --append columns tests/data_simple.csv,tests/data_simple.csv"
+        args = "tstoolbox read --append columns tests/data_simple.csv tests/data_simple.csv"
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
         self.assertEqual(out[0], self.read_multiple_cli)
