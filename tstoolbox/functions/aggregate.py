@@ -44,6 +44,7 @@ def aggregate_cli(
     print_input=False,
     tablefmt="csv",
     skipna=True,
+    min_count=0,
 ):
     """Take a time series and aggregate to specified frequency.
 
@@ -52,9 +53,50 @@ def aggregate_cli(
     statistic : str
         [optional, defaults to 'mean', transformation]
 
-        Any of 'mean', 'sem', 'sum', 'std', 'max', 'min', 'median',
-        'first', 'last', 'ohlc', or list of same to calculate on each
+        Any string in the following table of list of same to calculate on each
         `groupby` group.
+
+        +-----------+-----------+---------------------------------------------+
+        | statistic | Allow kwd | Description                                 |
+        +===========+===========+=============================================+
+        | count     |           | Compute count of group, excluding missing   |
+        |           |           | values.                                     |
+        +-----------+-----------+---------------------------------------------+
+        | nunique   |           | Return number of unique elements in the     |
+        |           |           | group.                                      |
+        +-----------+-----------+---------------------------------------------+
+        | first     | min_count | Return first value within each group.       |
+        +-----------+-----------+---------------------------------------------+
+        | last      | min_count | Return last value within each group.        |
+        +-----------+-----------+---------------------------------------------+
+        | max       | min_count | Compute max of group values.                |
+        +-----------+-----------+---------------------------------------------+
+        | mean      |           | Compute mean of groups, excluding missing   |
+        |           |           | values.                                     |
+        +-----------+-----------+---------------------------------------------+
+        | median    |           | Compute median of groups, excluding missing |
+        |           |           | values.                                     |
+        +-----------+-----------+---------------------------------------------+
+        | min       | min_count | Compute min of group values.                |
+        +-----------+-----------+---------------------------------------------+
+        | ohlc      |           | Compute open, high, low and close values of |
+        |           |           | a group, excluding missing values.          |
+        +-----------+-----------+---------------------------------------------+
+        | prod      | min_count | Compute prod of group values.               |
+        +-----------+-----------+---------------------------------------------+
+        | size      |           | Compute group sizes.                        |
+        +-----------+-----------+---------------------------------------------+
+        | sem       |           | Compute standard error of the mean of       |
+        |           |           | groups, excluding missing values.           |
+        +-----------+-----------+---------------------------------------------+
+        | std       |           | Compute standard deviation of groups,       |
+        |           |           | excluding missing values.                   |
+        +-----------+-----------+---------------------------------------------+
+        | sum       | min_count | Compute sum of group values.                |
+        +-----------+-----------+---------------------------------------------+
+        | var       |           | Compute variance of groups, excluding       |
+        |           |           | missing values.                             |
+        +-----------+-----------+---------------------------------------------+
 
         Python example::
             statistic=['mean', 'max', 'first']
@@ -88,6 +130,12 @@ def aggregate_cli(
         If False will return a NaN for any aggregation group that has a NaN.
         If True will fill all NaNs with 0 before aggregation.  Ignored if
         `groupby` is "all" or `groupby` is "months_across_years".
+    min_count:
+        The required number of valid values to perform the operation. If fewer than
+        min_count non-NA values are present the result will be NA.  Default is 0.
+
+        Only available for the following `statistic` methods: "first", "last", "max",
+        "min", "prod", and "sum".
     agg_interval :
         DEPRECATED:
         Use the 'groupby' option instead.
@@ -115,6 +163,7 @@ def aggregate_cli(
             target_units=target_units,
             print_input=print_input,
             skipna=skipna,
+            min_count=min_count,
         ),
         tablefmt=tablefmt,
     )
@@ -124,7 +173,7 @@ def aggregate_cli(
 @typic.al
 def aggregate(
     input_ts="-",
-    groupby=None,
+    groupby: str = None,
     statistic: List[
         Literal[
             "mean", "sum", "std", "sem", "max", "min", "median", "first", "last", "ohlc"
@@ -145,6 +194,7 @@ def aggregate(
     target_units=None,
     print_input=False,
     skipna: bool = True,
+    min_count: int = 0,
 ):
     """Take a time series and aggregate to specified frequency."""
     aggd = {"hourly": "H", "daily": "D", "monthly": "M", "yearly": "A", "all": "all"}
@@ -235,11 +285,12 @@ consistent with other tstoolbox commands.
             tmptsd = tsd.groupby(lambda x: x.month).agg(method)
             tmptsd.index = list(range(1, 13))
         else:
-            tmptsd = eval(
-                """tsd.resample('{0}{1}').agg(pd.Series.{2}, skipna={3})""".format(
-                    ninterval, groupby, method, skipna
+            if method in ["first", "last", "max", "min", "prod", "sum"]:
+                tmptsd = tsd.resample(f"{ninterval}{groupby}").agg(
+                    method, skipna=skipna, min_count=min_count
                 )
-            )
+            else:
+                tmptsd = tsd.resample(f"{ninterval}{groupby}").agg(method)
         tmptsd.columns = [tsutils.renamer(i, method) for i in tmptsd.columns]
         newts = newts.join(tmptsd, how="outer")
     if groupby == "all":

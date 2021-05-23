@@ -45,7 +45,7 @@ Just run 'tstoolbox --help' to get a list of subcommands::
                      normalization, pca, pct_change, peak_detection, pick,
                      plot, rank, read, remove_trend, replace, rolling_window,
                      stack, stdtozrxp, tstopickle, unstack, about} ...
-    
+
     positional arguments:
       {accumulate, add_trend, aggregate, calculate_fdc, calculate_kde, clip,
       convert, convert_index, convert_index_to_julian, converttz, lag,
@@ -54,83 +54,83 @@ Just run 'tstoolbox --help' to get a list of subcommands::
       pct_change, peak_detection, pick, plot, rank, read, remove_trend,
       replace, rolling_window, stack, stdtozrxp, tstopickle, unstack, about}
 
-    accumulate          
+    accumulate
         Calculate accumulating statistics.
-    add_trend           
+    add_trend
         Add a trend.
-    aggregate           
+    aggregate
         Take a time series and aggregate to specified frequency.
-    calculate_fdc       
+    calculate_fdc
         Return the frequency distribution curve.
-    calculate_kde       
+    calculate_kde
         Return the kernel density estimation (KDE) curve.
-    clip                
+    clip
         Return a time-series with values limited to [a_min, a_max].
-    convert             
+    convert
         Convert values of a time series by applying a factor and offset.
-    convert_index       
+    convert_index
         Convert datetime to/from Julian dates from different epochs.
     convert_index_to_julian
         DEPRECATED: Use convert_index instead.
-    converttz           
+    converttz
         Convert the time zone of the index.
-    lag                 
+    lag
         Create a series of lagged time-series.
-    correlation         
+    correlation
         Develop a correlation between time-series and potentially lags.
-    createts            
+    createts
         Create empty time series, optionally fill with a value.
-    date_offset         
+    date_offset
         Apply an offset to a time-series.
-    date_slice          
+    date_slice
         Print out data to the screen between start_date and end_date.
-    describe            
+    describe
         Print out statistics for the time-series.
-    dtw                 
+    dtw
         Dynamic Time Warping.
-    equation            
+    equation
         Apply <equation_str> to the time series data.
-    ewm_window          
+    ewm_window
         Calculate exponential weighted functions.
-    expanding_window    
+    expanding_window
         Calculate an expanding window statistic.
-    fill                
+    fill
         Fill missing values (NaN) with different methods.
-    filter              
+    filter
         Apply different filters to the time-series.
-    gof                 
+    gof
         Will calculate goodness of fit statistics between two time-series.
-    normalization       
+    normalization
         Return the normalization of the time series.
-    pca                 
+    pca
         Return the principal components analysis of the time series.
-    pct_change          
+    pct_change
         Return the percent change between times.
-    peak_detection      
+    peak_detection
         Peak and valley detection.
-    pick                
+    pick
         Will pick a column or list of columns from input.
-    plot                
+    plot
         Plot data.
-    rank                
+    rank
         Compute numerical data ranks (1 through n) along axis.
-    read                
+    read
         Collect time series from a list of pickle or csv files.
-    remove_trend        
+    remove_trend
         Remove a 'trend'.
-    replace             
+    replace
         Return a time-series replacing values with others.
-    rolling_window      
+    rolling_window
         Calculate a rolling window statistic.
-    stack               
+    stack
         Return the stack of the input table.
-    stdtozrxp           
+    stdtozrxp
         Print out data to the screen in a WISKI ZRXP format.
-    tstopickle          
+    tstopickle
         Pickle the data into a Python pickled file.
-    unstack             
+    unstack
         Return the unstack of the input table.
-    about               
+    about
         Display version number and system information.
 
     optional arguments:
@@ -158,7 +158,6 @@ Simply import tstoolbox::
     # Then you could call the functions
     ntsd = tstoolbox.fill(method='linear', input_ts='tests/test_fill_01.csv')
 
-    # Once you have a PANDAS DataFrame you can use that as input to other 
+    # Once you have a PANDAS DataFrame you can use that as input to other
     # tstoolbox functions.
     ntsd = tstoolbox.aggregate(statistic='mean', agg_interval='daily', input_ts=ntsd)
-

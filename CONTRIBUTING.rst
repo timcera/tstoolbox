@@ -3,7 +3,7 @@ Contributing
 ============
 
 Contributions are welcome, and they are greatly appreciated! Every
-little bit helps, and credit will always be given. 
+little bit helps, and credit will always be given.
 
 You can contribute in many ways:
 
@@ -32,7 +32,7 @@ is open to whoever wants to implement it.
 
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
-TSToolbox could always use more documentation, whether as part of the 
+TSToolbox could always use more documentation, whether as part of the
 official TSToolbox docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
@@ -103,4 +103,3 @@ Before you submit a pull request, check that it meets these guidelines:
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
 3. The pull request should work for Python 3.5, 3.6, 3.7
-

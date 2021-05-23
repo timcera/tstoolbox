@@ -1,6 +1,6 @@
 .. include:: ../BADGES.rst
 
-.. _tstoolbox_documentation:    
+.. _tstoolbox_documentation:
 
 tstoolbox
 =========

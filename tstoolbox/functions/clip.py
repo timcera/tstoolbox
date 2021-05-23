@@ -40,7 +40,7 @@ def clip_cli(
     """Return a time-series with values limited to [a_min, a_max].
 
     Parameters
-    ---------
+    ----------
     a_min
         [optional, defaults to None, transformation]
 

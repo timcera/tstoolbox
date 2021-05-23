@@ -1680,4 +1680,3 @@ values = [
 dr = pd.date_range('1874-05-31', periods=len(values), freq='M')
 
 tsd = pd.Series(values, index=dr)
-

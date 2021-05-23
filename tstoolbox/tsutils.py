@@ -533,37 +533,37 @@ docstrings = {
 
 @typic.constrained(gt=0, lt=1)
 class FloatBetweenZeroAndOne(float):
-    """ 0.0 < float < 1.0 """
+    """0.0 < float < 1.0"""
 
 
 @typic.constrained(ge=0, le=1)
 class FloatBetweenZeroAndOneInclusive(float):
-    """ 0.0 <= float <= 1.0 """
+    """0.0 <= float <= 1.0"""
 
 
 @typic.constrained(ge=0)
 class FloatGreaterEqualToZero(float):
-    """ float >= 0.0 """
+    """float >= 0.0"""
 
 
 @typic.constrained(ge=1)
 class FloatGreaterEqualToOne(float):
-    """ float >= 1.0 """
+    """float >= 1.0"""
 
 
 @typic.constrained(ge=0)
 class IntGreaterEqualToZero(int):
-    """ int >= 0 """
+    """int >= 0"""
 
 
 @typic.constrained(ge=1)
 class IntGreaterEqualToOne(int):
-    """ int >= 1 """
+    """int >= 1"""
 
 
 @typic.constrained(ge=1, le=3)
 class IntBetweenOneAndThree(int):
-    """ 1 <= int <= 3 """
+    """1 <= int <= 3"""
 
 
 def flatten(list_of_lists):
@@ -1349,9 +1349,11 @@ def asbestfreq(data: DataFrame, force_freq: Optional[str] = None) -> DataFrame:
         raise ValueError(
             error_wrapper(
                 """
-Duplicate or time reversal index entry at
-record {1} (start count at 0):
+Duplicate or time reversal index entry at record {1} (start count at 0):
 "{0}".
+
+Perhaps use the "--clean" keyword on the CLI or "clean=True" if using Python or edit the
+input data..
 """.format(
                     data.index[:-1][ndiff <= 0][0], np.where(ndiff <= 0)[0][0] + 1
                 )
@@ -1373,8 +1375,8 @@ record {1} (start count at 0):
             pass
 
     # pd.infer_freq would fail if given a large dataset
-    if len(data.index) > 100:
-        slic = slice(None, 99)
+    if len(data.index) > 1000:
+        slic = slice(None, 999)
     else:
         slic = slice(None, None)
     try:
