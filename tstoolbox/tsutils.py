@@ -904,7 +904,7 @@ The list {0} for "{2}" should have {1} members according to function requirement
 
     ret = []
     for each in strorlist:
-        if isinstance(each, (type(None), int, float)):
+        if isinstance(each, (type(None), int, float, pd.DataFrame, pd.Series)):
             ret.append(each)
             continue
         if each is None or each.strip() == "" or each == "None":

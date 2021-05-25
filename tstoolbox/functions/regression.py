@@ -70,7 +70,7 @@ def regression_cli(
     print_input=False,
     tablefmt="csv",
 ):
-    """Regression of one or more time-series against other time-series.
+    """Regression of one or more time-series or indices to a time-series.
 
     If optional ``x_pred_cols`` is given will return a time-series of the ``y``
     predictions. Otherwise returns dictionary of equation and statistics about
@@ -79,7 +79,8 @@ def regression_cli(
     Parameters
     ----------
     method: str
-        The method of regression.
+        The method of regression.  The chosen method will use `x_train_cols` as the
+        independent data and `y_pred_col` as the dependent data.
 
         ARD
             Requires lots of memory.
@@ -178,8 +179,9 @@ def regression_cli(
             (or L1 median) is calculated of all least square solutions.
     x_train_cols: str or list
         List of column names/numbers that hold the ``x`` value datasets used to
-        train the regression..  Perform a multiple regression if ``method``
-        allows by giving several ``x_train_cols``.
+        train the regression.  Perform a multiple regression if ``method``
+        allows by giving several ``x_train_cols``.  To include the index in the
+        regression use column 0 or the index name.
     y_train_col: str or list
         Column name or number of the ``y`` dataset used to train the
         regression.
@@ -234,7 +236,7 @@ def regression_cli(
 # )
 @tsutils.transform_args(
     x_train_cols=tsutils.make_list,
-    y_train_cols=tsutils.make_list,
+    y_train_col=tsutils.make_list,
     x_pred_cols=tsutils.make_list,
 )
 @typic.al
@@ -289,6 +291,23 @@ keywords.  Instead you have "{to}" in both.
         ntsd = tsd
     ntsd = tsutils.asbestfreq(ntsd)
 
+    tmplist = []
+    for cols in x_train_cols:
+        if cols == 0 or cols == ntsd.index.name:
+            tmplist.append(len(ntsd.columns) + 1)
+        else:
+            tmplist.append(cols)
+
+    try:
+        # In case ntsd.index.freqstr is a multiple, for example "15T".
+        ntsd[ntsd.index.name + "_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
+            ntsd.index.freqstr
+        )
+    except ValueError:
+        ntsd[ntsd.index.name + "_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
+            "1" + ntsd.index.freqstr
+        )
+
     if x_pred_cols is None:
         nx_pred_cols = x_train_cols
     else:
@@ -296,6 +315,7 @@ keywords.  Instead you have "{to}" in both.
 
     x_train_cols = tsutils.make_iloc(ntsd.columns, x_train_cols)
     y_train_col = tsutils.make_iloc(ntsd.columns, y_train_col)
+
     wtsd = ntsd.iloc[:, x_train_cols + y_train_col]
 
     # Train on 'any' dropna
