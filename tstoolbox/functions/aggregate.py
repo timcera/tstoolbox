@@ -287,7 +287,7 @@ consistent with other tstoolbox commands.
         else:
             if method in ["first", "last", "max", "min", "prod", "sum"]:
                 tmptsd = tsd.resample(f"{ninterval}{groupby}").agg(
-                    method, skipna=skipna, min_count=min_count
+                    method, min_count=min_count
                 )
             else:
                 tmptsd = tsd.resample(f"{ninterval}{groupby}").agg(method)

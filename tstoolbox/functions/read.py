@@ -58,11 +58,10 @@ def read_cli(
     append : str
         [optional, default is 'columns']
 
-        The type of appending to do.  For "combine" option matching
-        column indices will append rows, matching row indices will
-        append columns, and matching column/row indices use the value
-        from the first dataset.  You can use "row" or "column" to force
-        an append along either axis.
+        The type of appending to do.  For "combine" option matching column
+        indices will append rows, matching row indices will append columns, and
+        matching column/row indices use the value from the first dataset.  You
+        can use "row" or "column" to force an append along either axis.
     {force_freq}
 
         {pandas_offset_codes}
@@ -127,16 +126,23 @@ def read(
 
     # # Check for older style where comma delimited list of only files.
     # # If so, rework as space delimited.
-    # fcheck = True
-    # for fname in tsutils.make_list(filenames):
-    #     if not os.path.exists(fname):
-    #         fcheck = False
-    #         break
-    # if fcheck is False:
-    #     # All filenames are real files.  Therefore old style and just make a simple
-    #     # list.
-    #     filenames = tsutils.make_list(filenames)
-    filenames = tsutils.make_list(filenames, sep=" ")
+    isspacedelimited = False
+    for fname in tsutils.make_list(filenames, sep=","):
+        if not os.path.exists(fname):
+            isspacedelimited = True
+            break
+    if isspacedelimited is True:
+        filenames = tsutils.make_list(filenames, sep=" ")
+    else:
+        # All filenames are real files.  Therefore old style and just make
+        # a simple list.
+        filenames = tsutils.make_list(filenames, sep=",")
+        warnings.warn(
+            tsutils.error_wrapper(
+                """
+Using "," separated files is deprecated in favor of space delimited files."""
+            )
+        )
 
     tsd = tsutils.common_kwds(
         input_tsd=filenames,

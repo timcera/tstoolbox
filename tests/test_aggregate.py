@@ -27,8 +27,8 @@ class TestAggregate(TestCase):
         self.aggregate_direct_sum = tsutils.memory_optimize(self.aggregate_direct_sum)
 
         self.aggregate_cli_mean = b"""Datetime,Value::mean
-2011-01-01,2
-2011-01-02,2
+2011-01-01,2.0
+2011-01-02,2.0
 """
 
         self.aggregate_cli_sum = b"""Datetime,Value::sum
@@ -40,7 +40,7 @@ class TestAggregate(TestCase):
         """Test daily mean aggregation."""
         out = tstoolbox.aggregate(
             statistic="mean", groupby="daily", input_ts="tests/data_flat.csv"
-        )
+        ).astype("Int64")
         assert_frame_equal(out, self.aggregate_direct_mean)
 
     def test_aggregate_direct_sum(self):
