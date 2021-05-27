@@ -1914,7 +1914,6 @@ def read_iso_ts(
                         sheet_name=sheet,
                         keep_default_na=True,
                         header=header,
-                        names=names,
                         na_values=na_values,
                         index_col=index_col,
                         usecols=usecols,
@@ -1969,7 +1968,6 @@ def read_iso_ts(
                     keep_default_na=True,
                     skipinitialspace=True,
                     header=header,
-                    names=names,
                     sep=sep,
                     na_values=na_values,
                     index_col=index_col,
@@ -2051,6 +2049,11 @@ def read_iso_ts(
                 )
     else:
         result = lresult_list[0]
+
+    # Assign names to the index and columns.
+    if names is not None:
+        result.index.name = names.pop(0)
+        result.columns = names
 
     result.sort_index(inplace=True)
     return result

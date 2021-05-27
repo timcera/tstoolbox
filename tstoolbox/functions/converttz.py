@@ -118,6 +118,9 @@ def converttz(
     # TODO Should test that 'fromtz' matches time zone that might be already
     # set in tsd.
 
+    if totz == "None" or not totz:
+        totz = None
+
     try:
         tsd = tsd.tz_localize(fromtz).tz_convert(totz)
     except TypeError:
