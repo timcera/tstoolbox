@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
 
-from argparse import RawTextHelpFormatter
 import os
 import warnings
+from argparse import RawTextHelpFormatter
 
 import mando
 import pandas as pd
@@ -14,6 +14,7 @@ try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
+
 import typic
 
 from .. import tsutils
@@ -128,9 +129,10 @@ def read(
     # # If so, rework as space delimited.
     isspacedelimited = False
     for fname in tsutils.make_list(filenames, sep=","):
-        if not os.path.exists(fname):
+        if not os.path.exists(str(fname)):
             isspacedelimited = True
             break
+
     if isspacedelimited is True:
         filenames = tsutils.make_list(filenames, sep=" ")
     else:

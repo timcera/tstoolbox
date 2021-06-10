@@ -1,16 +1,15 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
-from typing import List, Optional, Union
 
 import warnings
+from typing import List, Optional, Union
 
 import mando
-from mando.rst_text_formatter import RSTHelpFormatter
-import typic
-
 import pandas as pd
+import typic
+from mando.rst_text_formatter import RSTHelpFormatter
 from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 
@@ -290,13 +289,6 @@ keywords.  Instead you have "{to}" in both.
     else:
         ntsd = tsd
     ntsd = tsutils.asbestfreq(ntsd)
-
-    tmplist = []
-    for cols in x_train_cols:
-        if cols == 0 or cols == ntsd.index.name:
-            tmplist.append(len(ntsd.columns) + 1)
-        else:
-            tmplist.append(cols)
 
     try:
         # In case ntsd.index.freqstr is a multiple, for example "15T".

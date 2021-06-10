@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function
 
 import mando
@@ -122,6 +123,155 @@ def automatic_cli(
 
 
 def automatic(
+    input_ts="-",
+    start_date=None,
+    end_date=None,
+    columns=None,
+    force_freq=None,
+    groupby=None,
+    dropna="no",
+    round_index=None,
+    clean=False,
+    target_units=None,
+    source_units=None,
+    bestfreq=True,
+    parse_dates=True,
+    extended_columns=False,
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    horizon=2,
+    print_input=False,
+    print_cols="all",
+):
+    tsd = tsutils.common_kwds(
+        input_ts,
+        skiprows=skiprows,
+        names=names,
+        index_type=index_type,
+        start_date=start_date,
+        end_date=end_date,
+        pick=columns,
+        round_index=round_index,
+        dropna=dropna,
+        source_units=source_units,
+        target_units=target_units,
+        clean=clean,
+    )
+
+    index_name = tsd.index.name
+
+    # create a forecast engine. This is the main object handling all the operations
+    lEngine = autof.cForecastEngine()
+
+    if len(tsd.columns) > 1:
+        multiple_cols = True
+    else:
+        multiple_cols = False
+
+    if multiple_cols is True and print_cols != "forecast":
+        raise ValueError(
+            tsutils.error_wrapper(
+                """
+To forecast multiple columns requires `print_cols` to be "forecast", not {0}.
+""".format(
+                    print_cols
+                )
+            )
+        )
+
+    rtsd = pd.DataFrame()
+    for col in tsd.columns:
+        ntsd = pd.DataFrame(
+            {
+                index_name: tsd.index.astype("M8[ns]").values,
+                col: tsd[col].values.astype("float64"),
+            }
+        )
+        # get the best time series model for predicting one week
+        lEngine.train(iInputDS=ntsd, iTime=index_name, iSignal=col, iHorizon=horizon)
+        lEngine.getModelInfo()
+
+        df_forecast = lEngine.forecast(iInputDS=ntsd, iHorizon=horizon)
+
+        df_forecast = df_forecast.set_index(index_name)
+
+        if print_cols == "forecast":
+            rtsd = rtsd.join(df_forecast[col + "_Forecast"], how="outer")
+
+    if print_cols == "forecast":
+        return rtsd
+    else:
+        return df_forecast
+
+
+@mando.main.forecast.command("arima")
+@tsutils.doc(tsutils.docstrings)
+def arima_cli(
+    input_ts="-",
+    columns=None,
+    start_date=None,
+    end_date=None,
+    dropna="no",
+    clean=False,
+    round_index=None,
+    skiprows=None,
+    index_type="datetime",
+    names=None,
+    source_units=None,
+    target_units=None,
+    print_input=False,
+    tablefmt="csv",
+    horizon=2,
+    print_cols="all",
+):
+    """ARIMA
+
+    ARIMA Model
+
+    Parameters
+    ----------
+    {input_ts}
+    {start_date}
+    {end_date}
+    {skiprows}
+    {names}
+    {columns}
+    {dropna}
+    {clean}
+    {source_units}
+    {target_units}
+    {round_index}
+    {index_type}
+    {print_input}
+    {tablefmt}
+    print_cols: str
+        Identifies what columns to return.  One of "all" or "forecast"
+
+    """
+    tsutils.printiso(
+        arima(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            dropna=dropna,
+            clean=clean,
+            round_index=round_index,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            source_units=source_units,
+            target_units=target_units,
+            print_input=print_input,
+            horizon=horizon,
+            print_cols=print_cols,
+        ),
+        tablefmt="csv",
+    )
+
+
+def arima(
     input_ts="-",
     start_date=None,
     end_date=None,

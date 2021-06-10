@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
@@ -12,9 +12,9 @@ import warnings
 
 import mando
 import numpy as np
-from mando.rst_text_formatter import RSTHelpFormatter
 import pandas as pd
 import typic
+from mando.rst_text_formatter import RSTHelpFormatter
 
 from tstoolbox import tsutils
 
@@ -184,7 +184,7 @@ def filter_cli(
         The larger the number the softer the filter edges.  A value of 1
         will have a brick wall step function which may introduce
         frequencies into the filtered output.
-    butterworth_order: int
+    butterworth_stages: int
         [optional, default is 1]
 
         The order of the butterworth filter.
@@ -207,6 +207,11 @@ def filter_cli(
     {source_units}
     {target_units}
     {print_input}
+    cutoff_period
+        [optional, default is None]
+
+        DEPRECATED: Use `lowpass_cutoff` if `filter_pass` equals "lowpass"
+        and `highpass_cutoff` if `filter_pass` equals "highpass".
     {tablefmt}
 
     """

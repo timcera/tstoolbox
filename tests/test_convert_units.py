@@ -1,10 +1,10 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
-import pytest
 
+import pytest
 from pandas.testing import assert_frame_equal
+
 from tstoolbox import tstoolbox
 
 
@@ -28,9 +28,8 @@ class TestConvertUnits(TestCase):
             _ = tstoolbox.read(
                 "tests/data_gainesville_daily_precip.csv", source_units="ft3/s"
             )
-        assert (
-            r"   You specified 'source_units' as ft3/s, but column units are mm."
-            in str(e_info.value)
+        assert r'The units specified by the "source_units" keyword and in the' in str(
+            e_info.value
         )
 
         with pytest.raises(ValueError) as e_info:

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """A collection of functions used by tstoolbox, wdmtoolbox, ...etc."""
 
 from __future__ import division, print_function
@@ -5,33 +6,30 @@ from __future__ import division, print_function
 import bz2
 import datetime
 import gzip
+import inspect
 import io
 import os
 import sys
-from textwrap import TextWrapper
-from functools import reduce
-from io import StringIO, BytesIO
+from functools import reduce, wraps
+from io import BytesIO, StringIO
 from math import gcd
+from textwrap import TextWrapper
+from typing import Any, Callable, List, Optional, Tuple, Union
 from urllib.parse import urlparse
-from functools import wraps
-import inspect
 
 import dateparser
-from pandas.tseries.frequencies import to_offset
 import numpy as np
-from pint import UnitRegistry
 import pandas as pd
-from scipy.stats.distributions import norm
-from scipy.stats.distributions import lognorm
+from _io import TextIOWrapper
+from numpy import int64, ndarray
+from pandas._libs.tslibs.timestamps import Timestamp
+from pandas.core.frame import DataFrame
+from pandas.core.indexes.base import Index
+from pandas.tseries.frequencies import to_offset
+from pint import UnitRegistry
+from scipy.stats.distributions import lognorm, norm
 from tabulate import simple_separated_format
 from tabulate import tabulate as tb
-from numpy import ndarray
-from pandas.core.frame import DataFrame
-from numpy import int64
-from pandas._libs.tslibs.timestamps import Timestamp
-from pandas.core.indexes.base import Index
-from _io import TextIOWrapper
-from typing import Optional, Any, List, Tuple, Callable, Union
 
 try:
     from typing import Literal
@@ -744,6 +742,7 @@ def merge_dicts(*dict_args: dict) -> dict:
 def about(name):
     """Return generic 'about' information used across all toolboxes."""
     import platform
+
     import pkg_resources
 
     namever = str(pkg_resources.get_distribution(name.split(".")[0]))
@@ -960,7 +959,10 @@ def make_iloc(columns, col_list):
 
 
 def _normalize_units(
-    ntsd: DataFrame, source_units: Optional[str], target_units: Optional[str]
+    ntsd: DataFrame,
+    source_units: Optional[str],
+    target_units: Optional[str],
+    source_units_required: bool = False,
 ) -> DataFrame:
     """
     Following is aspirational and may not reflect the code.
@@ -988,39 +990,70 @@ def _normalize_units(
 
     """
     target_units = make_list(target_units, n=len(ntsd.columns))
-    source_units = make_list(source_units, n=len(ntsd.columns))
+    isource_units = make_list(source_units, n=len(ntsd.columns))
 
-    if source_units is not None:
-        names = []
-        for inx in list(range(len(ntsd.columns))):
+    # Create completely filled names from the column names.
+    tsource_units = []
+    for inx in list(range(len(ntsd.columns))):
+        if isinstance(ntsd.columns[inx], (str, bytes)):
             words = ntsd.columns[inx].split(":")
-            testunits = source_units[inx]
-            if len(words) > 1:
-                names.append(ntsd.columns[inx])
-                if words[1] != testunits:
-                    raise ValueError(
-                        error_wrapper(
-                            """
-If 'source_units' specified must match units from column name.  Column
-name units are specified as the second ':' delimited field.
-You specified 'source_units' as {0}, but column units are {1}.
-""".format(
-                                source_units[inx], words[1]
-                            )
-                        )
-                    )
+            if len(words) >= 2:
+                tsource_units.append(words[1])
             else:
-                names.append("{0}:{1}".format(ntsd.columns[inx], testunits))
-        ntsd.columns = names
-    else:
-        source_units = []
-        for nu in ntsd.columns:
-            try:
-                source_units.append(nu.split(":")[1])
-            except (AttributeError, IndexError):
-                source_units.append("")
+                tsource_units.append("")
+        else:
+            tsource_units.append(ntsd.columns[inx])
 
-    if source_units is None and target_units is not None:
+    # Combine isource_units and tsource_units into su.
+    su = []
+    if isource_units is not None:
+        for isource, tsource in zip(isource_units, tsource_units):
+            if not tsource:
+                tsource = isource
+            if isource != tsource:
+                raise ValueError(
+                    error_wrapper(
+                        f"""
+The units specified by the "source_units" keyword and in the second ":"
+delimited field in the DataFrame column name must match.
+
+"source_unit" keyword is {isource_units}
+Column name source units are {tsource_units}
+                                                       """
+                    )
+                )
+            su.append(tsource)
+    else:
+        su = [""] * len(ntsd.columns)
+
+    if source_units_required is True:
+        if "" in su:
+            raise ValueError(
+                error_wrapper(
+                    f"""
+Source units must be specified either using "source_units" keyword of in the
+second ":" delimited field in the column name.  Instead you have {su}.
+                                           """
+                )
+            )
+
+    names = []
+    for inx, unit in enumerate(su):
+        if isinstance(ntsd.columns[inx], (str, bytes)):
+            words = ntsd.columns[inx].split(":")
+            if unit:
+                tmpname = ":".join([words[0], unit])
+                if len(words) > 2:
+                    tmpname = tmpname + ":" + ":".join(words[2:])
+                names.append(tmpname)
+            else:
+                names.append(":".join(words))
+        else:
+            names.append(ntsd.columns[inx])
+
+    ntsd.columns = names
+
+    if su is None and target_units is not None:
         raise ValueError(
             error_wrapper(
                 """
@@ -1115,6 +1148,7 @@ def common_kwds(
     clean: bool = False,
     target_units=None,
     source_units=None,
+    source_units_required: bool = False,
     bestfreq: bool = True,
     parse_dates: bool = True,
     extended_columns: bool = False,
@@ -1160,7 +1194,9 @@ def common_kwds(
 
     ntsd = _pick(ntsd, pick)
 
-    ntsd = _normalize_units(ntsd, source_units, target_units)
+    ntsd = _normalize_units(
+        ntsd, source_units, target_units, source_units_required=source_units_required
+    )
 
     if clean is True:
         ntsd = ntsd.sort_index()
