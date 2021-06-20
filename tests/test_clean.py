@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -7,6 +6,7 @@ import os
 from unittest import TestCase
 
 from pandas.testing import assert_frame_equal
+
 from tstoolbox import tstoolbox
 
 test_sinwave = """Datetime,0::,0::peak,0::valley

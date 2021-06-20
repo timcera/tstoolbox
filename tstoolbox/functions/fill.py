@@ -1,7 +1,8 @@
-#!/sjr/beodata/local/python_linux/bin/python
+# -*- coding: utf-8 -*-
 """A collection of filling routines."""
 
 from __future__ import absolute_import, print_function
+
 from typing import List, Optional, Union
 
 try:
@@ -10,11 +11,10 @@ except ImportError:
     from typing_extensions import Literal
 
 import mando
-from mando.rst_text_formatter import RSTHelpFormatter
-
 import numpy as np
 import pandas as pd
 import typic
+from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 

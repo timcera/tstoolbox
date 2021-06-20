@@ -1,14 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
 
 from unittest import TestCase
 
-import pytest
-
 import pandas as pd
+import pytest
 from pandas.testing import assert_index_equal
+
 from tstoolbox import tstoolbox, tsutils
 
 

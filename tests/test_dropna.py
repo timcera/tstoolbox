@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 from unittest import TestCase
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
+
 from tstoolbox import tstoolbox
 
 

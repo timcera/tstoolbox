@@ -1,14 +1,14 @@
-#!/sjr/beodata/local/python_linux/bin/python
+# -*- coding: utf-8 -*-
 """A lag routine."""
 
 from __future__ import absolute_import, print_function
+
 from typing import List
 
 import mando
-from mando.rst_text_formatter import RSTHelpFormatter
-
 import pandas as pd
 import typic
+from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 

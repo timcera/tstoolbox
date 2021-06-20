@@ -7,3 +7,24 @@ include README.rst
 include tstoolbox/skill_metrics/README_SkillMetrics.txt
 include tstoolbox/skill_metrics/LICENSE_SkillMetrics.txt
 include tstoolbox/SciencePlots_styles/*
+
+# added by check-manifest
+include *.rst
+include *.yaml
+include *.yml
+include detox
+include pytest.ini
+recursive-include docsrc *.bat
+recursive-include docsrc *.py
+recursive-include docsrc *.rst
+recursive-include docsrc Makefile
+recursive-include notebooks *.csv
+recursive-include notebooks *.ipynb
+recursive-include notebooks *.png
+recursive-include tests *.csv
+recursive-include tests *.png
+recursive-include tests *.py
+recursive-include tests *.txt
+recursive-include tests *.wdm
+recursive-include tests *.xlsx
+recursive-include tstoolbox *.rst

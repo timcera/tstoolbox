@@ -1,14 +1,14 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
-from typing import Union
 
 import warnings
+from typing import Union
 
 import mando
-from mando.rst_text_formatter import RSTHelpFormatter
 import typic
+from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 

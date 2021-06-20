@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import shlex
@@ -6,8 +5,9 @@ import subprocess
 from unittest import TestCase
 
 import pandas as pd
-import tstoolbox.tsutils as tsutils
 from pandas.testing import assert_frame_equal
+
+import tstoolbox.tsutils as tsutils
 from tstoolbox import tstoolbox
 
 from . import capture

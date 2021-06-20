@@ -1,15 +1,14 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import shlex
 import subprocess
 from unittest import TestCase
 
-import pytest
-
 import numpy as np
 import pandas as pd
+import pytest
 from pandas.testing import assert_frame_equal
+
 from tstoolbox import tstoolbox, tsutils
 
 output_peak_detection = tsutils.read_iso_ts(

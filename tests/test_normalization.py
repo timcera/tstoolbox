@@ -1,11 +1,11 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
 
-from pandas.testing import assert_frame_equal
-from tstoolbox import tstoolbox, tsutils
 import pandas as pd
+from pandas.testing import assert_frame_equal
+
+from tstoolbox import tstoolbox, tsutils
 
 
 class TestDescribe(TestCase):

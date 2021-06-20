@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -7,8 +6,8 @@ from unittest import TestCase
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from tstoolbox import tstoolbox
-from tstoolbox import tsutils
+
+from tstoolbox import tstoolbox, tsutils
 
 try:
     from cStringIO import StringIO

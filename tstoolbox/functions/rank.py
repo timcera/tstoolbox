@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
@@ -9,10 +9,9 @@ except ImportError:
     from typing_extensions import Literal
 
 import mando
-from mando.rst_text_formatter import RSTHelpFormatter
-
 import pandas as pd
 import typic
+from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 

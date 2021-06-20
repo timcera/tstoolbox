@@ -1,7 +1,8 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+
 from typing import List
 
 try:
@@ -12,8 +13,8 @@ except ImportError:
 import warnings
 
 import mando
-from mando.rst_text_formatter import RSTHelpFormatter
 import typic
+from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -276,8 +277,9 @@ The gof algorithms work with two time-series only.  You gave {0}.
 
     tsd = tsd.dropna(how="any")
 
-    from .. import skill_metrics as sm
     import numpy as np
+
+    from .. import skill_metrics as sm
 
     statval = []
 

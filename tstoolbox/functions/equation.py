@@ -1,19 +1,18 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
-from typing import List
 
 import re
 import warnings
+from typing import List
 
 import mando
-from mando.rst_text_formatter import RSTHelpFormatter
-from numpy import *
-import typic
-
 import numpy as np
 import pandas as pd
+import typic
+from mando.rst_text_formatter import RSTHelpFormatter
+from numpy import *  # nopycln: import
 
 from .. import tsutils
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from . import brier_score, utils
 
 

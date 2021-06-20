@@ -1,7 +1,8 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+
 from typing import List, Optional, Tuple
 
 try:
@@ -14,11 +15,10 @@ import os
 import warnings
 
 import mando
-from mando.rst_text_formatter import RSTHelpFormatter
-import typic
-
 import numpy as np
 import pandas as pd
+import typic
+from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -1377,8 +1377,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
         if legend is True:
             plt.legend(loc="best")
     elif type in ["taylor"]:
-        from ..skill_metrics import centered_rms_dev
-        from ..skill_metrics import taylor_diagram
+        from ..skill_metrics import centered_rms_dev, taylor_diagram
 
         ref = tsd.iloc[:, 0]
         std = [np.std(ref)]
@@ -1390,10 +1389,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             crmsd.append(centered_rms_dev(tsd.iloc[:, col].values, ref.values))
         taylor_diagram(np.array(std), np.array(crmsd), np.array(ccoef))
     elif type in ["target"]:
-        from ..skill_metrics import centered_rms_dev
-        from ..skill_metrics import rmsd
-        from ..skill_metrics import bias
-        from ..skill_metrics import target_diagram
+        from ..skill_metrics import bias, centered_rms_dev, rmsd, target_diagram
 
         biases = []
         rmsds = []

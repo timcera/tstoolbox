@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 from unittest import TestCase
 
-import pytest
-
 import pandas as pd
+import pytest
 from pandas.testing import assert_frame_equal
+
 from tstoolbox import tstoolbox, tsutils
 
 

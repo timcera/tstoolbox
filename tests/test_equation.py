@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -7,10 +6,10 @@ import shlex
 import subprocess
 from unittest import TestCase
 
-import io
 import numpy as np
 import pandas as pd
 from pandas.testing import assert_frame_equal
+
 from tstoolbox import tstoolbox, tsutils
 
 from . import capture

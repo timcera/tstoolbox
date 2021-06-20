@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 def get_target_diagram_options(**kwargs):
     """
     Get optional arguments for target_diagram function.

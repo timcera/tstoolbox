@@ -1,7 +1,8 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from __future__ import absolute_import, division, print_function
+
 from typing import List
 
 try:
@@ -11,12 +12,12 @@ except ImportError:
 
 import warnings
 
+import mando
 import numpy as np
 import pandas as pd
-from statsmodels.nonparametric.smoothers_lowess import lowess
-from mando.rst_text_formatter import RSTHelpFormatter
-import mando
 import typic
+from mando.rst_text_formatter import RSTHelpFormatter
+from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from .. import tsutils
 

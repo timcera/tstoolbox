@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -7,6 +6,7 @@ from unittest import TestCase
 
 import numpy as np
 import pandas as pd
+
 from tstoolbox import tstoolbox
 
 pandacodes = [
