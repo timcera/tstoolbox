@@ -9,15 +9,15 @@ from argparse import RawTextHelpFormatter
 
 import mando
 import pandas as pd
+import typic
+
+from .. import tsutils
 
 try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
 
-import typic
-
-from .. import tsutils
 
 warnings.filterwarnings("ignore")
 
@@ -85,19 +85,19 @@ def read_cli(
     tsutils.printiso(
         read(
             *filenames,
-            force_freq=force_freq,
             append=append,
-            columns=columns,
             start_date=start_date,
             end_date=end_date,
             dropna=dropna,
-            skiprows=skiprows,
             index_type=index_type,
-            names=names,
             clean=clean,
+            force_freq=force_freq,
+            round_index=round_index,
+            columns=columns,
+            skiprows=skiprows,
+            names=names,
             source_units=source_units,
             target_units=target_units,
-            round_index=round_index,
         ),
         float_format=float_format,
         tablefmt=tablefmt,

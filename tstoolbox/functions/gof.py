@@ -3,20 +3,20 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import List
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
-
 import warnings
+from typing import List
 
 import mando
 import typic
 from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
+
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
 
 warnings.filterwarnings("ignore")
 

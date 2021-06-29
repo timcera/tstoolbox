@@ -3,14 +3,8 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Union
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
-
 import warnings
+from typing import Union
 
 import mando
 import numpy as np
@@ -20,6 +14,11 @@ from mando.rst_text_formatter import RSTHelpFormatter
 from pandas.tseries.frequencies import to_offset
 
 from .. import tsutils
+
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 
 @mando.command("convert_index", formatter_class=RSTHelpFormatter, doctype="numpy")

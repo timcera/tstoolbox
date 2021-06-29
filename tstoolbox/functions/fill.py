@@ -5,11 +5,6 @@ from __future__ import absolute_import, print_function
 
 from typing import List, Optional, Union
 
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
-
 import mando
 import numpy as np
 import pandas as pd
@@ -17,6 +12,11 @@ import typic
 from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
+
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 
 def _validate_columns(ntsd, from_columns, to_columns):
@@ -187,11 +187,6 @@ def fill_cli(
         ),
         tablefmt=tablefmt,
     )
-
-
-@typic.constrained(ge=0)
-class IntGreaterThanOrEqualToZero(int):
-    """Simple constraint."""
 
 
 @tsutils.transform_args(from_columns=tsutils.make_list, to_columns=tsutils.make_list)

@@ -5,11 +5,6 @@ from __future__ import absolute_import, print_function
 
 from typing import List
 
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
-
 import mando
 import numpy as np
 import pandas as pd
@@ -18,6 +13,11 @@ from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 from . import lag
+
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 
 def autocorrelation(series):

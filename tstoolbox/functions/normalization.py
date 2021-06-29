@@ -3,17 +3,17 @@
 
 from __future__ import absolute_import, division, print_function
 
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
-
 import mando
 import pandas as pd
 import typic
 from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
+
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 
 @mando.command("normalization", formatter_class=RSTHelpFormatter, doctype="numpy")

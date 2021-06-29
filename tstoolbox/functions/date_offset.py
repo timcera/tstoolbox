@@ -85,11 +85,6 @@ def date_offset_cli(
     )
 
 
-@typic.constrained(ge=1)
-class Intervals(int):
-    """Intervals should be positive."""
-
-
 def date_offset(
     intervals: tsutils.IntGreaterEqualToOne,
     offset: str,

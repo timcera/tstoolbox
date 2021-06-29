@@ -3,11 +3,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
-
 import warnings
 
 import mando
@@ -17,6 +12,12 @@ import typic
 from mando.rst_text_formatter import RSTHelpFormatter
 
 from tstoolbox import tsutils
+
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
 
 warnings.filterwarnings("ignore")
 

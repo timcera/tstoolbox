@@ -20,6 +20,7 @@ from urllib.parse import urlparse
 import dateparser
 import numpy as np
 import pandas as pd
+import typic
 from _io import TextIOWrapper
 from numpy import int64, ndarray
 from pandas._libs.tslibs.timestamps import Timestamp
@@ -36,7 +37,6 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-import typic
 
 UREG = UnitRegistry()
 

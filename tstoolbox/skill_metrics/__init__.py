@@ -13,7 +13,6 @@ from .get_target_diagram_options import get_target_diagram_options
 from .get_taylor_diagram_axes import get_taylor_diagram_axes
 from .get_taylor_diagram_options import get_taylor_diagram_options
 from .index_agreement import index_agreement
-from .kge09 import kge09
 from .kge09 import kge09 as kge
 from .kge12 import kge12
 from .nse import nse
