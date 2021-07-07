@@ -990,7 +990,11 @@ def _normalize_units(
 
     """
     target_units = make_list(target_units, n=len(ntsd.columns))
+    if target_units is not None:
+        target_units = ["" if i is None else i for i in target_units]
     isource_units = make_list(source_units, n=len(ntsd.columns))
+    if isource_units is not None:
+        isource_units = ["" if i is None else i for i in isource_units]
 
     # Create completely filled names from the column names.
     tsource_units = []
@@ -2017,9 +2021,11 @@ def read_iso_ts(
         first = [fstr.format(fname, i) for i in first]
         first = [[i.strip()] for i in dedupIndex(first)]
 
-        rest = [str(i).rstrip(".0123456789 ").split(":")[1:] for i in res.columns]
+        second = [[str(i).split(":")[1].strip()] for i in res.columns]
 
-        res.columns = [":".join(i + j) for i, j in zip(first, rest)]
+        rest = [str(i).rstrip(".0123456789 ").split(":")[2:] for i in res.columns]
+
+        res.columns = [":".join(i + j + k) for i, j, k in zip(first, second, rest)]
 
         tmpc = res.columns.values
         for index, i in enumerate(res.columns):
@@ -2092,4 +2098,4 @@ def read_iso_ts(
         result.columns = names
 
     result.sort_index(inplace=True)
-    return result
+    return result.convert_dtypes()
