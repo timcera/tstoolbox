@@ -8,6 +8,7 @@ Capture function
 
 import sys
 
+
 try:
     from cStringIO import StringIO
 except:

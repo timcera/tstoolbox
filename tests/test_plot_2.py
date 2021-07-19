@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import matplotlib
 
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pytest
 
 from tstoolbox import tstoolbox
+
 
 # Pull this in once.
 df = tstoolbox.aggregate(

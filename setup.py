@@ -3,7 +3,8 @@
 import os
 import sys
 
-from setuptools import setup
+from setuptools import find_packages, setup
+
 
 # temporarily redirect config directory to prevent matplotlib importing
 # testing that for writeable directory which results in sandbox error in
@@ -46,6 +47,7 @@ install_requires = [
     "pyaf",
     "xlrd >= 1.0.0",
     "openpyxl",
+    "plottoolbox",
 ]
 
 extras_require = {
@@ -85,17 +87,13 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],  # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
     keywords="time_series",
-    author="Tim Cera, P.E.",
+    author="Tim Cera, PE",
     author_email="tim@cerazone.net",
     url="http://timcera.bitbucket.io/{pkg_name}/docsrc/index.html".format(**locals()),
     license="BSD",
-    packages=[
-        "{pkg_name}".format(**locals()),
-        "{pkg_name}.functions".format(**locals()),
-        "{pkg_name}.skill_metrics".format(**locals()),
-    ],
-    package_dir={"tstoolbox": "tstoolbox"},
-    package_data={"tstoolbox": ["SciencePlots_styles/*"]},
+    packages=find_packages("src"),
+    package_dir={"": "src"},
+    package_data={"SciencePlots": ["*.mplstyle"]},
     include_package_data=True,
     zip_safe=False,
     install_requires=install_requires,

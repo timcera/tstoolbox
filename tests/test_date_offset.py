@@ -9,6 +9,7 @@ from pandas.testing import assert_frame_equal
 
 from tstoolbox import tstoolbox, tsutils
 
+
 try:
     from cStringIO import StringIO
 except:
