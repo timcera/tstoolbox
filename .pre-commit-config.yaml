@@ -26,15 +26,15 @@ repos:
     hooks:
       - id: isort
         name: isort (python)
-        args: ["--profile", "black", "--filter-files"]
+        args: ["--profile", "black", "--filter-files", "--line-length", "88", "--multi-line", "3"]
       - id: isort
         name: isort (cython)
         types: [cython]
-        args: ["--profile", "black", "--filter-files"]
+        args: ["--profile", "black", "--filter-files", "--line-length", "88", "--multi-line", "3"]
       - id: isort
         name: isort (pyi)
         types: [pyi]
-        args: ["--profile", "black", "--filter-files"]
+        args: ["--profile", "black", "--filter-files", "--line-length", "88", "--multi-line", "3"]
 
   - repo: https://github.com/dfm/black_nbconvert
     rev: v0.2.0
