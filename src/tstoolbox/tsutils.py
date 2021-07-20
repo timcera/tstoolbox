@@ -1003,7 +1003,7 @@ def _normalize_units(
         if isinstance(ntsd.columns[inx], (str, bytes)):
             words = ntsd.columns[inx].split(":")
             if len(words) >= 2:
-                tsource_units + words[1:]
+                [tsource_units.append(i) for i in words[1:]]
             else:
                 tsource_units.append("")
         else:
@@ -1041,7 +1041,6 @@ second ":" delimited field in the column name.  Instead you have {su}.
                                            """
                 )
             )
-
     names = []
     for inx, unit in enumerate(su):
         if isinstance(ntsd.columns[inx], (str, bytes)):
@@ -1055,7 +1054,6 @@ second ":" delimited field in the column name.  Instead you have {su}.
                 names.append(":".join(words))
         else:
             names.append(ntsd.columns[inx])
-
     ntsd.columns = names
 
     if su is None and target_units is not None:
@@ -2027,21 +2025,20 @@ def read_iso_ts(
     first = []
     second = []
     rest = []
-    for i in res.columns:
-        words = str(i).split(":")
-        nwords = str(i).rstrip(".0123456789 ").split(":")
+    for col in res.columns:
+        words = [i.strip() for i in str(col).split(":")]
+        nwords = [i.strip("0123456789") for i in words]
 
         first.append(fstr.format(fname, words[0].strip()))
 
         if len(words) > 1:
-            second.append([words[1].strip()])
+            second.append([nwords[1]])
         else:
             second.append([])
         if len(nwords) > 2:
             rest.append(nwords[2:])
         else:
             rest.append([])
-
     first = [[i.strip()] for i in dedupIndex(first)]
     res.columns = [":".join(i + j + k) for i, j, k in zip(first, second, rest)]
 

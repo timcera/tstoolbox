@@ -11,6 +11,8 @@ from tstoolbox import tstoolbox
 class TestConvertUnits(TestCase):
     def test_convert_units(self):
         a = tstoolbox.read("tests/data_gainesville_daily_precip.csv", target_units="in")
+        a.iloc[:, 0].values[:] = [i.magnitude for i in a.iloc[:, 0].values]
+        a = a.convert_dtypes()
         b = tstoolbox.equation(
             "x1/25.4", input_ts="tests/data_gainesville_daily_precip.csv"
         ).astype("Float64")
@@ -18,6 +20,8 @@ class TestConvertUnits(TestCase):
         assert_frame_equal(a, b)
 
         a = tstoolbox.read("tests/data_gainesville_daily_precip.csv", target_units="km")
+        a.iloc[:, 0].values[:] = [i.magnitude for i in a.iloc[:, 0].values]
+        a = a.convert_dtypes()
         b = tstoolbox.equation(
             "x1/(1000*1000)", input_ts="tests/data_gainesville_daily_precip.csv"
         ).astype("Float64")

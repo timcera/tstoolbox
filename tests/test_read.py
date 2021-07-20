@@ -2,6 +2,7 @@
 
 import shlex
 import subprocess
+import sys
 from unittest import TestCase
 
 import pandas
