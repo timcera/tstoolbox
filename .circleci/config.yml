@@ -32,8 +32,9 @@ jobs:
     steps:
       - checkout
       - run:
-          command: pip install --upgrade pip
-                   python setup.py install
+          command: | 
+                    pip install --upgrade pip
+                    python setup.py install
       - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
