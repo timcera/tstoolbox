@@ -33,6 +33,8 @@ jobs:
       - image: circleci/python:3.9
     steps:
       - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
       - run:
           command: | 
                     pip install --upgrade pip
