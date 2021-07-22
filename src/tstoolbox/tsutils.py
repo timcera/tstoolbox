@@ -20,6 +20,7 @@ from urllib.parse import urlparse
 import dateparser
 import numpy as np
 import pandas as pd
+import pint_pandas
 import typic
 from _io import TextIOWrapper
 from numpy import int64, ndarray
@@ -27,7 +28,6 @@ from pandas._libs.tslibs.timestamps import Timestamp
 from pandas.core.frame import DataFrame
 from pandas.core.indexes.base import Index
 from pandas.tseries.frequencies import to_offset
-from pint import UnitRegistry
 from scipy.stats.distributions import lognorm, norm
 from tabulate import simple_separated_format
 from tabulate import tabulate as tb
@@ -37,9 +37,6 @@ try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
-
-
-UREG = UnitRegistry()
 
 
 @typic.al
@@ -1079,11 +1076,11 @@ to the `target_units`: {target_units}
             words = colname.split(":")
             if len(words) > 1:
                 # convert words[1] to target_units[inx]
-                Q_ = UREG.Quantity
                 try:
-                    ntsd[colname] = Q_(ntsd[colname].to_numpy(), UREG(words[1])).to(
+                    ps = pd.Series(ntsd[colname], dtype=f"pint[{words[1]}]").pint.to(
                         target_units[inx]
                     )
+                    ntsd[colname] = np.array(ps, dtype=float)
                     words[1] = target_units[inx]
                 except AttributeError:
                     raise ValueError(
