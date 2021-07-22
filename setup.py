@@ -36,7 +36,7 @@ install_requires = [
     "numpy",
     "scipy",
     "pandas",
-    "pint",
+    "pint-pandas",
     "matplotlib",
     "xlsxwriter",
     "scikit-learn",
