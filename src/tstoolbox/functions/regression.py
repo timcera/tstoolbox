@@ -291,15 +291,24 @@ keywords.  Instead you have "{to}" in both.
         ntsd = tsd
     ntsd = tsutils.asbestfreq(ntsd)
 
-    try:
-        # In case ntsd.index.freqstr is a multiple, for example "15T".
-        ntsd[ntsd.index.name + "_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
-            ntsd.index.freqstr
+    testfreqstr = ntsd.index.freqstr.lstrip("0123456789")
+
+    if testfreqstr[0] == "A":
+        ntsd[ntsd.index.name + "_"] = ntsd.index.year - ntsd.index[0].year
+    elif testfreqstr[0] == "M":
+        ntsd[ntsd.index.name + "_"] = (ntsd.index.year - ntsd.index[0].year) * 12 + (
+            ntsd.index.month - ntsd.index[0].month
         )
-    except ValueError:
-        ntsd[ntsd.index.name + "_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
-            "1" + ntsd.index.freqstr
-        )
+    else:
+        try:
+            # In case ntsd.index.freqstr is a multiple, for example "15T".
+            ntsd[ntsd.index.name + "_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
+                ntsd.index.freqstr
+            )
+        except ValueError:
+            ntsd[ntsd.index.name + "_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
+                "1" + ntsd.index.freqstr
+            )
 
     if x_pred_cols is None:
         nx_pred_cols = x_train_cols
