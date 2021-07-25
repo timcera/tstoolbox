@@ -994,13 +994,13 @@ def _normalize_units(
     if isource_units is not None:
         isource_units = ["" if i is None else i for i in isource_units]
 
-    # Create completely filled names from the column names.
+    # Create completely filled list of units from the column names.
     tsource_units = []
     for inx in list(range(len(ntsd.columns))):
         if isinstance(ntsd.columns[inx], (str, bytes)):
             words = ntsd.columns[inx].split(":")
             if len(words) >= 2:
-                [tsource_units.append(i) for i in words[1:]]
+                tsource_units.append(words[1])
             else:
                 tsource_units.append("")
         else:
