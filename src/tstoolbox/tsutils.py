@@ -799,9 +799,15 @@ def make_list(*strorlist, **kwds: Any) -> Any:
     except KeyError:
         kwdname = ""
 
+    try:
+        flat = kwds.pop("flat")
+    except KeyError:
+        flat = True
+
     if isinstance(strorlist, (list, tuple)):
         # The following will fix ((tuples, in, a, tuple, problem),)
-        strorlist = flatten(strorlist)
+        if flat is True:
+            strorlist = flatten(strorlist)
 
         if len(strorlist) == 1:
             # Normalize lists and tuples of length 1 to scalar for
@@ -823,6 +829,9 @@ The list {0} for "{2}" should have {1} members according to function requirement
 
     if isinstance(strorlist, pd.DataFrame):
         return [strorlist]
+
+    if isinstance(strorlist, pd.Series):
+        return [pd.DataFrame(strorlist)]
 
     if strorlist is None or isinstance(strorlist, (type(None))):
         # None -> None
@@ -902,6 +911,9 @@ The list {0} for "{2}" should have {1} members according to function requirement
     ret = []
     for each in strorlist:
         if isinstance(each, (type(None), int, float, pd.DataFrame, pd.Series)):
+            ret.append(each)
+            continue
+        if flat is False and isinstance(each, list):
             ret.append(each)
             continue
         if each is None or each.strip() == "" or each == "None":
@@ -987,6 +999,9 @@ def _normalize_units(
     +--------------+--------------+--------------+--------------+--------------+
 
     """
+    # Enforce DataFrame
+    ntsd = pd.DataFrame(ntsd)
+
     target_units = make_list(target_units, n=len(ntsd.columns))
     if target_units is not None:
         target_units = ["" if i is None else i for i in target_units]
@@ -1073,14 +1088,22 @@ to the `target_units`: {target_units}
     if target_units is not None:
         ncolumns = []
         for inx, colname in enumerate(ntsd.columns):
-            words = colname.split(":")
+            words = str(colname).split(":")
             if len(words) > 1:
                 # convert words[1] to target_units[inx]
                 try:
-                    ps = pd.Series(ntsd[colname], dtype=f"pint[{words[1]}]").pint.to(
-                        target_units[inx]
+                    # Would be nice in the future to carry around units,
+                    # however at the moment most tstoolbox functions will not
+                    # work right with units specified.
+                    # This single command uses pint to convert units and
+                    # the "np.array(..., dtype=float)" command removes pint
+                    # units from the converted pandas Series.
+                    ntsd[str(colname)] = np.array(
+                        pd.Series(
+                            ntsd[str(colname)].astype(float), dtype=f"pint[{words[1]}]"
+                        ).pint.to(target_units[inx]),
+                        dtype=float,
                     )
-                    ntsd[colname] = np.array(ps, dtype=float)
                     words[1] = target_units[inx]
                 except AttributeError:
                     raise ValueError(
@@ -1134,15 +1157,17 @@ def transform_args(**trans_func_for_arg):
     return transform_args_decorator
 
 
-@transform_args(pick=make_list)
+@transform_args(
+    pick=make_list, names=make_list, source_units=make_list, target_units=make_list
+)
 @typic.al
 def common_kwds(
     input_tsd=None,
     start_date=None,
     end_date=None,
     pick: Optional[List[Union[int, str]]] = None,
-    force_freq=None,
-    groupby=None,
+    force_freq: str = None,
+    groupby: str = None,
     dropna: Optional[Literal["no", "any", "all"]] = "no",
     round_index: str = None,
     clean: bool = False,
@@ -1154,7 +1179,7 @@ def common_kwds(
     extended_columns: bool = False,
     skiprows: Optional[Union[int, List[int]]] = None,
     index_type: Literal["datetime", "number"] = "datetime",
-    names: Optional[str] = None,
+    names: Optional[Union[str, List[str]]] = None,
     usecols: Optional[List[Union[int, str]]] = None,
     por: bool = False,
 ):
@@ -1188,9 +1213,12 @@ def common_kwds(
             force_freq=force_freq,
             skiprows=skiprows,
             index_type=index_type,
-            names=names,
             usecols=usecols,
+            clean=clean,
         )
+
+    if names is not None:
+        ntsd.columns = names
 
     ntsd = _pick(ntsd, pick)
 
@@ -1375,11 +1403,11 @@ def asbestfreq(data: DataFrame, force_freq: Optional[str] = None) -> DataFrame:
     if force_freq is not None:
         return data.asfreq(force_freq)
 
-    data = data.sort_index()
-    data = data[~data.index.duplicated()]
+    ndata = data.sort_index()
+    ndata = ndata[~ndata.index.duplicated()]
 
     ndiff = (
-        data.index.values.astype("int64")[1:] - data.index.values.astype("int64")[:-1]
+        ndata.index.values.astype("int64")[1:] - ndata.index.values.astype("int64")[:-1]
     )
     if np.any(ndiff <= 0):
         raise ValueError(
@@ -1391,7 +1419,7 @@ Duplicate or time reversal index entry at record {1} (start count at 0):
 Perhaps use the "--clean" keyword on the CLI or "clean=True" if using Python or edit the
 input data..
 """.format(
-                    data.index[:-1][ndiff <= 0][0], np.where(ndiff <= 0)[0][0] + 1
+                    ndata.index[:-1][ndiff <= 0][0], np.where(ndiff <= 0)[0][0] + 1
                 )
             )
         )
@@ -1818,10 +1846,11 @@ def read_iso_ts(
     # skiprows = kwds.get("skiprows", None)
     # index_col = kwds.get("index_col", 0)
     # parse_dates = kwds.get("parse_dates", True)
-    # names = kwds.get("names", None)
     # index_type = kwds.get("index_type", "datetime")
     # sep = kwds.get("sep", ",")
     # header = kwds.get("header", 0)
+    clean = kwds.get("clean", False)
+    names = kwds.get("names", None)
 
     if not inindat:
         inindat = "-"
@@ -1844,7 +1873,10 @@ def read_iso_ts(
     if index_type == "number":
         parse_dates = False
 
-    sources = make_list(inindat, sep=" ")
+    if isinstance(inindat[0], (tuple, list)) and len(inindat) == 1:
+        inindat = inindat[0]
+
+    sources = make_list(inindat, sep=" ", flat=False)
 
     if not isinstance(sources, (list, tuple)):
         sources = [sources]
@@ -1852,7 +1884,7 @@ def read_iso_ts(
     lresult_list = []
     zones = set()
     result = pd.DataFrame()
-
+    stdin_df = pd.DataFrame()
     for source in sources:
         res = pd.DataFrame()
         parameters = make_list(source, sep=",")
@@ -1861,7 +1893,6 @@ def read_iso_ts(
         else:
             fname = parameters
             parameters = []
-
         # Python API
         if isinstance(fname, pd.DataFrame):
             if len(parameters) > 0:
@@ -1997,20 +2028,25 @@ def read_iso_ts(
                 dname = "_"
 
             if len(res) == 0:
-                res = pd.read_csv(
-                    fpi,
-                    engine="python",
-                    infer_datetime_format=True,
-                    keep_default_na=True,
-                    skipinitialspace=True,
-                    header=header,
-                    sep=sep,
-                    na_values=na_values,
-                    index_col=index_col,
-                    parse_dates=parse_dates,
-                    skiprows=skiprows,
-                    **newkwds,
-                )
+                if fname == "-" and not stdin_df.empty:
+                    res = stdin_df
+                else:
+                    res = pd.read_csv(
+                        fpi,
+                        engine="python",
+                        infer_datetime_format=True,
+                        keep_default_na=True,
+                        skipinitialspace=True,
+                        header=header,
+                        sep=sep,
+                        na_values=na_values,
+                        index_col=index_col,
+                        parse_dates=parse_dates,
+                        skiprows=skiprows,
+                        **newkwds,
+                    )
+                if fname == "-" and stdin_df.empty:
+                    stdin_df = res
                 res = _pick(res, parameters)
 
         lresult_list.append(res)
@@ -2081,6 +2117,13 @@ def read_iso_ts(
                     res.index = res.index.tz_convert(None)
                 except (TypeError, AttributeError):
                     pass
+
+            # Remove duplicate times if hourly and daylight savings.
+            if clean is True:
+                res = res.sort_index()
+                res = res[~res.index.duplicated()]
+
+            res = asbestfreq(res)
             if res.index.inferred_freq is not None and moffset > epoch + to_offset(
                 res.index.inferred_freq
             ):

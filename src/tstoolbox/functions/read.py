@@ -126,6 +126,9 @@ def read(
     if force_freq is not None:
         dropna = "no"
 
+    if isinstance(filenames, (list, tuple)) and len(filenames) == 1:
+        filenames = filenames[0]
+
     # # Check for older style where comma delimited list of only files.
     # # If so, rework as space delimited.
     isspacedelimited = False
@@ -135,7 +138,7 @@ def read(
             break
 
     if isspacedelimited is True:
-        filenames = tsutils.make_list(filenames, sep=" ")
+        filenames = tsutils.make_list(filenames, sep=" ", flat=False)
     else:
         # All filenames are real files.  Therefore old style and just make
         # a simple list.
@@ -150,11 +153,11 @@ Using "," separated files is deprecated in favor of space delimited files."""
     tsd = tsutils.common_kwds(
         input_tsd=filenames,
         skiprows=skiprows,
-        names=names,
         index_type=index_type,
         start_date=start_date,
         end_date=end_date,
         round_index=round_index,
+        names=names,
         dropna=dropna,
         force_freq=force_freq,
         clean=clean,

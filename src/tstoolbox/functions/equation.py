@@ -257,21 +257,21 @@ def equation(
         tsearch, nsearch, testeval, nequation = _parse_equation(eqn)
         if tsearch and nsearch:
             y = pd.DataFrame(
-                pd.Series(index=x.index, dtype="Float64"),
+                pd.Series(index=x.index, dtype=float),
                 columns=["_"],
-                dtype="Float64",
+                dtype=float,
             )
             for t in range(len(x)):
                 y.iloc[t, 0] = returnval(t, x, testeval, nequation)
         elif tsearch:
-            y = x.astype("Float64")
+            y = x.astype(float)
             for t in range(len(x)):
                 y.iloc[t, :] = returnval(t, x, testeval, nequation)
         elif nsearch:
             y = pd.DataFrame(
-                pd.Series(index=x.index, dtype="Float64"),
+                pd.Series(index=x.index, dtype=float),
                 columns=["_"],
-                dtype="Float64",
+                dtype=float,
             )
             try:
                 y.iloc[:, 0] = eval(nequation)

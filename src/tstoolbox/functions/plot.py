@@ -1675,7 +1675,7 @@ The "heatmap" plot type can only work with daily time series.
         dr = pd.date_range(
             "{0}-01-01".format(byear), "{0}-12-31".format(eyear), freq="D"
         )
-        ntsd = tsd.reindex(index=dr).astype("Float64")
+        ntsd = tsd.reindex(index=dr).astype(float)
         groups = ntsd.iloc[:, 0].groupby(pd.Grouper(freq="A"))
         years = pd.DataFrame()
         for name, group in groups:

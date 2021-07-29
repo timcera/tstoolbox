@@ -1,0 +1,4 @@
+
+[tool.check-manifest]
+ignore = [".travis.yml",
+          "docs/_function_autosummary/*"]
