@@ -810,7 +810,7 @@ def plot_cli(
     """
 
     plt = plot(
-        input_ts="-",
+        input_ts=input_ts,
         columns=columns,
         start_date=start_date,
         end_date=end_date,

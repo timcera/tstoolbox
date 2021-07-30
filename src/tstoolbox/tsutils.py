@@ -1880,12 +1880,11 @@ def read_iso_ts(
 
     if not isinstance(sources, (list, tuple)):
         sources = [sources]
-
     lresult_list = []
     zones = set()
     result = pd.DataFrame()
     stdin_df = pd.DataFrame()
-    for source in sources:
+    for source_index, source in enumerate(sources):
         res = pd.DataFrame()
         parameters = make_list(source, sep=",")
         if isinstance(parameters, list) and len(parameters) > 0:
@@ -1893,6 +1892,7 @@ def read_iso_ts(
         else:
             fname = parameters
             parameters = []
+
         # Python API
         if isinstance(fname, pd.DataFrame):
             if len(parameters) > 0:
@@ -1904,10 +1904,14 @@ def read_iso_ts(
             res = pd.DataFrame(inindat)
 
         elif isinstance(fname, (tuple, list)):
-            res = pd.DataFrame({"values": inindat})
+            res = pd.DataFrame(
+                {"values{source_index}".format(**locals()): fname}, index=[0]
+            )
 
-        elif isinstance(fname, (int, float)):
-            res = pd.DataFrame({"values": inindat}, index=[0])
+        elif isinstance(fname, float):
+            res = pd.DataFrame(
+                {"values{source_index}".format(**locals()): fname}, index=[0]
+            )
 
         if len(res) == 0:
             # Store keywords for each source.
@@ -1935,7 +1939,7 @@ def read_iso_ts(
             elif isinstance(fname, (io.StringIO, io.BytesIO)):
                 fpi = fname
                 header = 0
-            elif os.path.exists(fname):
+            elif os.path.exists(str(fname)):
                 # a local file
                 # Read all wdm, hdf5, and, xls* files here
                 header = "infer"
@@ -1995,7 +1999,7 @@ def read_iso_ts(
                         fi = ["_".join((str(i[0]), str(i[1]))) for i in fi]
                         res.columns = fi
 
-            elif is_valid_url(fname):
+            elif is_valid_url(str(fname)):
                 # a url?
                 header = "infer"
                 fpi = fname
@@ -2031,20 +2035,30 @@ def read_iso_ts(
                 if fname == "-" and not stdin_df.empty:
                     res = stdin_df
                 else:
-                    res = pd.read_csv(
-                        fpi,
-                        engine="python",
-                        infer_datetime_format=True,
-                        keep_default_na=True,
-                        skipinitialspace=True,
-                        header=header,
-                        sep=sep,
-                        na_values=na_values,
-                        index_col=index_col,
-                        parse_dates=parse_dates,
-                        skiprows=skiprows,
-                        **newkwds,
-                    )
+                    try:
+                        res = pd.read_csv(
+                            fpi,
+                            engine="python",
+                            infer_datetime_format=True,
+                            keep_default_na=True,
+                            skipinitialspace=True,
+                            header=header,
+                            sep=sep,
+                            na_values=na_values,
+                            index_col=index_col,
+                            parse_dates=parse_dates,
+                            skiprows=skiprows,
+                            **newkwds,
+                        )
+                    except ValueError:
+                        raise ValueError(
+                            error_wrapper(
+                                """
+File or file-like object "{fname}" does not exist.""".format(
+                                    **locals()
+                                )
+                            )
+                        )
                 if fname == "-" and stdin_df.empty:
                     stdin_df = res
                 res = _pick(res, parameters)
@@ -2112,6 +2126,8 @@ def read_iso_ts(
         moffset = epoch + to_offset("A")
         offset_set = set()
         for res in lresult_list:
+            if res.index.inferred_type != "datetime64":
+                continue
             if len(zones) != 1:
                 try:
                     res.index = res.index.tz_convert(None)
