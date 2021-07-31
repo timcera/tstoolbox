@@ -38,17 +38,29 @@ def pca_cli(
 
         The columns in the input_ts will be grouped into `n_components`
         groups.
+
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {clean}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {source_units}
+
     {target_units}
+
     {round_index}
+
     {tablefmt}
 
     """

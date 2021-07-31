@@ -48,15 +48,21 @@ def createts_cli(
             --freq='A'
 
         {pandas_offset_codes}
+
     fillvalue
         [optional, default is None]
 
         The fill value for the time-series.  The default is None, which
         generates the date/time stamps only.
+
     {input_ts}
+
     {start_date}
+
     {end_date}
+
     {index_type}
+
     {tablefmt}
 
     """
@@ -92,9 +98,9 @@ def createts(
 If input_ts is None, then start_date, end_date, and freq must be supplied.
 
 Instead you have:
-start_date = {0},
-end_date = {1},
-freq = {2}
+start_date = {},
+end_date = {},
+freq = {}
 """.format(
                         start_date, end_date, freq
                     )

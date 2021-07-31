@@ -50,6 +50,7 @@ def convert_index_cli(
         should have a datetime index to convert to a number.  If 'datetime',
         source data should be a number and the converted index will be
         datetime.
+
     interval
         [optional, defaults to None, transformation]
 
@@ -63,6 +64,7 @@ def convert_index_cli(
         equal to or smaller than the frequency of the time-series.
 
         {pandas_offset_codes}
+
     epoch : str
         [optional, defaults to 'julian', transformation]
 
@@ -136,16 +138,27 @@ def convert_index_cli(
            The TPtime Handbook. Media Lab.
 
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {round_index}
+
     {dropna}
+
     {clean}
+
     {skiprows}
+
     {names}
+
     {source_units}
+
     {target_units}
+
     {tablefmt}
 
     """
@@ -281,7 +294,7 @@ def convert_index(
             warnings.warn(
                 """
 *
-*   The epoch keyword "{0}" overrides the anchoring suffix "{1}".
+*   The epoch keyword "{}" overrides the anchoring suffix "{}".
 *
 """.format(
                     epoch, words[1]
@@ -295,7 +308,7 @@ def convert_index(
             """
 *
 *   Typically the unix epoch would has an interval of 'S' (seconds).
-*   Instead you gave {0}.
+*   Instead you gave {}.
 *
 """.format(
                 interval
@@ -306,8 +319,8 @@ def convert_index(
         warnings.warn(
             """
 *
-*   Typically the {0} epoch would has an interval of 'D' (days).
-*   Instead you gave {1}.
+*   Typically the {} epoch would has an interval of 'D' (days).
+*   Instead you gave {}.
 *
 """.format(
                 epoch, interval
@@ -336,7 +349,7 @@ def convert_index(
         )
 
     if names is None:
-        tsd.index.name = "{0}_date".format(epoch)
+        tsd.index.name = "{}_date".format(epoch)
 
     if to == "datetime":
         index_type = "number"

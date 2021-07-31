@@ -112,7 +112,7 @@ def _know_your_limits(xylimits, axis="arithmetic"):
 Both limits must be between 0 and 1 for the 'normal', 'lognormal', or 'weibull'
 axis.
 
-Instead you have {0}.
+Instead you have {}.
 """.format(
                         nlim
                     )
@@ -129,7 +129,7 @@ Instead you have {0}.
                     """
 The second limit must be greater than the first.
 
-You gave {0}.
+You gave {}.
 """.format(
                         nlim
                     )
@@ -145,7 +145,7 @@ You gave {0}.
                     """
 If log plot cannot have limits less than or equal to 0.
 
-You have {0}.
+You have {}.
 """.format(
                         nlim
                     )
@@ -231,6 +231,7 @@ def plot_cli(
     Parameters
     ----------
     {input_ts}
+
     ofilename : str, optional
         [optional, defaults to 'plot.png']
 
@@ -240,6 +241,7 @@ def plot_cli(
         If used within Python, and `ofilename` is None will return the
         Matplotlib figure that can then be changed or added to as
         needed.
+
     type : {'time', 'xy', 'double_mass', 'bloxplot', 'scatter_matrix',
             'lag_plot', 'autocorrelation', 'bootstrap', 'histogram', 'kde',
             'kde_time', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
@@ -349,30 +351,37 @@ def plot_cli(
             calculated and displayed are bias, root mean square deviation, and
             centered root mean square deviation.  The data columns have to be
             organized as 'observed,simulated1,simulated2,simulated3,...etc.'
+
     lag_plot_lag : int, optional
         [optional, default to 1]
 
         The lag used if ``type`` "lag_plot" is chosen.
+
     xtitle : str
         [optional, default depends on ``type``]
 
         Title of x-axis.
+
     ytitle : str
         [optional, default depends on ``type``]
 
         Title of y-axis.
+
     title : str
         [optional, defaults to '']
 
         Title of chart.
+
     figsize : str
         [optional, defaults to '10,6.5']
 
         The 'width,height' of plot in inches.
+
     legend
         [optional, defaults to True]
 
         Whether to display the legend.
+
     legend_names : str
         [optional, defaults to None]
 
@@ -380,18 +389,22 @@ def plot_cli(
         the input data.  The 'legend_names' option allows you to
         override the names in the data set.  You must supply a comma
         separated list of strings for each time-series in the data set.
+
     subplots
         [optional, defaults to False]
 
         Make separate subplots for each time series.
+
     sharex
         [optional, default to True]
 
         In case subplots=True, share x axis.
+
     sharey
         [optional, default to False]
 
         In case subplots=True, share y axis.
+
     colors
         [optional, default is 'auto']
 
@@ -445,6 +458,7 @@ def plot_cli(
 
         Color reference:
         http://matplotlib.org/api/colors_api.html
+
     linestyles
         [optional, default to 'auto']
 
@@ -477,6 +491,7 @@ def plot_cli(
 
         Line reference:
         http://matplotlib.org/api/artist_api.html
+
     markerstyles
         [optional, default to ' ']
 
@@ -541,6 +556,7 @@ def plot_cli(
 
         Marker reference:
         http://matplotlib.org/api/markers_api.html
+
     style
         [optional, default is None]
 
@@ -551,6 +567,7 @@ def plot_cli(
         Comma separated matplotlib style strings per time-series.  Just
         combine codes in 'ColorMarkerLine' order, for example 'r*--' is
         a red dashed line with star marker.
+
     bar_hatchstyles
         [optional, default to "auto", only used if type equal to "bar", "barh",
         "bar_stacked", and "barh_stacked"]
@@ -585,8 +602,10 @@ def plot_cli(
 
     logx
         DEPRECATED: use '--xaxis="log"' instead.
+
     logy
         DEPRECATED: use '--yaxis="log"' instead.
+
     xlim
         [optional, default is based on range of x values]
 
@@ -594,66 +613,84 @@ def plot_cli(
         plot.  For example, '--xlim 1,1000' would limit the plot from
         1 to 1000, where '--xlim ,1000' would base the lower limit on
         the data and set the upper limit to 1000.
+
     ylim
         [optional, default is based on range of y values]
 
         Comma separated lower and upper limits for the y-axis of the
         plot.  See `xlim` for examples.
+
     xaxis : str
         [optional, default is 'arithmetic']
 
         Defines the type of the xaxis.  One of 'arithmetic', 'log'.
+
     yaxis : str
         [optional, default is 'arithmetic']
 
         Defines the type of the yaxis.  One of 'arithmetic', 'log'.
+
     secondary_y
         {secondary_axis}
+
     secondary_x
         {secondary_axis}
+
     mark_right
         [optional, default is True]
 
         When using a secondary_y axis, should the legend label the axis of the
         various time-series automatically.
+
     scatter_matrix_diagonal : str
         [optional, defaults to 'kde']
 
         If plot type is 'scatter_matrix', this specifies the plot along the
         diagonal.  One of 'kde' for Kernel Density Estimation or 'hist'
         for a histogram.
+
     bootstrap_size : int
         [optional, defaults to 50]
 
         The size of the random subset for 'bootstrap' plot.
+
     bootstrap_samples
         [optional, defaults to 500]
 
         The number of random subsets of 'bootstrap_size'.
+
     norm_xaxis
         DEPRECATED: use '--type="norm_xaxis"' instead.
+
     norm_yaxis
         DEPRECATED: use '--type="norm_yaxis"' instead.
+
     lognorm_xaxis
         DEPRECATED: use '--type="lognorm_xaxis"' instead.
+
     lognorm_yaxis
         DEPRECATED: use '--type="lognorm_yaxis"' instead.
+
     xy_match_line : str
         [optional, defaults is '']
 
         Will add a match line where x == y. Set to a line style code.
+
     grid
         [optional, default is False]
 
         Whether to plot grid lines on the major ticks.
+
     label_rotation : int
         [optional]
 
         Rotation for major labels for bar plots.
+
     label_skip : int
         [optional]
 
         Skip for major labels for bar plots.
+
     drawstyle : str
         [optional, default is 'default']
 
@@ -670,15 +707,19 @@ def plot_cli(
 
         Plot from first good value to last good value.  Strips NANs
         from beginning and end.
+
     {force_freq}
+
     invert_xaxis
         [optional, default is False]
 
         Invert the x-axis.
+
     invert_yaxis
         [optional, default is False]
 
         Invert the y-axis.
+
     plotting_position : str
         [optional, default is 'weibull']
 
@@ -686,6 +727,7 @@ def plot_cli(
 
         Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
         lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
+
     prob_plot_sort_values : str
         [optional, default is 'descending']
 
@@ -693,17 +735,29 @@ def plot_cli(
 
         Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
         lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {clean}
+
     {skiprows}
+
     {dropna}
+
     {index_type}
+
     {names}
+
     {source_units}
+
     {target_units}
+
     {round_index}
+
     plot_styles: str
         [optional, default is "default"]
 
@@ -747,6 +801,7 @@ def plot_cli(
         [optional, defaults to None]
 
         Number or list of y values where to place a horizontal line.
+
     hlines_xmin:
         [optional, defaults to None]
 
@@ -754,6 +809,7 @@ def plot_cli(
         be same length as `hlines_y`.  If a single number will be used as the
         minimum x values for all horizontal lines.  A missing value or None
         will start at the minimum x value for the entire plot.
+
     hlines_xmax:
         [optional, defaults to None]
 
@@ -761,6 +817,7 @@ def plot_cli(
         be same length as `hlines_y`.  If a single number will be the maximum
         x value for all horizontal lines.  A missing value or None will end at
         the maximum x value for the entire plot.
+
     hlines_colors:
         [optional, defaults to None]
 
@@ -768,6 +825,7 @@ def plot_cli(
         be used as the color for all horizontal lines.  If a list must be same
         length as `hlines_y`.  If None will take from the color pallette in the
         current plot style.
+
     hlines_linestyles:
         [optional, defaults to None]
 
@@ -775,10 +833,12 @@ def plot_cli(
         then will be used as the linestyle for all horizontal lines.  If a list
         must be same length as `hlines_y`.  If None will take for the standard
         linestyles list.
+
     vlines_x:
         [optional, defaults to None]
 
         List of x values where to place a vertical line.
+
     vlines_ymin:
         [optional, defaults to None]
 
@@ -786,6 +846,7 @@ def plot_cli(
         same length as `vlines_x`.  If a single number will be used as the
         minimum x values for all vertical lines.  A missing value or None will
         start at the minimum x value for the entire plot.
+
     vlines_ymax:
         [optional, defaults to None]
 
@@ -793,6 +854,7 @@ def plot_cli(
         same length as `vlines_x`.  If a single number will be the maximum
         x value for all vertical lines.  A missing value or None will end at
         the maximum x value for the entire plot.
+
     vlines_colors:
         [optional, defaults to None]
 
@@ -800,6 +862,7 @@ def plot_cli(
         used as the color for all vertical lines.  If a list must be same
         length as `vlines_x`.  If None will take from the color pallette in the
         current plot style.
+
     vlines_linestyles:
         [optional, defaults to None]
 
@@ -1106,7 +1169,7 @@ The DataFrame that you supplied has {0} time-series.
             short_freq = ""
         else:
             # short freq string (day) OR (2 day)
-            short_freq = "({0})".format(pltfreq[beginstr:-1])
+            short_freq = "({})".format(pltfreq[beginstr:-1])
     except AttributeError:
         short_freq = ""
 
@@ -1132,8 +1195,8 @@ Each name in legend_names must be unique.
                 tsutils.error_wrapper(
                     """
 For 'legend_names' and most plot types you must have the same number of comma
-separated names as columns in the input data.  The input data has {0} where the
-number of 'legend_names' is {1}.
+separated names as columns in the input data.  The input data has {} where the
+number of 'legend_names' is {}.
 
 If `type` is 'xy' or 'double_mass' you need to have legend names as
 l1,l2,l3,...  where l1 is the legend for x1,y1, l2 is the legend for x2,y2,
@@ -1174,8 +1237,8 @@ l1,l2,l3,...  where l1 is the legend for x1,y1, l2 is the legend for x2,y2,
                 tsutils.error_wrapper(
                     """
 You have to have the same number of style strings as time-series to plot.
-You supplied '{0}' for style which has {1} style strings,
-but you have {2} time-series.
+You supplied '{}' for style which has {} style strings,
+but you have {} time-series.
 """.format(
                         style, len(nstyle), len(tsd.columns)
                     )
@@ -1309,7 +1372,7 @@ a datetime index.
                     tsutils.error_wrapper(
                         """
 The 'xy' and 'double_mass' types must have an even number of columns arranged
-as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
+as x,y pairs or an x-index and one y data column.  You supplied {} columns.
 """.format(
                             tsd.shape[1]
                         )
@@ -1445,8 +1508,8 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
             ax.legend(loc="best")
 
         if type == "double_mass":
-            xtitle = xtitle or "Cumulative {0}".format(tsd.columns[0])
-            ytitle = ytitle or "Cumulative {0}".format(tsd.columns[1])
+            xtitle = xtitle or "Cumulative {}".format(tsd.columns[0])
+            ytitle = ytitle or "Cumulative {}".format(tsd.columns[1])
 
     elif type in [
         "norm_xaxis",
@@ -1647,12 +1710,12 @@ as x,y pairs or an x-index and one y data column.  You supplied {0} columns.
 
         lag_plot(tsd.dropna(), lag=lag_plot_lag, ax=ax)
         xtitle = xtitle or "y(t)"
-        ytitle = ytitle or "y(t+{0})".format(short_freq or 1)
+        ytitle = ytitle or "y(t+{})".format(short_freq or 1)
     elif type == "autocorrelation":
         from pandas.plotting import autocorrelation_plot
 
         autocorrelation_plot(tsd.dropna(), ax=ax)
-        xtitle = xtitle or "Time Lag {0}".format(short_freq)
+        xtitle = xtitle or "Time Lag {}".format(short_freq)
     elif type == "bootstrap":
         from pandas.plotting import bootstrap_plot
 
@@ -1672,9 +1735,7 @@ The "heatmap" plot type can only work with daily time series.
 """
                 )
             )
-        dr = pd.date_range(
-            "{0}-01-01".format(byear), "{0}-12-31".format(eyear), freq="D"
-        )
+        dr = pd.date_range("{}-01-01".format(byear), "{}-12-31".format(eyear), freq="D")
         ntsd = tsd.reindex(index=dr).astype(float)
         groups = ntsd.iloc[:, 0].groupby(pd.Grouper(freq="A"))
         years = pd.DataFrame()

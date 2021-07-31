@@ -72,7 +72,7 @@ def kge12(predicted, reference, sr=1.0, sgamma=1.0, sbeta=1.0):
     for name, term in [("sr", sr), ("sgamma", sgamma), ("sbeta", sbeta)]:
         if term > 1 or term < 0:
             raise ValueError(
-                "'{0}' must be between 0 and 1, you gave {1}".format(name, term)
+                "'{}' must be between 0 and 1, you gave {}".format(name, term)
             )
 
     std_ref = np.std(reference)

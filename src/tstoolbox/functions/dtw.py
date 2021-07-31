@@ -17,13 +17,12 @@ from .. import tsutils
 def _dtw(ts_a, ts_b, d=lambda x, y: abs(x - y), window=10000):
     """Return the DTW similarity distance timeseries numpy arrays.
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     ts_a, ts_b : array of shape [n_samples, n_timepoints]
         Two arrays containing n_samples of timeseries data
         whose DTW distance between each sample of A and B
         will be compared
-
     d : DistanceMetric object (default = abs(x-y))
         the distance measure used for A_i - B_j in the
         DTW dynamic programming function
@@ -79,21 +78,34 @@ def dtw_cli(
     Parameters
     ----------
     window : int
-         [optional, default is 10000]
+        [optional, default is 10000]
 
-         Window length.
+        Window length.
+
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {round_index}
+
     {dropna}
+
     {skiprows}
+
     {index_type}
+
     {source_units}
+
     {target_units}
+
     {names}
+
     {clean}
+
     {tablefmt}
 
     """

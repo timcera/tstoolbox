@@ -39,17 +39,29 @@ def stdtozrxp_cli(
         [optional, default is None]
 
         The REXCHANGE ID to be written into the zrxp header.
+
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {dropna}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {clean}
+
     {source_units}
+
     {target_units}
+
     {round_index}
 
     """
@@ -107,7 +119,7 @@ def stdtozrxp(
             tsutils.error_wrapper(
                 """
 The "stdtozrxp" command can only accept a single
-'time-series, instead it is seeing {0}.
+'time-series, instead it is seeing {}.
 """.format(
                     len(tsd.columns)
                 )
@@ -115,7 +127,7 @@ The "stdtozrxp" command can only accept a single
         )
 
     if rexchange:
-        print("#REXCHANGE{0}|*|".format(rexchange))
+        print("#REXCHANGE{}|*|".format(rexchange))
     for i in range(len(tsd)):
         print(
             (

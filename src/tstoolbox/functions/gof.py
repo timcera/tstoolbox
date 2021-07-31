@@ -52,6 +52,7 @@ def gof_cli(
     Parameters
     ----------
     {input_ts}
+
     stats : str
         [optional,  Python: list, Command line: comma separated string,
         default is 'all']
@@ -134,29 +135,44 @@ def gof_cli(
         +-----------------+--------------------------------------------------+
 
     {columns}
+
     {start_date}
+
     {end_date}
+
     {round_index}
+
     {clean}
+
     {index_type}
+
     {names}
+
     {source_units}
+
     {target_units}
+
     {skiprows}
+
     {tablefmt}
+
     {float_format}
+
     kge_sr: float
         [optional, defaults to 1.0]
 
         Scaling factor for `kge09` and `kge12` correlation.
+
     kge09_salpha: float
         [optional, defaults to 1.0]
 
         Scaling factor for `kge09` alpha.
+
     kge_sbeta: float
         [optional, defaults to 1.0]
 
         Scaling factor for `kge09` and `kge12` beta.
+
     kge12_sgamma: float
         [optional, defaults to 1.0]
 
@@ -268,7 +284,7 @@ def gof(
         raise ValueError(
             tsutils.error_wrapper(
                 """
-The gof algorithms work with two time-series only.  You gave {0}.
+The gof algorithms work with two time-series only.  You gave {}.
 """.format(
                     len(tsd.columns)
                 )

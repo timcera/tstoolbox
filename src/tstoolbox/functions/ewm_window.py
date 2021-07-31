@@ -141,17 +141,29 @@ def ewm_window_cli(
         Ignore missing values when calculating weights.
 
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {dropna}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {clean}
+
     {source_units}
+
     {target_units}
+
     {print_input}
+
     {tablefmt}
 
     """
@@ -234,8 +246,8 @@ def ewm_window(
     if statistic:
         nntsd = pd.DataFrame()
         for stat in statistic:
-            ntsd = eval("ntsd.{0}()".format(stat))
-            ntsd = [tsutils.renamer(i, "ewm.{0}".format(stat)) for i in ntsd.columns]
+            ntsd = eval("ntsd.{}()".format(stat))
+            ntsd = [tsutils.renamer(i, "ewm.{}".format(stat)) for i in ntsd.columns]
             nntsd = nntsd.join(ntsd, how="outer")
     else:
         nntsd = ntsd

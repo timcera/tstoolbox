@@ -71,7 +71,7 @@ class TestAddTrend(TestCase):
             for tstep in range(1, nintervals):
                 aperiods = periods // tstep
                 dr = pd.date_range(
-                    sdate, periods=aperiods, freq="{0}{1}".format(tstep, testpc)
+                    sdate, periods=aperiods, freq="{}{}".format(tstep, testpc)
                 )
                 df = pd.DataFrame(np.arange(aperiods), index=dr)
                 df.index.name = "index"
@@ -151,7 +151,7 @@ class TestAddTrend(TestCase):
             inferred_code = df.index.inferred_freq
             if inferred_code is None:
                 continue
-            testcode = "{0}{1}".format(*key)
+            testcode = "{}{}".format(*key)
             if inferred_code[0] not in "123456789":
                 inferred_code = "1" + inferred_code
             if testcode in matches:

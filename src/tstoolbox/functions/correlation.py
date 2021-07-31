@@ -88,19 +88,33 @@ def correlation_cli(
             kendall : Kendall Tau correlation coefficient
 
             spearman : Spearman rank correlation
+
     {print_input}
+
     {input_ts}
+
     {start_date}
+
     {end_date}
+
     {clean}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {source_units}
+
     {target_units}
+
     {columns}
+
     {tablefmt}
+
     {round_index}
+
     {dropna}
 
     """

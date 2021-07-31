@@ -54,7 +54,6 @@ def rolling_window_cli(
     Parameters
     ----------
     statistic : str
-
         The statistic that will be applied to each
         window.
 
@@ -87,6 +86,7 @@ def rolling_window_cli(
         +----------+--------------------+
 
     {groupby}
+
     window
         [optional, default = 2]
 
@@ -152,17 +152,29 @@ def rolling_window_cli(
         DEPRECATED: Changed to 'window' to be consistent with pandas.
 
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {dropna}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {clean}
+
     {source_units}
+
     {target_units}
+
     {print_input}
+
     {tablefmt}
 
     """
@@ -286,7 +298,7 @@ def rolling_window(
             )
         )
         etsd.columns = [
-            tsutils.renamer(i, "rolling.{0}.{1}".format(win, statistic))
+            tsutils.renamer(i, "rolling.{}.{}".format(win, statistic))
             for i in etsd.columns
         ]
 

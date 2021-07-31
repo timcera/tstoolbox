@@ -35,29 +35,26 @@ def _boolrelextrema(
     ----------
     data: ndarray
     comparator: function
-        function to use to compare two data points.
-        Should take 2 numbers as arguments
+        function to use to compare two data points.  Should take 2 numbers as
+        arguments
     axis: int, optional
         axis over which to select from `data`
     order: int, optional
-        How many points on each side to require
-        a `comparator`(n,n+x) = True.
+        How many points on each side to require a `comparator`(n,n+x) = True.
     mode: string, optional
-        How the edges of the vector are treated.
-        'wrap' (wrap around) or 'clip' (treat overflow
-        as the same as the last (or first) element).
+        How the edges of the vector are treated.  'wrap' (wrap around) or
+        'clip' (treat overflow as the same as the last (or first) element).
         Default 'clip'. See numpy.take
 
     Returns
     -------
     extrema: ndarray
-        Indices of the extrema, as boolean array
-        of same shape as data. True for an extrema,
-        False else.
+        Indices of the extrema, as boolean array of same shape as data. True
+        for an extrema, False else.
 
-    See also
+    See Also
     --------
-    argrelmax,argrelmin
+    argrelmax, argrelmin
 
     Examples
     --------
@@ -94,9 +91,9 @@ def _argrel(data, axis=0, window=1):
 def _argrelmin(data, axis=0, order=1, mode="clip"):
     """Calculate the relative minima of `data`.
 
-    See also
+    See Also
     --------
-    argrelextrema,argrelmax
+    argrelextrema, argrelmax
 
     """
     return _argrelextrema(data, np.less, axis, order, mode)
@@ -105,9 +102,9 @@ def _argrelmin(data, axis=0, order=1, mode="clip"):
 def _argrelmax(data, axis=0, order=1, mode="clip"):
     """Calculate the relative maxima of `data`.
 
-    See also
+    See Also
     --------
-    argrelextrema,argrelmin
+    argrelextrema, argrelmin
 
     """
     return _argrelextrema(data, np.greater, axis, order, mode)
@@ -122,7 +119,7 @@ def _argrelextrema(data, comparator, axis=0, order=1, mode="clip"):
         Indices of the extrema, as an array
         of integers (same format as argmin, argmax
 
-    See also
+    See Also
     --------
     argrelmin, argrelmax
 
@@ -144,7 +141,7 @@ def _datacheck_peakdetect(x_axis, y_axis):
             tsutils.error_wrapper(
                 """
 The length of y values must equal the length of x values.  Instead the
-length of y values is {0} and the length of x values is {1}.
+length of y values is {} and the length of x values is {}.
 """.format(
                     len(y_axis), len(x_axis)
                 )
@@ -714,7 +711,7 @@ def _smooth(
 
     See Also
     --------
-    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman,
+    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman
     numpy.convolve, scipy.signal.lfilter
 
     """
@@ -833,12 +830,14 @@ def peak_detection_cli(
 
         'peak', 'valley', or 'both' to determine what should be
         returned.
+
     method: str
         [optional, default is 'rel']
 
         'rel', 'minmax', 'zero_crossing', 'parabola', 'sine' methods are
         available.  The different algorithms have different strengths
         and weaknesses.
+
     window: int
         [optional, default is 24]
 
@@ -855,35 +854,53 @@ def peak_detection_cli(
 
         For 'zero_crossing' the window keyword is the dimension of the
         smoothing window and should be an odd integer.
+
     pad_len: int
         [optional, default is 5]
 
         Used with FFT to pad edges of time-series.
+
     points: int
         [optional, default is 9]
 
         For 'parabola' and 'sine' methods. How many points around the
         peak should be used during curve fitting, must be odd.  The
+
     lock_frequency
         [optional, default is False]
 
         For 'sine' method only.  Specifies if the frequency argument of
         the model function should be locked to the value calculated from
         the raw peaks or if optimization process may tinker with it.
+
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {dropna}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {clean}
+
     {float_format}
+
     {round_index}
+
     {source_units}
+
     {target_units}
+
     {print_input}
+
     {tablefmt}
 
     """

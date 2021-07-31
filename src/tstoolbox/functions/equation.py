@@ -162,21 +162,37 @@ def equation_cli(
 
         to add to the current value 0.6 times the maximum row adjacent
         value.
+
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {dropna}
+
     {skiprows}
+
     {index_type}
+
     {clean}
+
     {print_input}
+
     {names}
+
     {float_format}
+
     {source_units}
+
     {target_units}
+
     {round_index}
+
     {tablefmt}
+
     {output_names}
 
     """
@@ -279,7 +295,7 @@ def equation(
                 raise IndexError(
                     """
 *
-*   There are {0} columns, but the equation you are trying to apply is trying
+*   There are {} columns, but the equation you are trying to apply is trying
 *   to access a column greater than that.
 *
 """.format(
@@ -289,7 +305,7 @@ def equation(
 
         else:
             y = eval(eqn)
-        y.columns = [tsutils.renamer(i, "equation{0}_".format(cnt)) for i in y.columns]
+        y.columns = [tsutils.renamer(i, "equation{}_".format(cnt)) for i in y.columns]
         newy = newy.join(y, how="outer")
 
     newy = tsutils.memory_optimize(newy)

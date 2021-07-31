@@ -54,23 +54,38 @@ def fit_cli(
         vector data, like time-series, whereas the LOESS is a generalized
         technique that can be applied to multi-dimensional data.  For working
         with time-series LOESS and LOWESS are identical.
+
     lowess_frac : float
         [optional, default=0.01, range between 0 and 1]
 
         Fraction of data used for `method`="lowess".
+
     {input_ts}
+
     {start_date}
+
     {end_date}
+
     {skiprows}
+
     {names}
+
     {columns}
+
     {dropna}
+
     {clean}
+
     {source_units}
+
     {target_units}
+
     {round_index}
+
     {index_type}
+
     {print_input}
+
     {tablefmt}
 
     """

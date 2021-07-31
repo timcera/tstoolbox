@@ -39,7 +39,7 @@ def tstopickle_cli(
     Parameters
     ----------
     filename : str
-         The filename to store the pickled data.
+        The filename to store the pickled data.
     {input_ts}
     {columns}
     {start_date}

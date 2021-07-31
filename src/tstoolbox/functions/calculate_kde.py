@@ -44,22 +44,34 @@ def calculate_kde_cli(
         [optional, defaults to True, input filter]
 
         Sort order.
+
     evaluate : bool
         [optional, defaults to False, transformation]
 
         Whether or not to return a time-series of KDE density values or
         the KDE curve.  Defaults to False, which would return the KDE
         curve.
+
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {source_units}
+
     {target_units}
+
     {clean}
+
     {tablefmt}
 
     """
@@ -117,7 +129,7 @@ def calculate_kde(
                 """
 Right now "calculate_kde" only support one time-series at a time.
 
-You gave {0}.
+You gave {}.
 """.format(
                     tsd.columns
                 )

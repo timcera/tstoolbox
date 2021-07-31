@@ -130,40 +130,54 @@ def fill_cli(
         +----------------------+----------------------------------------------+
 
     {print_input}
+
     {input_ts}
+
     {start_date}
+
     {end_date}
+
     {clean}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {source_units}
+
     {target_units}
+
     {columns}
+
     from_columns : str or list
         [required if method='from', otherwise not used]
 
         List of column names/numbers from which good values will be
         taken to fill missing values in the `to_columns` keyword.
+
     to_columns : str or list
         [required if method='from', otherwise not used]
 
         List of column names/numbers that missing values will be
         replaced in from good values in the `from_columns` keyword.
+
     limit : int
         [default is None]
 
         Gaps of missing values greater than this number will not be filled.
+
     order : int
         [required if method is 'spline' or 'polynomial', otherwise not used,
         default is None]
 
         The order of the 'spline' or 'polynomial' fit for missing values.
+
     {tablefmt}
+
     {force_freq}
-
         {pandas_offset_codes}
-
 
     """
     tsutils.printiso(
@@ -367,10 +381,10 @@ def fill_by_correlation(
             raise ValueError(
                 tsutils.error_wrapper(
                     """
-For methods in {0}
+For methods in {}
 You can only have a single source column.  You can pass in onlu 2
 time-series or use the flag 'choose_best' along with 'maximum_lag'.
-Instead there are {1} source time series.
+Instead there are {} source time series.
 """.format(
                         single_source_ts, len(basets.columns)
                     )

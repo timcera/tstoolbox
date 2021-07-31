@@ -311,5 +311,5 @@ def _dispopt(optname, optval):
     It displays the option name OPTNAME on a line by itself followed by its
     value OPTVAL on the following line.
     """
-    _disp("\t{0}".format(optname))
-    _disp("\t\t{0}".format(optval))
+    _disp("\t{}".format(optname))
+    _disp("\t\t{}".format(optval))

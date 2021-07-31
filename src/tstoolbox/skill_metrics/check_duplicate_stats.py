@@ -37,7 +37,7 @@ def check_duplicate_stats(stats1, stats2, threshold=0.01):
             """
 *
 *   Arguments stats1 and stats2 have different list lengths.
-*   len(stats1) = {0} != len(stats2) = {1}
+*   len(stats1) = {} != len(stats2) = {}
 *
 *""".format(
                 len(stats1), len(stats2)

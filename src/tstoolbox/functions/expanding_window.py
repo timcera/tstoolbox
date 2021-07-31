@@ -85,17 +85,29 @@ def expanding_window_cli(
         Set the labels at the center of the window.
 
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {dropna}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {clean}
+
     {source_units}
+
     {target_units}
+
     {print_input}
+
     {tablefmt}
 
     """
@@ -177,9 +189,9 @@ def expanding_window(
     if statistic:
         nntsd = pd.DataFrame()
         for stat in statistic:
-            ntsd = eval("ntsd.{0}()".format(stat))
+            ntsd = eval("ntsd.{}()".format(stat))
             ntsd.columns = [
-                tsutils.renamer(i, "expanding.{0}".format(stat)) for i in ntsd.columns
+                tsutils.renamer(i, "expanding.{}".format(stat)) for i in ntsd.columns
             ]
             nntsd = nntsd.join(ntsd, how="outer")
     else:

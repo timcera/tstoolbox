@@ -38,15 +38,25 @@ def describe_cli(
         [optional, default is False, output format]
 
         If 'transpose' option is used, will transpose describe output.
+
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {dropna}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {clean}
+
     {tablefmt}
 
     """

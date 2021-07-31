@@ -137,9 +137,9 @@ def unstack(
         raise ValueError(
             tsutils.error_wrapper(
                 """
-Duplicate index (time stamp and '{0}') where found.
+Duplicate index (time stamp and '{}') where found.
 Found these duplicate indices:
-{1}
+{}
 """.format(
                     column_names, tsd.index.get_duplicates()
                 )

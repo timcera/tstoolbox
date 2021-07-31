@@ -598,7 +598,7 @@ def set_ppf(ptype: Optional[Literal["norm", "lognorm", "weibull"]]) -> Callable:
 
         def ppf(y: Union[List[float], ndarray]) -> ndarray:
             """Percentage Point Function for the weibull distibution."""
-            return np.log(-np.log((1 - np.array(y))))
+            return np.log(-np.log(1 - np.array(y)))
 
         return ppf
     elif ptype is None:
@@ -716,7 +716,7 @@ def parsedate(
         raise ValueError(
             error_wrapper(
                 """
-Could not parse date string '{0}'.
+Could not parse date string '{}'.
 """.format(
                     dstr
                 )
@@ -744,23 +744,23 @@ def about(name):
     import pkg_resources
 
     namever = str(pkg_resources.get_distribution(name.split(".")[0]))
-    print("package name = {0}\npackage version = {1}".format(*namever.split()))
+    print("package name = {}\npackage version = {}".format(*namever.split()))
 
-    print("platform architecture = {0}".format(platform.architecture()))
-    print("platform machine = {0}".format(platform.machine()))
-    print("platform = {0}".format(platform.platform()))
-    print("platform processor = {0}".format(platform.processor()))
-    print("platform python_build = {0}".format(platform.python_build()))
-    print("platform python_compiler = {0}".format(platform.python_compiler()))
-    print("platform python branch = {0}".format(platform.python_branch()))
+    print("platform architecture = {}".format(platform.architecture()))
+    print("platform machine = {}".format(platform.machine()))
+    print("platform = {}".format(platform.platform()))
+    print("platform processor = {}".format(platform.processor()))
+    print("platform python_build = {}".format(platform.python_build()))
+    print("platform python_compiler = {}".format(platform.python_compiler()))
+    print("platform python branch = {}".format(platform.python_branch()))
     print(
-        "platform python implementation = {0}".format(platform.python_implementation())
+        "platform python implementation = {}".format(platform.python_implementation())
     )
-    print("platform python revision = {0}".format(platform.python_revision()))
-    print("platform python version = {0}".format(platform.python_version()))
-    print("platform release = {0}".format(platform.release()))
-    print("platform system = {0}".format(platform.system()))
-    print("platform version = {0}".format(platform.version()))
+    print("platform python revision = {}".format(platform.python_revision()))
+    print("platform python version = {}".format(platform.python_version()))
+    print("platform release = {}".format(platform.release()))
+    print("platform system = {}".format(platform.system()))
+    print("platform version = {}".format(platform.version()))
 
 
 def _round_index(ntsd: DataFrame, round_index: Optional[str] = None) -> DataFrame:
@@ -1109,7 +1109,7 @@ to the `target_units`: {target_units}
                     raise ValueError(
                         error_wrapper(
                             """
-No conversion between {0} and {1}.""".format(
+No conversion between {} and {}.""".format(
                                 words[1], target_units[inx]
                             )
                         )
@@ -1282,8 +1282,8 @@ def _pick(tsd: DataFrame, columns: Any) -> DataFrame:
             raise ValueError(
                 error_wrapper(
                     """
-The name {0} isn't in the list of column names
-{1}.
+The name {} isn't in the list of column names
+{}.
 """.format(
                         i, tsd.columns
                     )
@@ -1293,7 +1293,7 @@ The name {0} isn't in the list of column names
             raise ValueError(
                 error_wrapper(
                     """
-The requested column "{0}" must be greater than or equal to 0.
+The requested column "{}" must be greater than or equal to 0.
 First data column is 1, index is column 0.
 """.format(
                         i
@@ -1304,8 +1304,8 @@ First data column is 1, index is column 0.
             raise ValueError(
                 error_wrapper(
                     """
-The request column index {0} must be less than or equal to the
-number of columns {1}.
+The request column index {} must be less than or equal to the
+number of columns {}.
 """.format(
                         i, len(tsd.columns)
                     )
@@ -1330,7 +1330,7 @@ number of columns {1}.
             except IndexError:
                 jtsd = pd.DataFrame(tsd.loc[:, col], index=tsd.index)
 
-        newtsd = newtsd.join(jtsd, lsuffix="_{0}".format(index), how="outer")
+        newtsd = newtsd.join(jtsd, lsuffix="_{}".format(index), how="outer")
     return newtsd
 
 
@@ -1464,13 +1464,13 @@ input data..
     elif np.alltrue(data.index.is_month_end):
         if np.all(data.index.month == data.index[0].month):
             # Actually yearly with different ends
-            infer_freq = "A-{0}".format(_ANNUALS[data.index[0].month])
+            infer_freq = "A-{}".format(_ANNUALS[data.index[0].month])
         else:
             infer_freq = "M"
     elif np.alltrue(data.index.is_month_start):
         if np.all(data.index.month == data.index[0].month):
             # Actually yearly with different start
-            infer_freq = "A-{0}".format(_ANNUALS[data.index[0].month] - 1)
+            infer_freq = "A-{}".format(_ANNUALS[data.index[0].month] - 1)
         else:
             infer_freq = "MS"
 
@@ -1488,23 +1488,23 @@ input data..
     else:
         ngcd = reduce(gcd, ndiff)
     if ngcd < 1000:
-        infer_freq = "{0}N".format(ngcd)
+        infer_freq = "{}N".format(ngcd)
     elif ngcd < 1000000:
-        infer_freq = "{0}U".format(ngcd // 1000)
+        infer_freq = "{}U".format(ngcd // 1000)
     elif ngcd < 1000000000:
-        infer_freq = "{0}L".format(ngcd // 1000000)
+        infer_freq = "{}L".format(ngcd // 1000000)
     elif ngcd < 60000000000:
-        infer_freq = "{0}S".format(ngcd // 1000000000)
+        infer_freq = "{}S".format(ngcd // 1000000000)
     elif ngcd < 3600000000000:
-        infer_freq = "{0}T".format(ngcd // 60000000000)
+        infer_freq = "{}T".format(ngcd // 60000000000)
     elif ngcd < 86400000000000:
-        infer_freq = "{0}H".format(ngcd // 3600000000000)
+        infer_freq = "{}H".format(ngcd // 3600000000000)
     elif ngcd < 604800000000000:
-        infer_freq = "{0}D".format(ngcd // 86400000000000)
+        infer_freq = "{}D".format(ngcd // 86400000000000)
     elif ngcd < 2419200000000000:
-        infer_freq = "{0}W".format(ngcd // 604800000000000)
+        infer_freq = "{}W".format(ngcd // 604800000000000)
         if np.all(data.index.dayofweek == data.index[0].dayofweek):
-            infer_freq = infer_freq + "-{0}".format(_WEEKLIES[data.index[0].dayofweek])
+            infer_freq = infer_freq + "-{}".format(_WEEKLIES[data.index[0].dayofweek])
         else:
             infer_freq = "D"
 
@@ -1658,7 +1658,7 @@ def _printiso(
             try:
                 tsd.to_csv(
                     sys.stdout,
-                    float_format="%{0}".format(float_format),
+                    float_format="%{}".format(float_format),
                     date_format=date_format,
                     sep=sep,
                     index=print_index,
@@ -1782,7 +1782,7 @@ def is_valid_url(url: bytes, qualifying: Optional[Any] = None) -> bool:
     min_attributes = ("scheme", "netloc")
     qualifying = min_attributes if qualifying is None else qualifying
     token = urlparse(url)
-    return all((getattr(token, qualifying_attr) for qualifying_attr in qualifying))
+    return all(getattr(token, qualifying_attr) for qualifying_attr in qualifying)
 
 
 # @typic.al
@@ -1815,7 +1815,6 @@ def read_iso_ts(
     Returns
     -------
     df: DataFrame
-
         Returns a DataFrame.
 
     """
@@ -2112,7 +2111,7 @@ File or file-like object "{fname}" does not exist.""".format(
                 res.index = res.index.tz_localize(words[1])
             except TypeError:
                 pass
-            res.index.name = "Datetime:{0}".format(words[1])
+            res.index.name = "Datetime:{}".format(words[1])
         else:
             res.index.name = "Datetime"
 

@@ -222,7 +222,7 @@ def get_taylor_diagram_options(*args, **kwargs):
                     raise ValueError(
                         """
 *
-*   Invalid string format for rmslabelformat: {0}
+*   Invalid string format for rmslabelformat: {}
 *
 """.format(
                             optvalue

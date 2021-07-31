@@ -38,7 +38,6 @@ def lag_cli(
         If an integer will calculate all lags up to and including the
         lag number.  If a list will calculate each lag in the list.  If
         a string must be a comma separated list of integers.
-
     {print_input}
     {input_ts}
     {start_date}

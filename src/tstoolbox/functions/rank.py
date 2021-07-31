@@ -53,6 +53,7 @@ def rank_cli(
 
         0 or 'index' for rows. 1 or 'columns' for columns.  Index to
         direct ranking.
+
     method : str
         [optional, default is 'average']
 
@@ -77,6 +78,7 @@ def rank_cli(
 
         Include only float, int, boolean data. Valid only for DataFrame
         or Panel objects.
+
     na_option : str
         [optional, default is 'keep']
 
@@ -94,24 +96,40 @@ def rank_cli(
         [optional, default is True]
 
         False ranks by high (1) to low (N)
+
     pct
         [optional, default is False]
 
         Computes percentage rank of data.
+
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {dropna}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {clean}
+
     {print_input}
+
     {float_format}
+
     {source_units}
+
     {target_units}
+
     {round_index}
+
     {tablefmt}
 
     """

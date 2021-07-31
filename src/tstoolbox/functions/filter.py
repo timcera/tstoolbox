@@ -158,27 +158,32 @@ def filter_cli(
         OneOf("fft", "butterworth")
 
         The "fft" and "butterworth" types are defined by cutoff frequencies.
+
     filter_pass: str
         OneOf("lowpass", "highpass", "bandpass", "bandstop")
 
         Indicates what frequencies to block.
+
     cutoff_period
         [optional, default is None]
 
         DEPRECATED: Use `lowpass_cutoff` if `filter_pass` equals "lowpass"
         and `highpass_cutoff` if `filter_pass` equals "highpass".
+
     lowpass_cutoff: float
         [optional, default is None, used only if `filter_pass` equals
          "lowpass", "bandpass" or "bandstop"]
 
         The low frequency cutoff when `filter_pass` equals "vertical",
         "bandpass", or "bandstop".
+
     highpass_cutoff: float
         [optional, default is None, used only if `filter_pass` equals
          "highpass", "bandpass" or "bandstop"]
 
         The high frequency cutoff when `filter_pass` equals "highpass",
         "bandpass", or "bandstop".
+
     window_len: int
         [optional, default is 3]
 
@@ -186,34 +191,52 @@ def filter_cli(
         The larger the number the softer the filter edges.  A value of 1
         will have a brick wall step function which may introduce
         frequencies into the filtered output.
+
     butterworth_stages: int
         [optional, default is 1]
 
         The order of the butterworth filter.
+
     reverse_second_stage: bool
         [optional, default is True]
 
         Will perform a second filter in reverse to eliminate shifting
         in time caused by the first filter.
+
     {input_ts}
+
     {start_date}
+
     {end_date}
+
     {columns}
+
     {float_format}
+
     {dropna}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {clean}
+
     {round_index}
+
     {source_units}
+
     {target_units}
+
     {print_input}
+
     cutoff_period
         [optional, default is None]
 
         DEPRECATED: Use `lowpass_cutoff` if `filter_pass` equals "lowpass"
         and `highpass_cutoff` if `filter_pass` equals "highpass".
+
     {tablefmt}
 
     """
@@ -313,7 +336,7 @@ def filter(
         raise ValueError(
             tsutils.error_wrapper(
                 """
-Input vector (length={0}) needs to be bigger than window size ({1}).
+Input vector (length={}) needs to be bigger than window size ({}).
 """.format(
                     len(tsd.values), window_len
                 )

@@ -18,7 +18,7 @@ from . import capture
 class TestFill(TestCase):
     def setUp(self):
         dindex = pd.date_range("2011-01-01T00:00:00", periods=26, freq="H")
-        self.ats = np.ones((26)) * 2
+        self.ats = np.ones(26) * 2
         self.ats = pd.DataFrame(
             self.ats,
             index=dindex,

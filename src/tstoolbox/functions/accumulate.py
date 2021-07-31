@@ -56,19 +56,33 @@ def accumulate_cli(
 
         Command line example::
             --statistic=sum,max
+
     {input_ts}
+
     {start_date}
+
     {end_date}
+
     {skiprows}
+
     {names}
+
     {columns}
+
     {dropna}
+
     {clean}
+
     {source_units}
+
     {target_units}
+
     {round_index}
+
     {index_type}
+
     {print_input}
+
     {tablefmt}
 
     """
@@ -129,7 +143,7 @@ def accumulate(
     ntsd = pd.DataFrame()
 
     for stat in statistic:
-        tmptsd = eval("tsd.cum{0}()".format(stat))
+        tmptsd = eval("tsd.cum{}()".format(stat))
         tmptsd.columns = [tsutils.renamer(i, stat) for i in tmptsd.columns]
         ntsd = ntsd.join(tmptsd, how="outer")
     return tsutils.return_input(print_input, tsd, ntsd)

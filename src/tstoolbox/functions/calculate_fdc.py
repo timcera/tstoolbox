@@ -57,6 +57,7 @@ def calculate_fdc_cli(
 
         The distribution used to shift the plotting position values.
         Choose from 'norm', 'lognorm', 'weibull', and None.
+
     plotting_position : str
         [optional, default is 'weibull', transformation]
 
@@ -71,21 +72,34 @@ def calculate_fdc_cli(
         [optional, default is 'ascending', input filter]
 
         Sort order is either 'ascending' or 'descending'.
+
     {input_ts}
+
     {columns}
+
     {start_date}
+
     {end_date}
+
     {skiprows}
+
     {index_type}
+
     {names}
+
     {source_units}
+
     {target_units}
+
     {clean}
+
     {tablefmt}
+
     add_index : bool
         [optional, default is False]
 
         Add a monotonically increasing index.
+
     include_cd : bool
         [optional, default is False]
 
@@ -98,6 +112,7 @@ def calculate_fdc_cli(
 
             Pc is the cumulative probability
             N is the number of values
+
     include_cl : bool
         [optional, default is False]
 
@@ -113,6 +128,7 @@ def calculate_fdc_cli(
             t is the Student's "t" value for number of samples and
                 confidence interval as defined with `ci` keyword
             Sd is the standard deviation with the equation above
+
     ci : float
         [optional, default is 0.9]
 

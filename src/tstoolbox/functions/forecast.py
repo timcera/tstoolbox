@@ -174,7 +174,7 @@ def automatic(
         raise ValueError(
             tsutils.error_wrapper(
                 """
-To forecast multiple columns requires `print_cols` to be "forecast", not {0}.
+To forecast multiple columns requires `print_cols` to be "forecast", not {}.
 """.format(
                     print_cols
                 )
@@ -323,7 +323,7 @@ def arima(
         raise ValueError(
             tsutils.error_wrapper(
                 """
-To forecast multiple columns requires `print_cols` to be "forecast", not {0}.
+To forecast multiple columns requires `print_cols` to be "forecast", not {}.
 """.format(
                     print_cols
                 )

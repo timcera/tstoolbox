@@ -58,7 +58,7 @@ def check_taylor_stats(stds, crmsds, cors, threshold=0.01):
             ValueError(
                 """
 *
-*   Incompatible data indices: {0}
+*   Incompatible data indices: {}
 *
 *   You must have:
 *       crmsds - sqrt(stds.^2 + stds(1)^2 - 2*stds*stds(1).*cors) = 0
