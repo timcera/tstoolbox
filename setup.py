@@ -61,6 +61,13 @@ extras_require = {
         "pytest-cov",
         "pytest-mpl",
         "pre-commit",
+        "black-nbconvert",
+        "blacken-docs",
+        "velin",
+        "isort",
+        "pyroma",
+        "pyupgrade",
+        "commitizen",
     ]
 }
 
@@ -82,6 +89,7 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development :: Libraries :: Python Modules",
