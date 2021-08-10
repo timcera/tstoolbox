@@ -16,7 +16,6 @@ from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
-
 try:
     from typing import Literal
 except ImportError:
@@ -1413,6 +1412,9 @@ as x,y pairs or an x-index and one y data column.  You supplied {} columns.
             subplots=subplots,
             sharex=sharex,
             sharey=sharey,
+            colors=colors,
+            markerstyles=markerstyles,
+            linestyles=linestyles,
             logx=logx,
             logy=logy,
             xlim=xlim,
