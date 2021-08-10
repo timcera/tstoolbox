@@ -9,3 +9,10 @@ version = "103.14.9"
 tag_format = "v$version"
 version_files = ["VERSION"]
 update_changelog_on_bump = true
+
+[build-system]
+requires = [
+    "setuptools",
+    "oldest-supported-numpy",
+]
+build-backend = "setuptools.build_meta"

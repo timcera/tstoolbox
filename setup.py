@@ -5,7 +5,6 @@ import sys
 
 from setuptools import find_packages, setup
 
-
 # temporarily redirect config directory to prevent matplotlib importing
 # testing that for writeable directory which results in sandbox error in
 # certain easy_install versions
@@ -97,7 +96,7 @@ setup(
     keywords="time_series",
     author="Tim Cera, PE",
     author_email="tim@cerazone.net",
-    url="http://timcera.bitbucket.io/{pkg_name}/docsrc/index.html".format(**locals()),
+    url="http://timcera.bitbucket.io/{pkg_name}/docs/index.html".format(**locals()),
     license="BSD",
     packages=find_packages("src"),
     package_dir={"": "src"},
