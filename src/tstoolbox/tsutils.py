@@ -32,7 +32,6 @@ from scipy.stats.distributions import lognorm, norm
 from tabulate import simple_separated_format
 from tabulate import tabulate as tb
 
-
 try:
     from typing import Literal
 except ImportError:
@@ -1652,6 +1651,7 @@ def _printiso(
     elif isinstance(tsd, (int, float, tuple, np.ndarray)):
         tablefmt = None
 
+    ntablefmt = None
     if tablefmt in ["csv", "tsv", "csv_nos", "tsv_nos"]:
         sep = {"csv": ",", "tsv": "\t", "csv_nos": ",", "tsv_nos": "\t"}[tablefmt]
         if isinstance(tsd, pd.DataFrame):
@@ -1667,18 +1667,28 @@ def _printiso(
             except IOError:
                 return
         else:
-            tablefmt = simple_separated_format(sep)
+            ntablefmt = simple_separated_format(sep)
 
     if tablefmt is None:
         print(str(list(tsd))[1:-1])
 
-    all_table = tb(
-        tsd,
-        tablefmt=tablefmt,
-        showindex=showindex,
-        headers=headers,
-        floatfmt=float_format,
-    )
+    if ntablefmt is None:
+        all_table = tb(
+            tsd,
+            tablefmt=tablefmt,
+            showindex=showindex,
+            headers=headers,
+            floatfmt=float_format,
+        )
+    else:
+        all_table = tb(
+            tsd,
+            tablefmt=ntablefmt,
+            showindex=showindex,
+            headers=headers,
+            floatfmt=float_format,
+        )
+
     if tablefmt in ["csv_nos", "tsv_nos"]:
         print(all_table.replace(" ", ""))
     else:
