@@ -15,7 +15,6 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 from .. import tsutils
 
-
 warnings.filterwarnings("ignore")
 
 _FUNCS = {
@@ -69,6 +68,7 @@ def regression_cli(
     names=None,
     print_input=False,
     tablefmt="csv",
+    por=False,
 ):
     """Regression of one or more time-series or indices to a time-series.
 
@@ -222,6 +222,8 @@ def regression_cli(
     {print_input}
 
     {tablefmt}
+
+    {por}
     """
     tsutils.printiso(
         regression(
@@ -240,6 +242,7 @@ def regression_cli(
             index_type=index_type,
             names=names,
             print_input=print_input,
+            por=por,
         ),
         tablefmt=tablefmt,
         headers=[],
@@ -271,6 +274,7 @@ def regression(
     index_type="datetime",
     names=None,
     print_input=False,
+    por=False,
 ):
     """Regression of data."""
     for to in y_train_col:
@@ -298,16 +302,17 @@ keywords.  Instead you have "{to}" in both.
         round_index=round_index,
         dropna=dropna,
         clean=clean,
+        por=por,
     )
 
     if print_input is True:
         ntsd = tsd.copy()
     else:
         ntsd = tsd
+
     ntsd = tsutils.asbestfreq(ntsd)
 
     testfreqstr = ntsd.index.freqstr.lstrip("0123456789")
-
     if testfreqstr[0] == "A":
         ntsd[ntsd.index.name + "_"] = ntsd.index.year - ntsd.index[0].year
     elif testfreqstr[0] == "M":
@@ -335,9 +340,11 @@ keywords.  Instead you have "{to}" in both.
 
     wtsd = ntsd.iloc[:, x_train_cols + y_train_col]
 
-    # Train on 'any' dropna
+    # Train on 'any' dropna rows
     wtsddna = wtsd.dropna()
+    # Train on last column
     y_train = wtsddna.iloc[:, -1].values
+    # with all other columns
     x_train = wtsddna.iloc[:, :-1].values
 
     regr = _FUNCS[method]()
@@ -360,9 +367,13 @@ keywords.  Instead you have "{to}" in both.
         rdata.append(["Coefficient of determination", r2_score(y_train, y_pred)])
         return rdata
     else:
-        return tsutils.return_input(
-            print_input, tsd, pd.DataFrame(y_pred, index=x_pred.index)
-        )
+        result = pd.DataFrame(y_pred, index=x_pred.index)
+        result = result.reindex(index=wtsd.index)
+        return tsutils.return_input(print_input, tsd, result)
 
 
 regression.__doc__ = regression_cli.__doc__
+
+
+if __name__ == "__init__":
+    pass

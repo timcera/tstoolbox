@@ -1,3 +1,11 @@
+## v103.14.10 (2021-08-15)
+
+### Fix
+
+- fixed the way `start_date` and `end_date` were handled by adding working `por` keyword
+- **tsutils.py**: print_iso changed to correctly print out no spaces table formats *_nos
+- **plot.py**: plottoolbox needed additional keywords to correctly plot time-series
+
 ## v103.14.9 (2021-08-01)
 
 ## v103.14.8 (2021-07-30)

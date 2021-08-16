@@ -168,6 +168,12 @@ _CODES["ANNUAL"]: {
 }
 
 docstrings = {
+    "por": r"""por
+        The `por` keyword adjusts the operation of `start_date` and `end_date`
+        If "False" (the default) choose the indices in the time-series between
+        `start_date` and `end_date`.  If "True" and if `start_date` or
+        `end_date` is outside of the time-series will extend the time-series by
+        inserting the exterior date(s).""",
     "lat": r"""lat
         The latitude of the point. North hemisphere is positive from 0 to 90. South
         hemisphere is negative from 0 to -90.""",
@@ -1234,7 +1240,7 @@ def common_kwds(
     if bestfreq is True:
         ntsd = asbestfreq(ntsd, force_freq=force_freq)
 
-    ntsd = _date_slice(ntsd, start_date=start_date, end_date=end_date)
+    ntsd = _date_slice(ntsd, start_date=start_date, end_date=end_date, por=por)
 
     if ntsd.index.inferred_type == "datetime64":
         ntsd.index.name = "Datetime"
@@ -1337,29 +1343,33 @@ def _date_slice(
     input_tsd: DataFrame,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
+    por=False,
 ) -> DataFrame:
     """Private function to slice time series."""
     if input_tsd.index.inferred_type == "datetime64":
-        accdate = []
-        for testdate in [start_date, end_date]:
-            if testdate is None:
-                tdate = None
-            else:
-                if input_tsd.index.tz is None:
-                    tdate = pd.Timestamp(testdate)
-                else:
-                    tdate = pd.Timestamp(testdate, tz=input_tsd.index.tz)
-                # Is this comparison cheaper than the .join?
-                if not np.any(input_tsd.index == tdate):
-                    # Create a dummy column at the date I want, then delete
-                    # Not the best, but...
-                    row = pd.DataFrame([np.nan], index=[tdate])
-                    row.columns = ["deleteme"]
-                    input_tsd = input_tsd.join(row, how="outer")
-                    input_tsd.drop("deleteme", inplace=True, axis=1)
-            accdate.append(tdate)
+        if start_date is None:
+            start_date = input_tsd.index[0]
 
-        return input_tsd[slice(*accdate)]
+        if end_date is None:
+            end_date = input_tsd.index[-1]
+
+        if input_tsd.index.tz is None:
+            start_date = pd.Timestamp(start_date)
+            end_date = pd.Timestamp(end_date)
+        else:
+            start_date = pd.Timestamp(start_date, tz=input_tsd.index.tz)
+            end_date = pd.Timestamp(end_date, tz=input_tsd.index.tz)
+
+        mask = (input_tsd.index >= start_date) & (input_tsd.index <= end_date)
+
+        input_tsd = input_tsd.loc[mask, :]
+
+        if por is True:
+            if start_date < input_tsd.index[0]:
+                input_tsd = pd.DataFrame(index=[start_date]).append(input_tsd)
+            if end_date > input_tsd.index[-1]:
+                input_tsd = input_tsd.append(pd.DataFrame(index=[end_date]))
+            input_tsd = asbestfreq(input_tsd)
     return input_tsd
 
 
@@ -1408,6 +1418,7 @@ def asbestfreq(data: DataFrame, force_freq: Optional[str] = None) -> DataFrame:
     ndiff = (
         ndata.index.values.astype("int64")[1:] - ndata.index.values.astype("int64")[:-1]
     )
+
     if np.any(ndiff <= 0):
         raise ValueError(
             error_wrapper(
