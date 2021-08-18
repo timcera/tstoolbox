@@ -3,6 +3,7 @@
 ignore = [".travis.yml",
           "docs/_function_autosummary/*"]
 
+
 [tool.commitizen]
 name = "cz_conventional_commits"
 version = "103.14.10"
@@ -10,9 +11,14 @@ tag_format = "v$version"
 version_files = ["VERSION"]
 update_changelog_on_bump = true
 
+
 [build-system]
 requires = [
     "setuptools",
     "oldest-supported-numpy",
 ]
 build-backend = "setuptools.build_meta"
+
+
+[tool.coverage.run]
+relative_files = true

@@ -55,7 +55,7 @@ extras_require = {
         "cleanpy",
         "twine",
         "pytest",
-        "coverage",
+        "coverage[toml]",
         "flake8",
         "pytest-cov",
         "pytest-mpl",
