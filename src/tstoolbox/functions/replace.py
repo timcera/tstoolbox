@@ -4,14 +4,13 @@
 from __future__ import absolute_import, division, print_function
 
 import warnings
-from typing import List
+from typing import List, Optional
 
 import mando
 import typic
 from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
-
 
 warnings.filterwarnings("ignore")
 
@@ -90,8 +89,8 @@ def replace_cli(
 @tsutils.transform_args(from_values=tsutils.make_list, to_values=tsutils.make_list)
 @typic.al
 def replace(
-    from_values: List[float],
-    to_values: List[float],
+    from_values: Optional[List[float, int, str, None]],
+    to_values: Optional[List[float, int, str, None]],
     round_index=None,
     input_ts="-",
     columns=None,
