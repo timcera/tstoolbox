@@ -4,7 +4,7 @@
 from __future__ import absolute_import, division, print_function
 
 import warnings
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import mando
 import typic
@@ -89,8 +89,8 @@ def replace_cli(
 @tsutils.transform_args(from_values=tsutils.make_list, to_values=tsutils.make_list)
 @typic.al
 def replace(
-    from_values: Optional[List[float, int, str, None]],
-    to_values: Optional[List[float, int, str, None]],
+    from_values: Optional[List[Optional[Union[float, int, str]]]],
+    to_values: Optional[List[Optional[Union[float, int, str]]]],
     round_index=None,
     input_ts="-",
     columns=None,
