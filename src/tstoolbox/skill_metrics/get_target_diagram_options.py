@@ -102,21 +102,20 @@ def get_target_diagram_options(**kwargs):
         optname = optname.lower()
         if optname not in option:
             raise ValueError("Unrecognized option: " + optname)
-        else:
-            # Replace option value with that from arguments
-            option[optname] = optvalue
+        # Replace option value with that from arguments
+        option[optname] = optvalue
 
-            # Check values for specific options
-            if optname == "equalaxes":
-                option["equalaxes"] = check_on_off(option["equalaxes"])
-            elif optname == "markerlegend":
-                option["markerlegend"] = check_on_off(option["markerlegend"])
-            elif optname == "nonrmsdz":
-                option["nonrmsdz"] = check_on_off(option["nonrmsdz"])
-            elif optname == "normalized":
-                option["normalized"] = check_on_off(option["normalized"])
-            elif optname == "overlay":
-                option["overlay"] = check_on_off(option["overlay"])
+        # Check values for specific options
+        if optname == "equalaxes":
+            option["equalaxes"] = check_on_off(option["equalaxes"])
+        elif optname == "markerlegend":
+            option["markerlegend"] = check_on_off(option["markerlegend"])
+        elif optname == "nonrmsdz":
+            option["nonrmsdz"] = check_on_off(option["nonrmsdz"])
+        elif optname == "normalized":
+            option["normalized"] = check_on_off(option["normalized"])
+        elif optname == "overlay":
+            option["overlay"] = check_on_off(option["overlay"])
 
     option["colormap"] = option["nonrmsdz"]
 
