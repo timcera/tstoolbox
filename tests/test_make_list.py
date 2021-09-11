@@ -6,7 +6,8 @@ from tstoolbox import tsutils
 
 
 class TestMakeList(TestCase):
-    def test_make_list(self):
+    @staticmethod
+    def test_make_list():
         assert tsutils.make_list(None) == None
         assert tsutils.make_list(1) == [1]
         assert tsutils.make_list(1.2) == [1.2]

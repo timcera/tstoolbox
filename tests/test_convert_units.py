@@ -10,7 +10,8 @@ from tstoolbox import tstoolbox
 
 
 class TestConvertUnits(TestCase):
-    def test_convert_units(self):
+    @staticmethod
+    def test_convert_units():
         a = tstoolbox.read("tests/data_gainesville_daily_precip.csv", target_units="in")
         b = tstoolbox.equation(
             "x1/25.4", input_ts="tests/data_gainesville_daily_precip.csv"
