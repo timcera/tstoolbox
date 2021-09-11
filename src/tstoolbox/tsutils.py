@@ -1870,7 +1870,7 @@ def read_iso_ts(
     # sep = kwds.get("sep", ",")
     # header = kwds.get("header", 0)
     clean = kwds.get("clean", False)
-    names = kwds.get("names", None)
+    names = kwds.get("names")
 
     if not inindat:
         inindat = "-"
