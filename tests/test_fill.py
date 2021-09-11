@@ -198,7 +198,8 @@ class TestFill(TestCase):
         out = tstoolbox.fill(method=2.42, input_ts="tests/data_missing.csv")
         assert_frame_equal(out, self.con_compare)
 
-    def test_fill_from(self):
+    @staticmethod
+    def test_fill_from():
         """Test fill with from API."""
         out = tstoolbox.fill(
             method="from",
@@ -212,7 +213,8 @@ class TestFill(TestCase):
         compare.loc["2000-01-04", "Value::fill"] = 23.1
         assert_frame_equal(out, compare)
 
-    def test_fill_value(self):
+    @staticmethod
+    def test_fill_value():
         """Test fill with value API."""
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.fill(method="a", input_ts="tests/data_missing.csv")

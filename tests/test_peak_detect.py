@@ -144,7 +144,8 @@ class TestPeakDetect(TestCase):
         assert_frame_equal(out, self.compare)
 
     # CLI...
-    def test_peak_rel_cli(self):
+    @staticmethod
+    def test_peak_rel_cli():
         """Test peak detection CLI using the default method."""
         args = 'tstoolbox peak_detection --extrema="both" --print_input=True'
         args = shlex.split(args)
@@ -154,7 +155,8 @@ class TestPeakDetect(TestCase):
         out = tsutils.read_iso_ts(out)
         assert_frame_equal(out, output_peak_detection)
 
-    def test_peak_minmax_cli(self):
+    @staticmethod
+    def test_peak_minmax_cli():
         """Test peak detection CLI using the minmax method."""
         args = (
             "tstoolbox peak_detection "
@@ -173,7 +175,8 @@ class TestPeakDetect(TestCase):
         out.to_csv("out.csv")
         assert_frame_equal(out, output_peak_detection)
 
-    def test_peak_zero_crossing_cli(self):
+    @staticmethod
+    def test_peak_zero_crossing_cli():
         """Test peak detection CLI using the zero_crossing method."""
         args = (
             "tstoolbox peak_detection "
@@ -199,7 +202,8 @@ class TestPeakDetect(TestCase):
     #     self.maxDiff = None
     #     self.assertEqual(out, output_peak_detection)
 
-    def test_peak_sine_cli(self):
+    @staticmethod
+    def test_peak_sine_cli():
         """Test peak detection CLI using the 'sine' method."""
         args = (
             "tstoolbox peak_detection "

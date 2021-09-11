@@ -101,7 +101,8 @@ class TestFilter(TestCase):
             self.maxDiff = None
             assert_frame_equal(out, self.fft_lowpass, check_column_type=False)
 
-    def test_small_window_len(self):
+    @staticmethod
+    def test_small_window_len():
         with pytest.deprecated_call():
             out = tstoolbox.filter(
                 "flat", "lowpass", input_ts="tests/data_sine.csv", window_len=2
@@ -111,14 +112,16 @@ class TestFilter(TestCase):
             # NOp
             assert_frame_equal(out, out1)
 
-    def test_large_window_len(self):
+    @staticmethod
+    def test_large_window_len():
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.filter(
                 "flat", "lowpass", input_ts="tests/data_sine.csv", window_len=1000
             )
         assert r"Input vector (length=" in str(e_info.value)
 
-    def test_filter_type(self):
+    @staticmethod
+    def test_filter_type():
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.filter("flatter", "lowpass", input_ts="tests/data_sine.csv")
         assert r"Given value <'flatter'> fails constraints:" in str(e_info.value)

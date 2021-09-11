@@ -35,7 +35,8 @@ class TestRead(TestCase):
         out.name = "Datetime"
         assert_index_equal(out, self.data.index)
 
-    def test_exception(self):
+    @staticmethod
+    def test_exception():
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.createts()
         assert r"If input_ts is None, then start_date, end_date" in str(e_info.value)
