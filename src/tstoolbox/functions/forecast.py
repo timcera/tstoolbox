@@ -165,10 +165,7 @@ def automatic(
     # create a forecast engine. This is the main object handling all the operations
     lEngine = autof.cForecastEngine()
 
-    if len(tsd.columns) > 1:
-        multiple_cols = True
-    else:
-        multiple_cols = False
+    multiple_cols = len(tsd.columns) > 1
 
     if multiple_cols is True and print_cols != "forecast":
         raise ValueError(
@@ -314,10 +311,7 @@ def arima(
     # create a forecast engine. This is the main object handling all the operations
     lEngine = autof.cForecastEngine()
 
-    if len(tsd.columns) > 1:
-        multiple_cols = True
-    else:
-        multiple_cols = False
+    multiple_cols = len(tsd.columns) > 1
 
     if multiple_cols is True and print_cols != "forecast":
         raise ValueError(
