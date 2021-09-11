@@ -107,18 +107,9 @@ def _getColorBarLocation(hc, option, **kwargs):
     cxscale : scale factor to adjust thickness of color bar
     """
     # Check for optional arguments and set defaults if required
-    if "xscale" in kwargs:
-        xscale = kwargs["xscale"]
-    else:
-        xscale = 1.0
-    if "yscale" in kwargs:
-        yscale = kwargs["yscale"]
-    else:
-        yscale = 1.0
-    if "cxscale" in kwargs:
-        cxscale = kwargs["cxscale"]
-    else:
-        cxscale = 1.0
+    xscale = kwargs.get("xscale", 1.0)
+    yscale = kwargs.get("yscale", 1.0)
+    cxscale = kwargs.get("cxscale", 1.0)
 
     # Get current position of color bar
     cp = hc.ax.get_position()

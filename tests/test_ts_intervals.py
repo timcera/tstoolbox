@@ -154,8 +154,7 @@ class TestAddTrend(TestCase):
             testcode = "{}{}".format(*key)
             if inferred_code[0] not in "123456789":
                 inferred_code = "1" + inferred_code
-            if testcode in matches:
-                testcode = matches[testcode]
+            testcode = matches.get(testcode)
             try:
                 self.assertEqual(testcode, inferred_code.split("-")[0])
             except AssertionError:
