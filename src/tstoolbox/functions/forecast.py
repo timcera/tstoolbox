@@ -202,8 +202,7 @@ To forecast multiple columns requires `print_cols` to be "forecast", not {}.
 
     if print_cols == "forecast":
         return rtsd
-    else:
-        return df_forecast
+    return df_forecast
 
 
 @mando.main.forecast.command("arima")
@@ -351,5 +350,4 @@ To forecast multiple columns requires `print_cols` to be "forecast", not {}.
 
     if print_cols == "forecast":
         return rtsd
-    else:
-        return df_forecast
+    return df_forecast
