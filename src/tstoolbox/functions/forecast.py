@@ -165,10 +165,7 @@ def automatic(
     # create a forecast engine. This is the main object handling all the operations
     lEngine = autof.cForecastEngine()
 
-    if len(tsd.columns) > 1:
-        multiple_cols = True
-    else:
-        multiple_cols = False
+    multiple_cols = len(tsd.columns) > 1
 
     if multiple_cols is True and print_cols != "forecast":
         raise ValueError(
@@ -202,8 +199,7 @@ To forecast multiple columns requires `print_cols` to be "forecast", not {}.
 
     if print_cols == "forecast":
         return rtsd
-    else:
-        return df_forecast
+    return df_forecast
 
 
 @mando.main.forecast.command("arima")
@@ -314,10 +310,7 @@ def arima(
     # create a forecast engine. This is the main object handling all the operations
     lEngine = autof.cForecastEngine()
 
-    if len(tsd.columns) > 1:
-        multiple_cols = True
-    else:
-        multiple_cols = False
+    multiple_cols = len(tsd.columns) > 1
 
     if multiple_cols is True and print_cols != "forecast":
         raise ValueError(
@@ -351,5 +344,4 @@ To forecast multiple columns requires `print_cols` to be "forecast", not {}.
 
     if print_cols == "forecast":
         return rtsd
-    else:
-        return df_forecast
+    return df_forecast

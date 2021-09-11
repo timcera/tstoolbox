@@ -189,67 +189,66 @@ def get_taylor_diagram_options(*args, **kwargs):
         optname = optname.lower()
         if optname not in option:
             raise ValueError("Unrecognized option: " + optname)
-        else:
-            # Replace option value with that from arguments
-            if optname == "tickcor":
-                list1 = option["tickcor"][0]
-                list2 = option["tickcor"][1]
-                if option["numberpanels"] == 1:
-                    list1 = optvalue
-                else:
-                    list2 = optvalue
-                option["tickcor"] = (list1, list2)
+        # Replace option value with that from arguments
+        if optname == "tickcor":
+            list1 = option["tickcor"][0]
+            list2 = option["tickcor"][1]
+            if option["numberpanels"] == 1:
+                list1 = optvalue
             else:
-                option[optname] = optvalue
+                list2 = optvalue
+            option["tickcor"] = (list1, list2)
+        else:
+            option[optname] = optvalue
 
-            # Check values for specific options
-            if optname == "checkstats":
-                option["checkstats"] = check_on_off(option["checkstats"])
-            elif optname == "markerlabel":
-                if not isinstance(optvalue, list):
-                    raise ValueError("Option value is not a list: " + str(optvalue))
-                option["markerlabel"] = optvalue[1:]
-            elif optname == "markerlegend":
-                option["markerlegend"] = check_on_off(option["markerlegend"])
-            elif optname == "overlay":
-                option["overlay"] = check_on_off(option["overlay"])
-            elif optname == "rmslabelformat":
-                # Check for valid string format
-                labelformat = "{" + optvalue + "}"
-                try:
-                    labelformat.format(99.0)
-                except ValueError:
-                    raise ValueError(
-                        """
-*
-*   Invalid string format for rmslabelformat: {}
-*
-""".format(
-                            optvalue
-                        )
+        # Check values for specific options
+        if optname == "checkstats":
+            option["checkstats"] = check_on_off(option["checkstats"])
+        elif optname == "markerlabel":
+            if not isinstance(optvalue, list):
+                raise ValueError("Option value is not a list: " + str(optvalue))
+            option["markerlabel"] = optvalue[1:]
+        elif optname == "markerlegend":
+            option["markerlegend"] = check_on_off(option["markerlegend"])
+        elif optname == "overlay":
+            option["overlay"] = check_on_off(option["overlay"])
+        elif optname == "rmslabelformat":
+            # Check for valid string format
+            labelformat = "{" + optvalue + "}"
+            try:
+                labelformat.format(99.0)
+            except ValueError:
+                raise ValueError(
+                    """
+        *
+        *   Invalid string format for rmslabelformat: {}
+        *
+        """.format(
+                        optvalue
                     )
-            elif optname == "showlabelscor":
-                option["showlabelscor"] = check_on_off(option["showlabelscor"])
-            elif optname == "showlabelsrms":
-                option["showlabelsrms"] = check_on_off(option["showlabelsrms"])
-            elif optname == "showlabelsstd":
-                option["showlabelsstd"] = check_on_off(option["showlabelsstd"])
-            elif optname == "tickrms":
-                option["tickrms"] = np.sort(optvalue)
-                option["rincrms"] = (
-                    max(option["tickrms"]) - min(option["tickrms"])
-                ) / len(option["tickrms"])
-            elif optname == "tickstd":
-                option["tickstd"] = np.sort(optvalue)
-                option["rincstd"] = (
-                    max(option["tickstd"]) - min(option["tickstd"])
-                ) / len(option["tickstd"])
-            elif optname == "titlecor":
-                option["titlecor"] = check_on_off(option["titlecor"])
-            elif optname == "titlerms":
-                option["titlerms"] = check_on_off(option["titlerms"])
-            elif optname == "titlestd":
-                option["titlestd"] = check_on_off(option["titlestd"])
+                )
+        elif optname == "showlabelscor":
+            option["showlabelscor"] = check_on_off(option["showlabelscor"])
+        elif optname == "showlabelsrms":
+            option["showlabelsrms"] = check_on_off(option["showlabelsrms"])
+        elif optname == "showlabelsstd":
+            option["showlabelsstd"] = check_on_off(option["showlabelsstd"])
+        elif optname == "tickrms":
+            option["tickrms"] = np.sort(optvalue)
+            option["rincrms"] = (
+                max(option["tickrms"]) - min(option["tickrms"])
+            ) / len(option["tickrms"])
+        elif optname == "tickstd":
+            option["tickstd"] = np.sort(optvalue)
+            option["rincstd"] = (
+                max(option["tickstd"]) - min(option["tickstd"])
+            ) / len(option["tickstd"])
+        elif optname == "titlecor":
+            option["titlecor"] = check_on_off(option["titlecor"])
+        elif optname == "titlerms":
+            option["titlerms"] = check_on_off(option["titlerms"])
+        elif optname == "titlestd":
+            option["titlestd"] = check_on_off(option["titlestd"])
 
     option["colormap"] = option["nonrmsdz"]
 

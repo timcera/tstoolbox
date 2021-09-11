@@ -574,8 +574,7 @@ def flatten(list_of_lists):
         if isinstance(list_of_lists[0], (list, tuple)):
             return list(flatten(list_of_lists[0])) + list(flatten(list_of_lists[1:]))
         return list(list_of_lists[:1]) + list(flatten(list_of_lists[1:]))
-    else:
-        return list_of_lists
+    return list_of_lists
 
 
 @typic.al
@@ -597,16 +596,16 @@ def set_ppf(ptype: Optional[Literal["norm", "lognorm", "weibull"]]) -> Callable:
     """Return correct Percentage Point Function for `ptype`."""
     if ptype == "norm":
         return norm.ppf
-    elif ptype == "lognorm":
+    if ptype == "lognorm":
         return lognorm.freeze(0.5, loc=0).ppf
-    elif ptype == "weibull":
+    if ptype == "weibull":
 
         def ppf(y: Union[List[float], ndarray]) -> ndarray:
             """Percentage Point Function for the weibull distibution."""
             return np.log(-np.log(1 - np.array(y)))
 
         return ppf
-    elif ptype is None:
+    if ptype is None:
 
         def ppf(y: ndarray) -> ndarray:
             return y
@@ -876,14 +875,12 @@ The list {0} for "{2}" should have {1} members according to function requirement
         if isinstance(strorlist, str):
             if "\r" in strorlist or "\n" in strorlist:
                 return [io.StringIO(strorlist)]
-            else:
-                strorlist = strorlist.split(str(sep))
+            strorlist = strorlist.split(str(sep))
 
         if isinstance(strorlist, bytes):
             if b"\r" in strorlist or b"\n" in strorlist:
                 return [io.BytesIO(strorlist)]
-            else:
-                strorlist = strorlist.split(bytes(sep, encoding="utf8"))
+            strorlist = strorlist.split(bytes(sep, encoding="utf8"))
 
     if isinstance(strorlist, (io.StringIO, io.BytesIO)):
         return strorlist
@@ -1870,7 +1867,7 @@ def read_iso_ts(
     # sep = kwds.get("sep", ",")
     # header = kwds.get("header", 0)
     clean = kwds.get("clean", False)
-    names = kwds.get("names", None)
+    names = kwds.get("names")
 
     if not inindat:
         inindat = "-"

@@ -127,8 +127,7 @@ def _argrelextrema(data, comparator, axis=0, order=1, mode="clip"):
     results = _boolrelextrema(data, comparator, axis, order, mode)
     if ~results.any():
         return (np.array([]),) * 2
-    else:
-        return np.where(results)
+    return np.where(results)
 
 
 def _datacheck_peakdetect(x_axis, y_axis):

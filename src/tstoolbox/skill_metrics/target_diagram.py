@@ -118,7 +118,7 @@ def _get_target_diagram_arguments(*args):
         # Display options list
         _display_target_diagram_options()
         return bs, rmsds, rmsdxz
-    elif nargin != 3:
+    if nargin != 3:
         raise ValueError("Must supply 3 arguments.")
 
     bs = args[0]
