@@ -366,10 +366,9 @@ keywords.  Instead you have "{to}" in both.
         rdata.append(["Mean squared error", mean_squared_error(y_train, y_pred)])
         rdata.append(["Coefficient of determination", r2_score(y_train, y_pred)])
         return rdata
-    else:
-        result = pd.DataFrame(y_pred, index=x_pred.index)
-        result = result.reindex(index=wtsd.index)
-        return tsutils.return_input(print_input, tsd, result)
+    result = pd.DataFrame(y_pred, index=x_pred.index)
+    result = result.reindex(index=wtsd.index)
+    return tsutils.return_input(print_input, tsd, result)
 
 
 regression.__doc__ = regression_cli.__doc__

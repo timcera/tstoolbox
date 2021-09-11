@@ -22,10 +22,9 @@ def check_on_off(value):
         lowcase = value.lower()
         if lowcase == "off":
             return lowcase
-        elif lowcase == "on":
+        if lowcase == "on":
             return lowcase
-        else:
-            raise ValueError("Invalid value: " + str(value))
+        raise ValueError("Invalid value: " + str(value))
     elif isinstance(value, bool):
         if not value:
             value = "off"
