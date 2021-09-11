@@ -129,12 +129,11 @@ def get_write_stats_options(**kwargs):
         optname = optname.lower()
         if optname not in option:
             raise ValueError("Unrecognized option: " + optname)
-        else:
-            # Replace option value with that from arguments
-            option[optname] = optvalue
+        # Replace option value with that from arguments
+        option[optname] = optvalue
 
-            # Check values for specific options
-            if optname == "overwrite":
-                option["overwrite"] = check_on_off(option["overwrite"])
+        # Check values for specific options
+        if optname == "overwrite":
+            option["overwrite"] = check_on_off(option["overwrite"])
 
     return option

@@ -20,5 +20,5 @@ with open(changelog, "r") as fin:
                 "As described in: https://python-project-skeleton.readthedocs.io"
                 "/en/latest/contributing.html#update-changelog."
             )
-        elif line.startswith("*"):
+        if line.startswith("*"):
             break
