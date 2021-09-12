@@ -1,0 +1,16 @@
+tabulate>=0.8.6
+dateparser>=0.7.2
+XlsxWriter>=1.3.7
+scipy>=1.6.0
+numpy>=1.19.5
+plottoolbox>=101.4.12
+mando>=0.6.4
+statsmodels>=0.12.0
+pandas>=1.2.0
+pytest>=6.2.1
+typing_extensions>=3.7.4.3
+matplotlib>=3.3.3
+pyaf>=2.0.1
+Pint_Pandas>=0.1
+scikit_learn>=0.24.0
+typical>=2.0.33
