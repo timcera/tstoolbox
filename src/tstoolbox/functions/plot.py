@@ -1682,7 +1682,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {} columns.
             icolors = None
         imarkerstyles = itertools.cycle(markerstyles)
         ilinestyles = itertools.cycle(linestyles)
-        for col in range(len(tsd.columns)):
+        for col, item in enumerate(tsd.columns):
             xvals = tsd.iloc[:, col].dropna().values
             pdf = gaussian_kde(xvals)
             if icolors is not None:
@@ -1693,7 +1693,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {} columns.
                 linestyle=next(ilinestyles),
                 color=c,
                 marker=next(imarkerstyles),
-                label=tsd.columns[col],
+                label=item,
                 drawstyle=drawstyle,
             )
         ax0.set(xlabel="Probability Density", ylabel=ytitle)
