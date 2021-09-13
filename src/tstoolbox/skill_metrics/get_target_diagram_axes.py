@@ -111,10 +111,10 @@ def get_target_diagram_axes(x, y, option):
     ylabel = []
 
     # Set x tick labels
-    for i in range(len(xtick)):
-        index = np.where(option["xticklabelpos"] == xtick[i])
+    for i, item in enumerate(xtick):
+        index = np.where(option["xticklabelpos"] == item)
         if len(index) > 0:
-            xlabel.append(str(xtick[i]))
+            xlabel.append(str(item))
         else:
             xlabel.append("")
 
@@ -124,10 +124,10 @@ def get_target_diagram_axes(x, y, option):
     xlabel[index] = ""
 
     # Set y tick labels
-    for i in range(len(ytick)):
+    for i, item in enumerate(ytick):
         index = np.where(option["xticklabelpos"] == xtick[i])
         if len(index) > 0:
-            ylabel.append(str(ytick[i]))
+            ylabel.append(str(item))
         else:
             ylabel.append("")
 
