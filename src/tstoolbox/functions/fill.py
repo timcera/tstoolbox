@@ -376,20 +376,22 @@ def fill_by_correlation(
         basets = pd.DataFrame(ntsd.iloc[:, bestts + 1].shift(bestlag))
 
     single_source_ts = ["move1", "move2", "move3"]
-    if method.lower() in single_source_ts:
-        if len(basets.columns) != 1:
-            raise ValueError(
-                tsutils.error_wrapper(
-                    """
+    if (
+        method.lower() in single_source_ts
+        and len(basets.columns) != 1
+    ):
+        raise ValueError(
+            tsutils.error_wrapper(
+                """
 For methods in {}
 You can only have a single source column.  You can pass in onlu 2
 time-series or use the flag 'choose_best' along with 'maximum_lag'.
 Instead there are {} source time series.
 """.format(
-                        single_source_ts, len(basets.columns)
-                    )
+                    single_source_ts, len(basets.columns)
                 )
             )
+        )
 
     if method == "move1":
         ntsd = firstcol.join(basets)
