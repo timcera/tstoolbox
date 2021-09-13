@@ -121,35 +121,41 @@ Instead you have {}.
     if nlim is None:
         return nlim
 
-    if nlim[0] is not None and nlim[1] is not None:
-        if nlim[0] >= nlim[1]:
-            raise ValueError(
-                tsutils.error_wrapper(
-                    """
+    if (
+        nlim[0] is not None
+        and nlim[1] is not None
+        and nlim[0] >= nlim[1]
+    ):
+        raise ValueError(
+            tsutils.error_wrapper(
+                """
 The second limit must be greater than the first.
 
 You gave {}.
 """.format(
-                        nlim
-                    )
+                    nlim
                 )
             )
+        )
 
-    if axis == "log":
-        if (nlim[0] is not None and nlim[0] <= 0) or (
-            nlim[1] is not None and nlim[1] <= 0
-        ):
-            raise ValueError(
-                tsutils.error_wrapper(
-                    """
+    if (
+        axis == "log"
+        and (nlim[0] is not None and nlim[0] <= 0)
+        or (
+        nlim[1] is not None and nlim[1] <= 0
+    )
+    ):
+        raise ValueError(
+            tsutils.error_wrapper(
+                """
 If log plot cannot have limits less than or equal to 0.
 
 You have {}.
 """.format(
-                        nlim
-                    )
+                    nlim
                 )
             )
+        )
 
     return nlim
 
@@ -870,7 +876,6 @@ def plot_cli(
         be same length as `vlines_x`.  If None will take for the standard
         linestyles list.
     """
-
     plt = plot(
         input_ts=input_ts,
         columns=columns,
@@ -1141,18 +1146,20 @@ def plot(
         por=por,
     )
 
-    if type in ["bootstrap", "heatmap", "autocorrelation", "lag_plot"]:
-        if len(tsd.columns) != 1:
-            raise ValueError(
-                tsutils.error_wrapper(
-                    """
+    if (
+        type in ["bootstrap", "heatmap", "autocorrelation", "lag_plot"]
+        and len(tsd.columns) != 1
+    ):
+        raise ValueError(
+            tsutils.error_wrapper(
+                """
 The '{1}' plot can only work with 1 time-series in the DataFrame.
 The DataFrame that you supplied has {0} time-series.
 """.format(
-                        len(tsd.columns), type
-                    )
+                    len(tsd.columns), type
                 )
             )
+        )
 
     # This is to help pretty print the frequency
     try:
@@ -1209,9 +1216,8 @@ l1,l2,l3,...  where l1 is the legend for x1,y1, l2 is the legend for x2,y2,
     else:
         lnames = tsd.columns
 
-    if colors is not None:
-        if "auto" in colors:
-            colors = None
+    if colors is not None and "auto" in colors:
+        colors = None
 
     if linestyles is None:
         linestyles = " "
@@ -1352,31 +1358,32 @@ The {0} setting for yaxis is ignored.
 
     _, ax = plt.subplots(figsize=figsize)
 
-    if not isinstance(tsd.index, pd.DatetimeIndex):
-        if type == "time":
-            raise ValueError(
-                tsutils.error_wrapper(
-                    """
+    if (
+        not isinstance(tsd.index, pd.DatetimeIndex)
+        and type == "time"
+    ):
+        raise ValueError(
+            tsutils.error_wrapper(
+                """
 The index is not a datetime index and cannot be plotted as a time-series.
 Instead of `type="time"` you might want `type="xy"` or change the index to
 a datetime index.
 """
-                )
             )
+        )
 
     if type in ["xy", "double_mass"]:
-        if tsd.shape[1] > 1:
-            if tsd.shape[1] % 2 != 0:
-                raise AttributeError(
-                    tsutils.error_wrapper(
-                        """
+        if tsd.shape[1] > 1 and tsd.shape[1] % 2 != 0:
+            raise AttributeError(
+                tsutils.error_wrapper(
+                    """
 The 'xy' and 'double_mass' types must have an even number of columns arranged
 as x,y pairs or an x-index and one y data column.  You supplied {} columns.
 """.format(
-                            tsd.shape[1]
-                        )
+                        tsd.shape[1]
                     )
                 )
+            )
         colcnt = tsd.shape[1] // 2
     elif type in [
         "norm_xaxis",
@@ -1682,7 +1689,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {} columns.
             icolors = None
         imarkerstyles = itertools.cycle(markerstyles)
         ilinestyles = itertools.cycle(linestyles)
-        for col in range(len(tsd.columns)):
+        for col, item in enumerate(tsd.columns):
             xvals = tsd.iloc[:, col].dropna().values
             pdf = gaussian_kde(xvals)
             if icolors is not None:
@@ -1693,7 +1700,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {} columns.
                 linestyle=next(ilinestyles),
                 color=c,
                 marker=next(imarkerstyles),
-                label=tsd.columns[col],
+                label=item,
                 drawstyle=drawstyle,
             )
         ax0.set(xlabel="Probability Density", ylabel=ytitle)
