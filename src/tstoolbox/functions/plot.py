@@ -876,7 +876,6 @@ def plot_cli(
         be same length as `vlines_x`.  If None will take for the standard
         linestyles list.
     """
-
     plt = plot(
         input_ts=input_ts,
         columns=columns,
