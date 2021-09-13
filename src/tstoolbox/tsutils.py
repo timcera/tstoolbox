@@ -818,18 +818,20 @@ def make_list(*strorlist, **kwds: Any) -> Any:
             # further processing.
             strorlist = strorlist[0]
 
-    if isinstance(strorlist, (list, tuple)):
-        if n is not None:
-            if len(strorlist) != n:
-                raise ValueError(
-                    error_wrapper(
-                        """
+    if (
+        isinstance(strorlist, (list, tuple))
+        and n is not None
+        and len(strorlist) != n
+    ):
+        raise ValueError(
+            error_wrapper(
+                """
 The list {0} for "{2}" should have {1} members according to function requirements.
 """.format(
-                            strorlist, n, kwdname
-                        )
-                    )
+                    strorlist, n, kwdname
                 )
+            )
+        )
 
     if isinstance(strorlist, pd.DataFrame):
         return [strorlist]
@@ -1045,16 +1047,15 @@ Column name source units are {tsource_units}
     else:
         su = [""] * len(ntsd.columns)
 
-    if source_units_required is True:
-        if "" in su:
-            raise ValueError(
-                error_wrapper(
-                    f"""
+    if source_units_required is True and "" in su:
+        raise ValueError(
+            error_wrapper(
+                f"""
 Source units must be specified either using "source_units" keyword of in the
 second ":" delimited field in the column name.  Instead you have {su}.
                                            """
-                )
             )
+        )
     names = []
     for inx, unit in enumerate(su):
         if isinstance(ntsd.columns[inx], (str, bytes)):
@@ -1554,12 +1555,11 @@ def renamer(xloc: Union[int, str], suffix: Optional[str] = "") -> str:
         words.append(suffix)
     elif len(words) == 2:
         words.append(suffix)
-    elif len(words) == 3:
-        if suffix:
-            if words[2]:
-                words[2] = words[2] + "_" + suffix
-            else:
-                words[2] = suffix
+    elif len(words) == 3 and suffix:
+        if words[2]:
+            words[2] = words[2] + "_" + suffix
+        else:
+            words[2] = suffix
     return ":".join(words)
 
 
