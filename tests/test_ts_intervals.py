@@ -9,7 +9,6 @@ import pandas as pd
 
 from tstoolbox import tstoolbox
 
-
 pandacodes = [
     "A",
     "AS",
@@ -56,6 +55,10 @@ pd_tstep_minterval = {
     "U": ("2000-01-01", 1000, 2),
 }
 
+import logging
+
+logging.basicConfig(filename="example.log", encoding="utf-8", level=logging.DEBUG)
+
 
 class TestAddTrend(TestCase):
     def setUp(self):
@@ -94,46 +97,46 @@ class TestAddTrend(TestCase):
             "8BQ": "2BA",
             "4QS": "1AS",
             "8QS": "2AS",
-            # '2M': '1M',
+            "2M": "1M",
             "3M": "1Q",
-            # '4M': '1M',
-            # '5M': '1M',
+            "4M": "1M",
+            "5M": "1M",
             "6M": "2Q",
-            # '7M': '1M',
-            # '8M': '1M',
+            "7M": "1M",
+            "8M": "1M",
             "9M": "3Q",
-            # '10M': '1M',
-            # '11M': '1M',
-            # '2BMS': '1BMS',
+            "10M": "1M",
+            "11M": "1M",
+            "2BMS": "1BMS",
             "3BMS": "1BQS",
-            # '4BMS': '1BMS',
-            # '5BMS': '1BMS',
+            "4BMS": "1BMS",
+            "5BMS": "1BMS",
             "6BMS": "2BQS",
-            # '7BMS': '1BMS',
-            # '8BMS': '1BMS',
+            "7BMS": "1BMS",
+            "8BMS": "1BMS",
             "9BMS": "3BQS",
-            # '10BMS': '1BMS',
-            # '11BMS': '1BMS',
-            # '2BM': '1BM',
+            "10BMS": "1BMS",
+            "11BMS": "1BMS",
+            "2BM": "1BM",
             "3BM": "1BQ",
-            # '4BM': '1BM',
-            # '5BM': '1BM',
+            "4BM": "1BM",
+            "5BM": "1BM",
             "6BM": "2BQ",
-            # '7BM': '1BM',
-            # '8BM': '1BM',
+            "7BM": "1BM",
+            "8BM": "1BM",
             "9BM": "3BQ",
-            # '10BM': '1BM',
-            # '11BM': '1BM',
-            # '2MS': '1MS',
+            "10BM": "1BM",
+            "11BM": "1BM",
+            "2MS": "1MS",
             "3MS": "1QS",
-            # '4MS': '1MS',
-            # '5MS': '1MS',
+            "4MS": "1MS",
+            "5MS": "1MS",
             "6MS": "2QS",
-            # '7MS': '1MS',
-            # '8MS': '1MS',
+            "7MS": "1MS",
+            "8MS": "1MS",
             "9MS": "3QS",
-            # '10MS': '1MS',
-            # '11MS': '1MS',
+            "10MS": "1MS",
+            "11MS": "1MS",
             "5B": "1W",
             "7D": "1W",
             # BUG!!!
@@ -154,7 +157,8 @@ class TestAddTrend(TestCase):
             testcode = "{}{}".format(*key)
             if inferred_code[0] not in "123456789":
                 inferred_code = "1" + inferred_code
-            testcode = matches.get(testcode)
+            testcode = matches.get(testcode, testcode)
+            logging.warning("{} {}".format(testcode, inferred_code))
             try:
                 self.assertEqual(testcode, inferred_code.split("-")[0])
             except AssertionError:
@@ -165,7 +169,6 @@ class TestAddTrend(TestCase):
 
     def tearDown(self):
         """Remove the temporary files."""
-        for key in self.fps:
-            fname = self.fps[key][1]
-            if os.path.exists(fname):
-                os.remove(fname)
+        for key, fname in self.fps.items():
+            if os.path.exists(fname[1]):
+                os.remove(fname[1])
