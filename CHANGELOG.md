@@ -1,3 +1,27 @@
+## v103.15.0 (2021-09-14)
+
+## 103.15.0 (2021-09-14)
+
+### Fix
+
+- minor fixes reverting changes from autofix
+
+## None (2021-09-14)
+
+## v103.15.0 (2021-09-12)
+
+### Fix
+
+- **replace.py**: for type checking needed additional types
+- **replace.py**: None needed to be included in type for typical
+- pip_requirements.txt to reduce vulnerabilities
+
+### Feat
+
+- add upload of coverage results to coveralls
+
+## vpor (2021-08-15)
+
 ## v103.14.10 (2021-08-15)
 
 ### Fix
