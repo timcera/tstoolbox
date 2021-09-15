@@ -218,7 +218,7 @@ class TestFill(TestCase):
         """Test fill with value API."""
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.fill(method="a", input_ts="tests/data_missing.csv")
-        assert r"could not convert string to float: 'a'" in str(e_info.value)
+        assert r"Value could not be " in str(e_info.value)
 
     def test_fill_ffill_cli(self):
         """Test forward fill CLI."""

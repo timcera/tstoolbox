@@ -15,7 +15,6 @@ from pandas.tseries.frequencies import to_offset
 
 from .. import tsutils
 
-
 try:
     from typing import Literal
 except ImportError:
@@ -200,7 +199,7 @@ def convert_index(
             "mars_sol",
             "unix",
         ],
-        pd.Timestamp,
+        pd._typing.TimestampConvertibleTypes,
     ] = "julian",
     input_ts="-",
     columns=None,
