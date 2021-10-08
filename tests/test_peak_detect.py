@@ -11,7 +11,6 @@ from pandas.testing import assert_frame_equal
 
 from tstoolbox import tstoolbox, tsutils
 
-
 output_peak_detection = tsutils.read_iso_ts(
     b"""Datetime,0,0::peak,0::valley
 2000-01-01 00:00:00,0,,

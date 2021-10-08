@@ -9,8 +9,7 @@ import mando
 from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
-from . import convert_index
-
+from .convert_index import convert_index
 
 warnings.filterwarnings("ignore")
 

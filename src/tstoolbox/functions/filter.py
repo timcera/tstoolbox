@@ -13,7 +13,6 @@ from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
-
 try:
     from typing import Literal
 except ImportError:
@@ -385,13 +384,11 @@ according to `filter_pass`."""
         if lowpass_cutoff is None or highpass_cutoff is None:
             raise ValueError(
                 tsutils.error_wrapper(
-                    """
+                    f"""
 The "bandpass" and "bandstop" options for `filter_pass` require values
 for the `lowpass_cutoff` and `highpass_cutoff` keywords.  You have
 "{lowpass_cutoff}" for `lowpass_cutoff` and "{highpass_cutoff}" for
-`highpass_cutoff`.""".format(
-                        **locals()
-                    )
+`highpass_cutoff`."""
                 )
             )
 
@@ -399,21 +396,17 @@ for the `lowpass_cutoff` and `highpass_cutoff` keywords.  You have
         if lowpass_cutoff is None:
             raise ValueError(
                 tsutils.error_wrapper(
-                    """
+                    f"""
 The "lowpass" option for `filter_pass` requires a value for
-`lowpass_cutoff`.  You have "{lowpass_cutoff}".""".format(
-                        **locals()
-                    )
+`lowpass_cutoff`.  You have "{lowpass_cutoff}"."""
                 )
             )
         if highpass_cutoff is not None:
             warnings.warn(
                 tsutils.error_wrapper(
-                    """
+                    f"""
 The `highpass_cutoff` value of {highpass_cutoff} is ignored it
-`filter_pass` is "lowpass".""".format(
-                        **locals()
-                    )
+`filter_pass` is "lowpass"."""
                 )
             )
 
@@ -421,21 +414,17 @@ The `highpass_cutoff` value of {highpass_cutoff} is ignored it
         if highpass_cutoff is None:
             raise ValueError(
                 tsutils.error_wrapper(
-                    """
+                    f"""
 The "highpass" option for `filter_pass` requires a value for
-`highpass_cutoff`.  You have "{highpass_cutoff}".""".format(
-                        **locals()
-                    )
+`highpass_cutoff`.  You have "{highpass_cutoff}"."""
                 )
             )
         if lowpass_cutoff is not None:
             warnings.warn(
                 tsutils.error_wrapper(
-                    """
+                    f"""
 The `lowpass_cutoff` value of {lowpass_cutoff} is ignored it
-`filter_pass` is "highpass".""".format(
-                        **locals()
-                    )
+`filter_pass` is "highpass"."""
                 )
             )
 

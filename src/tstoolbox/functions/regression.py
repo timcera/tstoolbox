@@ -282,12 +282,10 @@ def regression(
             if to == fro:
                 raise ValueError(
                     tsutils.error_wrapper(
-                        """
+                        f"""
 You can't have columns in both "x_train_cols", and "y_train_col"
 keywords.  Instead you have "{to}" in both.
-""".format(
-                            **locals()
-                        )
+"""
                     )
                 )
 

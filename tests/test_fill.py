@@ -27,7 +27,7 @@ class TestFill(TestCase):
         )
         self.ats.index.name = "Datetime"
 
-        self.ats_cli = capture.capture(tsutils._printiso, self.ats)
+        self.ats_cli = capture.capture(tsutils.printiso, self.ats)
 
         self.ffill_compare = self.ats.copy()
         self.ffill_compare["Value_with_missing::fill"][
@@ -35,7 +35,7 @@ class TestFill(TestCase):
         ] = 3
         self.ffill_compare["Value_with_missing::fill"]["2011-01-01T13:00:00"] = 9
 
-        self.ffill_compare_cli = capture.capture(tsutils._printiso, self.ffill_compare)
+        self.ffill_compare_cli = capture.capture(tsutils.printiso, self.ffill_compare)
 
         self.bfill_compare = self.ats.copy()
         self.bfill_compare["Value_with_missing::fill"]["2011-01-01T09:00:00"] = 3
@@ -43,7 +43,7 @@ class TestFill(TestCase):
             "2011-01-01T10:00:00":"2011-01-01T13:00:00"
         ] = 9
 
-        self.bfill_compare_cli = capture.capture(tsutils._printiso, self.bfill_compare)
+        self.bfill_compare_cli = capture.capture(tsutils.printiso, self.bfill_compare)
 
         self.linear_compare = self.ats.copy()
         self.linear_compare["Value_with_missing::fill"]["2011-01-01T09:00:00"] = 3.0
@@ -52,9 +52,7 @@ class TestFill(TestCase):
         self.linear_compare["Value_with_missing::fill"]["2011-01-01T12:00:00"] = 7.5
         self.linear_compare["Value_with_missing::fill"]["2011-01-01T13:00:00"] = 9.0
 
-        self.linear_compare_cli = capture.capture(
-            tsutils._printiso, self.linear_compare
-        )
+        self.linear_compare_cli = capture.capture(tsutils.printiso, self.linear_compare)
 
         self.nearest_compare = self.ats.copy()
         self.nearest_compare["Value_with_missing::fill"][
@@ -66,7 +64,7 @@ class TestFill(TestCase):
         self.nearest_compare = tsutils.memory_optimize(self.nearest_compare)
 
         self.nearest_compare_cli = capture.capture(
-            tsutils._printiso, self.nearest_compare
+            tsutils.printiso, self.nearest_compare
         )
 
         self.mean_compare = self.ats.copy()
@@ -94,7 +92,7 @@ class TestFill(TestCase):
             "2011-01-01T23:00:00"
         ] = 2.4210526315789473
 
-        self.mean_compare_cli = capture.capture(tsutils._printiso, self.mean_compare)
+        self.mean_compare_cli = capture.capture(tsutils.printiso, self.mean_compare)
 
         self.median_compare = self.ats.copy()
         self.median_compare["Value_with_missing::fill"]["2011-01-01T01:00:00"] = 2.0
@@ -108,9 +106,7 @@ class TestFill(TestCase):
         self.median_compare["Value_with_missing::fill"]["2011-01-01T23:00:00"] = 2.0
         self.median_compare = tsutils.memory_optimize(self.median_compare)
 
-        self.median_compare_cli = capture.capture(
-            tsutils._printiso, self.median_compare
-        )
+        self.median_compare_cli = capture.capture(tsutils.printiso, self.median_compare)
 
         self.max_compare = self.ats.copy()
         self.max_compare["Value_with_missing::fill"]["2011-01-01T01:00:00"] = 9.0
@@ -124,7 +120,7 @@ class TestFill(TestCase):
         self.max_compare["Value_with_missing::fill"]["2011-01-01T23:00:00"] = 9.0
         self.max_compare = tsutils.memory_optimize(self.max_compare)
 
-        self.max_compare_cli = capture.capture(tsutils._printiso, self.max_compare)
+        self.max_compare_cli = capture.capture(tsutils.printiso, self.max_compare)
 
         self.min_compare = self.ats.copy()
         self.min_compare["Value_with_missing::fill"]["2011-01-01T01:00:00"] = 2.0
@@ -138,7 +134,7 @@ class TestFill(TestCase):
         self.min_compare["Value_with_missing::fill"]["2011-01-01T23:00:00"] = 2.0
         self.min_compare = tsutils.memory_optimize(self.min_compare)
 
-        self.min_compare_cli = capture.capture(tsutils._printiso, self.min_compare)
+        self.min_compare_cli = capture.capture(tsutils.printiso, self.min_compare)
 
         self.con_compare = self.ats.copy()
         self.con_compare["Value_with_missing::fill"]["2011-01-01T01:00:00"] = 2.42
@@ -151,7 +147,7 @@ class TestFill(TestCase):
         self.con_compare["Value_with_missing::fill"]["2011-01-01T22:00:00"] = 2.42
         self.con_compare["Value_with_missing::fill"]["2011-01-01T23:00:00"] = 2.42
 
-        self.con_compare_cli = capture.capture(tsutils._printiso, self.con_compare)
+        self.con_compare_cli = capture.capture(tsutils.printiso, self.con_compare)
 
     def test_fill_ffill_direct(self):
         """Test forward fill API."""
@@ -243,7 +239,9 @@ class TestFill(TestCase):
     # def test_fill_linear_cli(self):
     #     """Test linear fill CLI."""
     #     args = (
-    #         "tstoolbox fill " '--method="linear" ' "--input_ts=tests/data_missing.csv"
+    #         "tstoolbox fill "
+    #         '--method="linear" '
+    #         "--input_ts=tests/data_missing.csv"
     #     )
     #     args = shlex.split(args)
     #     out = subprocess.Popen(
@@ -255,7 +253,9 @@ class TestFill(TestCase):
     # def test_fill_nearest_cli(self):
     #     """Test nearest fill CLI."""
     #     args = (
-    #         "tstoolbox fill " '--method="nearest" ' "--input_ts=tests/data_missing.csv"
+    #         "tstoolbox fill "
+    #         '--method="nearest" '
+    #         "--input_ts=tests/data_missing.csv"
     #     )
     #     args = shlex.split(args)
     #     out = subprocess.Popen(

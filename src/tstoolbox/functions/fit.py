@@ -15,7 +15,6 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from .. import tsutils
 
-
 try:
     from typing import Literal
 except ImportError:

@@ -18,7 +18,7 @@ class TestDate_slice(TestCase):
         self.date_slice = pd.DataFrame([2, 2, 2], index=dr, columns=["Value"])
         self.date_slice = tsutils.memory_optimize(self.date_slice)
 
-        self.date_slice_cli = capture.capture(tsutils._printiso, self.date_slice)
+        self.date_slice_cli = capture.capture(tsutils.printiso, self.date_slice)
 
     def test_date_slice(self):
         """Test date_slice API."""

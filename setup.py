@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import shlex
 import sys
 
 from setuptools import find_packages, setup
@@ -15,9 +16,9 @@ pkg_name = "tstoolbox"
 version = open("VERSION").readline().strip()
 
 if sys.argv[-1] == "publish":
-    os.system("cleanpy .")
-    os.system("python setup.py sdist")
-    os.system("twine upload dist/{pkg_name}-{version}.tar.gz".format(**locals()))
+    os.system(shlex.quote("cleanpy ."))
+    os.system(shlex.quote("python setup.py sdist"))
+    os.system(shlex.quote(f"twine upload dist/{pkg_name}-{version}.tar.gz"))
     sys.exit()
 
 README = open("README.rst").read()
@@ -92,11 +93,11 @@ setup(
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development :: Libraries :: Python Modules",
-    ],  # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    ],  # strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
     keywords="time_series",
     author="Tim Cera, PE",
     author_email="tim@cerazone.net",
-    url="http://timcera.bitbucket.io/{pkg_name}/docs/index.html".format(**locals()),
+    url=f"http://timcera.bitbucket.io/{pkg_name}/docs/index.html",
     license="BSD",
     packages=find_packages("src"),
     package_dir={"": "src"},
@@ -105,9 +106,7 @@ setup(
     zip_safe=False,
     install_requires=install_requires,
     extras_require=extras_require,
-    entry_points={
-        "console_scripts": ["{pkg_name}={pkg_name}.{pkg_name}:main".format(**locals())]
-    },
+    entry_points={"console_scripts": [f"{pkg_name}={pkg_name}.{pkg_name}:main"]},
     test_suite="tests",
     python_requires=">=3.7.1",
 )

@@ -13,7 +13,6 @@ from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
-
 try:
     from typing import Literal
 except ImportError:
@@ -284,18 +283,16 @@ def rolling_window(
             "sum",
             "var",
         ]:
-            statstr = ".{statistic}()".format(**locals())
+            statstr = f".{statistic}()"
         etsd = eval(
-            """tsd.apply(lambda x:
+            f"""tsd.apply(lambda x:
                        x.rolling({win},
                                  min_periods={min_periods},
                                  center={center},
                                  win_type={win_type},
                                  on={on},
                                  closed={closed}){statstr}
-                                 )""".format(
-                **locals()
-            )
+                                 )"""
         )
         etsd.columns = [
             tsutils.renamer(i, "rolling.{}.{}".format(win, statistic))

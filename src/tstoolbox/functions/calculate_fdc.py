@@ -13,7 +13,6 @@ from scipy.stats import t
 
 from .. import tsutils
 
-
 try:
     from typing import Literal
 except ImportError:

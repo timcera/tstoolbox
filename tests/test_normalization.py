@@ -42,9 +42,14 @@ class TestDescribe(TestCase):
     # was and ExtensionArray
     # def test_normalize(self):
     #     """Test the normalization API function using the zscore method."""
-    #     out = tstoolbox.normalization(mode="zscore", input_ts="tests/data_sunspot.csv")
+    #     out = tstoolbox.normalization(mode="zscore",
+    #                                   input_ts="tests/data_sunspot.csv")
     #     assert_frame_equal(
-    #         out, self.data_zscore, check_exact=False, check_column_type=False, atol=1e-4
+    #         out,
+    #         self.data_zscore,
+    #         check_exact=False,
+    #         check_column_type=False,
+    #         atol=1e-4
     #     )
 
     def test_pct_rank(self):

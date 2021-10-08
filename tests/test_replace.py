@@ -20,7 +20,7 @@ class TestReplace(TestCase):
         )
         self.ats.index.name = "Datetime"
 
-        self.ats_cli = capture.capture(tsutils._printiso, self.ats)
+        self.ats_cli = capture.capture(tsutils.printiso, self.ats)
 
         self.freplace_compare = self.ats.copy()
         self.freplace_compare["Value_with_missing::replace"][
@@ -30,7 +30,7 @@ class TestReplace(TestCase):
 
         self.freplace_compare.columns = ["Value_with_missing"]
         self.freplace_compare_cli = capture.capture(
-            tsutils._printiso, self.freplace_compare
+            tsutils.printiso, self.freplace_compare
         )
 
         self.breplace_compare = self.ats.copy()
@@ -41,7 +41,7 @@ class TestReplace(TestCase):
 
         self.breplace_compare.columns = ["Value_with_missing"]
         self.breplace_compare_cli = capture.capture(
-            tsutils._printiso, self.breplace_compare
+            tsutils.printiso, self.breplace_compare
         )
 
         self.linear_compare = self.ats.copy()
@@ -52,9 +52,7 @@ class TestReplace(TestCase):
         self.linear_compare["Value_with_missing::replace"]["2011-01-01T13:00:00"] = 9.0
 
         self.linear_compare.columns = ["Value_with_missing"]
-        self.linear_compare_cli = capture.capture(
-            tsutils._printiso, self.linear_compare
-        )
+        self.linear_compare_cli = capture.capture(tsutils.printiso, self.linear_compare)
 
         self.nearest_compare = self.ats.copy()
         self.nearest_compare["Value_with_missing::replace"][
@@ -66,7 +64,7 @@ class TestReplace(TestCase):
 
         self.nearest_compare.columns = ["Value_with_missing"]
         self.nearest_compare_cli = capture.capture(
-            tsutils._printiso, self.nearest_compare
+            tsutils.printiso, self.nearest_compare
         )
 
         self.median_compare = self.ats.copy()
@@ -81,9 +79,7 @@ class TestReplace(TestCase):
         self.median_compare["Value_with_missing::replace"]["2011-01-01T23:00:00"] = 2.0
 
         self.median_compare.columns = ["Value_with_missing"]
-        self.median_compare_cli = capture.capture(
-            tsutils._printiso, self.median_compare
-        )
+        self.median_compare_cli = capture.capture(tsutils.printiso, self.median_compare)
 
         self.max_compare = self.ats.copy()
         self.max_compare["Value_with_missing::replace"]["2011-01-01T01:00:00"] = 9.0
@@ -97,7 +93,7 @@ class TestReplace(TestCase):
         self.max_compare["Value_with_missing::replace"]["2011-01-01T23:00:00"] = 9.0
 
         self.max_compare.columns = ["Value_with_missing"]
-        self.max_compare_cli = capture.capture(tsutils._printiso, self.max_compare)
+        self.max_compare_cli = capture.capture(tsutils.printiso, self.max_compare)
 
         self.min_compare = self.ats.copy()
         self.min_compare["Value_with_missing::replace"]["2011-01-01T01:00:00"] = 2.0
@@ -111,7 +107,7 @@ class TestReplace(TestCase):
         self.min_compare["Value_with_missing::replace"]["2011-01-01T23:00:00"] = 2.0
 
         self.min_compare.columns = ["Value_with_missing"]
-        self.min_compare_cli = capture.capture(tsutils._printiso, self.min_compare)
+        self.min_compare_cli = capture.capture(tsutils.printiso, self.min_compare)
 
         self.con_compare = self.ats.copy()
         self.con_compare["Value_with_missing::replace"]["2011-01-01T01:00:00"] = 2.42
@@ -125,7 +121,7 @@ class TestReplace(TestCase):
         self.con_compare["Value_with_missing::replace"]["2011-01-01T23:00:00"] = 2.42
 
         self.con_compare.columns = ["Value_with_missing"]
-        self.con_compare_cli = capture.capture(tsutils._printiso, self.con_compare)
+        self.con_compare_cli = capture.capture(tsutils.printiso, self.con_compare)
 
     def test_replace_freplace_direct(self):
         """Test forward replace API."""
