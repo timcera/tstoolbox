@@ -7,7 +7,6 @@ import pyaf.ForecastEngine as autof
 
 from .. import tsutils
 
-
 mando.main.add_subprog("forecast", help="Forecast algorithms")
 
 

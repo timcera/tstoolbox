@@ -7,7 +7,6 @@ import bz2
 import datetime
 import gzip
 import inspect
-import io
 import os
 import sys
 from functools import reduce, wraps
@@ -20,7 +19,6 @@ from urllib.parse import urlparse
 import dateparser
 import numpy as np
 import pandas as pd
-import pint_pandas
 import typic
 from _io import TextIOWrapper
 from numpy import int64, ndarray
@@ -522,7 +520,9 @@ docstrings = {
 # and how I want it.
 # ntables = {}
 # for key in ["SUB_D", "DAILY", "WEEKLY", "QUATERLY", "ANNUAL"]:
-#     ntables[key] = tb(_CODES[key].items(), tablefmt="grid", headers=["Alias", "Description"],)
+#     ntables[key] = tb(_CODES[key].items(),
+#                       tablefmt="grid",
+#                       headers=["Alias", "Description"],)
 #     ntables[key] = "        ".join(ntables[key].splitlines(True))
 # codes_table = f"""{ntables["SUB_D"]}
 #
@@ -595,22 +595,21 @@ def stride_and_unit(sunit: str) -> Tuple[int, str]:
 def set_ppf(ptype: Optional[Literal["norm", "lognorm", "weibull"]]) -> Callable:
     """Return correct Percentage Point Function for `ptype`."""
     if ptype == "norm":
-        return norm.ppf
-    if ptype == "lognorm":
-        return lognorm.freeze(0.5, loc=0).ppf
-    if ptype == "weibull":
+        ppf = norm.ppf
+    elif ptype == "lognorm":
+        ppf = lognorm.freeze(0.5, loc=0).ppf
+    elif ptype == "weibull":
 
         def ppf(y: Union[List[float], ndarray]) -> ndarray:
             """Percentage Point Function for the weibull distibution."""
             return np.log(-np.log(1 - np.array(y)))
 
-        return ppf
-    if ptype is None:
+    elif ptype is None:
 
         def ppf(y: ndarray) -> ndarray:
             return y
 
-        return ppf
+    return ppf
 
 
 @typic.al
@@ -818,11 +817,7 @@ def make_list(*strorlist, **kwds: Any) -> Any:
             # further processing.
             strorlist = strorlist[0]
 
-    if (
-        isinstance(strorlist, (list, tuple))
-        and n is not None
-        and len(strorlist) != n
-    ):
+    if isinstance(strorlist, (list, tuple)) and n is not None and len(strorlist) != n:
         raise ValueError(
             error_wrapper(
                 """
@@ -876,15 +871,15 @@ The list {0} for "{2}" should have {1} members according to function requirement
 
         if isinstance(strorlist, str):
             if "\r" in strorlist or "\n" in strorlist:
-                return [io.StringIO(strorlist)]
+                return [StringIO(strorlist)]
             strorlist = strorlist.split(str(sep))
 
         if isinstance(strorlist, bytes):
             if b"\r" in strorlist or b"\n" in strorlist:
-                return [io.BytesIO(strorlist)]
+                return [BytesIO(strorlist)]
             strorlist = strorlist.split(bytes(sep, encoding="utf8"))
 
-    if isinstance(strorlist, (io.StringIO, io.BytesIO)):
+    if isinstance(strorlist, (StringIO, BytesIO)):
         return strorlist
 
     if n is None:
@@ -1074,16 +1069,14 @@ second ":" delimited field in the column name.  Instead you have {su}.
     if su is None and target_units is not None:
         raise ValueError(
             error_wrapper(
-                """
+                f"""
 To specify target_units, you must also specify source_units.  You can
 specify source_units either by using the `source_units` keyword or placing
 in the name of the data column as the second ':' separated field.
 
 The `source_units` keyword must specify units that are convertible
 to the `target_units`: {target_units}
-""".format(
-                    **locals()
-                )
+"""
             )
         )
 
@@ -1134,8 +1127,8 @@ def get_default_args(func):
 
 def transform_args(**trans_func_for_arg):
     """
-    Make a decorator that transforms function arguments before calling the function.
-    Works with plain functions and bounded methods.
+    Make a decorator that transforms function arguments before calling the
+    function.  Works with plain functions and bounded methods.
     """
 
     def transform_args_decorator(func):
@@ -1144,8 +1137,9 @@ def transform_args(**trans_func_for_arg):
         @wraps(func)
         def transform_args_wrapper(*args, **kwargs):
             # get a {argname: argval, ...} dict from *args and **kwargs
-            # Note: Didn't really need an if/else here but I am assuming that...
-            # Note: ... getcallargs gives us an overhead that can be avoided if there's only keyword args.
+            # Note: Didn't really need an if/else here but I am assuming
+            # that getcallargs gives us an overhead that can be avoided if
+            # there's only keyword args.
             val_of_argname = sig.bind(*args, **kwargs)
             val_of_argname.apply_defaults()
             for argname, trans_func in trans_func_for_arg.items():
@@ -1575,7 +1569,7 @@ def print_input(
     showindex="never",
 ):
     """Print the input time series also."""
-    return _printiso(
+    return printiso(
         return_input(iftrue, intds, output, suffix=suffix),
         date_format=date_format,
         float_format=float_format,
@@ -1920,15 +1914,8 @@ def read_iso_ts(
         elif isinstance(fname, (pd.Series, dict)):
             res = pd.DataFrame(inindat)
 
-        elif isinstance(fname, (tuple, list)):
-            res = pd.DataFrame(
-                {"values{source_index}".format(**locals()): fname}, index=[0]
-            )
-
-        elif isinstance(fname, float):
-            res = pd.DataFrame(
-                {"values{source_index}".format(**locals()): fname}, index=[0]
-            )
+        elif isinstance(fname, (tuple, list, float)):
+            res = pd.DataFrame({f"values{source_index}": fname}, index=[0])
 
         if len(res) == 0:
             # Store keywords for each source.
@@ -1945,15 +1932,14 @@ def read_iso_ts(
             # Command line API
             # Uses wdmtoolbox, hspfbintoolbox, or pd.read_* functions.
             fpi = None
-            if fname == "-" or fname == b"-":
+            if fname in ["-", b"-"]:
                 # if from stdin format must be the tstoolbox standard
                 # pandas read_csv supports file like objects
                 if "header" not in kwds:
                     kwds["header"] = 0
                 header = 0
                 fpi = sys.stdin
-                dname = "_"
-            elif isinstance(fname, (io.StringIO, io.BytesIO)):
+            elif isinstance(fname, (StringIO, BytesIO)):
                 fpi = fname
                 header = 0
             elif os.path.exists(str(fname)):
@@ -2020,33 +2006,28 @@ def read_iso_ts(
                 # a url?
                 header = "infer"
                 fpi = fname
-                dname = ""
             elif isinstance(fname, bytes):
                 # Python API
                 if b"\n" in fname or b"\r" in fname:
                     # a string?
                     header = 0
                     fpi = BytesIO(fname)
-                    dname = ""
             elif isinstance(fname, str):
                 # Python API
                 if "\n" in fname or "\r" in fname:
                     # a string?
                     header = 0
                     fpi = StringIO(fname)
-                    dname = ""
             elif isinstance(fname, (StringIO, BytesIO)):
                 # Python API
                 header = "infer"
                 fpi = fname
-                dname = ""
             else:
                 # Maybe fname and parameters are actual column names of standard input.
                 parameters.insert(0, fname)
                 fname = "-"
                 header = 0
                 fpi = sys.stdin
-                dname = "_"
 
             if len(res) == 0:
                 if fname == "-" and not stdin_df.empty:
@@ -2070,10 +2051,8 @@ def read_iso_ts(
                     except ValueError:
                         raise ValueError(
                             error_wrapper(
-                                """
-File or file-like object "{fname}" does not exist.""".format(
-                                    **locals()
-                                )
+                                f"""
+File or file-like object "{fname}" does not exist."""
                             )
                         )
                 if fname == "-" and stdin_df.empty:

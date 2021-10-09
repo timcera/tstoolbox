@@ -8,7 +8,6 @@ Situations tested:
 """
 from pathlib import Path
 
-
 folder = Path(__file__).resolve().parents[1]
 changelog = Path(folder, "docs", "CHANGELOG.rst")
 

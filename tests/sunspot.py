@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 
-
 # Monthly time-series starting in May, 1874
 values = [
     365.1,

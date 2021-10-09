@@ -14,7 +14,6 @@ from mando.rst_text_formatter import RSTHelpFormatter
 from .. import tsutils
 from . import lag
 
-
 try:
     from typing import Literal
 except ImportError:

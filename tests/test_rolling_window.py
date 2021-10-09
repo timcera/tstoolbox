@@ -31,11 +31,11 @@ class TestRollingWindow(TestCase):
         self.compare_rolling_window_mean.index.name = "Datetime"
 
         self.compare_rolling_window_sum_cli = capture.capture(
-            tsutils._printiso, self.compare_rolling_window_sum
+            tsutils.printiso, self.compare_rolling_window_sum
         )
 
         self.compare_rolling_window_mean_cli = capture.capture(
-            tsutils._printiso, self.compare_rolling_window_mean
+            tsutils.printiso, self.compare_rolling_window_mean
         )
 
     def test_rolling_window_sum(self):

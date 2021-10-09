@@ -2,19 +2,13 @@
 
 from __future__ import print_function
 
+from io import StringIO
 from unittest import TestCase
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
 from tstoolbox import tstoolbox, tsutils
-
-
-try:
-    from cStringIO import StringIO
-except:
-    from io import StringIO
-
 
 test_sinwave = r"""Datetime,Value
 1999-12-31 23:00:00,0

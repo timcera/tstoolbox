@@ -235,14 +235,14 @@ def get_taylor_diagram_options(*args, **kwargs):
             option["showlabelsstd"] = check_on_off(option["showlabelsstd"])
         elif optname == "tickrms":
             option["tickrms"] = np.sort(optvalue)
-            option["rincrms"] = (
-                max(option["tickrms"]) - min(option["tickrms"])
-            ) / len(option["tickrms"])
+            option["rincrms"] = (max(option["tickrms"]) - min(option["tickrms"])) / len(
+                option["tickrms"]
+            )
         elif optname == "tickstd":
             option["tickstd"] = np.sort(optvalue)
-            option["rincstd"] = (
-                max(option["tickstd"]) - min(option["tickstd"])
-            ) / len(option["tickstd"])
+            option["rincstd"] = (max(option["tickstd"]) - min(option["tickstd"])) / len(
+                option["tickstd"]
+            )
         elif optname == "titlecor":
             option["titlecor"] = check_on_off(option["titlecor"])
         elif optname == "titlerms":

@@ -13,7 +13,6 @@ from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
-
 try:
     from typing import Literal
 except ImportError:

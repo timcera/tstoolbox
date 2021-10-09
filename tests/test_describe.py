@@ -32,7 +32,7 @@ class TestDescribe(TestCase):
         )
         self.date_slice.index.name = "Statistic"
         self.date_slice_cli = capture.capture(
-            tsutils._printiso, self.date_slice, showindex="always"
+            tsutils.printiso, self.date_slice, showindex="always"
         )
         self.date_slice.index.name = "UniqueID"
 

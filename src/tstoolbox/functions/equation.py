@@ -16,7 +16,6 @@ from numpy import *  # nopycln: import
 
 from .. import tsutils
 
-
 warnings.filterwarnings("ignore")
 
 

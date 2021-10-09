@@ -121,11 +121,7 @@ Instead you have {}.
     if nlim is None:
         return nlim
 
-    if (
-        nlim[0] is not None
-        and nlim[1] is not None
-        and nlim[0] >= nlim[1]
-    ):
+    if nlim[0] is not None and nlim[1] is not None and nlim[0] >= nlim[1]:
         raise ValueError(
             tsutils.error_wrapper(
                 """
@@ -141,9 +137,7 @@ You gave {}.
     if (
         axis == "log"
         and (nlim[0] is not None and nlim[0] <= 0)
-        or (
-        nlim[1] is not None and nlim[1] <= 0
-    )
+        or (nlim[1] is not None and nlim[1] <= 0)
     ):
         raise ValueError(
             tsutils.error_wrapper(
@@ -1358,10 +1352,7 @@ The {0} setting for yaxis is ignored.
 
     _, ax = plt.subplots(figsize=figsize)
 
-    if (
-        not isinstance(tsd.index, pd.DatetimeIndex)
-        and type == "time"
-    ):
+    if not isinstance(tsd.index, pd.DatetimeIndex) and type == "time":
         raise ValueError(
             tsutils.error_wrapper(
                 """

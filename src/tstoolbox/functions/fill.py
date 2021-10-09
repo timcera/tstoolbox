@@ -13,7 +13,6 @@ from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
-
 try:
     from typing import Literal
 except ImportError:
@@ -27,13 +26,11 @@ def _validate_columns(ntsd, from_columns, to_columns):
         for fro in from_columns:
             if to == fro:
                 raise ValueError(
-                    """
-*
-*   You can't have columns in both "from_columns", and "to_columns"
-*   keywords.  Instead you have "{to}" in both.
-*
-""".format(
-                        **locals()
+                    tsutils.error_wrapper(
+                        f"""
+You can't have columns in both "from_columns", and "to_columns"
+keywords.  Instead you have "{to}" in both.
+"""
                     )
                 )
     return from_columns, to_columns
@@ -376,10 +373,7 @@ def fill_by_correlation(
         basets = pd.DataFrame(ntsd.iloc[:, bestts + 1].shift(bestlag))
 
     single_source_ts = ["move1", "move2", "move3"]
-    if (
-        method.lower() in single_source_ts
-        and len(basets.columns) != 1
-    ):
+    if method.lower() in single_source_ts and len(basets.columns) != 1:
         raise ValueError(
             tsutils.error_wrapper(
                 """
