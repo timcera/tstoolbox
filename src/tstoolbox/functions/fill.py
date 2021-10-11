@@ -202,7 +202,7 @@ def fill_cli(
 
 
 @tsutils.transform_args(from_columns=tsutils.make_list, to_columns=tsutils.make_list)
-@typic.al
+# @typic.al
 def fill(
     input_ts="-",
     method: Union[
