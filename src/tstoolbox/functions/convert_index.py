@@ -180,7 +180,7 @@ def convert_index_cli(
     tsutils.printiso(tsd, tablefmt=tablefmt)
 
 
-@typic.al
+# @typic.al
 def convert_index(
     to: Literal["datetime", "number"],
     interval=None,
@@ -225,6 +225,13 @@ def convert_index(
         nstart_date = start_date
         nend_date = end_date
         nround_index = round_index
+    else:
+        raise ValueError(
+            tsutils.error_wrapper(
+                f"""
+The "to" option can be one of "datetime" or "number" not "{to}"."""
+            )
+        )
 
     tsd = tsutils.common_kwds(
         input_ts,

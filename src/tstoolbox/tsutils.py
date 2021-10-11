@@ -18,6 +18,7 @@ from urllib.parse import urlparse
 
 import dateparser
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 import typic
 from _io import TextIOWrapper
@@ -578,7 +579,7 @@ def flatten(list_of_lists):
 
 
 @typic.al
-def stride_and_unit(sunit: str) -> Tuple[int, str]:
+def stride_and_unit(sunit: str) -> Tuple[str, int]:
     """Split a stride/unit combination into component parts."""
     if sunit is None:
         return sunit
@@ -600,22 +601,16 @@ def set_ppf(ptype: Optional[Literal["norm", "lognorm", "weibull"]]) -> Callable:
         ppf = lognorm.freeze(0.5, loc=0).ppf
     elif ptype == "weibull":
 
-        def ppf(y: Union[List[float], ndarray]) -> ndarray:
+        def ppf(y: Union[List[float], npt.ArrayLike]) -> npt.ArrayLike:
             """Percentage Point Function for the weibull distibution."""
             return np.log(-np.log(1 - np.array(y)))
 
     elif ptype is None:
 
-        def ppf(y: ndarray) -> ndarray:
+        def ppf(y: npt.ArrayLike) -> npt.ArrayLike:
             return y
 
     return ppf
-
-
-@typic.al
-def _plotting_position_equation(i: ndarray, n: Union[int, int64], a: float) -> ndarray:
-    """Parameterized, generic plotting position equation."""
-    return (i - a) / float(n + 1 - 2 * a)
 
 
 PPDICT = {
@@ -633,7 +628,7 @@ PPDICT = {
 }
 
 
-@typic.al
+# @typic.al
 def set_plotting_position(
     n: Union[int, int64],
     plotting_position: Union[
@@ -662,7 +657,8 @@ def set_plotting_position(
         a = PPDICT[plotting_position]
     except KeyError:
         a = float(plotting_position)
-    return _plotting_position_equation(np.arange(1, n + 1), n, a)
+    i = np.arange(1, n + 1)
+    return (i - a) / float(n + 1 - 2 * a)
 
 
 @typic.al
@@ -1163,10 +1159,10 @@ def common_kwds(
     start_date=None,
     end_date=None,
     pick: Optional[List[Union[int, str]]] = None,
-    force_freq: str = None,
-    groupby: str = None,
+    force_freq: Optional[str] = None,
+    groupby: Optional[str] = None,
     dropna: Optional[Literal["no", "any", "all"]] = "no",
-    round_index: str = None,
+    round_index: Optional[str] = None,
     clean: bool = False,
     target_units=None,
     source_units=None,
@@ -1536,14 +1532,12 @@ def dedupIndex(
     return pd.Index(idx)
 
 
-def renamer(xloc: Union[int, str], suffix: Optional[str] = "") -> str:
+@typic.al
+def renamer(xloc: str, suffix: Optional[str] = "") -> str:
     """Print the suffix into the third ":" separated field of the header."""
     if suffix is None:
         suffix = ""
-    try:
-        words = xloc.split(":")
-    except AttributeError:
-        words = [str(xloc)]
+    words = xloc.split(":")
     if len(words) == 1:
         words.append("")
         words.append(suffix)
@@ -1789,7 +1783,7 @@ def memory_optimize(tsd: DataFrame) -> DataFrame:
     return tsd
 
 
-def is_valid_url(url: bytes, qualifying: Optional[Any] = None) -> bool:
+def is_valid_url(url: Union[bytes, str], qualifying: Optional[Any] = None) -> bool:
     """Return whether "url" is valid."""
     min_attributes = ("scheme", "netloc")
     qualifying = min_attributes if qualifying is None else qualifying
