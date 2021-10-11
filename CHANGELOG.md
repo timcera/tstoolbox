@@ -1,10 +1,14 @@
-## 103.15.1 (2021-10-08)
+## 103.15.2 (2021-10-10)
+
+### Fix
+
+- typing versions greater than 2.6.4 adds a subclass test that made many tests fail
+
+## 103.15.1 (2021-10-09)
 
 ### Refactor
 
 - minor refactors
-
-## v103.15.0 (2021-09-14)
 
 ## 103.15.0 (2021-09-14)
 
