@@ -117,13 +117,15 @@ class TestFilter(TestCase):
             _ = tstoolbox.filter(
                 "flat", "lowpass", input_ts="tests/data_sine.csv", window_len=1000
             )
-        assert r"Input vector (length=" in str(e_info.value)
+        if r"Input vector (length=" not in str(e_info.value):
+            raise AssertionError
 
     @staticmethod
     def test_filter_type():
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.filter("flatter", "lowpass", input_ts="tests/data_sine.csv")
-        assert r"Given value <'flatter'> fails constraints:" in str(e_info.value)
+        if r"Given value <'flatter'> fails constraints:" not in str(e_info.value):
+            raise AssertionError
 
 
 #    def test_filter_fft_highpass(self):

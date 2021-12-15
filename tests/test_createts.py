@@ -39,4 +39,5 @@ class TestRead(TestCase):
     def test_exception():
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.createts()
-        assert r"If input_ts is None, then start_date, end_date" in str(e_info.value)
+        if r"If input_ts is None, then start_date, end_date" not in str(e_info.value):
+            raise AssertionError

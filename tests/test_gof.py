@@ -26,4 +26,5 @@ class Testgof(TestCase):
             input_ts=self.df,
             stats=["bias", "rmsd", "crmsd", "corrcoef", "murphyss", "nse", "brierss"],
         )
-        assert out == self.gof
+        if out != self.gof:
+            raise AssertionError

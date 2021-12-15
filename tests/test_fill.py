@@ -214,7 +214,8 @@ class TestFill(TestCase):
         """Test fill with value API."""
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.fill(method="a", input_ts="tests/data_missing.csv")
-        assert r"could not convert " in str(e_info.value)
+        if r"could not convert " not in str(e_info.value):
+            raise AssertionError
 
     def test_fill_ffill_cli(self):
         """Test forward fill CLI."""

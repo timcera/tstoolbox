@@ -69,7 +69,8 @@ def test_epoch_interval(epoch, interval, expected):
             interval=interval,
             epoch=epoch,
         )
-    assert out.index[1] == expected
+    if out.index[1] != expected:
+        raise AssertionError
 
 
 def test_raises():

@@ -30,9 +30,10 @@ class TestConvertUnits(TestCase):
             _ = tstoolbox.read(
                 "tests/data_gainesville_daily_precip.csv", source_units="ft3/s"
             )
-        assert r'The units specified by the "source_units" keyword and in the' in str(
+        if r'The units specified by the "source_units" keyword and in the' not in str(
             e_info.value
-        )
+        ):
+            raise AssertionError
 
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.read(
