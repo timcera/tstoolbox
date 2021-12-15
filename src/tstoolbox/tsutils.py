@@ -1578,9 +1578,11 @@ def return_input(
     output: DataFrame,
     suffix: Optional[str] = "",
     reverse_index: bool = False,
-    output_names: List = [],
+    output_names: List = None,
 ) -> DataFrame:
     """Print the input time series also."""
+    if output_names is None:
+        output_names = []
     output.columns = output_names or [renamer(i, suffix) for i in output.columns]
     if iftrue:
         return memory_optimize(
