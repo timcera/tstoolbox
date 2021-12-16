@@ -235,9 +235,11 @@ def equation(
     round_index=None,
     source_units=None,
     target_units=None,
-    output_names: List[str] = [],
+    output_names: List[str] = None,
 ):
     """Apply <equation_str> to the time series data."""
+    if output_names is None:
+        output_names = []
     x = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,
