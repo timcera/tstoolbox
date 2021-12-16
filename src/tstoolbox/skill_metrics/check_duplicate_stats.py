@@ -33,16 +33,12 @@ def check_duplicate_stats(stats1, stats2, threshold=0.01):
 
     # Check for matching list lengths
     if len(stats1) != len(stats2):
-        ValueError(
-            """
+        ValueError("""
 *
 *   Arguments stats1 and stats2 have different list lengths.
 *   len(stats1) = {} != len(stats2) = {}
 *
-*""".format(
-                len(stats1), len(stats2)
-            )
-        )
+*""".format(len(stats1), len(stats2)))
 
     # Search for duplicate pairs of statistics
     duplicates = []
@@ -53,7 +49,6 @@ def check_duplicate_stats(stats1, stats2, threshold=0.01):
             diff2 = abs((stats2[i] - stats2[j]) / stats2[i])
             if diff1 < threshold and diff2 < threshold:
                 duplicates.append(
-                    (i, j, (stats1[i], stats2[i]), (stats1[j], stats2[j]))
-                )
+                    (i, j, (stats1[i], stats2[i]), (stats1[j], stats2[j])))
 
     return duplicates

@@ -134,25 +134,22 @@ def unstack(
         )
     except ValueError:
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 Duplicate index (time stamp and '{}') where found.
 Found these duplicate indices:
 {}
-""".format(
-                    column_names, tsd.index.get_duplicates()
-                )
-            )
-        )
+""".format(column_names, tsd.index.get_duplicates())))
 
     newtsd.index.name = "Datetime"
 
     newtsd.columns = [
-        "_".join(tuple(map(str, col))).rstrip("_") for col in newtsd.columns.values
+        "_".join(tuple(map(str, col))).rstrip("_")
+        for col in newtsd.columns.values
     ]
 
     # Remove weird characters from column names
-    newtsd.rename(columns=lambda x: "".join([i for i in str(x) if i not in "'\" "]))
+    newtsd.rename(
+        columns=lambda x: "".join([i for i in str(x) if i not in "'\" "]))
 
     newtsd = tsutils.common_kwds(
         newtsd,

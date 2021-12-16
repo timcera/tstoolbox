@@ -60,8 +60,7 @@ def get_target_diagram_axes(x, y, option):
     else:
         # Use function attributes for nxticks and nyticks
         if hasattr(get_target_diagram_axes, "nxticks") and hasattr(
-            get_target_diagram_axes, "nxticks"
-        ):
+                get_target_diagram_axes, "nxticks"):
             nxticks = get_target_diagram_axes.nxticks
             nyticks = get_target_diagram_axes.nyticks
         else:

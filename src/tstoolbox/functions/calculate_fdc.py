@@ -18,11 +18,12 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-
 warnings.filterwarnings("ignore")
 
 
-@mando.command("calculate_fdc", formatter_class=RSTHelpFormatter, doctype="numpy")
+@mando.command("calculate_fdc",
+               formatter_class=RSTHelpFormatter,
+               doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def calculate_fdc_cli(
     input_ts="-",
@@ -204,12 +205,14 @@ def calculate_fdc(
     for col in tsd:
         tmptsd = tsd[col].dropna()
         if len(tmptsd) > 1:
-            xdat = ppf(tsutils.set_plotting_position(tmptsd.count(), plotting_position))
+            xdat = ppf(
+                tsutils.set_plotting_position(tmptsd.count(),
+                                              plotting_position))
             tmptsd.sort_values(ascending=sort_values, inplace=True)
             tmptsd.index = xdat * 100
             tmptsd = pd.DataFrame(tmptsd)
             if include_sd is True or include_cl is True:
-                sd = (xdat * (1 - xdat) / len(xdat)) ** 0.5
+                sd = (xdat * (1 - xdat) / len(xdat))**0.5
             if include_sd is True:
                 tmptsd[col + "_sd"] = sd
             if include_cl is True:

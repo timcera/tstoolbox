@@ -14,7 +14,9 @@ from .. import tsutils
 warnings.filterwarnings("ignore")
 
 
-@mando.command("remove_trend", formatter_class=RSTHelpFormatter, doctype="numpy")
+@mando.command("remove_trend",
+               formatter_class=RSTHelpFormatter,
+               doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def remove_trend_cli(
     input_ts="-",

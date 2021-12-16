@@ -16,31 +16,33 @@ except ImportError:
     from typing_extensions import Literal
 
 
-@mando.command("normalization", formatter_class=RSTHelpFormatter, doctype="numpy")
+@mando.command("normalization",
+               formatter_class=RSTHelpFormatter,
+               doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def normalization_cli(
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    mode="minmax",
-    min_limit=0,
-    max_limit=1,
-    pct_rank_method="average",
-    print_input=False,
-    round_index=None,
-    source_units=None,
-    target_units=None,
-    float_format="g",
-    tablefmt="csv",
-    with_centering=True,
-    with_scaling=True,
-    quantile_range=(0.25, 0.75),
+        input_ts="-",
+        columns=None,
+        start_date=None,
+        end_date=None,
+        dropna="no",
+        skiprows=None,
+        index_type="datetime",
+        names=None,
+        clean=False,
+        mode="minmax",
+        min_limit=0,
+        max_limit=1,
+        pct_rank_method="average",
+        print_input=False,
+        round_index=None,
+        source_units=None,
+        target_units=None,
+        float_format="g",
+        tablefmt="csv",
+        with_centering=True,
+        with_scaling=True,
+        quantile_range=(0.25, 0.75),
 ):
     """Return the normalization of the time series.
 
@@ -163,28 +165,28 @@ def normalization_cli(
 
 @typic.al
 def normalization(
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    mode: Literal[
-        "minmax", "zscore", "pct_rank", "maxabs", "normal", "robust"
-    ] = "minmax",
-    min_limit: float = 0,
-    max_limit: float = 1,
-    pct_rank_method: Literal["average", "min", "max", "first", "dense"] = "average",
-    print_input=False,
-    round_index=None,
-    source_units=None,
-    target_units=None,
-    with_centering=True,
-    with_scaling=True,
-    quantile_range=(0.25, 0.75),
+        input_ts="-",
+        columns=None,
+        start_date=None,
+        end_date=None,
+        dropna="no",
+        skiprows=None,
+        index_type="datetime",
+        names=None,
+        clean=False,
+        mode: Literal["minmax", "zscore", "pct_rank", "maxabs", "normal",
+                      "robust"] = "minmax",
+        min_limit: float = 0,
+        max_limit: float = 1,
+        pct_rank_method: Literal["average", "min", "max", "first",
+                                 "dense"] = "average",
+        print_input=False,
+        round_index=None,
+        source_units=None,
+        target_units=None,
+        with_centering=True,
+        with_scaling=True,
+        quantile_range=(0.25, 0.75),
 ):
     """Return the normalization of the time series."""
     tsd = tsutils.common_kwds(
@@ -210,8 +212,7 @@ def normalization(
 
     if mode == "minmax":
         tsd = min_limit + (tsd - tsd.min()) / (tsd.max() - tsd.min()) * (
-            max_limit - min_limit
-        )
+            max_limit - min_limit)
     elif mode == "zscore":
         tsd = (tsd - tsd.mean()) / tsd.std()
     elif mode == "pct_rank":

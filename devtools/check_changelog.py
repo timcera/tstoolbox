@@ -17,7 +17,6 @@ with open(changelog, "r") as fin:
             raise ValueError(
                 "Please add a summary of your additions to docs/CHANGELOG.rst. "
                 "As described in: https://python-project-skeleton.readthedocs.io"
-                "/en/latest/contributing.html#update-changelog."
-            )
+                "/en/latest/contributing.html#update-changelog.")
         if line.startswith("*"):
             break

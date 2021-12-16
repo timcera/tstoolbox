@@ -47,7 +47,10 @@ def plot_target_axes(axes):
         else:
             plt.plot([Xoff, 0], [y - 0.01 * Yoff, y - 0.01 * Yoff], "-k")
 
-        plt.text(x, y - 0.5 * Yoff, axes["ylabel"][i], horizontalalignment="right")
+        plt.text(x,
+                 y - 0.5 * Yoff,
+                 axes["ylabel"][i],
+                 horizontalalignment="right")
 
     # Label x-axis with text at end of axis
     xpos = xtick[-1] + 3 * xtick[-1] / 30

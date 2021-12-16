@@ -96,10 +96,10 @@ def plot_taylor_axes(axes, cax, option):
             ratio = 1.0
             while ratio > 0.7:
                 itick += 1
-                ratio = (option["axismax"] - option["tickrms"][itick]) / option[
-                    "axismax"
-                ]
-            dd = 0.7 * option["tickrms"][itick] + 0.3 * option["tickrms"][itick + 1]
+                ratio = (option["axismax"] -
+                         option["tickrms"][itick]) / option["axismax"]
+            dd = 0.7 * option["tickrms"][itick] + 0.3 * option["tickrms"][itick
+                                                                          + 1]
 
             # Write label in a circular arc
             for ii, ith in enumerate(c):
@@ -186,7 +186,9 @@ def plot_taylor_axes(axes, cax, option):
     if option["numberpanels"] == 2:
         axislim = [axes["rmax"] * x for x in [-1.15, 1.15, 0, 1.15]]
         plt.axis(axislim)
-        plt.plot([-axes["rmax"], axes["rmax"]], [0, 0], color=axes["tc"], linewidth=2)
+        plt.plot([-axes["rmax"], axes["rmax"]], [0, 0],
+                 color=axes["tc"],
+                 linewidth=2)
         plt.plot([0, 0], [0, axes["rmax"]], color=axes["tc"])
     else:
         axislim = [axes["rmax"] * x for x in [0, 1.15, 0, 1.15]]

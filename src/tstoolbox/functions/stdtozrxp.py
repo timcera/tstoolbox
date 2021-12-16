@@ -79,8 +79,7 @@ def stdtozrxp_cli(
             source_units=source_units,
             target_units=target_units,
             rexchange=rexchange,
-        )
-    )
+        ))
 
 
 def stdtozrxp(
@@ -115,25 +114,17 @@ def stdtozrxp(
     )
     if len(tsd.columns) != 1:
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 The "stdtozrxp" command can only accept a single
 'time-series, instead it is seeing {}.
-""".format(
-                    len(tsd.columns)
-                )
-            )
-        )
+""".format(len(tsd.columns))))
 
     if rexchange:
         print("#REXCHANGE{}|*|".format(rexchange))
     for i in range(len(tsd)):
-        print(
-            (
-                "{0.year:04d}{0.month:02d}{0.day:02d}{0.hour:02d}"
-                "{0.minute:02d}{0.second:02d}, {1}"
-            ).format(tsd.index[i], tsd[tsd.columns[0]][i])
-        )
+        print(("{0.year:04d}{0.month:02d}{0.day:02d}{0.hour:02d}"
+               "{0.minute:02d}{0.second:02d}, {1}").format(
+                   tsd.index[i], tsd[tsd.columns[0]][i]))
 
 
 stdtozrxp.__doc__ = stdtozrxp_cli.__doc__

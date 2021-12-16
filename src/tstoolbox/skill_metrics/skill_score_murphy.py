@@ -51,10 +51,10 @@ def skill_score_murphy(predicted, reference):
     utils.check_arrays(predicted, reference)
 
     # Calculate RMSE
-    rmse2 = rmsd(predicted, reference) ** 2
+    rmse2 = rmsd(predicted, reference)**2
 
     # Calculate standard deviation
-    sdev2 = np.std(reference, ddof=1) ** 2
+    sdev2 = np.std(reference, ddof=1)**2
 
     # Calculate skill score
     ss = 1 - rmse2 / sdev2

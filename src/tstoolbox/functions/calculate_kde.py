@@ -15,7 +15,9 @@ from .. import tsutils
 warnings.filterwarnings("ignore")
 
 
-@mando.command("calculate_kde", formatter_class=RSTHelpFormatter, doctype="numpy")
+@mando.command("calculate_kde",
+               formatter_class=RSTHelpFormatter,
+               doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def calculate_kde_cli(
     ascending=True,
@@ -124,16 +126,11 @@ def calculate_kde(
 
     if len(tsd.columns) > 1:
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 Right now "calculate_kde" only support one time-series at a time.
 
 You gave {}.
-""".format(
-                    tsd.columns
-                )
-            )
-        )
+""".format(tsd.columns)))
 
     from scipy.stats import gaussian_kde
 

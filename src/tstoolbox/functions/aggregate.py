@@ -18,7 +18,6 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-
 warnings.filterwarnings("ignore")
 
 
@@ -191,11 +190,8 @@ def aggregate_cli(
 def aggregate(
     input_ts="-",
     groupby: str = None,
-    statistic: List[
-        Literal[
-            "mean", "sum", "std", "sem", "max", "min", "median", "first", "last", "ohlc"
-        ]
-    ] = "mean",
+    statistic: List[Literal["mean", "sum", "std", "sem", "max", "min",
+                            "median", "first", "last", "ohlc"]] = "mean",
     columns=None,
     start_date=None,
     end_date=None,
@@ -214,26 +210,26 @@ def aggregate(
     min_count: int = 0,
 ):
     """Take a time series and aggregate to specified frequency."""
-    aggd = {"hourly": "H", "daily": "D", "monthly": "M", "yearly": "A", "all": "all"}
+    aggd = {
+        "hourly": "H",
+        "daily": "D",
+        "monthly": "M",
+        "yearly": "A",
+        "all": "all"
+    }
 
     if agg_interval is not None:
         if groupby is not None:
             raise ValueError(
-                tsutils.error_wrapper(
-                    """
+                tsutils.error_wrapper("""
 You cannot specify both 'groupby' and 'agg_interval'.  The 'agg_interval'
 option is deprecated in favor of 'groupby'.
-"""
-                )
-            )
+"""))
         warnings.warn(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 The 'agg_interval' option has been deprecated in favor of 'groupby' to be
 consistent with other tstoolbox commands.
-"""
-            )
-        )
+"""))
         groupby = aggd.get(agg_interval, agg_interval)
 
     if groupby is None:
@@ -251,19 +247,16 @@ consistent with other tstoolbox commands.
             pass
 
         if inter is not None:
-            raise ValueError(
-                """
+            raise ValueError("""
 *
 *   You cannot specify the 'ninterval' option and prefix a number in the
 *   'groupby' option.  The 'ninterval' option is deprecated in favor of
 *   prefixing the number in the pandas offset code used in the 'groupby'
 *   option.
 *
-"""
-            )
+""")
 
-        warnings.warn(
-            """
+        warnings.warn("""
 *
 *   The 'ninterval' option has been deprecated in favor of prefixing the
 *   desired interval in front of the 'groupby' pandas offset code.
@@ -271,8 +264,7 @@ consistent with other tstoolbox commands.
 *   For example: instead of 'grouby="D"' and 'ninterval=7', you can just
 *   have 'groupby="7D"'.
 *
-"""
-        )
+""")
     else:
         ninterval = ""
 
@@ -294,9 +286,11 @@ consistent with other tstoolbox commands.
     for method in statistic:
         if groupby == "all":
             try:
-                tmptsd = pd.DataFrame(eval("""tsd.aggregate({})""".format(method))).T
+                tmptsd = pd.DataFrame(
+                    eval("""tsd.aggregate({})""".format(method))).T
             except NameError:
-                tmptsd = pd.DataFrame(eval("""tsd.aggregate('{}')""".format(method))).T
+                tmptsd = pd.DataFrame(
+                    eval("""tsd.aggregate('{}')""".format(method))).T
             tmptsd.index = [tsd.index[-1]]
         elif groupby == "months_across_years":
             tmptsd = tsd.groupby(lambda x: x.month).agg(method)
@@ -304,8 +298,7 @@ consistent with other tstoolbox commands.
         else:
             if method in ["first", "last", "max", "min", "prod", "sum"]:
                 tmptsd = tsd.resample(f"{ninterval}{groupby}").agg(
-                    method, min_count=min_count
-                )
+                    method, min_count=min_count)
             else:
                 tmptsd = tsd.resample(f"{ninterval}{groupby}").agg(method)
         tmptsd.columns = [tsutils.renamer(i, method) for i in tmptsd.columns]

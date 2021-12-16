@@ -66,7 +66,9 @@ def write_taylor_stats(filename, data, **kwargs):
 
     # Write data for each dictionary
     row = 2
-    headers = ["Description", "Standard Deviation", "CRMSD", "Correlation Coeff."]
+    headers = [
+        "Description", "Standard Deviation", "CRMSD", "Correlation Coeff."
+    ]
     for i in range(ncell):
         row += 1
         if len(option["title"]) > 0:

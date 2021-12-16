@@ -25,17 +25,20 @@ def autocorrelation(series):
     n = len(series)
     data = np.asarray(series)
     mean = np.mean(data)
-    c0 = np.sum((data - mean) ** 2) / float(n)
+    c0 = np.sum((data - mean)**2) / float(n)
 
     def r(h):
-        return ((data[: n - h] - mean) * (data[h:] - mean)).sum() / float(n) / c0
+        return ((data[:n - h] - mean) *
+                (data[h:] - mean)).sum() / float(n) / c0
 
     x = np.arange(n) + 1
     y = [r(loc) for loc in x]
     return y
 
 
-@mando.command("correlation", formatter_class=RSTHelpFormatter, doctype="numpy")
+@mando.command("correlation",
+               formatter_class=RSTHelpFormatter,
+               doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def correlation_cli(
     lags,
@@ -179,11 +182,12 @@ def correlation(
         ntsd = pd.DataFrame()
         for cname, cdata in tsd.iteritems():
             y = autocorrelation(cdata)
-            ntsd = ntsd.join(
-                pd.DataFrame(y, index=tsd.index, columns=[cname]), how="outer"
-            )
+            ntsd = ntsd.join(pd.DataFrame(y, index=tsd.index, columns=[cname]),
+                             how="outer")
         try:
-            x = pd.timedelta_range(start=1, end=len(ntsd) + 1, freq=tsd.index.freqstr)
+            x = pd.timedelta_range(start=1,
+                                   end=len(ntsd) + 1,
+                                   freq=tsd.index.freqstr)
         except ValueError:
             x = np.arange(len(ntsd)) + 1
         ntsd.index = x

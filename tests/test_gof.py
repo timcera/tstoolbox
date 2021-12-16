@@ -7,7 +7,8 @@ from tstoolbox import tstoolbox
 
 class Testgof(TestCase):
     def setUp(self):
-        self.df = tstoolbox.read(["tests/data_sunspot.csv", "tests/data_sunspot.csv"])
+        self.df = tstoolbox.read(
+            ["tests/data_sunspot.csv", "tests/data_sunspot.csv"])
         self.gof = [
             ["Bias", 0.0],
             ["Root-mean-square Deviation (RMSD)", 0.0],
@@ -24,6 +25,9 @@ class Testgof(TestCase):
         """Test of gof API."""
         out = tstoolbox.gof(
             input_ts=self.df,
-            stats=["bias", "rmsd", "crmsd", "corrcoef", "murphyss", "nse", "brierss"],
+            stats=[
+                "bias", "rmsd", "crmsd", "corrcoef", "murphyss", "nse",
+                "brierss"
+            ],
         )
         assert out == self.gof

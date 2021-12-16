@@ -23,11 +23,13 @@ class TestRead(TestCase):
 
         self.read_multiple_direct = pandas.DataFrame(ts, columns=["Value"])
         self.read_multiple_direct = pandas.concat(
-            [self.read_multiple_direct, pandas.Series(ts, name="Value_r")],
+            [self.read_multiple_direct,
+             pandas.Series(ts, name="Value_r")],
             axis="columns",
         )
         self.read_multiple_direct.index.name = "Datetime"
-        self.read_multiple_direct = tsutils.memory_optimize(self.read_multiple_direct)
+        self.read_multiple_direct = tsutils.memory_optimize(
+            self.read_multiple_direct)
 
         self.read_cli = b"""Datetime,Value
 2000-01-01,4.5
@@ -47,9 +49,11 @@ class TestRead(TestCase):
         self.read_tsstep_2_daily = pandas.DataFrame(
             [[4.5, 45.6], [4.7, 34.2], [4.5, 7.2]],
             columns=["Value", "Value1"],
-            index=pandas.DatetimeIndex(["2000-01-01", "2000-01-03", "2000-01-05"]),
+            index=pandas.DatetimeIndex(
+                ["2000-01-01", "2000-01-03", "2000-01-05"]),
         )
-        self.read_tsstep_2_daily = tsutils.memory_optimize(self.read_tsstep_2_daily)
+        self.read_tsstep_2_daily = tsutils.memory_optimize(
+            self.read_tsstep_2_daily)
 
         self.read_tsstep_2_daily.index.name = "Datetime"
 
@@ -57,8 +61,7 @@ class TestRead(TestCase):
             b"""Datetime,Value::mean,Unnamed::mean,Unnamed.001::mean,Unnamed.002::mean,Unnamed.003::mean,Unnamed.004::mean,Unnamed.005::mean,Unnamed.006::mean,Unnamed.007::mean
 2000-01-01,2.46667,,,,,,,,
 2000-01-02,3.4,,,,,,,,
-"""
-        )
+""")
 
     def test_read_direct(self):
         """Test read API for single column - daily."""
@@ -67,16 +70,15 @@ class TestRead(TestCase):
 
     def test_read_mulitple_direct(self):
         """Test read API for multiple columns - daily."""
-        out = tstoolbox.read(
-            "tests/data_simple.csv tests/data_simple.csv", append=r"columns"
-        )
+        out = tstoolbox.read("tests/data_simple.csv tests/data_simple.csv",
+                             append=r"columns")
         assert_frame_equal(out, self.read_multiple_direct)
 
     def test_read_mulitple_direct_list(self):
         """Test read API for multiple columns - daily."""
         out = tstoolbox.read(
-            ["tests/data_simple.csv", "tests/data_simple.csv"], append=r"columns"
-        )
+            ["tests/data_simple.csv", "tests/data_simple.csv"],
+            append=r"columns")
         assert_frame_equal(out, self.read_multiple_direct)
 
     def test_read_bi_monthly(self):

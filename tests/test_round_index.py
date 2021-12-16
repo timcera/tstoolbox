@@ -18,17 +18,21 @@ class Testround_index(TestCase):
 
         self.round_index_direct = pandas.DataFrame(ts, columns=["Value"])
         self.round_index_direct.index.name = "Datetime"
-        self.round_index_direct = tsutils.memory_optimize(self.round_index_direct)
+        self.round_index_direct = tsutils.memory_optimize(
+            self.round_index_direct)
 
-        self.round_index_multiple_direct = pandas.DataFrame(ts, columns=["Value"])
+        self.round_index_multiple_direct = pandas.DataFrame(ts,
+                                                            columns=["Value"])
         self.round_index_multiple_direct = pandas.concat(
-            [self.round_index_multiple_direct, pandas.Series(ts, name="Value_r")],
+            [
+                self.round_index_multiple_direct,
+                pandas.Series(ts, name="Value_r")
+            ],
             axis="columns",
         )
         self.round_index_multiple_direct.index.name = "Datetime"
         self.round_index_multiple_direct = tsutils.memory_optimize(
-            self.round_index_multiple_direct
-        )
+            self.round_index_multiple_direct)
 
         self.round_index_cli = b"""Datetime,Value
 2000-01-01,4.5
@@ -48,11 +52,11 @@ class Testround_index(TestCase):
         self.round_index_tsstep_2_daily = pandas.DataFrame(
             [[4.5, 45.6], [4.7, 34.2], [4.5, 7.2]],
             columns=["Value", "Value1"],
-            index=pandas.DatetimeIndex(["2000-01-01", "2000-01-03", "2000-01-05"]),
+            index=pandas.DatetimeIndex(
+                ["2000-01-01", "2000-01-03", "2000-01-05"]),
         )
         self.round_index_tsstep_2_daily = tsutils.memory_optimize(
-            self.round_index_tsstep_2_daily
-        )
+            self.round_index_tsstep_2_daily)
 
         self.round_index_tsstep_2_daily.index.name = "Datetime"
 

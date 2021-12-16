@@ -65,9 +65,8 @@ def get_taylor_diagram_axes(rho, option):
         elif rticks % 3 == 0:
             rticks = rticks / 3
     axes["rinc"] = (axes["rmax"] - axes["rmin"]) / rticks
-    tick = np.arange(
-        axes["rmin"] + axes["rinc"], axes["rmax"] + axes["rinc"], axes["rinc"]
-    )
+    tick = np.arange(axes["rmin"] + axes["rinc"], axes["rmax"] + axes["rinc"],
+                     axes["rinc"])
 
     if len(option["tickrms"]) == 0:
         option["tickrms"] = tick

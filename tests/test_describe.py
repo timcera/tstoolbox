@@ -31,9 +31,9 @@ class TestDescribe(TestCase):
             columns=["Area"],
         )
         self.date_slice.index.name = "Statistic"
-        self.date_slice_cli = capture.capture(
-            tsutils.printiso, self.date_slice, showindex="always"
-        )
+        self.date_slice_cli = capture.capture(tsutils.printiso,
+                                              self.date_slice,
+                                              showindex="always")
         self.date_slice.index.name = "UniqueID"
 
     def test_describe(self):
@@ -46,7 +46,7 @@ class TestDescribe(TestCase):
         """Test of describe CLI."""
         args = 'tstoolbox describe --input_ts="tests/data_sunspot.csv"'
         args = shlex.split(args)
-        out = subprocess.Popen(
-            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
-        ).communicate()[0]
+        out = subprocess.Popen(args,
+                               stdout=subprocess.PIPE,
+                               stdin=subprocess.PIPE).communicate()[0]
         self.assertEqual(out, self.date_slice_cli)

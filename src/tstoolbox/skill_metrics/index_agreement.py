@@ -32,17 +32,8 @@ def index_agreement(simulated, observed):
     utils.check_arrays(simulated, observed)
 
     # Calculate the index_agreement
-    index_agreement = 1.0 - (
-        np.sum((observed - simulated) ** 2)
-        / (
-            np.sum(
-                (
-                    np.abs(simulated - np.mean(observed))
-                    + np.abs(observed - np.mean(observed))
-                )
-                ** 2
-            )
-        )
-    )
+    index_agreement = 1.0 - (np.sum((observed - simulated)**2) / (np.sum(
+        (np.abs(simulated - np.mean(observed)) +
+         np.abs(observed - np.mean(observed)))**2)))
 
     return index_agreement

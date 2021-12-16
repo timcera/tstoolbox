@@ -61,9 +61,8 @@ def overlay_taylor_diagram_circles(axes, cax, option):
 
     c82 = np.cos(tickRMSAngle * np.pi / 180)
     s82 = np.sin(tickRMSAngle * np.pi / 180)
-    radius = np.sqrt(
-        axes["dx"] ** 2 + axes["rmax"] ** 2 - 2 * axes["dx"] * axes["rmax"] * xunit
-    )
+    radius = np.sqrt(axes["dx"]**2 + axes["rmax"]**2 -
+                     2 * axes["dx"] * axes["rmax"] * xunit)
 
     # Define label format
     labelFormat = "{" + option["rmslabelformat"] + "}"
@@ -71,7 +70,8 @@ def overlay_taylor_diagram_circles(axes, cax, option):
     for iradius in option["tickrms"]:
         phi = th[np.where(radius >= iradius)]
         phi = phi[0]
-        ig = np.where(iradius * np.cos(th) + axes["dx"] <= axes["rmax"] * np.cos(phi))
+        ig = np.where(
+            iradius * np.cos(th) + axes["dx"] <= axes["rmax"] * np.cos(phi))
         hhh = plt.plot(
             xunit[ig] * iradius + axes["dx"],
             yunit[ig] * iradius,

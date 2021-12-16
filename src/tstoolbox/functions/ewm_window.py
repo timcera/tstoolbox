@@ -18,7 +18,6 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-
 warnings.filterwarnings("ignore")
 
 
@@ -205,7 +204,8 @@ def ewm_window(
     index_type="datetime",
     names=None,
     clean=False,
-    statistic: List[Optional[Literal["corr", "cov", "mean", "std", "var"]]] = "mean",
+    statistic: List[Optional[Literal["corr", "cov", "mean", "std",
+                                     "var"]]] = "mean",
     alpha_com: Optional[tsutils.FloatGreaterEqualToZero] = None,
     alpha_span: Optional[tsutils.FloatGreaterEqualToOne] = None,
     alpha_halflife: Optional[tsutils.FloatGreaterEqualToZero] = None,
@@ -246,7 +246,9 @@ def ewm_window(
         nntsd = pd.DataFrame()
         for stat in statistic:
             ntsd = eval("ntsd.{}()".format(stat))
-            ntsd = [tsutils.renamer(i, "ewm.{}".format(stat)) for i in ntsd.columns]
+            ntsd = [
+                tsutils.renamer(i, "ewm.{}".format(stat)) for i in ntsd.columns
+            ]
             nntsd = nntsd.join(ntsd, how="outer")
     else:
         nntsd = ntsd

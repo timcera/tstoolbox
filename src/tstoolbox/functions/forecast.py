@@ -168,25 +168,21 @@ def automatic(
 
     if multiple_cols is True and print_cols != "forecast":
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 To forecast multiple columns requires `print_cols` to be "forecast", not {}.
-""".format(
-                    print_cols
-                )
-            )
-        )
+""".format(print_cols)))
 
     rtsd = pd.DataFrame()
     for col in tsd.columns:
-        ntsd = pd.DataFrame(
-            {
-                index_name: tsd.index.astype("M8[ns]").values,
-                col: tsd[col].values.astype("float64"),
-            }
-        )
+        ntsd = pd.DataFrame({
+            index_name: tsd.index.astype("M8[ns]").values,
+            col: tsd[col].values.astype("float64"),
+        })
         # get the best time series model for predicting one week
-        lEngine.train(iInputDS=ntsd, iTime=index_name, iSignal=col, iHorizon=horizon)
+        lEngine.train(iInputDS=ntsd,
+                      iTime=index_name,
+                      iSignal=col,
+                      iHorizon=horizon)
         lEngine.getModelInfo()
 
         df_forecast = lEngine.forecast(iInputDS=ntsd, iHorizon=horizon)
@@ -313,25 +309,21 @@ def arima(
 
     if multiple_cols is True and print_cols != "forecast":
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 To forecast multiple columns requires `print_cols` to be "forecast", not {}.
-""".format(
-                    print_cols
-                )
-            )
-        )
+""".format(print_cols)))
 
     rtsd = pd.DataFrame()
     for col in tsd.columns:
-        ntsd = pd.DataFrame(
-            {
-                index_name: tsd.index.astype("M8[ns]").values,
-                col: tsd[col].values.astype("float64"),
-            }
-        )
+        ntsd = pd.DataFrame({
+            index_name: tsd.index.astype("M8[ns]").values,
+            col: tsd[col].values.astype("float64"),
+        })
         # get the best time series model for predicting one week
-        lEngine.train(iInputDS=ntsd, iTime=index_name, iSignal=col, iHorizon=horizon)
+        lEngine.train(iInputDS=ntsd,
+                      iTime=index_name,
+                      iSignal=col,
+                      iHorizon=horizon)
         lEngine.getModelInfo()
 
         df_forecast = lEngine.forecast(iInputDS=ntsd, iHorizon=horizon)

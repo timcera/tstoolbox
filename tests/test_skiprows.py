@@ -29,7 +29,8 @@ class TestRead(TestCase):
 
         self.read_direct_sparse = pandas.DataFrame(ts, columns=["Value"])
         self.read_direct_sparse.index.name = "Datetime"
-        self.read_direct_sparse = tsutils.memory_optimize(self.read_direct_sparse)
+        self.read_direct_sparse = tsutils.memory_optimize(
+            self.read_direct_sparse)
 
         self.read_cli_sparse = b"""Datetime,Value
 2000-01-01,4.5
@@ -46,5 +47,6 @@ class TestRead(TestCase):
 
     def test_read_direct_sparse(self):
         """Test read API for single column - daily."""
-        out = tstoolbox.read("tests/data_simple_extra_rows_sparse.csv", skiprows=[4, 6])
+        out = tstoolbox.read("tests/data_simple_extra_rows_sparse.csv",
+                             skiprows=[4, 6])
         assert_frame_equal(out, self.read_direct_sparse)

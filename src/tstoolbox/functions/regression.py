@@ -281,13 +281,10 @@ def regression(
         for fro in x_train_cols:
             if to == fro:
                 raise ValueError(
-                    tsutils.error_wrapper(
-                        f"""
+                    tsutils.error_wrapper(f"""
 You can't have columns in both "x_train_cols", and "y_train_col"
 keywords.  Instead you have "{to}" in both.
-"""
-                    )
-                )
+"""))
 
     tsd = tsutils.common_kwds(
         input_ts,
@@ -314,19 +311,19 @@ keywords.  Instead you have "{to}" in both.
     if testfreqstr[0] == "A":
         ntsd[ntsd.index.name + "_"] = ntsd.index.year - ntsd.index[0].year
     elif testfreqstr[0] == "M":
-        ntsd[ntsd.index.name + "_"] = (ntsd.index.year - ntsd.index[0].year) * 12 + (
-            ntsd.index.month - ntsd.index[0].month
-        )
+        ntsd[ntsd.index.name +
+             "_"] = (ntsd.index.year - ntsd.index[0].year) * 12 + (
+                 ntsd.index.month - ntsd.index[0].month)
     else:
         try:
             # In case ntsd.index.freqstr is a multiple, for example "15T".
-            ntsd[ntsd.index.name + "_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
-                ntsd.index.freqstr
-            )
+            ntsd[ntsd.index.name +
+                 "_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
+                     ntsd.index.freqstr)
         except ValueError:
-            ntsd[ntsd.index.name + "_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
-                "1" + ntsd.index.freqstr
-            )
+            ntsd[ntsd.index.name +
+                 "_"] = (ntsd.index - ntsd.index[0]
+                         ) // pd.Timedelta("1" + ntsd.index.freqstr)
 
     if x_pred_cols is None:
         nx_pred_cols = x_train_cols
@@ -361,8 +358,12 @@ keywords.  Instead you have "{to}" in both.
         rdata = []
         rdata.append(["Coefficients", regr.coef_])
         rdata.append(["Intercept", regr.intercept_])
-        rdata.append(["Mean squared error", mean_squared_error(y_train, y_pred)])
-        rdata.append(["Coefficient of determination", r2_score(y_train, y_pred)])
+        rdata.append(
+            ["Mean squared error",
+             mean_squared_error(y_train, y_pred)])
+        rdata.append(
+            ["Coefficient of determination",
+             r2_score(y_train, y_pred)])
         return rdata
     result = pd.DataFrame(y_pred, index=x_pred.index)
     result = result.reindex(index=wtsd.index)
@@ -370,7 +371,6 @@ keywords.  Instead you have "{to}" in both.
 
 
 regression.__doc__ = regression_cli.__doc__
-
 
 if __name__ == "__init__":
     pass

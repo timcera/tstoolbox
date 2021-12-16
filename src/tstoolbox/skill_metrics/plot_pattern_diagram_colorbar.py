@@ -51,21 +51,30 @@ def plot_pattern_diagram_colorbar(X, Y, Z, option):
 
     # Add color bar to plot
     if option["colormap"] == "on":
-        hc = plt.colorbar(orientation="horizontal", aspect=6, fraction=0.04, pad=0.04)
+        hc = plt.colorbar(orientation="horizontal",
+                          aspect=6,
+                          fraction=0.04,
+                          pad=0.04)
 
     elif option["colormap"] == "off":
         if len(Z) > 1:
             plt.clim(min(Z), max(Z))
-            hc = plt.colorbar(
-                orientation="horizontal", aspect=6, fraction=0.04, pad=0.04
-            )
+            hc = plt.colorbar(orientation="horizontal",
+                              aspect=6,
+                              fraction=0.04,
+                              pad=0.04)
             #                 hc.set_ticks([min(Z), max(Z)])
             hc.set_ticklabels("Min. RMSD", "Max. RMSD")
     else:
-        raise ValueError("Invalid option for option.colormap: " + option["colormap"])
+        raise ValueError("Invalid option for option.colormap: " +
+                         option["colormap"])
 
     # Set desired properties of color bar
-    location = _getColorBarLocation(hc, option, xscale=0.75, yscale=7.5, cxscale=1.0)
+    location = _getColorBarLocation(hc,
+                                    option,
+                                    xscale=0.75,
+                                    yscale=7.5,
+                                    cxscale=1.0)
     hc.ax.set_position(location)  # set new position
     hc.ax.tick_params(labelsize="medium")  # set tick labels to medium
 

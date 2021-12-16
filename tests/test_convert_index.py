@@ -13,8 +13,9 @@ from tstoolbox import tstoolbox, tsutils
 class Testconvert_index(TestCase):
     def setUp(self):
         self.read_direct = pd.read_csv(
-            "tests/data_gainesville_daily_precip_index.csv", index_col=0, header=0
-        )
+            "tests/data_gainesville_daily_precip_index.csv",
+            index_col=0,
+            header=0)
         self.read_direct = tsutils.memory_optimize(self.read_direct)
 
     def test_convert_index_from_UTC(self):
@@ -52,9 +53,8 @@ class Testconvert_index(TestCase):
     ],
 )
 def test_epoch_interval(epoch, interval, expected):
-    if interval is not None and (
-        (epoch == "unix" and interval != "s") or (epoch == "julian" and interval != "D")
-    ):
+    if interval is not None and ((epoch == "unix" and interval != "s") or
+                                 (epoch == "julian" and interval != "D")):
         with pytest.warns(UserWarning, match="Typically the "):
             out = tstoolbox.convert_index(
                 "number",

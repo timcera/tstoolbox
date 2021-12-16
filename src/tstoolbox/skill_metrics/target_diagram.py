@@ -155,16 +155,16 @@ def _display_target_diagram_options():
     _disp("General options:")
     _dispopt(
         "'overlay'",
-        "'on' / 'off' (default): "
-        + "Switch to overlay current statistics on target diagram. "
-        + "\n\t\tOnly markers will be displayed.",
+        "'on' / 'off' (default): " +
+        "Switch to overlay current statistics on target diagram. " +
+        "\n\t\tOnly markers will be displayed.",
     )
     _dispopt(
         "'colormap'",
-        "'on'/ 'off' (default): "
-        + "Switch to map color shading of markers to colormap ('on')\n\t\t"
-        + "or min to max range of rmsdxz values ('off').\n\t\t"
-        + "Set to same value as option['nonrmsdxz'].",
+        "'on'/ 'off' (default): " +
+        "Switch to map color shading of markers to colormap ('on')\n\t\t" +
+        "or min to max range of rmsdxz values ('off').\n\t\t" +
+        "Set to same value as option['nonrmsdxz'].",
     )
     _disp("")
 
@@ -172,29 +172,30 @@ def _display_target_diagram_options():
     _dispopt(
         "'MarkerDisplayed'",
         "'marker' (default): Experiments are represented by individual symbols\n\t\t"
-        + "'colorBar': Experiments are represented by a color described "
-        + "in a colorbar",
+        + "'colorBar': Experiments are represented by a color described " +
+        "in a colorbar",
     )
     _disp("OPTIONS when 'MarkerDisplayed' == 'marker'")
     _dispopt("'markerLabel'", "Labels for markers")
     _dispopt("'markerLabelColor'", "Marker label color (Default: black)")
     _dispopt("'markerColor'", "Marker color")
-    _dispopt("'markerLegend'", "'on' / 'off' (default): Use legend for markers'")
+    _dispopt("'markerLegend'",
+             "'on' / 'off' (default): Use legend for markers'")
     _dispopt("'markerSize'", "Marker size (Default: 10)")
     _disp("OPTIONS when 'MarkerDisplayed' == 'colorbar'")
     _dispopt(
         "'nonrmsdxz'",
-        "'on'/ 'off' (default): "
-        + "Values in rmsds do not correspond to total RMS Differences.\n\t\t"
-        + "(Used to make range of rmsds values appear above color bar.)",
+        "'on'/ 'off' (default): " +
+        "Values in rmsds do not correspond to total RMS Differences.\n\t\t" +
+        "(Used to make range of rmsds values appear above color bar.)",
     )
     _dispopt("'titleColorBar'", "Title of the colorbar.")
     _disp("")
 
     _disp("Axes options:")
     _dispopt(
-        "'ticks'", "define tick positions " + "(default is that used by axis function)"
-    )
+        "'ticks'",
+        "define tick positions " + "(default is that used by axis function)")
     _dispopt(
         "'xtickLabelPos'",
         "position of the tick labels " + "along the x-axis (empty by default)",
@@ -210,15 +211,14 @@ def _display_target_diagram_options():
     _disp("Diagram options:")
     _dispopt(
         "'alpha'",
-        "Blending of symbol face color (0.0 transparent through 1.0 opaque)"
-        + "\n\t\t"
-        + "(Default: 1.0)",
+        "Blending of symbol face color (0.0 transparent through 1.0 opaque)" +
+        "\n\t\t" + "(Default: 1.0)",
     )
     _dispopt("'axismax'", "Maximum for the Bias & uRMSD axis")
     _dispopt(
         "'circles'",
-        "define the radii of circles to draw "
-        + "(default of (maximum rmsds)*[.7 1], [.7 1] when normalized diagram)",
+        "define the radii of circles to draw " +
+        "(default of (maximum rmsds)*[.7 1], [.7 1] when normalized diagram)",
     )
     _dispopt(
         "'circleLineSpec'",
@@ -226,7 +226,8 @@ def _display_target_diagram_options():
     )
     _dispopt("'circleLineWidth'", "Circle line width")
     _dispopt("'obsUncertainty'", "Observational Uncertainty (default of 0)")
-    _dispopt("'normalized'", "'on' / 'off' (default): normalized target diagram")
+    _dispopt("'normalized'",
+             "'on' / 'off' (default): normalized target diagram")
 
 
 def _disp(text):

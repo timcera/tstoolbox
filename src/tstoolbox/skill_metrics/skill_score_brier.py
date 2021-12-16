@@ -52,5 +52,6 @@ def skill_score_brier(forecast, reference, observed):
     utils.check_arrays(forecast, observed)
 
     # Calculate skill score
-    bss = 1 - brier_score(forecast, observed) / brier_score(reference, observed)
+    bss = 1 - brier_score(forecast, observed) / brier_score(
+        reference, observed)
     return bss

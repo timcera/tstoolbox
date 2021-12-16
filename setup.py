@@ -106,7 +106,9 @@ setup(
     zip_safe=False,
     install_requires=install_requires,
     extras_require=extras_require,
-    entry_points={"console_scripts": [f"{pkg_name}={pkg_name}.{pkg_name}:main"]},
+    entry_points={
+        "console_scripts": [f"{pkg_name}={pkg_name}.{pkg_name}:main"]
+    },
     test_suite="tests",
     python_requires=">=3.7.1",
 )

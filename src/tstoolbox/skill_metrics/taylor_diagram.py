@@ -221,8 +221,10 @@ def _display_taylor_diagram_options():
     _disp("OPTIONS when 'MarkerDisplayed' == 'marker'")
     _dispopt("'markerLabel'", "Labels for markers")
     _dispopt("'markerLabelColor'", "Marker label color (Default: black)")
-    _dispopt("'markerColor'", "Single color to use for all markers (Default: red)")
-    _dispopt("'markerLegend'", "'on' / 'off' (default): Use legend for markers")
+    _dispopt("'markerColor'",
+             "Single color to use for all markers (Default: red)")
+    _dispopt("'markerLegend'",
+             "'on' / 'off' (default): Use legend for markers")
     _dispopt("'markerSize'", "Marker size (Default: 10)")
 
     _disp("OPTIONS when MarkerDisplayed' == 'colorbar'")
@@ -236,10 +238,12 @@ def _display_taylor_diagram_options():
     _disp("")
 
     _disp("RMS axis options:")
-    _dispopt("'tickRMS'", "RMS values to plot grid circles from observation point")
+    _dispopt("'tickRMS'",
+             "RMS values to plot grid circles from observation point")
     _dispopt("'rincRMS'", "axis tick increment for RMS values")
     _dispopt("'colRMS'", "RMS grid and tick labels color. (Default: green)")
-    _dispopt("'showlabelsRMS'", "'on' (default) / 'off': Show the RMS tick labels")
+    _dispopt("'showlabelsRMS'",
+             "'on' (default) / 'off': Show the RMS tick labels")
     _dispopt(
         "'tickRMSangle'",
         "Angle for RMS tick labels with the observation point. Default: 135 deg.",
@@ -258,7 +262,8 @@ def _display_taylor_diagram_options():
     _dispopt("'tickSTD'", "STD values to plot gridding circles from origin")
     _dispopt("'rincSTD'", "axis tick increment for STD values")
     _dispopt("'colSTD'", "STD grid and tick labels color. (Default: black)")
-    _dispopt("'showlabelsSTD'", "'on' (default) / 'off': Show the STD tick labels")
+    _dispopt("'showlabelsSTD'",
+             "'on' (default) / 'off': Show the STD tick labels")
     _dispopt("'styleSTD'", "Line style of the STD grid")
     _dispopt("'widthSTD'", "Line width of the STD grid")
     _dispopt("'titleSTD'", "'on' (default) / 'off': Show STD axis title")
@@ -267,12 +272,12 @@ def _display_taylor_diagram_options():
     _disp("CORRELATION axis options:")
     _dispopt("'tickCOR'", "CORRELATON grid values")
     _dispopt("'colCOR'", "CORRELATION grid color. Default: blue")
-    _dispopt(
-        "'showlabelsCOR'", "'on' (default) / 'off': Show the CORRELATION tick labels"
-    )
+    _dispopt("'showlabelsCOR'",
+             "'on' (default) / 'off': Show the CORRELATION tick labels")
     _dispopt("'styleCOR'", "Line style of the COR grid")
     _dispopt("'widthCOR'", "Line width of the COR grid")
-    _dispopt("'titleCOR'", "'on' (default) / 'off': Show CORRELATION axis title")
+    _dispopt("'titleCOR'",
+             "'on' (default) / 'off': Show CORRELATION axis title")
     _disp("")
 
     _disp("Observation Point options:")

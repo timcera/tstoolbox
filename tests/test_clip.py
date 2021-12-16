@@ -46,6 +46,8 @@ class TestClip(TestCase):
         self.ats.loc[self.ats["Value::clip"] > 0.75, "Value::clip"] = 0.75
 
     def test_clip(self):
-        out = tstoolbox.clip(a_min=-0.75, a_max=0.75, input_ts="tests/data_sine.csv")
+        out = tstoolbox.clip(a_min=-0.75,
+                             a_max=0.75,
+                             input_ts="tests/data_sine.csv")
         self.maxDiff = None
         assert_frame_equal(out, self.ats)

@@ -54,7 +54,10 @@ def overlay_target_diagram_circles(option):
     for c in circles:
         rho = c * unit
         X, Y = pol2cart(theta, rho)
-        plt.plot(X, Y, option["circlelinespec"], linewidth=option["circlelinewidth"])
+        plt.plot(X,
+                 Y,
+                 option["circlelinespec"],
+                 linewidth=option["circlelinewidth"])
 
     # 3 - Observational Uncertainty threshold
     if option["obsuncertainty"] > 0:

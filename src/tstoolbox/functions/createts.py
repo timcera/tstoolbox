@@ -89,23 +89,17 @@ def createts(
     end_date=None,
 ):
     """Create empty time series, optionally fill with a value."""
-    if input_ts is None and (
-        (start_date is None) or (end_date is None) or (freq is None)
-    ):
+    if input_ts is None and ((start_date is None) or (end_date is None) or
+                             (freq is None)):
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 If input_ts is None, then start_date, end_date, and freq must be supplied.
 
 Instead you have:
 start_date = {},
 end_date = {},
 freq = {}
-""".format(
-                    start_date, end_date, freq
-                )
-            )
-        )
+""".format(start_date, end_date, freq)))
 
     if input_ts is not None:
         tsd = tsutils.common_kwds(

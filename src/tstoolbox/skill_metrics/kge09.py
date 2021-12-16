@@ -55,24 +55,16 @@ def kge09(predicted, reference, sr=1.0, salpha=1.0, sbeta=1.0):
     pdims = predicted.shape
     rdims = reference.shape
     if not np.array_equal(pdims, rdims):
-        message = (
-            "predicted and reference field dimensions do not"
-            + " match.\n"
-            + "shape(predicted)= "
-            + str(pdims)
-            + ", "
-            + "shape(reference)= "
-            + str(rdims)
-            + "\npredicted type: "
-            + str(type(predicted))
-        )
+        message = ("predicted and reference field dimensions do not" +
+                   " match.\n" + "shape(predicted)= " + str(pdims) + ", " +
+                   "shape(reference)= " + str(rdims) + "\npredicted type: " +
+                   str(type(predicted)))
         raise ValueError(message)
 
     for name, term in [("sr", sr), ("salpha", salpha), ("sbeta", sbeta)]:
         if term > 1 or term < 0:
             raise ValueError(
-                "'{}' must be between 0 and 1, you gave {}".format(name, term)
-            )
+                "'{}' must be between 0 and 1, you gave {}".format(name, term))
 
     std_ref = np.std(reference)
     if std_ref == 0:
@@ -85,10 +77,7 @@ def kge09(predicted, reference, sr=1.0, salpha=1.0, sbeta=1.0):
     cc = np.corrcoef(reference, predicted)[0, 1]
 
     # Calculate the kge09
-    kge09 = 1.0 - np.sqrt(
-        (sr * (cc - 1.0)) ** 2
-        + (salpha * (alpha - 1.0)) ** 2
-        + (sbeta * (beta - 1.0)) ** 2
-    )
+    kge09 = 1.0 - np.sqrt((sr * (cc - 1.0))**2 + (salpha * (alpha - 1.0))**2 +
+                          (sbeta * (beta - 1.0))**2)
 
     return kge09

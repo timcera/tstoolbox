@@ -68,8 +68,7 @@ def tstopickle_cli(
             source_units=source_units,
             target_units=target_units,
             clean=clean,
-        )
-    )
+        ))
 
 
 def tstopickle(

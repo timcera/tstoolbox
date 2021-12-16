@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 import matplotlib
-
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pytest
 
 from tstoolbox import tstoolbox
 
+matplotlib.use("Agg")
+
 # Pull this in once.
-df = tstoolbox.aggregate(
-    agg_interval="D", clean=True, input_ts="tests/02234500_65_65.csv"
-)
+df = tstoolbox.aggregate(agg_interval="D",
+                         clean=True,
+                         input_ts="tests/02234500_65_65.csv")
 # Pull this in once.
-dfa = tstoolbox.aggregate(
-    agg_interval="A", clean=True, input_ts="tests/02234500_65_65.csv"
-)
+dfa = tstoolbox.aggregate(agg_interval="A",
+                          clean=True,
+                          input_ts="tests/02234500_65_65.csv")
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)

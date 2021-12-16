@@ -91,16 +91,14 @@ def pick(
     clean=False,
 ):
     """Will pick a column or list of columns from input."""
-    warnings.warn(
-        """
+    warnings.warn("""
 *
 *   DEPRECATED in favor of using the "columns" keyword available in all
 *   other functions.
 *
 *   Will be removed in a future version of `tstoolbox`.
 *
-"""
-    )
+""")
     return tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

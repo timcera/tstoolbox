@@ -46,16 +46,14 @@ def convert_index_to_julian(
         from tstoolbox import tstoolbox
         ndf = ntstoolbox.convert_index('julian', ...)
     """
-    warnings.warn(
-        """
+    warnings.warn("""
 *
 *   DEPRECATED in favor of using `convert_index` with the 'julian'
 *   option.
 *
 *   Will be removed in a future version of `tstoolbox`.
 *
-"""
-    )
+""")
     return convert_index(
         "julian",
         epoch="julian",

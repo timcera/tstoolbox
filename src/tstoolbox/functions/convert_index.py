@@ -21,7 +21,9 @@ except ImportError:
     from typing_extensions import Literal
 
 
-@mando.command("convert_index", formatter_class=RSTHelpFormatter, doctype="numpy")
+@mando.command("convert_index",
+               formatter_class=RSTHelpFormatter,
+               doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def convert_index_cli(
     to,
@@ -184,23 +186,10 @@ def convert_index_cli(
 def convert_index(
     to: Literal["datetime", "number"],
     interval=None,
-    epoch: Union[
-        Literal[
-            "julian",
-            "reduced",
-            "modified",
-            "truncated",
-            "dublin",
-            "cnes",
-            "ccsds",
-            "lop",
-            "lilian",
-            "rata_die",
-            "mars_sol",
-            "unix",
-        ],
-        pd._typing.TimestampConvertibleTypes,
-    ] = "julian",
+    epoch: Union[Literal["julian", "reduced", "modified", "truncated",
+                         "dublin", "cnes", "ccsds", "lop", "lilian",
+                         "rata_die", "mars_sol", "unix", ],
+                 pd._typing.TimestampConvertibleTypes, ] = "julian",
     input_ts="-",
     columns=None,
     start_date=None,
@@ -227,11 +216,8 @@ def convert_index(
         nround_index = round_index
     else:
         raise ValueError(
-            tsutils.error_wrapper(
-                f"""
-The "to" option can be one of "datetime" or "number" not "{to}"."""
-            )
-        )
+            tsutils.error_wrapper(f"""
+The "to" option can be one of "datetime" or "number" not "{to}"."""))
 
     tsd = tsutils.common_kwds(
         input_ts,
@@ -297,41 +283,29 @@ The "to" option can be one of "datetime" or "number" not "{to}"."""
     else:
         words = interval.split("-")
         if len(words) == 2:
-            warnings.warn(
-                """
+            warnings.warn("""
 *
 *   The epoch keyword "{}" overrides the anchoring suffix "{}".
 *
-""".format(
-                    epoch, words[1]
-                )
-            )
+""".format(epoch, words[1]))
 
             interval = words[0]
 
     if epoch == "unix" and interval not in ["S", "s"]:
-        warnings.warn(
-            """
+        warnings.warn("""
 *
 *   Typically the unix epoch would has an interval of 'S' (seconds).
 *   Instead you gave {}.
 *
-""".format(
-                interval
-            )
-        )
+""".format(interval))
 
     if epoch in dailies and interval != "D":
-        warnings.warn(
-            """
+        warnings.warn("""
 *
 *   Typically the {} epoch would has an interval of 'D' (days).
 *   Instead you gave {}.
 *
-""".format(
-                epoch, interval
-            )
-        )
+""".format(epoch, interval))
 
     if to == "number":
         # Index must be datetime - let's make sure
@@ -343,16 +317,15 @@ The "to" option can be one of "datetime" or "number" not "{to}"."""
             tsd.index = allowed[epoch](tsd.index.to_julian_date()) * frac
         except KeyError:
             epoch_date = tsutils.parsedate(epoch)
-            tsd.index = (
-                tsd.index.to_julian_date() - epoch_date.to_julian_date()
-            ) * frac
+            tsd.index = (tsd.index.to_julian_date() -
+                         epoch_date.to_julian_date()) * frac
 
         tsd = tsutils.memory_optimize(tsd)
 
     elif to == "datetime":
-        tsd.index = pd.to_datetime(
-            tsd.index.values, origin=epoch_dates.setdefault(epoch, epoch), unit=interval
-        )
+        tsd.index = pd.to_datetime(tsd.index.values,
+                                   origin=epoch_dates.setdefault(epoch, epoch),
+                                   unit=interval)
 
     if names is None:
         tsd.index.name = "{}_date".format(epoch)
@@ -367,9 +340,10 @@ The "to" option can be one of "datetime" or "number" not "{to}"."""
         nstart_date = None
         nend_date = None
         nround_index = None
-    tsd = tsutils.common_kwds(
-        tsd, start_date=nstart_date, end_date=nend_date, round_index=nround_index
-    )
+    tsd = tsutils.common_kwds(tsd,
+                              start_date=nstart_date,
+                              end_date=nend_date,
+                              round_index=nround_index)
     return tsd
 
 

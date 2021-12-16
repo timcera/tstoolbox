@@ -52,9 +52,8 @@ def _parse_equation(equation_str):
         # replace 'x1[t+1]' with 'x.iloc[t+1,1-1]'
         # replace 'x2[t+7]' with 'x.iloc[t+7,2-1]'
         # ...etc
-        nequation = re.sub(
-            r"x([1-9][0-9]*)\[(.*?t.*?)\]", r"x.iloc[\2,\1-1]", nequation
-        )
+        nequation = re.sub(r"x([1-9][0-9]*)\[(.*?t.*?)\]", r"x.iloc[\2,\1-1]",
+                           nequation)
 
         # replace 'x1' with 'x.iloc[t,1-1]'
         # replace 'x4' with 'x.iloc[t,4-1]'
@@ -67,7 +66,8 @@ def _parse_equation(equation_str):
         nequation = re.sub(r"x\[(.*?t.*?)\]", r"xxiloc[\1,:]", nequation)
         # Replace 'x' with underlying equation, but not the 'x' in a word,
         # like 'maximum'.
-        nequation = re.sub(r"(?<![a-zA-Z])x(?![a-zA-Z\[])", r"xxiloc[t,:]", nequation)
+        nequation = re.sub(r"(?<![a-zA-Z])x(?![a-zA-Z\[])", r"xxiloc[t,:]",
+                           nequation)
         nequation = re.sub(r"xxiloc", r"x.iloc", nequation)
 
     elif nsearch:
@@ -291,25 +291,26 @@ def equation(
             try:
                 y.iloc[:, 0] = eval(nequation)
             except IndexError:
-                raise IndexError(
-                    """
+                raise IndexError("""
 *
 *   There are {} columns, but the equation you are trying to apply is trying
 *   to access a column greater than that.
 *
-""".format(
-                        y.shape[1]
-                    )
-                )
+""".format(y.shape[1]))
 
         else:
             y = eval(eqn)
-        y.columns = [tsutils.renamer(i, "equation{}_".format(cnt)) for i in y.columns]
+        y.columns = [
+            tsutils.renamer(i, "equation{}_".format(cnt)) for i in y.columns
+        ]
         newy = newy.join(y, how="outer")
 
     newy = tsutils.memory_optimize(newy)
 
-    return tsutils.return_input(print_input, x, newy, output_names=output_names)
+    return tsutils.return_input(print_input,
+                                x,
+                                newy,
+                                output_names=output_names)
 
 
 equation.__doc__ = equation_cli.__doc__

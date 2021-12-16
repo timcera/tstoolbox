@@ -20,11 +20,12 @@ class TestPick(TestCase):
         ts2 = pandas.Series([45.6, 90.5, 34.2, 23.1, 7.2, 4.3], index=dr)
         self.pick_multiple_direct = pandas.DataFrame(ts2, columns=["Value1"])
         self.pick_multiple_direct = self.pick_multiple_direct.join(
-            pandas.DataFrame(ts1, columns=["Value"])
-        )
-        self.pick_multiple_direct = tsutils.memory_optimize(self.pick_multiple_direct)
+            pandas.DataFrame(ts1, columns=["Value"]))
+        self.pick_multiple_direct = tsutils.memory_optimize(
+            self.pick_multiple_direct)
 
-        self.pick_cli = capture.capture(tsutils.printiso, self.pick_multiple_direct)
+        self.pick_cli = capture.capture(tsutils.printiso,
+                                        self.pick_multiple_direct)
 
     def test_pick(self):
         """Test the pick API by picking the 2nd then the 1st column.

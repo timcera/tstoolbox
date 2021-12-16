@@ -86,7 +86,8 @@ def replace_cli(
     )
 
 
-@tsutils.transform_args(from_values=tsutils.make_list, to_values=tsutils.make_list)
+@tsutils.transform_args(from_values=tsutils.make_list,
+                        to_values=tsutils.make_list)
 @typic.al
 def replace(
     from_values: Optional[List[Optional[Union[float, int, str]]]],

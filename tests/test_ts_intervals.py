@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import os
 import tempfile
 from unittest import TestCase
@@ -55,9 +56,9 @@ pd_tstep_minterval = {
     "U": ("2000-01-01", 1000, 2),
 }
 
-import logging
-
-logging.basicConfig(filename="example.log", encoding="utf-8", level=logging.DEBUG)
+logging.basicConfig(filename="example.log",
+                    encoding="utf-8",
+                    level=logging.DEBUG)
 
 
 class TestAddTrend(TestCase):
@@ -73,9 +74,9 @@ class TestAddTrend(TestCase):
             sdate, periods, nintervals = pd_tstep_minterval[testpc]
             for tstep in range(1, nintervals):
                 aperiods = periods // tstep
-                dr = pd.date_range(
-                    sdate, periods=aperiods, freq="{}{}".format(tstep, testpc)
-                )
+                dr = pd.date_range(sdate,
+                                   periods=aperiods,
+                                   freq="{}{}".format(tstep, testpc))
                 df = pd.DataFrame(np.arange(aperiods), index=dr)
                 df.index.name = "index"
                 df.columns = ["data"]
@@ -164,7 +165,10 @@ class TestAddTrend(TestCase):
             except AssertionError:
                 self.assertEqual(
                     [i for i in testcode if not i.isdigit()],
-                    [i for i in inferred_code.split("-")[0] if not i.isdigit()],
+                    [
+                        i for i in inferred_code.split("-")[0]
+                        if not i.isdigit()
+                    ],
                 )
 
     def tearDown(self):

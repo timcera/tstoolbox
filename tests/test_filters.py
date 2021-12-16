@@ -45,18 +45,16 @@ class TestFilter(TestCase):
         self.ats.columns = ["Value"]
 
         self.flat_3 = self.ats.join(
-            tstoolbox.read(os.path.join("tests", "data_filter_flat.csv"))
-        )
+            tstoolbox.read(os.path.join("tests", "data_filter_flat.csv")))
         self.flat_3.columns = ["Value", "Value::filter"]
 
         self.hanning = self.ats.join(
-            tstoolbox.read(os.path.join("tests", "data_filter_hanning.csv"))
-        )
+            tstoolbox.read(os.path.join("tests", "data_filter_hanning.csv")))
         self.hanning.columns = ["Value", "Value::filter"]
 
         self.fft_lowpass = self.ats.join(
-            tstoolbox.read(os.path.join("tests", "data_filter_fft_lowpass.csv"))
-        )
+            tstoolbox.read(os.path.join("tests",
+                                        "data_filter_fft_lowpass.csv")))
         self.fft_lowpass.columns = ["Value", "Value::filter"]
 
         self.fft_highpass = self.ats.copy()
@@ -103,9 +101,10 @@ class TestFilter(TestCase):
     @staticmethod
     def test_small_window_len():
         with pytest.deprecated_call():
-            out = tstoolbox.filter(
-                "flat", "lowpass", input_ts="tests/data_sine.csv", window_len=2
-            )
+            out = tstoolbox.filter("flat",
+                                   "lowpass",
+                                   input_ts="tests/data_sine.csv",
+                                   window_len=2)
             out1 = tstoolbox.read("tests/data_sine.csv")
             out1.columns = ["Value::filter"]
             # NOp
@@ -114,16 +113,20 @@ class TestFilter(TestCase):
     @staticmethod
     def test_large_window_len():
         with pytest.raises(ValueError) as e_info:
-            _ = tstoolbox.filter(
-                "flat", "lowpass", input_ts="tests/data_sine.csv", window_len=1000
-            )
+            _ = tstoolbox.filter("flat",
+                                 "lowpass",
+                                 input_ts="tests/data_sine.csv",
+                                 window_len=1000)
         assert r"Input vector (length=" in str(e_info.value)
 
     @staticmethod
     def test_filter_type():
         with pytest.raises(ValueError) as e_info:
-            _ = tstoolbox.filter("flatter", "lowpass", input_ts="tests/data_sine.csv")
-        assert r"Given value <'flatter'> fails constraints:" in str(e_info.value)
+            _ = tstoolbox.filter("flatter",
+                                 "lowpass",
+                                 input_ts="tests/data_sine.csv")
+        assert r"Given value <'flatter'> fails constraints:" in str(
+            e_info.value)
 
 
 #    def test_filter_fft_highpass(self):

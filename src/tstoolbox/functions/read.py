@@ -18,7 +18,6 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-
 warnings.filterwarnings("ignore")
 
 
@@ -156,11 +155,8 @@ def read(
         # a simple list.
         filenames = tsutils.make_list(filenames, sep=",")
         warnings.warn(
-            tsutils.error_wrapper(
-                """
-Using "," separated files is deprecated in favor of space delimited files."""
-            )
-        )
+            tsutils.error_wrapper("""
+Using "," separated files is deprecated in favor of space delimited files."""))
 
     tsd = tsutils.common_kwds(
         input_tsd=filenames,

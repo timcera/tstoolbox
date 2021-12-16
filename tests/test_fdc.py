@@ -24,9 +24,8 @@ class TestFDC(TestCase):
 
     def test_flat_norm(self):
         """Test linear ramp CLI calculation of the FDC."""
-        out = capture.capture(
-            tstoolbox.calculate_fdc, input_ts="tests/data_flat_01.csv"
-        )
+        out = capture.capture(tstoolbox.calculate_fdc,
+                              input_ts="tests/data_flat_01.csv")
         teststr = """Exceedance, Value, Exceedance_Label
 -1.78615556126, 2, 0.037037037037
 -1.44610359292, 2, 0.0740740740741

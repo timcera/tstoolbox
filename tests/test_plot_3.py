@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
 import matplotlib
-
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pytest
 
 from tstoolbox import tstoolbox
 
+matplotlib.use("Agg")
+
 # Pull this in once.
-df = tstoolbox.aggregate(
-    agg_interval="D", clean=True, input_ts="tests/02234500_65_65.csv", skipna=False
-)
+df = tstoolbox.aggregate(agg_interval="D",
+                         clean=True,
+                         input_ts="tests/02234500_65_65.csv",
+                         skipna=False)
 # Pull this in once.
-dfa = tstoolbox.aggregate(
-    agg_interval="A", clean=True, input_ts="tests/02234500_65_65.csv", skipna=False
-)
+dfa = tstoolbox.aggregate(agg_interval="A",
+                          clean=True,
+                          input_ts="tests/02234500_65_65.csv",
+                          skipna=False)
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)
@@ -132,7 +134,6 @@ def test_weibull_yaxis():
 #         ofilename=None,
 #         plot_styles="classic",
 #     )
-
 
 # @pytest.mark.mpl_image_compare(tolerance=6)
 # def test_kde_time_multiple_traces():

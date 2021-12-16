@@ -17,7 +17,6 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-
 warnings.filterwarnings("ignore")
 
 
@@ -206,28 +205,10 @@ def gof_cli(
 @typic.al
 def gof(
     input_ts="-",
-    stats: List[
-        Literal[
-            "bias",
-            "pc_bias",
-            "apc_bias",
-            "rmsd",
-            "crmsd",
-            "corrcoef",
-            "coefdet",
-            "murphyss",
-            "nse",
-            "kge",
-            "kge09",
-            "kge12",
-            "index_agreement",
-            "brierss",
-            "mae",
-            "mean",
-            "stdev",
-            "all",
-        ]
-    ] = "all",
+    stats: List[Literal["bias", "pc_bias", "apc_bias", "rmsd", "crmsd",
+                        "corrcoef", "coefdet", "murphyss", "nse", "kge",
+                        "kge09", "kge12", "index_agreement", "brierss", "mae",
+                        "mean", "stdev", "all", ]] = "all",
     columns=None,
     start_date=None,
     end_date=None,
@@ -281,14 +262,9 @@ def gof(
     )
     if len(tsd.columns) != 2:
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 The gof algorithms work with two time-series only.  You gave {}.
-""".format(
-                    len(tsd.columns)
-                )
-            )
-        )
+""".format(len(tsd.columns))))
     lennao, lennas = tsd.isna().sum()
 
     tsd = tsd.dropna(how="any")
@@ -312,64 +288,74 @@ The gof algorithms work with two time-series only.  You gave {}.
         statval.append(["Absolute percent bias", sm.apc_bias(pred, ref)])
 
     if "rmsd" in stats:
-        statval.append(["Root-mean-square Deviation (RMSD)", sm.rmsd(pred, ref)])
+        statval.append(
+            ["Root-mean-square Deviation (RMSD)",
+             sm.rmsd(pred, ref)])
 
     if "crmsd" in stats:
-        statval.append(["Centered RMSD (CRMSD)", sm.centered_rms_dev(pred, ref)])
+        statval.append(
+            ["Centered RMSD (CRMSD)",
+             sm.centered_rms_dev(pred, ref)])
 
     if "corrcoef" in stats:
         try:
-            statval.append(
-                [
-                    "Pearson coefficient of correlation (r)",
-                    np.corrcoef(pred, ref)[0, 1],
-                ]
-            )
+            statval.append([
+                "Pearson coefficient of correlation (r)",
+                np.corrcoef(pred, ref)[0, 1],
+            ])
         except AttributeError:
-            statval.append(
-                [
-                    "Pearson coefficient of correlation (r)",
-                    1.0,
-                ]
-            )
+            statval.append([
+                "Pearson coefficient of correlation (r)",
+                1.0,
+            ])
 
     if "coefdet" in stats:
-        statval.append(
-            ["Coefficient of determination (R^2)", np.corrcoef(pred, ref)[0, 1] ** 2]
-        )
+        statval.append([
+            "Coefficient of determination (R^2)",
+            np.corrcoef(pred, ref)[0, 1]**2
+        ])
 
     if "murphyss" in stats:
-        statval.append(["Skill score (Murphy)", sm.skill_score_murphy(pred, ref)])
+        statval.append(
+            ["Skill score (Murphy)",
+             sm.skill_score_murphy(pred, ref)])
 
     if "nse" in stats:
         statval.append(["Nash-Sutcliffe Efficiency", sm.nse(pred, ref)])
 
     if "kge" in stats or "kge09" in stats:
-        statval.append(
-            [
-                "Kling-Gupta Efficiency, 2009",
-                sm.kge09(pred, ref, sr=kge_sr, salpha=kge09_salpha, sbeta=kge_sbeta),
-            ]
-        )
+        statval.append([
+            "Kling-Gupta Efficiency, 2009",
+            sm.kge09(pred,
+                     ref,
+                     sr=kge_sr,
+                     salpha=kge09_salpha,
+                     sbeta=kge_sbeta),
+        ])
 
     if "kge12" in stats:
-        statval.append(
-            [
-                "Kling-Gupta Efficiency, 2012",
-                sm.kge12(pred, ref, sr=kge_sr, sgamma=kge12_sgamma, sbeta=kge_sbeta),
-            ]
-        )
+        statval.append([
+            "Kling-Gupta Efficiency, 2012",
+            sm.kge12(pred,
+                     ref,
+                     sr=kge_sr,
+                     sgamma=kge12_sgamma,
+                     sbeta=kge_sbeta),
+        ])
 
     if "index_agreement" in stats:
         statval.append(["Index of agreement", sm.index_agreement(pred, ref)])
 
     if "brierss" in stats:
-        statval.append(["Brier's Score", np.sum(pred - ref) ** 2 / len(tsd.index)])
+        statval.append(
+            ["Brier's Score",
+             np.sum(pred - ref)**2 / len(tsd.index)])
 
     if "mae" in stats:
-        statval.append(
-            ["Mean Absolute Error", np.sum(np.abs(pred - ref)) / len(tsd.index)]
-        )
+        statval.append([
+            "Mean Absolute Error",
+            np.sum(np.abs(pred - ref)) / len(tsd.index)
+        ])
 
     statval.append(["Common count observed and simulated", len(tsd.index)])
 

@@ -206,7 +206,8 @@ def get_taylor_diagram_options(*args, **kwargs):
             option["checkstats"] = check_on_off(option["checkstats"])
         elif optname == "markerlabel":
             if not isinstance(optvalue, list):
-                raise ValueError("Option value is not a list: " + str(optvalue))
+                raise ValueError("Option value is not a list: " +
+                                 str(optvalue))
             option["markerlabel"] = optvalue[1:]
         elif optname == "markerlegend":
             option["markerlegend"] = check_on_off(option["markerlegend"])
@@ -218,15 +219,11 @@ def get_taylor_diagram_options(*args, **kwargs):
             try:
                 labelformat.format(99.0)
             except ValueError:
-                raise ValueError(
-                    """
+                raise ValueError("""
         *
         *   Invalid string format for rmslabelformat: {}
         *
-        """.format(
-                        optvalue
-                    )
-                )
+        """.format(optvalue))
         elif optname == "showlabelscor":
             option["showlabelscor"] = check_on_off(option["showlabelscor"])
         elif optname == "showlabelsrms":
@@ -235,14 +232,12 @@ def get_taylor_diagram_options(*args, **kwargs):
             option["showlabelsstd"] = check_on_off(option["showlabelsstd"])
         elif optname == "tickrms":
             option["tickrms"] = np.sort(optvalue)
-            option["rincrms"] = (max(option["tickrms"]) - min(option["tickrms"])) / len(
-                option["tickrms"]
-            )
+            option["rincrms"] = (max(option["tickrms"]) - min(
+                option["tickrms"])) / len(option["tickrms"])
         elif optname == "tickstd":
             option["tickstd"] = np.sort(optvalue)
-            option["rincstd"] = (max(option["tickstd"]) - min(option["tickstd"])) / len(
-                option["tickstd"]
-            )
+            option["rincstd"] = (max(option["tickstd"]) - min(
+                option["tickstd"])) / len(option["tickstd"])
         elif optname == "titlecor":
             option["titlecor"] = check_on_off(option["titlecor"])
         elif optname == "titlerms":

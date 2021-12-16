@@ -19,37 +19,32 @@ class TestRollingWindow(TestCase):
         dr = pandas.date_range("2000-01-01", periods=2, freq="D")
         ts = pandas.Series([np.nan, 9.1], index=dr)
         self.compare_rolling_window_sum = pandas.DataFrame(
-            ts, columns=["Value::rolling.2.sum"]
-        )
+            ts, columns=["Value::rolling.2.sum"])
         self.compare_rolling_window_sum.index.name = "Datetime"
 
         dr = pandas.date_range("2000-01-01", periods=2, freq="D")
         ts = pandas.Series([np.nan, 4.55], index=dr)
         self.compare_rolling_window_mean = pandas.DataFrame(
-            ts, columns=["Value::rolling.2.mean"]
-        ).astype("Float64")
+            ts, columns=["Value::rolling.2.mean"]).astype("Float64")
         self.compare_rolling_window_mean.index.name = "Datetime"
 
         self.compare_rolling_window_sum_cli = capture.capture(
-            tsutils.printiso, self.compare_rolling_window_sum
-        )
+            tsutils.printiso, self.compare_rolling_window_sum)
 
         self.compare_rolling_window_mean_cli = capture.capture(
-            tsutils.printiso, self.compare_rolling_window_mean
-        )
+            tsutils.printiso, self.compare_rolling_window_mean)
 
     def test_rolling_window_sum(self):
         """API: Rolling window sum for data_simple.csv is 9.1."""
-        out = tstoolbox.rolling_window(
-            statistic="sum", input_ts="tests/data_simple.csv"
-        )
-        assert_frame_equal(out, tsutils.read_iso_ts(self.compare_rolling_window_sum))
+        out = tstoolbox.rolling_window(statistic="sum",
+                                       input_ts="tests/data_simple.csv")
+        assert_frame_equal(
+            out, tsutils.read_iso_ts(self.compare_rolling_window_sum))
 
     def test_rolling_window_mean(self):
         """API: Rolling window mean for data_simple.csv is 4.55."""
-        out = tstoolbox.rolling_window(
-            statistic="mean", input_ts="tests/data_simple.csv"
-        )
+        out = tstoolbox.rolling_window(statistic="mean",
+                                       input_ts="tests/data_simple.csv")
         assert_frame_equal(out, self.compare_rolling_window_mean)
 
     def test_rolling_window_sum_cli(self):
@@ -59,8 +54,7 @@ class TestRollingWindow(TestCase):
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
         out = tsutils.read_iso_ts(out)
         assert_frame_equal(
-            out, tsutils.read_iso_ts(self.compare_rolling_window_sum_cli)
-        )
+            out, tsutils.read_iso_ts(self.compare_rolling_window_sum_cli))
 
     def test_rolling_window_mean_cli(self):
         """CLI: Rolling window sum for data_simple.csv is 4.55."""
@@ -69,5 +63,4 @@ class TestRollingWindow(TestCase):
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
         out = tsutils.read_iso_ts(out)
         assert_frame_equal(
-            out, tsutils.read_iso_ts(self.compare_rolling_window_mean_cli)
-        )
+            out, tsutils.read_iso_ts(self.compare_rolling_window_mean_cli))

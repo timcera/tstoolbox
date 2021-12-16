@@ -26,13 +26,10 @@ def _validate_columns(ntsd, from_columns, to_columns):
         for fro in from_columns:
             if to == fro:
                 raise ValueError(
-                    tsutils.error_wrapper(
-                        f"""
+                    tsutils.error_wrapper(f"""
 You can't have columns in both "from_columns", and "to_columns"
 keywords.  Instead you have "{to}" in both.
-"""
-                    )
-                )
+"""))
     return from_columns, to_columns
 
 
@@ -201,39 +198,17 @@ def fill_cli(
     )
 
 
-@tsutils.transform_args(from_columns=tsutils.make_list, to_columns=tsutils.make_list)
+@tsutils.transform_args(from_columns=tsutils.make_list,
+                        to_columns=tsutils.make_list)
 # @typic.al
 def fill(
     input_ts="-",
-    method: Union[
-        Literal[
-            "ffill",
-            "bfill",
-            "linear",
-            "index",
-            "values",
-            "nearest",
-            "zero",
-            "slinear",
-            "quadratic",
-            "cubic",
-            "spline",
-            "polynomial",
-            "barycentric",
-            "mean",
-            "median",
-            "max",
-            "min",
-            "from",
-            "time",
-            "krogh",
-            "piecewise_polynomial",
-            "from_derivatives",
-            "pchip",
-            "akima",
-        ],
-        float,
-    ] = "ffill",
+    method: Union[Literal["ffill", "bfill", "linear", "index", "values",
+                          "nearest", "zero", "slinear", "quadratic", "cubic",
+                          "spline", "polynomial", "barycentric", "mean",
+                          "median", "max", "min", "from", "time", "krogh",
+                          "piecewise_polynomial", "from_derivatives", "pchip",
+                          "akima", ], float, ] = "ffill",
     print_input=False,
     start_date=None,
     end_date=None,
@@ -271,33 +246,33 @@ def fill(
         ntsd = tsd
     ntsd = tsutils.asbestfreq(ntsd)
     offset = ntsd.index[1] - ntsd.index[0]
-    predf = pd.DataFrame(
-        dict(list(zip(tsd.columns, tsd.mean().values))), index=[tsd.index[0] - offset]
-    )
-    postf = pd.DataFrame(
-        dict(list(zip(tsd.columns, tsd.mean().values))), index=[tsd.index[-1] + offset]
-    )
+    predf = pd.DataFrame(dict(list(zip(tsd.columns,
+                                       tsd.mean().values))),
+                         index=[tsd.index[0] - offset])
+    postf = pd.DataFrame(dict(list(zip(tsd.columns,
+                                       tsd.mean().values))),
+                         index=[tsd.index[-1] + offset])
     ntsd = pd.concat([predf, ntsd, postf])
     if method in ["ffill", "bfill"]:
         ntsd = ntsd.fillna(method=method, limit=limit)
     elif method in [
-        "linear",
-        "time",
-        "index",
-        "values",
-        "nearest",
-        "zero",
-        "slinear",
-        "quadratic",
-        "cubic",
-        "spline",
-        "polynomial",
-        "barycentric",
-        "kroch",
-        "piecewise_polynomial",
-        "pchip",
-        "akima",
-        "from_derivatives",
+            "linear",
+            "time",
+            "index",
+            "values",
+            "nearest",
+            "zero",
+            "slinear",
+            "quadratic",
+            "cubic",
+            "spline",
+            "polynomial",
+            "barycentric",
+            "kroch",
+            "piecewise_polynomial",
+            "pchip",
+            "akima",
+            "from_derivatives",
     ]:
         ntsd = ntsd.interpolate(method=method, limit=limit, order=order)
     elif method == "mean":
@@ -309,7 +284,8 @@ def fill(
     elif method == "min":
         ntsd = ntsd.fillna(ntsd.min(), limit=limit)
     elif method == "from":
-        from_columns, to_columns = _validate_columns(ntsd, from_columns, to_columns)
+        from_columns, to_columns = _validate_columns(ntsd, from_columns,
+                                                     to_columns)
         for to in to_columns:
             for fro in from_columns:
                 mask = ntsd.loc[:, to].isna()
@@ -375,17 +351,12 @@ def fill_by_correlation(
     single_source_ts = ["move1", "move2", "move3"]
     if method.lower() in single_source_ts and len(basets.columns) != 1:
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 For methods in {}
 You can only have a single source column.  You can pass in onlu 2
 time-series or use the flag 'choose_best' along with 'maximum_lag'.
 Instead there are {} source time series.
-""".format(
-                    single_source_ts, len(basets.columns)
-                )
-            )
-        )
+""".format(single_source_ts, len(basets.columns))))
 
     if method == "move1":
         ntsd = firstcol.join(basets)

@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 import matplotlib
-
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pytest
 
 from tstoolbox import tstoolbox
 
+matplotlib.use("Agg")
+
 # Pull this in once.
-df = tstoolbox.aggregate(
-    agg_interval="D", clean=True, input_ts="tests/02234500_65_65.csv"
-)
+df = tstoolbox.aggregate(agg_interval="D",
+                         clean=True,
+                         input_ts="tests/02234500_65_65.csv")
 # Pull this in once.
-dfa = tstoolbox.aggregate(
-    agg_interval="A", clean=True, input_ts="tests/02234500_65_65.csv"
-)
-dfa = tstoolbox.equation(
-    "x1*120@x2", input_ts=dfa, output_names=["Elevation::mean", "Flow::mean"]
-)
+dfa = tstoolbox.aggregate(agg_interval="A",
+                          clean=True,
+                          input_ts="tests/02234500_65_65.csv")
+dfa = tstoolbox.equation("x1*120@x2",
+                         input_ts=dfa,
+                         output_names=["Elevation::mean", "Flow::mean"])
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)
@@ -91,9 +91,11 @@ def test_boxplot():
 @pytest.mark.mpl_image_compare(tolerance=6)
 def test_lag_plot():
     plt.close("all")
-    return tstoolbox.plot(
-        columns=1, type="lag_plot", input_ts=df, ofilename=None, plot_styles="classic"
-    )
+    return tstoolbox.plot(columns=1,
+                          type="lag_plot",
+                          input_ts=df,
+                          ofilename=None,
+                          plot_styles="classic")
 
 
 # Can't have a bootstrap test since random selections are made.
@@ -121,30 +123,34 @@ def test_probability_density():
 @pytest.mark.mpl_image_compare(tolerance=6)
 def test_bar():
     plt.close("all")
-    return tstoolbox.plot(
-        type="bar", input_ts=dfa, plot_styles="classic", ofilename=None
-    )
+    return tstoolbox.plot(type="bar",
+                          input_ts=dfa,
+                          plot_styles="classic",
+                          ofilename=None)
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)
 def test_barh():
     plt.close("all")
-    return tstoolbox.plot(
-        type="barh", input_ts=dfa, plot_styles="classic", ofilename=None
-    )
+    return tstoolbox.plot(type="barh",
+                          input_ts=dfa,
+                          plot_styles="classic",
+                          ofilename=None)
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)
 def test_bar_stacked():
     plt.close("all")
-    return tstoolbox.plot(
-        type="bar_stacked", input_ts=dfa, plot_styles="classic", ofilename=None
-    )
+    return tstoolbox.plot(type="bar_stacked",
+                          input_ts=dfa,
+                          plot_styles="classic",
+                          ofilename=None)
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)
 def test_barh_stacked():
     plt.close("all")
-    return tstoolbox.plot(
-        type="barh_stacked", input_ts=dfa, plot_styles="classic", ofilename=None
-    )
+    return tstoolbox.plot(type="barh_stacked",
+                          input_ts=dfa,
+                          plot_styles="classic",
+                          ofilename=None)

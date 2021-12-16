@@ -10,7 +10,9 @@ from mando.rst_text_formatter import RSTHelpFormatter
 from .. import tsutils
 
 
-@mando.command("date_offset", formatter_class=RSTHelpFormatter, doctype="numpy")
+@mando.command("date_offset",
+               formatter_class=RSTHelpFormatter,
+               doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def date_offset_cli(
     intervals,

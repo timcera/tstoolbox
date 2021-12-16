@@ -55,9 +55,9 @@ def plot_pattern_diagram_markers(X, Y, option):
         colorm = ["b", "r", "g", "c", "m", "y", "k"]
         if len(X) > 70:
             _disp("You must introduce new markers to plot more than 70 cases.")
-            _disp(
-                "The " "marker" " character array need to be extended inside the code."
-            )
+            _disp("The "
+                  "marker"
+                  " character array need to be extended inside the code.")
 
         if len(X) <= len(kind):
             # Define markers with specified color
@@ -66,7 +66,7 @@ def plot_pattern_diagram_markers(X, Y, option):
             for color in colorm:
                 for symbol in kind:
                     marker.append(symbol + option["markercolor"])
-                    rgba = clr.to_rgb(option["markercolor"]) + (alpha,)
+                    rgba = clr.to_rgb(option["markercolor"]) + (alpha, )
                     markercolor.append(rgba)
         else:
             # Define markers and colors using predefined list
@@ -74,7 +74,7 @@ def plot_pattern_diagram_markers(X, Y, option):
             for color in colorm:
                 for symbol in kind:
                     marker.append(symbol + color)
-                    rgba = clr.to_rgb(color) + (alpha,)
+                    rgba = clr.to_rgb(color) + (alpha, )
                     markercolor.append(rgba)
 
         # Plot markers at data points
@@ -98,9 +98,11 @@ def plot_pattern_diagram_markers(X, Y, option):
         # Add legend
         if len(markerlabel) > 0:
             markerlabel = tuple(markerlabel)
-            plt.legend(
-                hp, markerlabel, loc="upper right", fontsize="medium", numpoints=1
-            )
+            plt.legend(hp,
+                       markerlabel,
+                       loc="upper right",
+                       fontsize="medium",
+                       numpoints=1)
         else:
             warnings.warn("No markers within axis limit ranges.")
 
@@ -110,7 +112,7 @@ def plot_pattern_diagram_markers(X, Y, option):
 
         # Plot markers at data points
         limit = option["axismax"]
-        rgba = clr.to_rgb(option["markercolor"]) + (alpha,)
+        rgba = clr.to_rgb(option["markercolor"]) + (alpha, )
         for i, xval in enumerate(X):
             if abs(X[i]) <= limit and abs(Y[i]) <= limit:
                 # Plot marker

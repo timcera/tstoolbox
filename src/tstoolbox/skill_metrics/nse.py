@@ -50,9 +50,7 @@ def nse(simulated, observed):
     utils.check_arrays(simulated, observed)
 
     # Calculate the NSE
-    nse = 1 - (
-        np.sum((simulated - observed) ** 2)
-        / np.sum((observed - np.mean(observed)) ** 2)
-    )
+    nse = 1 - (np.sum((simulated - observed)**2) / np.sum(
+        (observed - np.mean(observed))**2))
 
     return nse

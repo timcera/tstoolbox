@@ -61,7 +61,8 @@ class TestAddTrend(TestCase):
 2011-01-02 22:00:00,2.95745
 2011-01-02 23:00:00,3
 """
-        self.add_trend_direct = tstoolbox.date_slice(input_ts=self.add_trend_cli)
+        self.add_trend_direct = tstoolbox.date_slice(
+            input_ts=self.add_trend_cli)
         self.add_trend_direct.index.name = "Datetime"
         self.add_trend_direct = tsutils.memory_optimize(self.add_trend_direct)
 

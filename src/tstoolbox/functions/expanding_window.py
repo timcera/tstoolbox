@@ -18,7 +18,9 @@ except ImportError:
     from typing_extensions import Literal
 
 
-@mando.command("expanding_window", formatter_class=RSTHelpFormatter, doctype="numpy")
+@mando.command("expanding_window",
+               formatter_class=RSTHelpFormatter,
+               doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def expanding_window_cli(
     input_ts="-",
@@ -144,24 +146,9 @@ def expanding_window(
     index_type="datetime",
     names=None,
     clean=False,
-    statistic: Optional[
-        List[
-            Literal[
-                "corr",
-                "count",
-                "cov",
-                "kurt",
-                "max",
-                "mean",
-                "median",
-                "min",
-                "skew",
-                "std",
-                "sum",
-                "var",
-            ]
-        ]
-    ] = None,
+    statistic: Optional[List[Literal["corr", "count", "cov", "kurt", "max",
+                                     "mean", "median", "min", "skew", "std",
+                                     "sum", "var", ]]] = None,
     min_periods: tsutils.IntGreaterEqualToZero = 1,
     center: bool = False,
     source_units=None,
@@ -190,7 +177,8 @@ def expanding_window(
         for stat in statistic:
             ntsd = eval("ntsd.{}()".format(stat))
             ntsd.columns = [
-                tsutils.renamer(i, "expanding.{}".format(stat)) for i in ntsd.columns
+                tsutils.renamer(i, "expanding.{}".format(stat))
+                for i in ntsd.columns
             ]
             nntsd = nntsd.join(ntsd, how="outer")
     else:

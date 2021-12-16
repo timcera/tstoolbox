@@ -18,11 +18,12 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-
 warnings.filterwarnings("ignore")
 
 
-@mando.command("rolling_window", formatter_class=RSTHelpFormatter, doctype="numpy")
+@mando.command("rolling_window",
+               formatter_class=RSTHelpFormatter,
+               doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def rolling_window_cli(
     statistic,
@@ -208,21 +209,8 @@ def rolling_window_cli(
 @typic.al
 @tsutils.transform_args(window=tsutils.make_list)
 def rolling_window(
-    statistic: Literal[
-        "corr",
-        "count",
-        "cov",
-        "kurt",
-        "max",
-        "mean",
-        "median",
-        "min",
-        "quantile",
-        "skew",
-        "std",
-        "sum",
-        "var",
-    ],
+    statistic: Literal["corr", "count", "cov", "kurt", "max", "mean", "median",
+                       "min", "quantile", "skew", "std", "sum", "var", ],
     groupby=None,
     window: Optional[List[tsutils.IntGreaterEqualToZero]] = None,
     input_ts="-",
@@ -269,31 +257,29 @@ def rolling_window(
     for win in window:
         statstr = ""
         if statistic in [
-            "corr",
-            "count",
-            "cov",
-            "kurt",
-            "max",
-            "mean",
-            "median",
-            "min",
-            "quantile",
-            "skew",
-            "std",
-            "sum",
-            "var",
+                "corr",
+                "count",
+                "cov",
+                "kurt",
+                "max",
+                "mean",
+                "median",
+                "min",
+                "quantile",
+                "skew",
+                "std",
+                "sum",
+                "var",
         ]:
             statstr = f".{statistic}()"
-        etsd = eval(
-            f"""tsd.apply(lambda x:
+        etsd = eval(f"""tsd.apply(lambda x:
                        x.rolling({win},
                                  min_periods={min_periods},
                                  center={center},
                                  win_type={win_type},
                                  on={on},
                                  closed={closed}){statstr}
-                                 )"""
-        )
+                                 )""")
         etsd.columns = [
             tsutils.renamer(i, "rolling.{}.{}".format(win, statistic))
             for i in etsd.columns

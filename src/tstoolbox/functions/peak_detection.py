@@ -17,14 +17,15 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-
 warnings.filterwarnings("ignore")
 
 
 @typic.al
-def _boolrelextrema(
-    data, comparator, axis=0, order: tsutils.IntGreaterEqualToOne = 1, mode="clip"
-):
+def _boolrelextrema(data,
+                    comparator,
+                    axis=0,
+                    order: tsutils.IntGreaterEqualToOne = 1,
+                    mode="clip"):
     """Calculate the relative extrema of `data`.
 
     Relative extrema are calculated by finding locations where
@@ -125,7 +126,7 @@ def _argrelextrema(data, comparator, axis=0, order=1, mode="clip"):
     """
     results = _boolrelextrema(data, comparator, axis, order, mode)
     if ~results.any():
-        return (np.array([]),) * 2
+        return (np.array([]), ) * 2
     return np.where(results)
 
 
@@ -136,15 +137,10 @@ def _datacheck_peakdetect(x_axis, y_axis):
 
     if len(y_axis) != len(x_axis):
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 The length of y values must equal the length of x values.  Instead the
 length of y values is {} and the length of x values is {}.
-""".format(
-                    len(y_axis), len(x_axis)
-                )
-            )
-        )
+""".format(len(y_axis), len(x_axis))))
 
     # needs to be a numpy array
     y_axis = np.array(y_axis)
@@ -170,13 +166,13 @@ def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
     from scipy.optimize import curve_fit
 
     def func(x, k, tau, m):
-        return k * ((x - tau) ** 2) + m
+        return k * ((x - tau)**2) + m
 
     fitted_peaks = []
     for peak in raw_peaks:
         index = peak[0]
-        x_data = x_axis[index - points // 2 : index + points // 2 + 1]
-        y_data = y_axis[index - points // 2 : index + points // 2 + 1]
+        x_data = x_axis[index - points // 2:index + points // 2 + 1]
+        y_data = y_axis[index - points // 2:index + points // 2 + 1]
         # get a first approximation of tau (peak position in time)
         tau = x_axis[index]
         # get a first approximation of peak amplitude
@@ -264,7 +260,7 @@ def _peakdetect(
         if y < mx - delta and mx != np.Inf:
             # Maxima peak candidate found
             # look ahead in signal to ensure that this is a peak and not jitter
-            if y_axis[index : index + window].max() < mx:
+            if y_axis[index:index + window].max() < mx:
                 max_peaks.append([mxpos, mx])
                 dump.append(True)
                 # set algorithm to only find minima now
@@ -279,7 +275,7 @@ def _peakdetect(
         if y > mn + delta and mn != -np.Inf:
             # Minima peak candidate found
             # look ahead in signal to ensure that this is a peak and not jitter
-            if y_axis[index : index + window].min() > mn:
+            if y_axis[index:index + window].min() > mn:
                 min_peaks.append([mnpos, mn])
                 dump.append(False)
                 # set algorithm to only find maxima now
@@ -360,29 +356,31 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
     if len(zero_indices) < 2:
         fft_data = fft(y_axis)
     else:
-        fft_data = fft(y_axis[zero_indices[0] : zero_indices[last_indice]])
+        fft_data = fft(y_axis[zero_indices[0]:zero_indices[last_indice]])
 
     def padd(x, c):
-        return x[: len(x) // 2] + [0] * c + x[len(x) // 2 :]
+        return x[:len(x) // 2] + [0] * c + x[len(x) // 2:]
 
     def n(x):
         return (np.log(x) // np.log(2)).astype("i") + 1
 
     # pads to 2**n amount of samples
-    fft_padded = padd(list(fft_data), 2 ** n(len(fft_data) * pad_len) - len(fft_data))
+    fft_padded = padd(list(fft_data),
+                      2**n(len(fft_data) * pad_len) - len(fft_data))
 
     # There is amplitude decrease directly proportional to the sample increase
     sf = len(fft_padded) // float(len(fft_data))
     # There might be a leakage giving the result an imaginary component
     # Return only the real component
     y_axis_ifft = ifft(fft_padded).real * sf  # (pad_len + 1)
-    x_axis_ifft = np.linspace(
-        x_axis[zero_indices[0]], x_axis[zero_indices[last_indice]], len(y_axis_ifft)
-    )
+    x_axis_ifft = np.linspace(x_axis[zero_indices[0]],
+                              x_axis[zero_indices[last_indice]],
+                              len(y_axis_ifft))
     # get the peaks to the interpolated waveform
-    max_peaks, min_peaks = _peakdetect(
-        y_axis_ifft, x_axis_ifft, 500, delta=abs(np.diff(y_axis).max() * 2)
-    )
+    max_peaks, min_peaks = _peakdetect(y_axis_ifft,
+                                       x_axis_ifft,
+                                       500,
+                                       delta=abs(np.diff(y_axis).max() * 2))
     # max_peaks, min_peaks = _peakdetect_zero_crossing(y_axis_ifft,
     # x_axis_ifft)
 
@@ -530,8 +528,8 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         peak_data = []
         for peak in raw_peaks:
             index = peak[0]
-            x_data = x_axis[index - points // 2 : index + points // 2 + 1]
-            y_data = y_axis[index - points // 2 : index + points // 2 + 1]
+            x_data = x_axis[index - points // 2:index + points // 2 + 1]
+            y_data = y_axis[index - points // 2:index + points // 2 + 1]
             # get a first approximation of tau (peak position in time)
             tau = x_axis[index]
             # get a first approximation of peak amplitude
@@ -632,11 +630,11 @@ def _peakdetect_zero_crossing(y_axis, x_axis=None, window=5):
     period_lengths = np.diff(zero_indices)
 
     bins_y = [
-        y_axis[index : index + diff]
+        y_axis[index:index + diff]
         for index, diff in zip(zero_indices, period_lengths)
     ]
     bins_x = [
-        x_axis[index : index + diff]
+        x_axis[index:index + diff]
         for index, diff in zip(zero_indices, period_lengths)
     ]
 
@@ -676,7 +674,8 @@ def _peakdetect_zero_crossing(y_axis, x_axis=None, window=5):
 def _smooth(
     x,
     window_len=11,
-    window: Literal["flat", "hanning", "hamming", "bartlett", "blackman"] = "hanning",
+    window: Literal["flat", "hanning", "hamming", "bartlett",
+                    "blackman"] = "hanning",
 ):
     """Smooth the data using a window of the requested size.
 
@@ -722,7 +721,7 @@ def _smooth(
     if window_len < 3:
         return x
 
-    s = np.r_[x[window_len - 1 : 0 : -1], x, x[-1:-window_len:-1]]
+    s = np.r_[x[window_len - 1:0:-1], x, x[-1:-window_len:-1]]
     # print(len(s))
     if window == "flat":  # moving average
         w = np.ones(window_len, "d")
@@ -794,7 +793,9 @@ def zero_crossings(y_axis, window=11):
 ##############################################################################
 
 
-@mando.command("peak_detection", formatter_class=RSTHelpFormatter, doctype="numpy")
+@mando.command("peak_detection",
+               formatter_class=RSTHelpFormatter,
+               doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def peak_detection_cli(
     input_ts="-",
@@ -940,7 +941,8 @@ def peak_detection(
     index_type="datetime",
     names=None,
     clean=False,
-    method: Literal["rel", "minmax", "zero_crossing", "parabola", "sine"] = "rel",
+    method: Literal["rel", "minmax", "zero_crossing", "parabola",
+                    "sine"] = "rel",
     extrema: Literal["peak", "valley", "both"] = "peak",
     window: tsutils.IntGreaterEqualToOne = 24,
     pad_len: tsutils.IntGreaterEqualToOne = 5,
@@ -1010,9 +1012,8 @@ def peak_detection(
 
     for cols in tmptsd.columns:
         if method in ["fft", "parabola", "sine"]:
-            maxpeak, minpeak = func(
-                tmptsd[cols].values, list(range(len(tmptsd[cols]))), **kwds
-            )
+            maxpeak, minpeak = func(tmptsd[cols].values,
+                                    list(range(len(tmptsd[cols]))), **kwds)
         else:
             maxpeak, minpeak = func(tmptsd[cols].values, **kwds)
         if cols[-4:] == "peak":

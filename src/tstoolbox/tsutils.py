@@ -167,20 +167,24 @@ _CODES["ANNUAL"]: {
 }
 
 docstrings = {
-    "por": r"""por
+    "por":
+    r"""por
         The `por` keyword adjusts the operation of `start_date` and `end_date`
         If "False" (the default) choose the indices in the time-series between
         `start_date` and `end_date`.  If "True" and if `start_date` or
         `end_date` is outside of the time-series will extend the time-series by
         inserting the exterior date(s).""",
-    "lat": r"""lat
+    "lat":
+    r"""lat
         The latitude of the point. North hemisphere is positive from 0 to 90. South
         hemisphere is negative from 0 to -90.""",
-    "lon": r"""lon
+    "lon":
+    r"""lon
         The longitude of the point.  Western hemisphere (west of Greenwich Prime
         Meridian) is negative 0 to -180.  The eastern hemisphere (east of the Greenwich
         Prime Meridian) is positive 0 to 180.""",
-    "target_units": r"""target_units: str
+    "target_units":
+    r"""target_units: str
         [optional, default is None, transformation]
 
         The purpose of this option is to specify target units for unit
@@ -195,7 +199,8 @@ docstrings = {
 
         This option will also add the 'target_units' string to the
         column names.""",
-    "source_units": r"""source_units: str
+    "source_units":
+    r"""source_units: str
         [optional, default is None, transformation]
 
         If unit is specified for the column as the second field of a ':'
@@ -204,7 +209,8 @@ docstrings = {
 
         Any unit string compatible with the 'pint' library can be
         used.""",
-    "names": r"""names: str
+    "names":
+    r"""names: str
         [optional, default is None, transformation]
 
         If None, the column names are taken from the first row after
@@ -212,12 +218,14 @@ docstrings = {
 
         MUST include a name for all columns in the input dataset,
         including the index column.""",
-    "index_type": r"""index_type : str
+    "index_type":
+    r"""index_type : str
         [optional, default is 'datetime', output format]
 
         Can be either 'number' or 'datetime'.  Use 'number' with index
         values that are Julian dates, or other epoch reference.""",
-    "input_ts": r"""input_ts : str
+    "input_ts":
+    r"""input_ts : str
         [optional though required if using within Python, default is '-'
         (stdin)]
 
@@ -267,7 +275,8 @@ docstrings = {
             list, StringIO, or file name].
 
             If result is a time series, returns a pandas DataFrame.""",
-    "columns": r"""columns
+    "columns":
+    r"""columns
         [optional, defaults to all columns, input filter]
 
         Columns to select out of input.  Can use column names from the
@@ -279,29 +288,34 @@ docstrings = {
         This solves a big problem so that you don't have to create
         a data set with a certain column order, you can rearrange
         columns when data is read in.""",
-    "start_date": r"""start_date : str
+    "start_date":
+    r"""start_date : str
         [optional, defaults to first date in time-series, input filter]
 
         The start_date of the series in ISOdatetime format, or 'None'
         for beginning.""",
-    "end_date": r"""end_date : str
+    "end_date":
+    r"""end_date : str
         [optional, defaults to last date in time-series, input filter]
 
         The end_date of the series in ISOdatetime format, or 'None' for
         end.""",
-    "dropna": r"""dropna : str
+    "dropna":
+    r"""dropna : str
         [optional, defauls it 'no', input filter]
 
         Set `dropna` to 'any' to have records dropped that have NA value
         in any column, or 'all' to have records dropped that have NA in
         all columns.  Set to 'no' to not drop any records.  The default
         is 'no'.""",
-    "print_input": r"""print_input
+    "print_input":
+    r"""print_input
         [optional, default is False, output format]
 
         If set to 'True' will include the input columns in the output
         table.""",
-    "round_index": r"""round_index
+    "round_index":
+    r"""round_index
         [optional, default is None which will do nothing to the index,
         output format]
 
@@ -310,23 +324,27 @@ docstrings = {
         processing requirements, however be cautious about rounding to
         a very course interval from a small one.  This could lead to
         duplicate values in the index.""",
-    "float_format": r"""float_format
+    "float_format":
+    r"""float_format
         [optional, output format]
 
         Format for float numbers.""",
-    "tablefmt": r"""tablefmt : str
+    "tablefmt":
+    r"""tablefmt : str
         [optional, default is 'csv', output format]
 
         The table format.  Can be one of 'csv', 'tsv', 'plain',
         'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki', 'latex',
         'latex_raw' and 'latex_booktabs'.""",
-    "header": r"""header : str
+    "header":
+    r"""header : str
         [optional, default is 'default', output format]
 
         This is if you want a different header than is the default for
         this output table.  Pass a list of strings for each column in
         the table.""",
-    "pandas_offset_codes": r"""+-------+---------------+
+    "pandas_offset_codes":
+    r"""+-------+---------------+
         | Alias | Description   |
         +=======+===============+
         | N     | Nanoseconds   |
@@ -438,7 +456,8 @@ docstrings = {
         +-------+----------+-------------+----------------------------+
         | x-NOV |          |             | year ends end of NOVember  |
         +-------+----------+-------------+----------------------------+""",
-    "plotting_position_table": r"""+------------+--------+----------------------+-----------------------+
+    "plotting_position_table":
+    r"""+------------+--------+----------------------+-----------------------+
         | Name       | a      | Equation             | Description           |
         |            |        | (i-a)/(n+1-2*a)      |                       |
         +============+========+======================+=======================+
@@ -474,12 +493,14 @@ docstrings = {
 
         Where 'i' is the sorted rank of the y value, and 'n' is the
         total number of values to be plotted.""",
-    "clean": r"""clean
+    "clean":
+    r"""clean
         [optional, default is False, input filter]
 
         The 'clean' command will repair a input index, removing
         duplicate index values and sorting.""",
-    "skiprows": r"""skiprows: list-like or integer or callable
+    "skiprows":
+    r"""skiprows: list-like or integer or callable
         [optional, default is None which will infer header from first
         line, input filter]
 
@@ -492,14 +513,16 @@ docstrings = {
         be
 
         ``lambda x: x in [0, 2]``.""",
-    "groupby": r"""groupby: str
+    "groupby":
+    r"""groupby: str
         [optional, default is None, transformation]
 
         The pandas offset code to group the time-series data into.
         A special code is also available to group 'months_across_years'
         that will group into twelve monthly categories across the entire
         time-series.""",
-    "force_freq": r"""force_freq: str
+    "force_freq":
+    r"""force_freq: str
         [optional, output format]
 
         Force this frequency for the output.  Typically you will only
@@ -508,7 +531,8 @@ docstrings = {
         careful with this option.  In general, letting the algorithm
         determine the frequency should always work, but this option will
         override.  Use PANDAS offset codes.""",
-    "output_names": r"""output_names: str
+    "output_names":
+    r"""output_names: str
         [optional, output_format]
 
         The tstoolbox will change the names of the output columns to include
@@ -573,7 +597,8 @@ def flatten(list_of_lists):
         if len(list_of_lists) == 0:
             return list_of_lists
         if isinstance(list_of_lists[0], (list, tuple)):
-            return list(flatten(list_of_lists[0])) + list(flatten(list_of_lists[1:]))
+            return list(flatten(list_of_lists[0])) + list(
+                flatten(list_of_lists[1:]))
         return list(list_of_lists[:1]) + list(flatten(list_of_lists[1:]))
     return list_of_lists
 
@@ -584,7 +609,7 @@ def stride_and_unit(sunit: str) -> Tuple[str, int]:
     if sunit is None:
         return sunit
     unit = sunit.lstrip("+-. 1234567890")
-    stride = sunit[: sunit.index(unit)]
+    stride = sunit[:sunit.index(unit)]
     if len(stride) > 0:
         stride = int(stride)
     else:
@@ -593,7 +618,8 @@ def stride_and_unit(sunit: str) -> Tuple[str, int]:
 
 
 @typic.al
-def set_ppf(ptype: Optional[Literal["norm", "lognorm", "weibull"]]) -> Callable:
+def set_ppf(
+        ptype: Optional[Literal["norm", "lognorm", "weibull"]]) -> Callable:
     """Return correct Percentage Point Function for `ptype`."""
     if ptype == "norm":
         ppf = norm.ppf
@@ -631,24 +657,12 @@ PPDICT = {
 # @typic.al
 def set_plotting_position(
     n: Union[int, int64],
-    plotting_position: Union[
-        float,
-        Literal[
-            "weibull",
-            "benard",
-            "bos-levenbach",
-            "filliben",
-            "yu",
-            "tukey",
-            "blom",
-            "cunnane",
-            "gringorton",
-            "hazen",
-            "larsen",
-            "gumbel",
-            "california",
-        ],
-    ] = "weibull",
+    plotting_position: Union[float,
+                             Literal["weibull", "benard", "bos-levenbach",
+                                     "filliben", "yu", "tukey", "blom",
+                                     "cunnane", "gringorton", "hazen",
+                                     "larsen", "gumbel",
+                                     "california", ], ] = "weibull",
 ) -> ndarray:
     """Create plotting position 1D array using linspace."""
     if plotting_position == "california":
@@ -670,14 +684,12 @@ def _handle_curly_braces_in_docstring(s: str, **kwargs) -> str:
     except KeyError as e:
         keyname = e.args[0]
         return _handle_curly_braces_in_docstring(
-            s, **{keyname: RET.format(keyname)}, **kwargs
-        )
+            s, **{keyname: RET.format(keyname)}, **kwargs)
 
 
 @typic.al
 def doc(fdict: dict, **kwargs) -> Callable:
     """Return a decorator that formats a docstring."""
-
     def f(fn):
         fn.__doc__ = _handle_curly_braces_in_docstring(fn.__doc__, **fdict)
         # kwargs is currently always empty.
@@ -690,9 +702,9 @@ def doc(fdict: dict, **kwargs) -> Callable:
 
 
 @typic.al
-def parsedate(
-    dstr: Optional[str], strftime: Optional[Any] = None, settings: Optional[Any] = None
-) -> Timestamp:
+def parsedate(dstr: Optional[str],
+              strftime: Optional[Any] = None,
+              settings: Optional[Any] = None) -> Timestamp:
     """Use dateparser to parse a wide variety of dates.
 
     Used for start and end dates.
@@ -713,14 +725,9 @@ def parsedate(
 
     if pdate is None:
         raise ValueError(
-            error_wrapper(
-                """
+            error_wrapper("""
 Could not parse date string '{}'.
-""".format(
-                    dstr
-                )
-            )
-        )
+""".format(dstr)))
 
     if strftime is None:
         return pdate
@@ -752,9 +759,8 @@ def about(name):
     print("platform python_build = {}".format(platform.python_build()))
     print("platform python_compiler = {}".format(platform.python_compiler()))
     print("platform python branch = {}".format(platform.python_branch()))
-    print(
-        "platform python implementation = {}".format(platform.python_implementation())
-    )
+    print("platform python implementation = {}".format(
+        platform.python_implementation()))
     print("platform python revision = {}".format(platform.python_revision()))
     print("platform python version = {}".format(platform.python_version()))
     print("platform release = {}".format(platform.release()))
@@ -762,7 +768,8 @@ def about(name):
     print("platform version = {}".format(platform.version()))
 
 
-def _round_index(ntsd: DataFrame, round_index: Optional[str] = None) -> DataFrame:
+def _round_index(ntsd: DataFrame,
+                 round_index: Optional[str] = None) -> DataFrame:
     """Round the index, typically time, to the nearest interval."""
     if round_index is None:
         return ntsd
@@ -813,16 +820,12 @@ def make_list(*strorlist, **kwds: Any) -> Any:
             # further processing.
             strorlist = strorlist[0]
 
-    if isinstance(strorlist, (list, tuple)) and n is not None and len(strorlist) != n:
+    if isinstance(strorlist,
+                  (list, tuple)) and n is not None and len(strorlist) != n:
         raise ValueError(
-            error_wrapper(
-                """
+            error_wrapper("""
 The list {0} for "{2}" should have {1} members according to function requirements.
-""".format(
-                    strorlist, n, kwdname
-                )
-            )
-        )
+""".format(strorlist, n, kwdname)))
 
     if isinstance(strorlist, pd.DataFrame):
         return [strorlist]
@@ -841,9 +844,8 @@ The list {0} for "{2}" should have {1} members according to function requirement
         #
         return [strorlist]
 
-    if isinstance(strorlist, (str, bytes)) and (
-        strorlist in ["None", "", b"None", b""]
-    ):
+    if isinstance(strorlist,
+                  (str, bytes)) and (strorlist in ["None", "", b"None", b""]):
         # 'None' -> None
         # ''     -> None
         #
@@ -884,14 +886,9 @@ The list {0} for "{2}" should have {1} members according to function requirement
     # At this point 'strorlist' variable should be a list or tuple.
     if len(strorlist) != n:
         raise ValueError(
-            error_wrapper(
-                """
+            error_wrapper("""
 The list {0} for "{2}" should have {1} members according to function requirements.
-""".format(
-                    strorlist, n, kwdname
-                )
-            )
-        )
+""".format(strorlist, n, kwdname)))
 
     # [1, 2, 3]          -> [1, 2, 3]
     # ['1', '2']         -> [1, 2]
@@ -1024,29 +1021,23 @@ def _normalize_units(
                 tsource = isource
             if isource != tsource:
                 raise ValueError(
-                    error_wrapper(
-                        f"""
+                    error_wrapper(f"""
 The units specified by the "source_units" keyword and in the second ":"
 delimited field in the DataFrame column name must match.
 
 "source_unit" keyword is {isource_units}
 Column name source units are {tsource_units}
-                                                       """
-                    )
-                )
+                                                       """))
             su.append(tsource)
     else:
         su = [""] * len(ntsd.columns)
 
     if source_units_required is True and "" in su:
         raise ValueError(
-            error_wrapper(
-                f"""
+            error_wrapper(f"""
 Source units must be specified either using "source_units" keyword of in the
 second ":" delimited field in the column name.  Instead you have {su}.
-                                           """
-            )
-        )
+                                           """))
     names = []
     for inx, unit in enumerate(su):
         if isinstance(ntsd.columns[inx], (str, bytes)):
@@ -1064,17 +1055,14 @@ second ":" delimited field in the column name.  Instead you have {su}.
 
     if su is None and target_units is not None:
         raise ValueError(
-            error_wrapper(
-                f"""
+            error_wrapper(f"""
 To specify target_units, you must also specify source_units.  You can
 specify source_units either by using the `source_units` keyword or placing
 in the name of the data column as the second ':' separated field.
 
 The `source_units` keyword must specify units that are convertible
 to the `target_units`: {target_units}
-"""
-            )
-        )
+"""))
 
     # Convert source_units to target_units.
     if target_units is not None:
@@ -1091,21 +1079,16 @@ to the `target_units`: {target_units}
                     # the "np.array(..., dtype=float)" command removes pint
                     # units from the converted pandas Series.
                     ntsd[str(colname)] = np.array(
-                        pd.Series(
-                            ntsd[str(colname)].astype(float), dtype=f"pint[{words[1]}]"
-                        ).pint.to(target_units[inx]),
+                        pd.Series(ntsd[str(colname)].astype(float),
+                                  dtype=f"pint[{words[1]}]").pint.to(
+                                      target_units[inx]),
                         dtype=float,
                     )
                     words[1] = target_units[inx]
                 except AttributeError:
                     raise ValueError(
-                        error_wrapper(
-                            """
-No conversion between {} and {}.""".format(
-                                words[1], target_units[inx]
-                            )
-                        )
-                    )
+                        error_wrapper("""
+No conversion between {} and {}.""".format(words[1], target_units[inx])))
             ncolumns.append(":".join(words))
         ntsd.columns = ncolumns
 
@@ -1126,7 +1109,6 @@ def transform_args(**trans_func_for_arg):
     Make a decorator that transforms function arguments before calling the
     function.  Works with plain functions and bounded methods.
     """
-
     def transform_args_decorator(func):
         sig = inspect.signature(func)
 
@@ -1140,8 +1122,7 @@ def transform_args(**trans_func_for_arg):
             val_of_argname.apply_defaults()
             for argname, trans_func in trans_func_for_arg.items():
                 val_of_argname.arguments[argname] = trans_func(
-                    val_of_argname.arguments[argname]
-                )
+                    val_of_argname.arguments[argname])
             # apply transform functions to argument values
             return func(*val_of_argname.args, **val_of_argname.kwargs)
 
@@ -1150,9 +1131,10 @@ def transform_args(**trans_func_for_arg):
     return transform_args_decorator
 
 
-@transform_args(
-    pick=make_list, names=make_list, source_units=make_list, target_units=make_list
-)
+@transform_args(pick=make_list,
+                names=make_list,
+                source_units=make_list,
+                target_units=make_list)
 @typic.al
 def common_kwds(
     input_tsd=None,
@@ -1215,9 +1197,10 @@ def common_kwds(
 
     ntsd = _pick(ntsd, pick)
 
-    ntsd = _normalize_units(
-        ntsd, source_units, target_units, source_units_required=source_units_required
-    )
+    ntsd = _normalize_units(ntsd,
+                            source_units,
+                            target_units,
+                            source_units_required=source_units_required)
 
     if clean is True:
         ntsd = ntsd.sort_index()
@@ -1273,37 +1256,22 @@ def _pick(tsd: DataFrame, columns: Any) -> DataFrame:
             target_col = int(i) - 1
         except ValueError:
             raise ValueError(
-                error_wrapper(
-                    """
+                error_wrapper("""
 The name {} isn't in the list of column names
 {}.
-""".format(
-                        i, tsd.columns
-                    )
-                )
-            )
+""".format(i, tsd.columns)))
         if target_col < -1:
             raise ValueError(
-                error_wrapper(
-                    """
+                error_wrapper("""
 The requested column "{}" must be greater than or equal to 0.
 First data column is 1, index is column 0.
-""".format(
-                        i
-                    )
-                )
-            )
+""".format(i)))
         if target_col > len(tsd.columns):
             raise ValueError(
-                error_wrapper(
-                    """
+                error_wrapper("""
 The request column index {} must be less than or equal to the
 number of columns {}.
-""".format(
-                        i, len(tsd.columns)
-                    )
-                )
-            )
+""".format(i, len(tsd.columns))))
 
         # columns names or numbers or index organized into
         # numbers in ncolumns
@@ -1345,10 +1313,12 @@ def _date_slice(
             start_date = pd.Timestamp(start_date)
             end_date = pd.Timestamp(end_date)
         else:
-            start_date = pd.Timestamp(start_date).tz_convert(input_tsd.index.tz)
+            start_date = pd.Timestamp(start_date).tz_convert(
+                input_tsd.index.tz)
             end_date = pd.Timestamp(end_date).tz_convert(input_tsd.index.tz)
 
-        input_tsd = input_tsd.loc[(input_tsd.index >= start_date) & (input_tsd.index <= end_date), :]
+        input_tsd = input_tsd.loc[(input_tsd.index >= start_date) &
+                                  (input_tsd.index <= end_date), :]
 
         if por is True:
             if start_date < input_tsd.index[0]:
@@ -1375,7 +1345,15 @@ _ANNUALS = {
     12: "DEC",
 }
 
-_WEEKLIES = {0: "MON", 1: "TUE", 2: "WED", 3: "THU", 4: "FRI", 5: "SAT", 6: "SUN"}
+_WEEKLIES = {
+    0: "MON",
+    1: "TUE",
+    2: "WED",
+    3: "THU",
+    4: "FRI",
+    5: "SAT",
+    6: "SUN"
+}
 
 
 def asbestfreq(data: DataFrame, force_freq: Optional[str] = None) -> DataFrame:
@@ -1401,24 +1379,19 @@ def asbestfreq(data: DataFrame, force_freq: Optional[str] = None) -> DataFrame:
     ndata = data.sort_index()
     ndata = ndata[~ndata.index.duplicated()]
 
-    ndiff = (
-        ndata.index.values.astype("int64")[1:] - ndata.index.values.astype("int64")[:-1]
-    )
+    ndiff = (ndata.index.values.astype("int64")[1:] -
+             ndata.index.values.astype("int64")[:-1])
 
     if np.any(ndiff <= 0):
         raise ValueError(
-            error_wrapper(
-                """
+            error_wrapper("""
 Duplicate or time reversal index entry at record {1} (start count at 0):
 "{0}".
 
 Perhaps use the "--clean" keyword on the CLI or "clean=True" if using Python or edit the
 input data..
-""".format(
-                    ndata.index[:-1][ndiff <= 0][0], np.where(ndiff <= 0)[0][0] + 1
-                )
-            )
-        )
+""".format(ndata.index[:-1][ndiff <= 0][0],
+                np.where(ndiff <= 0)[0][0] + 1)))
 
     if data.index.freq is not None:
         return data
@@ -1500,7 +1473,8 @@ input data..
     elif ngcd < 2419200000000000:
         infer_freq = "{}W".format(ngcd // 604800000000000)
         if np.all(data.index.dayofweek == data.index[0].dayofweek):
-            infer_freq = infer_freq + "-{}".format(_WEEKLIES[data.index[0].dayofweek])
+            infer_freq = infer_freq + "-{}".format(
+                _WEEKLIES[data.index[0].dayofweek])
         else:
             infer_freq = "D"
 
@@ -1511,9 +1485,9 @@ input data..
     return data
 
 
-def dedupIndex(
-    idx: List[str], fmt: Optional[Any] = None, ignoreFirst: bool = True
-) -> Index:
+def dedupIndex(idx: List[str],
+               fmt: Optional[Any] = None,
+               ignoreFirst: bool = True) -> Index:
     # fmt:          A string format that receives two arguments:
     #               name and a counter. By default: fmt='%s.%03d'
     # ignoreFirst:  Disable/enable postfixing of first element.
@@ -1579,11 +1553,12 @@ def return_input(
     output_names: List = [],
 ) -> DataFrame:
     """Print the input time series also."""
-    output.columns = output_names or [renamer(i, suffix) for i in output.columns]
+    output.columns = output_names or [
+        renamer(i, suffix) for i in output.columns
+    ]
     if iftrue:
         return memory_optimize(
-            intds.join(output, lsuffix="_1", rsuffix="_2", how="outer")
-        )
+            intds.join(output, lsuffix="_1", rsuffix="_2", how="outer"))
     if reverse_index is True:
         return memory_optimize(output.iloc[::-1])
     return memory_optimize(output)
@@ -1647,7 +1622,12 @@ def _printiso(
 
     ntablefmt = None
     if tablefmt in ["csv", "tsv", "csv_nos", "tsv_nos"]:
-        sep = {"csv": ",", "tsv": "\t", "csv_nos": ",", "tsv_nos": "\t"}[tablefmt]
+        sep = {
+            "csv": ",",
+            "tsv": "\t",
+            "csv_nos": ",",
+            "tsv_nos": "\t"
+        }[tablefmt]
         if isinstance(tsd, pd.DataFrame):
             try:
                 tsd.to_csv(
@@ -1747,11 +1727,14 @@ def reduce_mem_usage(props):
             else:
                 if mn > np.iinfo(np.int8).min and mx < np.iinfo(np.int8).max:
                     props[col] = props[col].astype(np.int8)
-                elif mn > np.iinfo(np.int16).min and mx < np.iinfo(np.int16).max:
+                elif mn > np.iinfo(np.int16).min and mx < np.iinfo(
+                        np.int16).max:
                     props[col] = props[col].astype(np.int16)
-                elif mn > np.iinfo(np.int32).min and mx < np.iinfo(np.int32).max:
+                elif mn > np.iinfo(np.int32).min and mx < np.iinfo(
+                        np.int32).max:
                     props[col] = props[col].astype(np.int32)
-                elif mn > np.iinfo(np.int64).min and mx < np.iinfo(np.int64).max:
+                elif mn > np.iinfo(np.int64).min and mx < np.iinfo(
+                        np.int64).max:
                     props[col] = props[col].astype(np.int64)
 
         else:
@@ -1781,12 +1764,14 @@ def memory_optimize(tsd: DataFrame) -> DataFrame:
     return tsd
 
 
-def is_valid_url(url: Union[bytes, str], qualifying: Optional[Any] = None) -> bool:
+def is_valid_url(url: Union[bytes, str],
+                 qualifying: Optional[Any] = None) -> bool:
     """Return whether "url" is valid."""
     min_attributes = ("scheme", "netloc")
     qualifying = min_attributes if qualifying is None else qualifying
     token = urlparse(url)
-    return all(getattr(token, qualifying_attr) for qualifying_attr in qualifying)
+    return all(
+        getattr(token, qualifying_attr) for qualifying_attr in qualifying)
 
 
 # @typic.al
@@ -1948,7 +1933,8 @@ def read_iso_ts(
 
                     nres = []
                     for par in parameters:
-                        nres.append(wdmtoolbox.extract(",".join([fname] + [str(par)])))
+                        nres.append(
+                            wdmtoolbox.extract(",".join([fname] + [str(par)])))
                     res = pd.concat(nres, axis="columns")
                 elif ext.lower() == ".hdf5":
                     if len(parameters) == 0:
@@ -1956,17 +1942,17 @@ def read_iso_ts(
                     else:
                         res = pd.DataFrame()
                         for i in parameters:
-                            res = res.join(
-                                pd.read_hdf(fname, key=i, **newkwds), how="outer"
-                            )
+                            res = res.join(pd.read_hdf(fname, key=i,
+                                                       **newkwds),
+                                           how="outer")
                 elif ext.lower() in [
-                    ".xls",
-                    ".xlsx",
-                    ".xlsm",
-                    ".xlsb",
-                    ".odf",
-                    ".ods",
-                    ".odt",
+                        ".xls",
+                        ".xlsx",
+                        ".xlsm",
+                        ".xlsb",
+                        ".odf",
+                        ".ods",
+                        ".odt",
                 ]:
                     if len(parameters) == 0:
                         sheet = [0]
@@ -2042,11 +2028,8 @@ def read_iso_ts(
                         )
                     except ValueError:
                         raise ValueError(
-                            error_wrapper(
-                                f"""
-File or file-like object "{fname}" does not exist."""
-                            )
-                        )
+                            error_wrapper(f"""
+File or file-like object "{fname}" does not exist."""))
                 if fname == "-" and stdin_df.empty:
                     stdin_df = res
                 res = _pick(res, parameters)
@@ -2129,8 +2112,7 @@ File or file-like object "{fname}" does not exist."""
 
             res = asbestfreq(res)
             if res.index.inferred_freq is not None and moffset > epoch + to_offset(
-                res.index.inferred_freq
-            ):
+                    res.index.inferred_freq):
                 moffset = epoch + to_offset(res.index.inferred_freq)
                 offset_set.add(moffset)
 
@@ -2139,9 +2121,9 @@ File or file-like object "{fname}" does not exist."""
             if len(offset_set) < 2:
                 result = result.join(df, how="outer", rsuffix="_r")
             else:
-                result = result.join(
-                    df.asfreq(moffset - epoch), how="outer", rsuffix="_r"
-                )
+                result = result.join(df.asfreq(moffset - epoch),
+                                     how="outer",
+                                     rsuffix="_r")
     else:
         result = lresult_list[0]
 

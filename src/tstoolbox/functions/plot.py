@@ -21,29 +21,22 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-
 warnings.filterwarnings("ignore")
 
 ldocstrings = tsutils.docstrings
-ldocstrings[
-    "xydata"
-] = """If the input 'x,y' dataset(s) is organized as
+ldocstrings["xydata"] = """If the input 'x,y' dataset(s) is organized as
             'index,x1,y1,x2,y2,x3,y3,...,xN,yN' then the 'index' is ignored.
             If there is one 'x,y' dataset then it can be organized as 'index,y'
             where 'index' is used for 'x'.  The "columns" keyword can be used
             to duplicate or change the order of all the data columns."""
 ldocstrings[
-    "ydata"
-] = """Data must be organized as 'index,y1,y2,y3,...,yN'.  The 'index' is
+    "ydata"] = """Data must be organized as 'index,y1,y2,y3,...,yN'.  The 'index' is
             ignored and all data columns are plotted.  The "columns" keyword
             can be used to duplicate or change the order of all the data
             columns."""
 ldocstrings[
-    "yone"
-] = """Data must be organized as 'index,y1'.  Can only plot one series."""
-ldocstrings[
-    "secondary_axis"
-] = """[optional, default is False]
+    "yone"] = """Data must be organized as 'index,y1'.  Can only plot one series."""
+ldocstrings["secondary_axis"] = """[optional, default is False]
 
         * list/tuple: Give the column numbers or names to plot on secondary
           y-axis.
@@ -106,50 +99,32 @@ def _know_your_limits(xylimits, axis="arithmetic"):
             nlim[1] = 0.99
         if nlim[0] < 0 or nlim[0] > 1 or nlim[1] < 0 or nlim[1] > 1:
             raise ValueError(
-                tsutils.error_wrapper(
-                    """
+                tsutils.error_wrapper("""
 Both limits must be between 0 and 1 for the 'normal', 'lognormal', or 'weibull'
 axis.
 
 Instead you have {}.
-""".format(
-                        nlim
-                    )
-                )
-            )
+""".format(nlim)))
 
     if nlim is None:
         return nlim
 
     if nlim[0] is not None and nlim[1] is not None and nlim[0] >= nlim[1]:
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 The second limit must be greater than the first.
 
 You gave {}.
-""".format(
-                    nlim
-                )
-            )
-        )
+""".format(nlim)))
 
-    if (
-        axis == "log"
-        and (nlim[0] is not None and nlim[0] <= 0)
-        or (nlim[1] is not None and nlim[1] <= 0)
-    ):
+    if (axis == "log" and (nlim[0] is not None and nlim[0] <= 0)
+            or (nlim[1] is not None and nlim[1] <= 0)):
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 If log plot cannot have limits less than or equal to 0.
 
 You have {}.
-""".format(
-                    nlim
-                )
-            )
-        )
+""".format(nlim)))
 
     return nlim
 
@@ -988,33 +963,13 @@ def plot(
     index_type="datetime",
     names=None,
     ofilename: Optional[str] = "plot.png",
-    type: Literal[
-        "time",
-        "xy",
-        "double_mass",
-        "boxplot",
-        "scatter_matrix",
-        "lag_plot",
-        "autocorrelation",
-        "bootstrap",
-        "histogram",
-        "kde",
-        "kde_time",
-        "bar",
-        "barh",
-        "bar_stacked",
-        "barh_stacked",
-        "heatmap",
-        "norm_xaxis",
-        "norm_yaxis",
-        "lognorm_yaxis",
-        "lognorm_xaxis",
-        "weibull_xaxis",
-        "weibull_yaxis",
-        "taylor",
-        "target",
-        "probability_density",
-    ] = "time",
+    type: Literal["time", "xy", "double_mass", "boxplot", "scatter_matrix",
+                  "lag_plot", "autocorrelation", "bootstrap", "histogram",
+                  "kde", "kde_time", "bar", "barh", "bar_stacked",
+                  "barh_stacked", "heatmap", "norm_xaxis", "norm_yaxis",
+                  "lognorm_yaxis", "lognorm_xaxis", "weibull_xaxis",
+                  "weibull_yaxis", "taylor", "target",
+                  "probability_density", ] = "time",
     xtitle: str = "",
     ytitle: str = "",
     title: str = "",
@@ -1055,52 +1010,26 @@ def plot(
     invert_xaxis: bool = False,
     invert_yaxis: bool = False,
     round_index=None,
-    plotting_position: Literal[
-        "weibull", "benard", "tukey", "gumbel", "hazen", "cunnane", "california"
-    ] = "weibull",
+    plotting_position: Literal["weibull", "benard", "tukey", "gumbel", "hazen",
+                               "cunnane", "california"] = "weibull",
     prob_plot_sort_values: Literal["ascending", "descending"] = "descending",
     source_units=None,
     target_units=None,
     lag_plot_lag: tsutils.IntGreaterEqualToOne = 1,
-    plot_styles: List[
-        Literal[
-            "classic",
-            "Solarize_Light2",
-            "bmh",
-            "dark_background",
-            "fast",
-            "fivethirtyeight",
-            "ggplot",
-            "grayscale",
-            "seaborn",
-            "seaborn-bright",
-            "seaborn-colorblind",
-            "seaborn-dark",
-            "seaborn-dark-palette",
-            "seaborn-darkgrid",
-            "seaborn-deep",
-            "seaborn-muted",
-            "seaborn-notebook",
-            "seaborn-paper",
-            "seaborn-pastel",
-            "seaborn-poster",
-            "seaborn-talk",
-            "seaborn-ticks",
-            "seaborn-white",
-            "seaborn-whitegrid",
-            "tableau-colorblind10",
-            "science",
-            "grid",
-            "ieee",
-            "scatter",
-            "notebook",
-            "high-vis",
-            "bright",
-            "vibrant",
-            "muted",
-            "retro",
-        ]
-    ] = "bright",
+    plot_styles: List[Literal["classic", "Solarize_Light2", "bmh",
+                              "dark_background", "fast", "fivethirtyeight",
+                              "ggplot", "grayscale", "seaborn",
+                              "seaborn-bright", "seaborn-colorblind",
+                              "seaborn-dark", "seaborn-dark-palette",
+                              "seaborn-darkgrid", "seaborn-deep",
+                              "seaborn-muted", "seaborn-notebook",
+                              "seaborn-paper", "seaborn-pastel",
+                              "seaborn-poster", "seaborn-talk",
+                              "seaborn-ticks", "seaborn-white",
+                              "seaborn-whitegrid", "tableau-colorblind10",
+                              "science", "grid", "ieee", "scatter", "notebook",
+                              "high-vis", "bright", "vibrant", "muted",
+                              "retro", ]] = "bright",
     hlines_y: Optional[List[float]] = None,
     hlines_xmin: Optional[List[float]] = None,
     hlines_xmax: Optional[List[float]] = None,
@@ -1140,20 +1069,13 @@ def plot(
         por=por,
     )
 
-    if (
-        type in ["bootstrap", "heatmap", "autocorrelation", "lag_plot"]
-        and len(tsd.columns) != 1
-    ):
+    if (type in ["bootstrap", "heatmap", "autocorrelation", "lag_plot"]
+            and len(tsd.columns) != 1):
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 The '{1}' plot can only work with 1 time-series in the DataFrame.
 The DataFrame that you supplied has {0} time-series.
-""".format(
-                    len(tsd.columns), type
-                )
-            )
-        )
+""".format(len(tsd.columns), type)))
 
     # This is to help pretty print the frequency
     try:
@@ -1177,23 +1099,19 @@ The DataFrame that you supplied has {0} time-series.
         lnames = legend_names
         if len(lnames) != len(set(lnames)):
             raise ValueError(
-                tsutils.error_wrapper(
-                    """
+                tsutils.error_wrapper("""
 Each name in legend_names must be unique.
-"""
-                )
-            )
+"""))
         if len(tsd.columns) == len(lnames):
             renamedict = dict(list(zip(tsd.columns, lnames)))
-        elif type in ["xy", "double_mass"] and (
-            len(tsd.columns) // 2 == len(lnames) or len(tsd.columns) == 1
-        ):
+        elif type in [
+                "xy", "double_mass"
+        ] and (len(tsd.columns) // 2 == len(lnames) or len(tsd.columns) == 1):
             renamedict = dict(list(zip(tsd.columns[2::2], lnames[1:])))
             renamedict[tsd.columns[1]] = lnames[0]
         else:
             raise ValueError(
-                tsutils.error_wrapper(
-                    """
+                tsutils.error_wrapper("""
 For 'legend_names' and most plot types you must have the same number of comma
 separated names as columns in the input data.  The input data has {} where the
 number of 'legend_names' is {}.
@@ -1201,11 +1119,7 @@ number of 'legend_names' is {}.
 If `type` is 'xy' or 'double_mass' you need to have legend names as
 l1,l2,l3,...  where l1 is the legend for x1,y1, l2 is the legend for x2,y2,
 ...etc.
-""".format(
-                        len(tsd.columns), len(lnames)
-                    )
-                )
-            )
+""".format(len(tsd.columns), len(lnames))))
         tsd.rename(columns=renamedict, inplace=True)
     else:
         lnames = tsd.columns
@@ -1233,16 +1147,11 @@ l1,l2,l3,...  where l1 is the legend for x1,y1, l2 is the legend for x2,y2,
         nstyle = style
         if len(nstyle) != len(tsd.columns):
             raise ValueError(
-                tsutils.error_wrapper(
-                    """
+                tsutils.error_wrapper("""
 You have to have the same number of style strings as time-series to plot.
 You supplied '{}' for style which has {} style strings,
 but you have {} time-series.
-""".format(
-                        style, len(nstyle), len(tsd.columns)
-                    )
-                )
-            )
+""".format(style, len(nstyle), len(tsd.columns))))
         colors = []
         markerstyles = []
         linestyles = []
@@ -1277,16 +1186,10 @@ but you have {} time-series.
     # Only for bar, barh, bar_stacked, and barh_stacked.
     ibar_hatchstyles = itertools.cycle(bar_hatchstyles)
 
-    if (
-        logx is True
-        or logy is True
-        or norm_xaxis is True
-        or norm_yaxis is True
-        or lognorm_xaxis is True
-        or lognorm_yaxis is True
-    ):
-        warnings.warn(
-            """
+    if (logx is True or logy is True or norm_xaxis is True
+            or norm_yaxis is True or lognorm_xaxis is True
+            or lognorm_yaxis is True):
+        warnings.warn("""
 *
 *   The --logx, --logy, --norm_xaxis, --norm_yaxis, --lognorm_xaxis, and
 *   --lognorm_yaxis options are deprecated.
@@ -1298,8 +1201,7 @@ but you have {} time-series.
 *   For --lognorm_xaxis use --type="lognorm_xaxis"
 *   For --lognorm_yaxis use --type="lognorm_yaxis"
 *
-"""
-        )
+""")
 
     if xaxis == "log":
         logx = True
@@ -1310,42 +1212,31 @@ but you have {} time-series.
         xaxis = "normal"
         if logx is True:
             logx = False
-            warnings.warn(
-                """
+            warnings.warn("""
 *
 *   The --type={1} cannot also have the xaxis set to {0}.
 *   The {0} setting for xaxis is ignored.
 *
-""".format(
-                    xaxis, type
-                )
-            )
+""".format(xaxis, type))
 
     if type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
         yaxis = "normal"
         if logy is True:
             logy = False
             warnings.warn(
-                tsutils.error_wrapper(
-                    """
+                tsutils.error_wrapper("""
 The --type={1} cannot also have the yaxis set to {0}.
 The {0} setting for yaxis is ignored.
-""".format(
-                        yaxis, type
-                    )
-                )
-            )
+""".format(yaxis, type)))
 
     xlim = _know_your_limits(xlim, axis=xaxis)
     ylim = _know_your_limits(ylim, axis=yaxis)
     plot_styles = plot_styles + ["no-latex"]
-    style_loc = os.path.join(
-        os.path.dirname(__file__), os.pardir, "SciencePlots_styles"
-    )
+    style_loc = os.path.join(os.path.dirname(__file__), os.pardir,
+                             "SciencePlots_styles")
     plot_styles = [
-        os.path.join(style_loc, i + ".mplstyle")
-        if os.path.exists(os.path.join(style_loc, i + ".mplstyle"))
-        else i
+        os.path.join(style_loc, i + ".mplstyle") if os.path.exists(
+            os.path.join(style_loc, i + ".mplstyle")) else i
         for i in plot_styles
     ]
     plt.style.use(plot_styles)
@@ -1354,47 +1245,39 @@ The {0} setting for yaxis is ignored.
 
     if not isinstance(tsd.index, pd.DatetimeIndex) and type == "time":
         raise ValueError(
-            tsutils.error_wrapper(
-                """
+            tsutils.error_wrapper("""
 The index is not a datetime index and cannot be plotted as a time-series.
 Instead of `type="time"` you might want `type="xy"` or change the index to
 a datetime index.
-"""
-            )
-        )
+"""))
 
     if type in ["xy", "double_mass"]:
         if tsd.shape[1] > 1 and tsd.shape[1] % 2 != 0:
             raise AttributeError(
-                tsutils.error_wrapper(
-                    """
+                tsutils.error_wrapper("""
 The 'xy' and 'double_mass' types must have an even number of columns arranged
 as x,y pairs or an x-index and one y data column.  You supplied {} columns.
-""".format(
-                        tsd.shape[1]
-                    )
-                )
-            )
+""".format(tsd.shape[1])))
         colcnt = tsd.shape[1] // 2
     elif type in [
-        "norm_xaxis",
-        "norm_yaxis",
-        "lognorm_xaxis",
-        "lognorm_yaxis",
-        "weibull_xaxis",
-        "weibull_yaxis",
+            "norm_xaxis",
+            "norm_yaxis",
+            "lognorm_xaxis",
+            "lognorm_yaxis",
+            "weibull_xaxis",
+            "weibull_yaxis",
     ]:
         colcnt = tsd.shape[1]
 
     if type in [
-        "xy",
-        "double_mass",
-        "norm_xaxis",
-        "norm_yaxis",
-        "lognorm_xaxis",
-        "lognorm_yaxis",
-        "weibull_xaxis",
-        "weibull_yaxis",
+            "xy",
+            "double_mass",
+            "norm_xaxis",
+            "norm_yaxis",
+            "lognorm_xaxis",
+            "lognorm_yaxis",
+            "weibull_xaxis",
+            "weibull_yaxis",
     ]:
         plotdict = {
             (False, True): ax.semilogy,
@@ -1475,7 +1358,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {} columns.
             if colcnt == 0:
                 ndf = tsd.reset_index()
             else:
-                ndf = tsd.iloc[:, colindex * 2 : colindex * 2 + 2]
+                ndf = tsd.iloc[:, colindex * 2:colindex * 2 + 2]
 
             ndf = ndf.dropna()
 
@@ -1512,12 +1395,12 @@ as x,y pairs or an x-index and one y data column.  You supplied {} columns.
             ytitle = ytitle or "Cumulative {}".format(tsd.columns[1])
 
     elif type in [
-        "norm_xaxis",
-        "norm_yaxis",
-        "lognorm_xaxis",
-        "lognorm_yaxis",
-        "weibull_xaxis",
-        "weibull_yaxis",
+            "norm_xaxis",
+            "norm_yaxis",
+            "lognorm_xaxis",
+            "lognorm_yaxis",
+            "weibull_xaxis",
+            "weibull_yaxis",
     ]:
         ppf = tsutils.set_ppf(type.split("_")[0])
         ys = tsd.iloc[:, :]
@@ -1553,15 +1436,13 @@ as x,y pairs or an x-index and one y data column.  You supplied {} columns.
         # Make it pretty
         xtmaj = np.array([0.01, 0.1, 0.5, 0.9, 0.99])
         xtmaj_str = ["1", "10", "50", "90", "99"]
-        xtmin = np.concatenate(
-            [
-                np.linspace(0.001, 0.01, 10),
-                np.linspace(0.01, 0.1, 10),
-                np.linspace(0.1, 0.9, 9),
-                np.linspace(0.9, 0.99, 10),
-                np.linspace(0.99, 0.999, 10),
-            ]
-        )
+        xtmin = np.concatenate([
+            np.linspace(0.001, 0.01, 10),
+            np.linspace(0.01, 0.1, 10),
+            np.linspace(0.1, 0.9, 9),
+            np.linspace(0.9, 0.99, 10),
+            np.linspace(0.99, 0.999, 10),
+        ])
         xtmaj = ppf(xtmaj)
         xtmin = ppf(xtmin)
 
@@ -1719,9 +1600,10 @@ as x,y pairs or an x-index and one y data column.  You supplied {} columns.
     elif type == "bootstrap":
         from pandas.plotting import bootstrap_plot
 
-        bootstrap_plot(
-            tsd, size=bootstrap_size, samples=bootstrap_samples, color="gray"
-        )
+        bootstrap_plot(tsd,
+                       size=bootstrap_size,
+                       samples=bootstrap_samples,
+                       color="gray")
     elif type == "heatmap":
         # Find beginning and end years
         byear = tsd.index[0].year
@@ -1729,13 +1611,12 @@ as x,y pairs or an x-index and one y data column.  You supplied {} columns.
         tsd = tsutils.asbestfreq(tsd)
         if tsd.index.freqstr != "D":
             raise ValueError(
-                tsutils.error_wrapper(
-                    """
+                tsutils.error_wrapper("""
 The "heatmap" plot type can only work with daily time series.
-"""
-                )
-            )
-        dr = pd.date_range("{}-01-01".format(byear), "{}-12-31".format(eyear), freq="D")
+"""))
+        dr = pd.date_range("{}-01-01".format(byear),
+                           "{}-12-31".format(eyear),
+                           freq="D")
         ntsd = tsd.reindex(index=dr).astype(float)
         groups = ntsd.iloc[:, 0].groupby(pd.Grouper(freq="A"))
         years = pd.DataFrame()
@@ -1838,17 +1719,17 @@ The "heatmap" plot type can only work with daily time series.
     #        vlines_colors = tsutils.make_list(vlines_colors)
     #        vlines_linestyles = tsutils.make_list(vlines_colors)
     if type in [
-        "time",
-        "xy",
-        "bar",
-        "bar_stacked",
-        "histogram",
-        "norm_xaxis",
-        "lognorm_xaxis",
-        "weibull_xaxis",
-        "norm_yaxis",
-        "lognorm_yaxis",
-        "weibull_yaxis",
+            "time",
+            "xy",
+            "bar",
+            "bar_stacked",
+            "histogram",
+            "norm_xaxis",
+            "lognorm_xaxis",
+            "weibull_xaxis",
+            "norm_yaxis",
+            "lognorm_yaxis",
+            "weibull_yaxis",
     ]:
         if hlines_y is not None:
             if type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
@@ -1874,9 +1755,8 @@ The "heatmap" plot type can only work with daily time series.
                     val = hlines_xmax[index]
                 except KeyError:
                     hlines_xmax.append(hlines_xmax[-1])
-            for l, xmin, xmax, c, ls in zip(
-                hlines_y, hlines_xmin, hlines_xmax, hlines_colors, hlines_linestyles
-            ):
+            for l, xmin, xmax, c, ls in zip(hlines_y, hlines_xmin, hlines_xmax,
+                                            hlines_colors, hlines_linestyles):
                 ax.plot([xmin, l], [xmax, l], colors=c, linestyles=l)
         if vlines_x is not None:
             if type in ["norm_xaxis", "lognorm_xaxis", "weibull_xaxis"]:

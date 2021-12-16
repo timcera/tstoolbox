@@ -170,9 +170,10 @@ def pct_change(
     return tsutils.return_input(
         print_input,
         otsd,
-        tsd.pct_change(
-            periods=periods, fill_method=fill_method, limit=limit, freq=freq
-        ),
+        tsd.pct_change(periods=periods,
+                       fill_method=fill_method,
+                       limit=limit,
+                       freq=freq),
         "pctchange",
     )
 
