@@ -1345,12 +1345,10 @@ def _date_slice(
             start_date = pd.Timestamp(start_date)
             end_date = pd.Timestamp(end_date)
         else:
-            start_date = pd.Timestamp(start_date, tz=input_tsd.index.tz)
-            end_date = pd.Timestamp(end_date, tz=input_tsd.index.tz)
+            start_date = pd.Timestamp(start_date).tz_convert(input_tsd.index.tz)
+            end_date = pd.Timestamp(end_date).tz_convert(input_tsd.index.tz)
 
-        mask = (input_tsd.index >= start_date) & (input_tsd.index <= end_date)
-
-        input_tsd = input_tsd.loc[mask, :]
+        input_tsd = input_tsd.loc[(input_tsd.index >= start_date) & (input_tsd.index <= end_date), :]
 
         if por is True:
             if start_date < input_tsd.index[0]:
