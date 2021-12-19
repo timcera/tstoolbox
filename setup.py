@@ -48,6 +48,7 @@ install_requires = [
     "xlrd >= 1.0.0",
     "openpyxl",
     "plottoolbox",
+    "HydroErr",
 ]
 
 extras_require = {

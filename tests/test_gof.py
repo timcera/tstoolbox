@@ -10,9 +10,9 @@ class Testgof(TestCase):
         self.df = tstoolbox.read(["tests/data_sunspot.csv", "tests/data_sunspot.csv"])
         self.gof = [
             ["Bias", 0.0],
-            ["Root-mean-square Deviation (RMSD)", 0.0],
+            ["Root-mean-square Deviation/Error (RMSD)", 0.0],
             ["Centered RMSD (CRMSD)", 0.0],
-            ["Pearson coefficient of correlation (r)", 1.0],
+            ["Pearson coefficient of correlation (r)", 1.0000000000000002],
             ["Skill score (Murphy)", 1.0],
             ["Nash-Sutcliffe Efficiency", 1.0],
             ["Brier's Score", 0.0],
