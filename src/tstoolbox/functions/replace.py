@@ -120,7 +120,10 @@ def replace(
         target_units=target_units,
         clean=clean,
     )
-
+    if from_values is None:
+        from_values = [None]
+    if to_values is None:
+        to_values = [None]
     ntsd = tsd.replace(from_values, to_values)
 
     return tsutils.return_input(print_input, tsd, ntsd, "replace")
