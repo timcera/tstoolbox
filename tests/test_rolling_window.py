@@ -62,6 +62,18 @@ class TestRollingWindow(TestCase):
             out, tsutils.read_iso_ts(self.compare_rolling_window_sum_cli)
         )
 
+    def test_rolling_window_window_sum_cli(self):
+        """CLI: Rolling window mean for data_simple.csv is 9.1."""
+        args = (
+            'tstoolbox rolling_window sum --window 2 --input_ts="tests/data_simple.csv"'
+        )
+        args = shlex.split(args)
+        out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
+        out = tsutils.read_iso_ts(out)
+        assert_frame_equal(
+            out, tsutils.read_iso_ts(self.compare_rolling_window_sum_cli)
+        )
+
     def test_rolling_window_mean_cli(self):
         """CLI: Rolling window sum for data_simple.csv is 4.55."""
         args = 'tstoolbox rolling_window mean --input_ts="tests/data_simple.csv"'

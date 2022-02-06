@@ -205,8 +205,8 @@ def rolling_window_cli(
     )
 
 
-@typic.al
 @tsutils.transform_args(window=tsutils.make_list)
+@typic.al
 def rolling_window(
     statistic: Literal[
         "corr",
