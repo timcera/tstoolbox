@@ -103,6 +103,9 @@ class TestPeakDetect(TestCase):
         out = tstoolbox.peak_detection(
             input_ts=self.ats, print_input=True, extrema="both"
         )
+        cols = list(out.columns)
+        cols[0] = 0
+        out.columns = cols
         assert_frame_equal(out, self.compare)
 
     def test_peak_minmax_direct(self):
@@ -114,6 +117,9 @@ class TestPeakDetect(TestCase):
             print_input=True,
             extrema="both",
         )
+        cols = list(out.columns)
+        cols[0] = 0
+        out.columns = cols
         assert_frame_equal(out, self.compare)
 
     def test_peak_zero_crossing_direct(self):
@@ -125,6 +131,9 @@ class TestPeakDetect(TestCase):
             print_input=True,
             extrema="both",
         )
+        cols = list(out.columns)
+        cols[0] = 0
+        out.columns = cols
         assert_frame_equal(out, self.compare)
 
     #    def test_peak_parabola_direct(self):
@@ -140,6 +149,9 @@ class TestPeakDetect(TestCase):
         out = tstoolbox.peak_detection(
             method="sine", points=9, input_ts=self.ats, print_input=True, extrema="both"
         )
+        cols = list(out.columns)
+        cols[0] = 0
+        out.columns = cols
         assert_frame_equal(out, self.compare)
 
     # CLI...
