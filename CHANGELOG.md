@@ -1,3 +1,19 @@
+## 103.16.0 (2022-02-06)
+
+### Feat
+
+- **input_ts**: changed gof to not need input_ts instead can specify obs_col and sim_col
+- **gof**: shifted to using HydroErr library
+
+### Fix
+
+- **rolling_window.py**: window keyword was transformed to wrong type if default
+- **replace.py**: support for None
+
+### Refactor
+
+- **clip.py**: use pandas clip
+
 ## 103.15.2 (2021-10-10)
 
 ### Fix
