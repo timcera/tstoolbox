@@ -4,7 +4,7 @@
 from __future__ import absolute_import, division, print_function
 
 import warnings
-from typing import List
+from typing import List, Optional, Union
 
 import mando
 import pandas as pd
@@ -106,22 +106,29 @@ def accumulate_cli(
     )
 
 
-@tsutils.transform_args(statistic=tsutils.make_list)
+@tsutils.transform_args(
+    statistic=tsutils.make_list,
+    columns=tsutils.make_list,
+    names=tsutils.make_list,
+    source_units=tsutils.make_list,
+    target_units=tsutils.make_list,
+)
 @typic.al
+@tsutils.copy_doc(accumulate_cli)
 def accumulate(
     input_ts="-",
-    columns=None,
+    columns: Optional[Union[str, List]] = None,
     start_date=None,
     end_date=None,
     dropna="no",
     clean=False,
-    statistic: List[Literal["sum", "max", "min", "prod"]] = "sum",
+    statistic: List[Literal["sum", "max", "min", "prod"]] = ["sum"],
     round_index=None,
     skiprows=None,
     index_type="datetime",
-    names=None,
-    source_units=None,
-    target_units=None,
+    names: Optional[List] = None,
+    source_units: Optional[List] = None,
+    target_units: Optional[List] = None,
     print_input=False,
 ):
     """Calculate accumulating statistics."""
@@ -146,6 +153,3 @@ def accumulate(
         tmptsd.columns = [tsutils.renamer(i, stat) for i in tmptsd.columns]
         ntsd = ntsd.join(tmptsd, how="outer")
     return tsutils.return_input(print_input, tsd, ntsd)
-
-
-accumulate.__doc__ = accumulate_cli.__doc__

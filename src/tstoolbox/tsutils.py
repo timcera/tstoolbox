@@ -20,6 +20,7 @@ import dateparser
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
+import pint_pandas
 import typic
 from _io import TextIOWrapper
 from numpy import int64, ndarray
@@ -675,6 +676,32 @@ def _handle_curly_braces_in_docstring(s: str, **kwargs) -> str:
 
 
 @typic.al
+def copy_doc(source: Callable) -> Callable:
+    """Copy docstring from source.
+
+    Parameters
+    ----------
+    source : Callable
+        Function to take doc string from.
+
+    Examples
+    --------
+    >>> @decorit.copy_doc_params(func_to_copy_from)
+    >>> def func(args):
+    ...     pass  # function goes here
+    # Function uses parameters of given func
+
+    """
+
+    def wrapper_copy_doc(func: Callable) -> Callable:
+        if source.__doc__:
+            func.__doc__ = source.__doc__  # noqa: WPS125
+        return func
+
+    return wrapper_copy_doc
+
+
+@typic.al
 def doc(fdict: dict, **kwargs) -> Callable:
     """Return a decorator that formats a docstring."""
 
@@ -1195,20 +1222,17 @@ def common_kwds(
     if por is True:
         dropna = "no"
 
-    if isinstance(input_tsd, pd.DataFrame):
-        ntsd = input_tsd
-    else:
-        ntsd = read_iso_ts(
-            input_tsd,
-            parse_dates=parse_dates,
-            extended_columns=extended_columns,
-            dropna=dropna,
-            force_freq=force_freq,
-            skiprows=skiprows,
-            index_type=index_type,
-            usecols=usecols,
-            clean=clean,
-        )
+    ntsd = read_iso_ts(
+        input_tsd,
+        parse_dates=parse_dates,
+        extended_columns=extended_columns,
+        dropna=dropna,
+        force_freq=force_freq,
+        skiprows=skiprows,
+        index_type=index_type,
+        usecols=usecols,
+        clean=clean,
+    )
 
     if names is not None:
         ntsd.columns = names
@@ -1827,26 +1851,30 @@ def read_iso_ts(
 
     """
     # inindat
-    # -                               [["-"]]
-    #                                     all columns from standard input
     #
-    # 1,2,Value                       [["-", 1, 2, "Value"]]
-    #                                     extract columns from standard input
+    # CLI                              API                             TRANSFORM
+    # ("-",)                           "-"                             [["-"]]
+    #                                                                  all columns from standard input
     #
-    # fn.csv,skiprows=4               [["fn.csv", "skiprows=4"]]
-    #                                     all columns from "fn.csv"
-    #                                     skipping the 5th row
+    # ("1,2,Value",)                   [1, 2, "Value"]                 [["-", 1, 2, "Value"]]
+    #                                                                  extract columns from standard input
     #
-    # fn.csv,1,4,Val                  [["fn.csv", 1, 4, "Val"]]
-    #                                     extract columns from fn.csv
+    # ("fn.csv,skiprows=4",)           ["fn.csv", {"skiprow":4}]       [["fn.csv", "skiprows=4"]]
+    #                                                                  all columns from "fn.csv"
+    #                                                                  skipping the 5th row
     #
-    # fn.wdm,1002,20000               [["fn.wdm", 1002, 20000]]
-    #                                     WDM files MUST have DSNs
-    #                                     extract DSNs from "fn.wdm"
+    # ("fn.csv,1,4,Val",)              ["fn.csv", 1, 4, "Val"]         [["fn.csv", 1, 4, "Val"]]
+    #                                                                  extract columns from fn.csv
     #
-    # fn.csv,Val1,Q,4 fn.wdm,101,201  [["fn.csv", "Val1", "Q", 4], ["fn.wdm", 101, 201]]
-    #                                     extract columns from fn.csv
-    #                                     extract DSNs from fn.wdm
+    # ("fn.wdm,1002,20000",)           ["fn.wdm", 1002, 20000]         [["fn.wdm", 1002, 20000]]
+    #                                                                  WDM files MUST have DSNs
+    #                                                                  extract DSNs from "fn.wdm"
+    #
+    # ("fn.csv,Val1,Q,4 fn.wdm,201",)  [["fn.csv", "Val1", "Q", 4], ["fn.wdm", 101, 201]]
+    #                                                                  extract columns from fn.csv
+    #                                                                  extract DSNs from fn.wdm
+    #                                  dataframe
+    #                                  series                          [[series]]A
     newkwds = {}
     # Olde global way that applies to all sources.
     # usecols = kwds.get("usecols", None)
@@ -1880,11 +1908,12 @@ def read_iso_ts(
     if index_type == "number":
         parse_dates = False
 
-    if isinstance(inindat[0], (tuple, list)) and len(inindat) == 1:
+    if (
+        isinstance(inindat[0], (tuple, list, pd.DataFrame, pd.Series))
+        and len(inindat) == 1
+    ):
         inindat = inindat[0]
-
     sources = make_list(inindat, sep=" ", flat=False)
-
     if not isinstance(sources, (list, tuple)):
         sources = [sources]
     lresult_list = []
@@ -1899,7 +1928,6 @@ def read_iso_ts(
         else:
             fname = parameters
             parameters = []
-
         # Python API
         if isinstance(fname, pd.DataFrame):
             if len(parameters) > 0:
@@ -2008,12 +2036,22 @@ def read_iso_ts(
                     # a string?
                     header = 0
                     fpi = BytesIO(fname)
+                else:
+                    parameters.insert(0, fname)
+                    fname = "-"
+                    header = 0
+                    fpi = sys.stdin
             elif isinstance(fname, str):
                 # Python API
                 if "\n" in fname or "\r" in fname:
                     # a string?
                     header = 0
                     fpi = StringIO(fname)
+                else:
+                    parameters.insert(0, fname)
+                    header = 0
+                    fpi = sys.stdin
+                    fname = "-"
             elif isinstance(fname, (StringIO, BytesIO)):
                 # Python API
                 header = "infer"
@@ -2048,7 +2086,7 @@ def read_iso_ts(
                         raise ValueError(
                             error_wrapper(
                                 f"""
-File or file-like object "{fname}" does not exist."""
+File or file-like object "{fname}" of type "{type(fname)}" does not exist."""
                             )
                         )
                 if fname == "-" and stdin_df.empty:
