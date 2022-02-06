@@ -141,8 +141,8 @@ def read(
     if isinstance(filenames, (list, tuple)) and len(filenames) == 1:
         filenames = filenames[0]
 
-    # # Check for older style where comma delimited list of only files.
-    # # If so, rework as space delimited.
+    # Check for older style where comma delimited list of only files.
+    # If so, rework as space delimited.
     isspacedelimited = False
     for fname in tsutils.make_list(filenames, sep=","):
         if not os.path.exists(str(fname)):

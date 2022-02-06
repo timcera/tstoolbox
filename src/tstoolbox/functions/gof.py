@@ -9,11 +9,13 @@ from typing import List, Union
 import HydroErr as he
 import mando
 import numpy as np
+import pandas as pd
 import typic
 from mando.rst_text_formatter import RSTHelpFormatter
 
 from .. import skill_metrics as sm
 from .. import tsutils
+from .read import read
 
 try:
     from typing import Literal
@@ -26,22 +28,20 @@ warnings.filterwarnings("ignore")
 @mando.command("gof", formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def gof_cli(
-    input_ts="-",
+    obs_col=None,
+    sim_col=None,
     stats="default",
     replace_nan=None,
     replace_inf=None,
     remove_neg=False,
     remove_zero=False,
-    columns=None,
     start_date=None,
     end_date=None,
     round_index=None,
     clean=False,
     index_type="datetime",
-    names=None,
     source_units=None,
     target_units=None,
-    skiprows=None,
     tablefmt="plain",
     float_format=".3f",
     kge_sr=1.0,
@@ -51,13 +51,19 @@ def gof_cli(
 ):
     """Will calculate goodness of fit statistics between two time-series.
 
-    The first time series must be the observed, the second the predicted
+    The first time series must be the observed, the second the simulated
     series.  You can only give two time-series.
 
     Parameters
     ----------
-    {input_ts}
-
+    obs_col
+        If integer represents the column number of standard input. Can be
+        a csv, wdm, hdf or xlsx file following format specified in 'tstoolbox
+        read ...'.
+    sim_col
+        If integer represents the column number of standard input. Can be
+        a csv, wdm, hdf or xlsx file following format specified in 'tstoolbox
+        read ...'.
     stats : str
         [optional,  Python: list, Command line: comma separated string,
         default is 'default']
@@ -79,53 +85,47 @@ def gof_cli(
         +-----------------+--------------------------------------------------+
         | stats           | Description                                      |
         +=================+==================================================+
-        | bias            | Bias                                             |
-        |                 | mean(s) - mean(o)                                |
+        | me              | Mean error or bias                               |
+        |                 | -inf < ME < inf, close to 0 is better            |
         +-----------------+--------------------------------------------------+
         | pc_bias         | Percent Bias                                     |
-        |                 | 100.0*sum(s-o)/sum(o)                            |
+        |                 | -inf < PC_BIAS < inf, close to 0 is better       |
         +-----------------+--------------------------------------------------+
         | apc_bias        | Absolute Percent Bias                            |
-        |                 | 100.0*sum(abs(s-o))/sum(o)                       |
+        |                 | 0 <= APC_BIAS < inf, close to 0 is better        |
         +-----------------+--------------------------------------------------+
         | rmsd            | Root Mean Square Deviation/Error                 |
-        |                 | sqrt(sum[(s - o)**2]/N)                          |
+        |                 | 0 <= RMSD < inf, smaller is better               |
         +-----------------+--------------------------------------------------+
         | crmsd           | Centered Root Mean Square Deviation/Error        |
-        |                 | sum[(s - mean(s))(o - mean(o))]**2/N             |
         +-----------------+--------------------------------------------------+
         | corrcoef        | Pearson Correlation coefficient (r)              |
+        |                 | -1 <= r <= 1, 1 perfect positive correlation     |
+        |                 |               0 complete randomness              |
+        |                 |               -1 perfect negative correlation    |
         +-----------------+--------------------------------------------------+
-        | coefdet         | Coefficient of determination (R^2)               |
+        | coefdet         | Coefficient of determination (r^2)               |
+        |                 | 0 <= r^2 <= 1, 1 perfect correlation             |
+        |                 |                0 complete randomness             |
         +-----------------+--------------------------------------------------+
         | murphyss        | Murphy Skill Score                               |
-        |                 | 1 - RMSE**2/SDEV**2                              |
         +-----------------+--------------------------------------------------+
         | nse             | Nash-Sutcliffe Efficiency                        |
-        |                 | 1 - sum(s - o)**2 / sum (o - mean(r))**2         |
+        |                 | -inf < NSE < 1, larger is better                 |
         +-----------------+--------------------------------------------------+
         | kge09           | Kling-Gupta Efficiency, 2009                     |
-        |                 | 1 - sqrt((cc-1)**2 + (alpha-1)**2 + (beta-1)**2) |
-        |                 |                     cc = correlation coefficient |
-        |                 |           alpha = std(simulated) / std(observed) |
-        |                 |            beta = sum(simulated) / sum(observed) |
+        |                 | -inf < KGE09 < 1, larger is better               |
         +-----------------+--------------------------------------------------+
         | kge12           | Kling-Gupta Efficiency, 2012                     |
-        |                 | 1 - sqrt((cc-1)**2 + (alpha-1)**2 + (beta-1)**2) |
-        |                 |                     cc = correlation coefficient |
-        |                 |           alpha = std(simulated) / std(observed) |
-        |                 |            beta = sum(simulated) / sum(observed) |
+        |                 | -inf < KGE12 < 1, larger is better               |
         +-----------------+--------------------------------------------------+
-        | index_agreement | Index of Agreement                               |
-        |                 | 1.0 - sum((o - s)**2) /                          |
-        |                 | sum((abs(s - mean(o)) + abs(o - mean(o)))**2)    |
+        | index_agreement | Index of agreement (d)                           |
+        |                 | 0 <= d < 1, larger is better                     |
         +-----------------+--------------------------------------------------+
         | brierss         | Brier Skill Score                                |
-        |                 | sum(f - o)**2/N                                  |
-        |                 |                       f = forecast probabilities |
         +-----------------+--------------------------------------------------+
         | mae             | Mean Absolute Error                              |
-        |                 | sum(abs(s - o))/N                                |
+        |                 | 0 <= MAE < 1, larger is better                   |
         +-----------------+--------------------------------------------------+
         | mean            | observed mean, simulated mean                    |
         +-----------------+--------------------------------------------------+
@@ -138,28 +138,35 @@ def gof_cli(
         | stats       | Description                                           |
         +=============+=======================================================+
         | acc         | Anomaly correlation coefficient (ACC)                 |
+        |             | -1 <= r <= 1, 1 perfect positive correlation of       |
+        |             |                 variation in anomalies                |
+        |             |               0 complete randomness of                |
+        |             |                 variation in anomalies                |
+        |             |               -1 perfect negative correlation of      |
+        |             |                 variation in anomalies                |
         +-------------+-------------------------------------------------------+
         | d1          | Index of agreement (d1)                               |
+        |             | 0 <= d1 < 1, larger is better                         |
         +-------------+-------------------------------------------------------+
         | d1_p        | Legate-McCabe Index of Agreement                      |
+        |             | 0 <= d1_p < 1, larger is better                       |
         +-------------+-------------------------------------------------------+
         | d           | Index of agreement (d)                                |
+        |             | 0 <= d < 1, larger is better                          |
         +-------------+-------------------------------------------------------+
         | dmod        | Modified index of agreement (dmod)                    |
+        |             | 0 <= dmod < 1, larger is better                       |
         +-------------+-------------------------------------------------------+
         | drel        | Relative index of agreement (drel)                    |
+        |             | 0 <= drel < 1, larger is better                       |
         +-------------+-------------------------------------------------------+
         | dr          | Refined index of agreement (dr)                       |
+        |             | -1 <= dr < 1, larger is better                        |
         +-------------+-------------------------------------------------------+
         | ed          | Euclidean distance in vector space                    |
+        |             | 0 <= ed < inf, smaller is better                      |
         +-------------+-------------------------------------------------------+
         | g_mean_diff | Geometric mean difference                             |
-        +-------------+-------------------------------------------------------+
-        | h10_mahe    | H10 mean absolute error                               |
-        +-------------+-------------------------------------------------------+
-        | h10_mhe     | H10 mean error                                        |
-        +-------------+-------------------------------------------------------+
-        | h10_rmshe   | H10 root mean square error                            |
         +-------------+-------------------------------------------------------+
         | h1_mahe     | H1 absolute error                                     |
         +-------------+-------------------------------------------------------+
@@ -209,71 +216,109 @@ def gof_cli(
         +-------------+-------------------------------------------------------+
         | h8_rmshe    | H8 root mean square error                             |
         +-------------+-------------------------------------------------------+
+        | h10_mahe    | H10 mean absolute error                               |
+        +-------------+-------------------------------------------------------+
+        | h10_mhe     | H10 mean error                                        |
+        +-------------+-------------------------------------------------------+
+        | h10_rmshe   | H10 root mean square error                            |
+        +-------------+-------------------------------------------------------+
         | irmse       | Inertial root mean square error (IRMSE)               |
+        |             | 0 <= irmse < inf, smaller is better                   |
         +-------------+-------------------------------------------------------+
         | lm_index    | Legate-McCabe Efficiency Index                        |
+        |             | 0 <= lm_index < 1, larger is better                   |
         +-------------+-------------------------------------------------------+
         | maape       | Mean Arctangent Absolute Percentage Error (MAAPE)     |
+        |             | 0 <= maape < pi/2, smaller is better                  |
         +-------------+-------------------------------------------------------+
         | male        | Mean absolute log error                               |
+        |             | 0 <= male < inf, smaller is better                    |
         +-------------+-------------------------------------------------------+
         | mapd        | Mean absolute percentage deviation (MAPD)             |
         +-------------+-------------------------------------------------------+
         | mape        | Mean absolute percentage error (MAPE)                 |
+        |             | 0 <= mape < inf, 0 indicates perfect correlation      |
         +-------------+-------------------------------------------------------+
         | mase        | Mean absolute scaled error                            |
         +-------------+-------------------------------------------------------+
         | mb_r        | Mielke-Berry R value (MB R)                           |
+        |             | 0 <= mb_r < 1, larger is better                       |
         +-------------+-------------------------------------------------------+
         | mdae        | Median absolute error (MdAE)                          |
+        |             | 0 <= mdae < inf, smaller is better                    |
         +-------------+-------------------------------------------------------+
         | mde         | Median error (MdE)                                    |
+        |             | -inf < mde < inf, closer to zero is better            |
         +-------------+-------------------------------------------------------+
         | mdse        | Median squared error (MdSE)                           |
+        |             | 0 < mde < inf, closer to zero is better               |
         +-------------+-------------------------------------------------------+
         | mean_var    | Mean variance                                         |
         +-------------+-------------------------------------------------------+
         | me          | Mean error                                            |
+        |             | -inf < me < inf, closer to zero is better             |
         +-------------+-------------------------------------------------------+
         | mle         | Mean log error                                        |
+        |             | -inf < mle < inf, closer to zero is better            |
         +-------------+-------------------------------------------------------+
         | mse         | Mean squared error                                    |
+        |             | 0 <= mse < inf, smaller is better                     |
         +-------------+-------------------------------------------------------+
         | msle        | Mean squared log error                                |
+        |             | 0 <= msle < inf, smaller is better                    |
         +-------------+-------------------------------------------------------+
         | ned         | Normalized Euclidian distance in vector space         |
+        |             | 0 <= ned < inf, smaller is better                     |
         +-------------+-------------------------------------------------------+
         | nrmse_iqr   | IQR normalized root mean square error                 |
+        |             | 0 <= nrmse_iqr < inf, smaller is better               |
         +-------------+-------------------------------------------------------+
         | nrmse_mean  | Mean normalized root mean square error                |
+        |             | 0 <= nrmse_mean < inf, smaller is better              |
         +-------------+-------------------------------------------------------+
         | nrmse_range | Range normalized root mean square error               |
+        |             | 0 <= nrmse_range < inf, smaller is better             |
         +-------------+-------------------------------------------------------+
         | nse_mod     | Modified Nash-Sutcliffe efficiency (NSE mod)          |
+        |             | -inf < nse_mod < 1, larger is better                  |
         +-------------+-------------------------------------------------------+
         | nse_rel     | Relative Nash-Sutcliffe efficiency (NSE rel)          |
+        |             | -inf < nse_mod < 1, larger is better                  |
         +-------------+-------------------------------------------------------+
         | rmse        | Root mean square error                                |
+        |             | 0 <= rmse < inf, smaller is better                    |
         +-------------+-------------------------------------------------------+
         | rmsle       | Root mean square log error                            |
+        |             | 0 <= rmsle < inf, smaller is better                   |
         +-------------+-------------------------------------------------------+
         | sa          | Spectral Angle (SA)                                   |
+        |             | -pi/2 <= sa < pi/2, closer to 0 is better             |
         +-------------+-------------------------------------------------------+
         | sc          | Spectral Correlation (SC)                             |
+        |             | -pi/2 <= sc < pi/2, closer to 0 is better             |
         +-------------+-------------------------------------------------------+
         | sga         | Spectral Gradient Angle (SGA)                         |
+        |             | -pi/2 <= sga < pi/2, closer to 0 is better            |
         +-------------+-------------------------------------------------------+
         | sid         | Spectral Information Divergence (SID)                 |
+        |             | -pi/2 <= sid < pi/2, closer to 0 is better            |
         +-------------+-------------------------------------------------------+
         | smape1      | Symmetric Mean Absolute Percentage Error (1) (SMAPE1) |
+        |             | 0 <= smape1 < 100, smaller is better                  |
         +-------------+-------------------------------------------------------+
         | smape2      | Symmetric Mean Absolute Percentage Error (2) (SMAPE2) |
+        |             | 0 <= smape2 < 100, smaller is better                  |
         +-------------+-------------------------------------------------------+
         | spearman_r  | Spearman rank correlation coefficient                 |
+        |             | -1 <= spearman_r <= 1, 1 perfect positive correlation |
+        |             |                        0 complete randomness          |
+        |             |                       -1 perfect negative correlation |
         +-------------+-------------------------------------------------------+
         | ve          | Volumetric Efficiency (VE)                            |
+        |             | 0 <= ve < 1, smaller is better                        |
         +-------------+-------------------------------------------------------+
         | watt_m      | Watterson’s M (M)                                     |
+        |             | -1 <= watt_m < 1, larger is better                    |
         +-------------+-------------------------------------------------------+
 
     replace_nan: (float, optional)
@@ -298,8 +343,6 @@ def gof_cli(
         observed OR simulated array, the i-th value of the observed AND
         simulated array are removed before the computation.
 
-    {columns}
-
     {start_date}
 
     {end_date}
@@ -310,13 +353,9 @@ def gof_cli(
 
     {index_type}
 
-    {names}
-
     {source_units}
 
     {target_units}
-
-    {skiprows}
 
     {tablefmt}
 
@@ -341,24 +380,24 @@ def gof_cli(
         [optional, defaults to 1.0]
 
         Scaling factor for `kge09` and `kge12` beta."""
+    obs_col = obs_col or 1
+    sim_col = sim_col or 2
     tsutils.printiso(
         gof(
-            input_ts=input_ts,
+            obs_col=obs_col,
+            sim_col=sim_col,
             stats=stats,
             replace_nan=replace_nan,
             replace_inf=replace_inf,
             remove_neg=remove_neg,
             remove_zero=remove_zero,
-            columns=columns,
             start_date=start_date,
             end_date=end_date,
             round_index=round_index,
             clean=clean,
             index_type=index_type,
-            names=names,
             source_units=source_units,
             target_units=target_units,
-            skiprows=skiprows,
             kge_sr=kge_sr,
             kge09_salpha=kge09_salpha,
             kge12_sgamma=kge12_sgamma,
@@ -371,7 +410,7 @@ def gof_cli(
 
 
 stats_dict = {
-    "bias": ["Bias", sm.bias],
+    "bias": ["Mean error or bias", he.me],
     "pc_bias": ["Percent bias", sm.pc_bias],
     "apc_bias": ["Absolute percent bias", sm.apc_bias],
     "rmsd": ["Root-mean-square Deviation/Error (RMSD)", he.rmse],
@@ -383,7 +422,7 @@ stats_dict = {
     "kge09": ["Kling-Gupta efficiency (2009)", he.kge_2009],
     "kge12": ["Kling-Gupta efficiency (2012)", he.kge_2012],
     "index_agreement": ["Index of agreement", he.d],
-    "brierss": ["Brier's Score", lambda pred, ref: np.sum(pred - ref) ** 2 / len(pred)],
+    "brierss": ["Brier's Score", lambda sim, obs: np.sum(sim - obs) ** 2 / len(sim)],
     "mae": ["Mean Absolute Error", he.mae],
     "mean": ["Mean", lambda x: x],
     "stdev": ["Standard deviation", lambda x: x],
@@ -393,7 +432,7 @@ stats_dict = {
     "d": ["Index of agreement (d)", he.d],
     "dmod": ["Modified index of agreement (dmod)", he.dmod],
     "drel": ["Relative index of agreement (drel)", he.drel],
-    "dr": ["Refined index of agreement (dr)", he.dr],
+    "dr": ["refined index of agreement (dr)", he.dr],
     "ed": ["Euclidean distance in vector space", he.ed],
     "g_mean_diff": ["Geometric mean difference", he.g_mean_diff],
     "h10_mahe": ["H10 mean absolute error", he.h10_mahe],
@@ -435,7 +474,7 @@ stats_dict = {
     "mde": ["Median error (MdE)", he.mde],
     "mdse": ["Median squared error (MdSE)", he.mdse],
     "mean_var": ["Mean variance", he.mean_var],
-    "me": ["Mean error", he.me],
+    "me": ["Mean error or bias", he.me],
     "mle": ["Mean log error", he.mle],
     "mse": ["Mean squared error", he.mse],
     "msle": ["Mean squared log error", he.msle],
@@ -462,7 +501,8 @@ stats_dict = {
 @tsutils.transform_args(stats=tsutils.make_list)
 @typic.al
 def gof(
-    input_ts="-",
+    obs_col: Union[tsutils.IntGreaterEqualToOne, str, pd.DataFrame, pd.Series] = 1,
+    sim_col: Union[tsutils.IntGreaterEqualToOne, str, pd.DataFrame, pd.Series] = 2,
     stats: List[
         Literal[
             "default",
@@ -558,16 +598,13 @@ def gof(
     replace_inf=None,
     remove_neg=False,
     remove_zero=False,
-    columns=None,
     start_date=None,
     end_date=None,
     round_index=None,
     clean=False,
     index_type="datetime",
-    names=None,
     source_units=None,
     target_units=None,
-    skiprows=None,
     kge_sr: float = 1.0,
     kge09_salpha: float = 1.0,
     kge12_sgamma: float = 1.0,
@@ -576,7 +613,7 @@ def gof(
     """Will calculate goodness of fit statistics between two time-series."""
     if "default" in stats:
         stats = [
-            "bias",
+            "me",
             "pc_bias",
             "apc_bias",
             "rmsd",
@@ -597,14 +634,12 @@ def gof(
         stats = stats_dict.keys()
 
     # Use dropna='no' to get the lengths of both time-series.
-    tsd = tsutils.common_kwds(
-        input_ts,
-        skiprows=skiprows,
-        names=names,
+    tsd = read(
+        obs_col,
+        sim_col,
         index_type=index_type,
         start_date=start_date,
         end_date=end_date,
-        pick=columns,
         round_index=round_index,
         dropna="no",
         source_units=source_units,
@@ -615,10 +650,8 @@ def gof(
         raise ValueError(
             tsutils.error_wrapper(
                 """
-The gof algorithms work with two time-series only.  You gave {}.
-""".format(
-                    len(tsd.columns)
-                )
+The "gof" requires only two time-series, the first one is the observed values
+and the second is the simulated.  """
             )
         )
     lennao, lennas = tsd.isna().sum()
@@ -627,8 +660,8 @@ The gof algorithms work with two time-series only.  You gave {}.
 
     statval = []
 
-    ref = tsd.iloc[:, 0].astype("float64")
-    pred = tsd.iloc[:, 1].astype("float64")
+    obs = tsd.iloc[:, 0].astype("float64")
+    sim = tsd.iloc[:, 1].astype("float64")
 
     nstats = [i for i in stats if i not in ["mean", "stdev"]]
 
@@ -639,7 +672,7 @@ The gof algorithms work with two time-series only.  You gave {}.
             "remove_neg": remove_neg,
             "remove_zero": remove_zero,
         }
-        if stat in ["bias", "crmsd", "murphyss", "brierss", "pc_bias", "apc_bias"]:
+        if stat in ["crmsd", "murphyss", "brierss", "pc_bias", "apc_bias"]:
             extra_args = {}
         proc = stats_dict[stat]
         if "kge09" == stat:
@@ -649,7 +682,7 @@ The gof algorithms work with two time-series only.  You gave {}.
         statval.append(
             [
                 proc[0],
-                proc[1](pred, ref, **extra_args),
+                proc[1](sim, obs, **extra_args),
             ]
         )
 
@@ -658,10 +691,10 @@ The gof algorithms work with two time-series only.  You gave {}.
     statval.append(["Count of NaNs", None, lennao, lennas])
 
     if "mean" in stats:
-        statval.append(["Mean", None, ref.mean(), pred.mean()])
+        statval.append(["Mean", None, obs.mean(), sim.mean()])
 
     if "stdev" in stats:
-        statval.append(["Standard deviation", None, ref.std(), pred.std()])
+        statval.append(["Standard deviation", None, obs.std(), sim.std()])
 
     return statval
 
