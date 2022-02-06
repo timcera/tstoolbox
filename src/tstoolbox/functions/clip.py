@@ -136,26 +136,7 @@ def clip(
         target_units=target_units,
         clean=clean,
     )
-
-    ntsd = pd.DataFrame()
-    for col in tsd.columns:
-        if a_min is None:
-            try:
-                n_min = np.finfo(tsd[col].dtype).min
-            except ValueError:
-                n_min = np.iinfo(tsd[col].dtype).min
-        else:
-            n_min = float(a_min)
-
-        if a_max is None:
-            try:
-                n_max = np.finfo(tsd[col].dtype).max
-            except ValueError:
-                n_max = np.iinfo(tsd[col].dtype).max
-        else:
-            n_max = float(a_max)
-
-        ntsd = ntsd.join(tsd[col].clip(n_min, n_max), how="outer")
+    ntsd = tsd.clip(lower=a_min, upper=a_max)
 
     return tsutils.return_input(print_input, tsd, ntsd, "clip")
 
