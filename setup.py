@@ -2,6 +2,7 @@
 
 import os
 import shlex
+import subprocess
 import sys
 
 from setuptools import find_packages, setup
@@ -16,9 +17,9 @@ pkg_name = "tstoolbox"
 version = open("VERSION").readline().strip()
 
 if sys.argv[-1] == "publish":
-    os.system(shlex.quote("cleanpy ."))
-    os.system(shlex.quote("python setup.py sdist"))
-    os.system(shlex.quote(f"twine upload dist/{pkg_name}-{version}.tar.gz"))
+    subprocess.run(shlex.split("cleanpy ."))
+    subprocess.run(shlex.split("python setup.py sdist"))
+    subprocess.run(shlex.split(f"twine upload dist/{pkg_name}-{version}.tar.gz"))
     sys.exit()
 
 README = open("README.rst").read()
