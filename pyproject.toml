@@ -19,6 +19,8 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
-
-[tool.coverage.run]
-relative_files = true
+# This can't be specified in pyproject.toml because can't figure out how to add
+# toml support to coverage in github actions, but the equivalent setting can be
+# in setup.cfg.
+# [tool.coverage.run]
+# relative_files = true
