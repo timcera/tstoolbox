@@ -28,6 +28,8 @@ Python API Function Summary
     tstoolbox.tstoolbox.expanding_window
     tstoolbox.tstoolbox.fill
     tstoolbox.tstoolbox.filter
+    tstoolbox.tstoolbox.fit
+    tstoolbox.tstoolbox.forecast
     tstoolbox.tstoolbox.gof
     tstoolbox.tstoolbox.lag
     tstoolbox.tstoolbox.normalization
@@ -38,6 +40,7 @@ Python API Function Summary
     tstoolbox.tstoolbox.plot
     tstoolbox.tstoolbox.rank
     tstoolbox.tstoolbox.read
+    tstoolbox.tstoolbox.regression
     tstoolbox.tstoolbox.remove_trend
     tstoolbox.tstoolbox.replace
     tstoolbox.tstoolbox.rolling_window

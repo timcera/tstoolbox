@@ -117,6 +117,16 @@ filter
 .. program-output:: tstoolbox filter --help
    :prompt:
 
+fit
+~~~
+.. program-output:: tstoolbox fit --help
+   :prompt:
+
+forecast
+~~~~~~~~
+.. program-output:: tstoolbox forecast --help
+   :prompt:
+
 gof
 ~~~
 .. program-output:: tstoolbox gof --help
@@ -165,6 +175,11 @@ rank
 read
 ~~~~
 .. program-output:: tstoolbox read --help
+   :prompt:
+
+regression
+~~~~~~~~~~
+.. program-output:: tstoolbox regression --help
    :prompt:
 
 remove_trend

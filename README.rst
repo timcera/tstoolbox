@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/timcera/tstoolbox.svg?branch=master
-    :target: https://travis-ci.org/timcera/tstoolbox
+.. image:: https://github.com/timcera/tstoolbox/actions/workflows/python-package.yml/badge.svg
+    :target: https://github.com/timcera/tstoolbox/actions/workflows/python-package.yml
     :height: 20
 
 .. image:: https://coveralls.io/repos/timcera/tstoolbox/badge.png?branch=master
@@ -11,10 +11,10 @@
     :target: https://pypi.python.org/pypi/tstoolbox
 
 .. image:: http://img.shields.io/badge/license-BSD-lightgrey.svg
-    :alt: tstoolbox license
+    :alt: BSD-3 clause license
     :target: https://pypi.python.org/pypi/tstoolbox/
 
-.. image:: https://img.shields.io/pypi/dw/tstoolbox
+.. image:: http://img.shields.io/pypi/dd/tstoolbox.svg
     :alt: tstoolbox downloads
     :target: https://pypi.python.org/pypi/tstoolbox/
 
@@ -41,18 +41,20 @@ Just run 'tstoolbox --help' to get a list of subcommands::
                      calculate_kde, clip, convert, convert_index,
                      convert_index_to_julian, converttz, lag, correlation,
                      createts, date_offset, date_slice, describe, dtw,
-                     equation, ewm_window, expanding_window, fill, filter, gof,
-                     normalization, pca, pct_change, peak_detection, pick,
-                     plot, rank, read, remove_trend, replace, rolling_window,
-                     stack, stdtozrxp, tstopickle, unstack, about} ...
+                     equation, ewm_window, expanding_window, fill, filter, fit,
+                     forecast, read, gof, normalization, pca, pct_change,
+                     peak_detection, pick, plot, rank, regression,
+                     remove_trend, replace, rolling_window, stack, stdtozrxp,
+                     tstopickle, unstack, about} ...
 
     positional arguments:
       {accumulate, add_trend, aggregate, calculate_fdc, calculate_kde, clip,
       convert, convert_index, convert_index_to_julian, converttz, lag,
       correlation, createts, date_offset, date_slice, describe, dtw, equation,
-      ewm_window, expanding_window, fill, filter, gof, normalization, pca,
-      pct_change, peak_detection, pick, plot, rank, read, remove_trend,
-      replace, rolling_window, stack, stdtozrxp, tstopickle, unstack, about}
+      ewm_window, expanding_window, fill, filter, fit, forecast, read, gof,
+      normalization, pca, pct_change, peak_detection, pick, plot, rank,
+      regression, remove_trend, replace, rolling_window, stack, stdtozrxp,
+      tstopickle, unstack, about}
 
     accumulate
         Calculate accumulating statistics.
@@ -81,7 +83,7 @@ Just run 'tstoolbox --help' to get a list of subcommands::
     createts
         Create empty time series, optionally fill with a value.
     date_offset
-        Apply an offset to a time-series.
+        Apply a date offset to a time-series index.
     date_slice
         Print out data to the screen between start_date and end_date.
     describe
@@ -89,7 +91,7 @@ Just run 'tstoolbox --help' to get a list of subcommands::
     dtw
         Dynamic Time Warping.
     equation
-        Apply <equation_str> to the time series data.
+        Apply <equation_str> cto the time series data.
     ewm_window
         Calculate exponential weighted functions.
     expanding_window
@@ -98,6 +100,12 @@ Just run 'tstoolbox --help' to get a list of subcommands::
         Fill missing values (NaN) with different methods.
     filter
         Apply different filters to the time-series.
+    fit
+        Fit model to data.
+    forecast
+        Forecast algorithms
+    read
+        Combines time-series from a list of pickle or csv files.
     gof
         Will calculate goodness of fit statistics between two time-series.
     normalization
@@ -109,13 +117,13 @@ Just run 'tstoolbox --help' to get a list of subcommands::
     peak_detection
         Peak and valley detection.
     pick
-        Will pick a column or list of columns from input.
+        DEPRECATED: Will pick a column or list of columns from input
     plot
         Plot data.
     rank
         Compute numerical data ranks (1 through n) along axis.
-    read
-        Collect time series from a list of pickle or csv files.
+    regression
+        Regression of one or more time-series or indices to a time-series.
     remove_trend
         Remove a 'trend'.
     replace
@@ -134,7 +142,7 @@ Just run 'tstoolbox --help' to get a list of subcommands::
         Display version number and system information.
 
     optional arguments:
-        -h, --help            show this help message and exit
+      -h, --help            show this help message and exit
 
 The default for all of the subcommands is to accept data from stdin (typically
 a pipe).  If a subcommand accepts an input file for an argument, you can use
@@ -160,4 +168,4 @@ Simply import tstoolbox::
 
     # Once you have a PANDAS DataFrame you can use that as input to other
     # tstoolbox functions.
-    ntsd = tstoolbox.aggregate(statistic='mean', agg_interval='daily', input_ts=ntsd)
+    ntsd = tstoolbox.aggregate(statistic='mean', groupby='D', input_ts=ntsd)

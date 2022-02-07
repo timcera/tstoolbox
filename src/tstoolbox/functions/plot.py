@@ -242,11 +242,11 @@ def plot_cli(
         needed.
 
     type : {'time', 'xy', 'double_mass', 'bloxplot', 'scatter_matrix',
-            'lag_plot', 'autocorrelation', 'bootstrap', 'histogram', 'kde',
-            'kde_time', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
-            'heatmap', 'norm_xaxis', 'norm_yaxis', 'lognorm_xaxis',
-            'lognorm_yaxis', 'weibull_xaxis', 'weibull_yaxis', 'taylor',
-            'target'}, optional
+        'lag_plot', 'autocorrelation', 'bootstrap', 'histogram', 'kde',
+        'kde_time', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
+        'heatmap', 'norm_xaxis', 'norm_yaxis', 'lognorm_xaxis',
+        'lognorm_yaxis', 'weibull_xaxis', 'weibull_yaxis', 'taylor',
+        'target'}, optional
         [optional, defaults to 'time']
 
         The plot type.
@@ -260,6 +260,7 @@ def plot_cli(
             must be a date/time and all data columns are plotted.  Legend names
             are taken from the column names in the first row unless over-ridden
             by the `legend_names` keyword.
+
         xy
             An 'x,y' plot, also know as a scatter plot.
 

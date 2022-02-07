@@ -27,6 +27,7 @@ import os
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
@@ -35,6 +36,8 @@ extensions = [
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
     "sphinxcontrib.programoutput",
+    "nbsphinx",
+    "sphinx.ext.napoleon",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -50,8 +53,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"tstoolbox"
-copyright = u"2013, Tim Cera, P.E."
+project = "tstoolbox"
+copyright = "2013, Tim Cera, P.E."
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -191,7 +194,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ("index", "tstoolbox.tex", u"tstoolbox Documentation", u"Tim Cera, P.E.", "manual")
+    ("index", "tstoolbox.tex", "tstoolbox Documentation", "Tim Cera, P.E.", "manual")
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -219,7 +222,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [("index", "tstoolbox", u"tstoolbox Documentation", [u"Tim Cera, P.E."], 1)]
+man_pages = [("index", "tstoolbox", "tstoolbox Documentation", ["Tim Cera, P.E."], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -234,8 +237,8 @@ texinfo_documents = [
     (
         "index",
         "tstoolbox",
-        u"tstoolbox Documentation",
-        u"Tim Cera, P.E.",
+        "tstoolbox Documentation",
+        "Tim Cera, P.E.",
         "tstoolbox",
         "One line description of project.",
         "Miscellaneous",
@@ -255,10 +258,10 @@ texinfo_documents = [
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u"tstoolbox"
-epub_author = u"Tim Cera, P.E."
-epub_publisher = u"Tim Cera, P.E."
-epub_copyright = u"2013, Tim Cera, P.E."
+epub_title = "tstoolbox"
+epub_author = "Tim Cera, P.E."
+epub_publisher = "Tim Cera, P.E."
+epub_copyright = "2013, Tim Cera, P.E."
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.

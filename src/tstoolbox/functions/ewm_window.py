@@ -84,17 +84,19 @@ def ewm_window_cli(
 
         Statistic applied to each window.
 
-        +------+--------------------+
-        | corr | correlation        |
-        +------+--------------------+
-        | cov  | covariance         |
-        +------+--------------------+
-        | mean | mean               |
-        +------+--------------------+
-        | std  | standard deviation |
-        +------+--------------------+
-        | var  | variance           |
-        +------+--------------------+
+        +-----------+--------------------+
+        | statistic | Description        |
+        +===========+====================+
+        | corr      | correlation        |
+        +-----------+--------------------+
+        | cov       | covariance         |
+        +-----------+--------------------+
+        | mean      | mean               |
+        +-----------+--------------------+
+        | std       | standard deviation |
+        +-----------+--------------------+
+        | var       | variance           |
+        +-----------+--------------------+
 
     alpha_com : float
         [optional, defaults to None]

@@ -58,13 +58,14 @@ def gof_cli(
     ----------
     obs_col
         If integer represents the column number of standard input. Can be
-        a csv, wdm, hdf or xlsx file following format specified in 'tstoolbox
-        read ...'.
+        If integer represents the column number of standard input. Can be
+        a csv, wdm, hdf or xlsx file following format specified in
+        'tstoolbox read ...'.
     sim_col
         If integer represents the column number of standard input. Can be
-        a csv, wdm, hdf or xlsx file following format specified in 'tstoolbox
-        read ...'.
-    stats : str
+        a csv, wdm, hdf or xlsx file following format specified in
+        'tstoolbox read ...'.
+    stats: str
         [optional,  Python: list, Command line: comma separated string,
         default is 'default']
 
@@ -100,13 +101,15 @@ def gof_cli(
         | crmsd           | Centered Root Mean Square Deviation/Error        |
         +-----------------+--------------------------------------------------+
         | corrcoef        | Pearson Correlation coefficient (r)              |
-        |                 | -1 <= r <= 1, 1 perfect positive correlation     |
-        |                 |               0 complete randomness              |
-        |                 |               -1 perfect negative correlation    |
+        |                 | -1 <= r <= 1                                     |
+        |                 | 1 perfect positive correlation                   |
+        |                 | 0 complete randomness                            |
+        |                 | -1 perfect negative correlation                  |
         +-----------------+--------------------------------------------------+
         | coefdet         | Coefficient of determination (r^2)               |
-        |                 | 0 <= r^2 <= 1, 1 perfect correlation             |
-        |                 |                0 complete randomness             |
+        |                 | 0 <= r^2 <= 1                                    |
+        |                 | 1 perfect correlation                            |
+        |                 | 0 complete randomness                            |
         +-----------------+--------------------------------------------------+
         | murphyss        | Murphy Skill Score                               |
         +-----------------+--------------------------------------------------+
@@ -138,12 +141,10 @@ def gof_cli(
         | stats       | Description                                           |
         +=============+=======================================================+
         | acc         | Anomaly correlation coefficient (ACC)                 |
-        |             | -1 <= r <= 1, 1 perfect positive correlation of       |
-        |             |                 variation in anomalies                |
-        |             |               0 complete randomness of                |
-        |             |                 variation in anomalies                |
-        |             |               -1 perfect negative correlation of      |
-        |             |                 variation in anomalies                |
+        |             | -1 <= r <= 1                                          |
+        |             | 1 positive correlation of variation in anomalies      |
+        |             | 0 complete randomness of variation in anomalies       |
+        |             | -1 negative correlation of variation in anomalies     |
         +-------------+-------------------------------------------------------+
         | d1          | Index of agreement (d1)                               |
         |             | 0 <= d1 < 1, larger is better                         |
@@ -310,76 +311,62 @@ def gof_cli(
         |             | 0 <= smape2 < 100, smaller is better                  |
         +-------------+-------------------------------------------------------+
         | spearman_r  | Spearman rank correlation coefficient                 |
-        |             | -1 <= spearman_r <= 1, 1 perfect positive correlation |
-        |             |                        0 complete randomness          |
-        |             |                       -1 perfect negative correlation |
+        |             | -1 <= spearman_r <= 1                                 |
+        |             | 1 perfect positive correlation                        |
+        |             | 0 complete randomness                                 |
+        |             | -1 perfect negative correlation                       |
         +-------------+-------------------------------------------------------+
         | ve          | Volumetric Efficiency (VE)                            |
         |             | 0 <= ve < 1, smaller is better                        |
         +-------------+-------------------------------------------------------+
-        | watt_m      | Watterson’s M (M)                                     |
+        | watt_m      | Watterson's M (M)                                     |
         |             | -1 <= watt_m < 1, larger is better                    |
         +-------------+-------------------------------------------------------+
 
-    replace_nan: (float, optional)
+    replace_nan: float
         If given, indicates which value to replace NaN values with in the two
         arrays. If None, when a NaN value is found at the i-th position in the
         observed OR simulated array, the i-th value of the observed and
         simulated array are removed before the computation.
-
-    replace_inf: (float, optional)
+    replace_inf: float
         If given, indicates which value to replace Inf values with in the two
         arrays. If None, when an inf value is found at the i-th position in the
         observed OR simulated array, the i-th value of the observed and
         simulated array are removed before the computation.
-
-    remove_neg: (boolean, optional)
+    remove_neg: boolean
         If True, when a negative value is found at the i-th position in the
         observed OR simulated array, the i-th value of the observed AND
         simulated array are removed before the computation.
-
-    remove_zero: (boolean, optional)
+    remove_zero: boolean
         If true, when a zero value is found at the i-th position in the
         observed OR simulated array, the i-th value of the observed AND
         simulated array are removed before the computation.
-
     {start_date}
-
     {end_date}
-
     {round_index}
-
     {clean}
-
     {index_type}
-
     {source_units}
-
     {target_units}
-
     {tablefmt}
-
     {float_format}
-
     kge_sr: float
         [optional, defaults to 1.0]
 
         Scaling factor for `kge09` and `kge12` correlation.
-
     kge09_salpha: float
         [optional, defaults to 1.0]
 
         Scaling factor for `kge09` alpha.
-
     kge12_sgamma: float
         [optional, defaults to 1.0]
 
         Scaling factor for `kge12` beta.
-
     kge_sbeta: float
         [optional, defaults to 1.0]
 
-        Scaling factor for `kge09` and `kge12` beta."""
+        Scaling factor for `kge09` and `kge12` beta.
+    """
     obs_col = obs_col or 1
     sim_col = sim_col or 2
     tsutils.printiso(

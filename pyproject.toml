@@ -1,7 +1,9 @@
 
 [tool.check-manifest]
-ignore = [".travis.yml",
-          "docs/_function_autosummary/*"]
+ignore = ["docs/_function_autosummary/*",
+          ".coverage",
+          ".deepsource.toml",
+          ".ipynb_checkpoints/*"]
 
 
 [tool.commitizen]
