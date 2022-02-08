@@ -1,3 +1,9 @@
+## 103.16.1 (2022-02-07)
+
+### Fix
+
+- shifted to subprocess because os.system wasn't working
+
 ## 103.16.0 (2022-02-06)
 
 ### Feat
