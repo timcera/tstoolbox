@@ -1,3 +1,9 @@
+## 103.17.0 (2022-02-13)
+
+### Feat
+
+- copy docs using decorator instead of simple assignment
+
 ## 103.16.1 (2022-02-07)
 
 ### Fix
