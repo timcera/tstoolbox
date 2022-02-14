@@ -43,20 +43,19 @@ def converttz_cli(
     totz : str
         The time zone of the converted time-series.  Same note applies
         as for `fromtz`.  Needs to be different from `fromtz`.
-    {input_ts}
-    {columns}
-    {start_date}
-    {end_date}
-    {round_index}
-    {dropna}
-    {clean}
-    {skiprows}
-    {index_type}
-    {names}
-    {source_units}
-    {target_units}
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${round_index}
+    ${dropna}
+    ${clean}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${source_units}
+    ${target_units}
+    ${tablefmt}
     """
     tsutils.printiso(
         converttz(
@@ -81,6 +80,7 @@ def converttz_cli(
 
 
 @typic.al
+@tsutils.copy_doc(converttz_cli)
 def converttz(
     fromtz: str,
     totz: str,
@@ -125,6 +125,3 @@ def converttz(
         tsd = tsd.tz_convert(totz)
     tsd = tsutils.memory_optimize(tsd)
     return tsd
-
-
-converttz.__doc__ = converttz_cli.__doc__

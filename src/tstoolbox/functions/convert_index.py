@@ -49,7 +49,6 @@ def convert_index_cli(
         should have a datetime index to convert to a number.  If 'datetime',
         source data should be a number and the converted index will be
         datetime.
-
     interval
         [optional, defaults to None, transformation]
 
@@ -62,8 +61,7 @@ def convert_index_cli(
         epoch that begins with an arbitrary date, you can use any interval
         equal to or smaller than the frequency of the time-series.
 
-        {pandas_offset_codes}
-
+        ${pandas_offset_codes}
     epoch : str
         [optional, defaults to 'julian', transformation]
 
@@ -135,31 +133,18 @@ def convert_index_cli(
 
         .. [3] . Theveny, Pierre-Michel. (10 September 2001). "Date Format"
            The TPtime Handbook. Media Lab.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {round_index}
-
-    {dropna}
-
-    {clean}
-
-    {skiprows}
-
-    {names}
-
-    {source_units}
-
-    {target_units}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${round_index}
+    ${dropna}
+    ${clean}
+    ${skiprows}
+    ${names}
+    ${source_units}
+    ${target_units}
+    ${tablefmt}
     """
     tsd = convert_index(
         to,
@@ -181,6 +166,7 @@ def convert_index_cli(
 
 
 # @typic.al
+@tsutils.copy_doc(convert_index_cli)
 def convert_index(
     to: Literal["datetime", "number"],
     interval=None,
@@ -371,6 +357,3 @@ The "to" option can be one of "datetime" or "number" not "{to}"."""
         tsd, start_date=nstart_date, end_date=nend_date, round_index=nround_index
     )
     return tsd
-
-
-convert_index.__doc__ = convert_index_cli.__doc__

@@ -103,59 +103,40 @@ def aggregate_cli(
 
         Command line example::
             --statistic=mean,max,first
-
-    {groupby}
+    ${groupby}
         The `groupby` keyword has a special option 'all' which will aggregate
         all records.
 
-        {pandas_offset_codes}
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {dropna}
-
-    {clean}
-
-    {round_index}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {source_units}
-
-    {target_units}
-
-    {print_input}
-
-    {tablefmt}
-
+        ${pandas_offset_codes}
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${clean}
+    ${round_index}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${source_units}
+    ${target_units}
+    ${print_input}
+    ${tablefmt}
     skipna :
         [optional, defaults to True, transformation]
 
         If False will return a NaN for any aggregation group that has a NaN.
         If True will fill all NaNs with 0 before aggregation.  Ignored if
         `groupby` is "all" or `groupby` is "months_across_years".
-
     min_count:
         The required number of valid values to perform the operation. If fewer than
         min_count non-NA values are present the result will be NA.  Default is 0.
 
         Only available for the following `statistic` methods: "first", "last", "max",
         "min", "prod", and "sum".
-
     agg_interval :
         DEPRECATED:
         Use the 'groupby' option instead.
-
     ninterval :
         DEPRECATED:
         Just prefix the number in front of the 'groupby' pandas offset code.
@@ -188,6 +169,7 @@ def aggregate_cli(
 
 @tsutils.transform_args(statistic=tsutils.make_list)
 @typic.al
+@tsutils.copy_doc(aggregate_cli)
 def aggregate(
     input_ts="-",
     groupby: str = None,
@@ -315,6 +297,3 @@ consistent with other tstoolbox commands.
     if groupby == "months_across_years":
         newts.index.name = "Months"
     return tsutils.return_input(print_input, tsd, newts)
-
-
-aggregate.__doc__ = aggregate_cli.__doc__

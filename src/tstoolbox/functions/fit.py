@@ -53,40 +53,24 @@ def fit_cli(
         vector data, like time-series, whereas the LOESS is a generalized
         technique that can be applied to multi-dimensional data.  For working
         with time-series LOESS and LOWESS are identical.
-
     lowess_frac : float
         [optional, default=0.01, range between 0 and 1]
 
-        Fraction of data used for `method`="lowess".
-
-    {input_ts}
-
-    {start_date}
-
-    {end_date}
-
-    {skiprows}
-
-    {names}
-
-    {columns}
-
-    {dropna}
-
-    {clean}
-
-    {source_units}
-
-    {target_units}
-
-    {round_index}
-
-    {index_type}
-
-    {print_input}
-
-    {tablefmt}
-
+        Fraction of data used for 'method'="lowess".
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${clean}
+    ${round_index}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${source_units}
+    ${target_units}
+    ${print_input}
+    ${tablefmt}
     """
     tsutils.printiso(
         fit(
@@ -112,6 +96,7 @@ def fit_cli(
 
 @tsutils.transform_args(method=tsutils.make_list)
 @typic.al
+@tsutils.copy_doc(fit_cli)
 def fit(
     method: List[Literal["lowess", "linear"]],
     lowess_frac: tsutils.FloatBetweenZeroAndOne = 0.01,
@@ -166,6 +151,3 @@ def fit(
         tmptsd.columns = [tsutils.renamer(i, meth) for i in tmptsd.columns]
         ntsd = ntsd.join(tmptsd, how="outer")
     return tsutils.return_input(print_input, tsd, ntsd)
-
-
-fit.__doc__ = fit_cli.__doc__

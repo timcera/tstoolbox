@@ -42,8 +42,7 @@ def read_cli(
     tablefmt="csv",
     *filenames,
 ):
-    """
-    Combines time-series from a list of pickle or csv files.
+    """Combine time-series from different sources into single dataset.
 
     Prints the read in time-series in the tstoolbox standard format.
 
@@ -56,7 +55,6 @@ def read_cli(
         From the command line a list of comma or space delimited filenames to
         read time series from.  Using the Python API a list or tuple of
         filenames.
-
     append : str
         [optional, default is 'columns']
 
@@ -64,36 +62,21 @@ def read_cli(
         indices will append rows, matching row indices will append columns, and
         matching column/row indices use the value from the first dataset.  You
         can use "row" or "column" to force an append along either axis.
-
-    {force_freq}
-        {pandas_offset_codes}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {dropna}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {clean}
-
-    {source_units}
-
-    {target_units}
-
-    {float_format}
-
-    {round_index}
-
-    {tablefmt}
-
+    ${force_freq}
+        ${pandas_offset_codes}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${source_units}
+    ${target_units}
+    ${float_format}
+    ${round_index}
+    ${tablefmt}
     """
     tsutils.printiso(
         read(
@@ -118,6 +101,7 @@ def read_cli(
 
 
 @typic.al
+@tsutils.copy_doc(read_cli)
 def read(
     *filenames,
     force_freq=None,
@@ -179,6 +163,3 @@ Using "," separated files is deprecated in favor of space delimited files."""
     )
 
     return tsd
-
-
-read.__doc__ = read_cli.__doc__

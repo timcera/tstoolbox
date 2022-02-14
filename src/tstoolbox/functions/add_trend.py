@@ -49,52 +49,34 @@ def add_trend_cli(
         The starting value for the applied trend.  This is the starting
         value for the linear interpolation that will be added to the
         input data.
-
     end_offset : float
         The ending value for the applied trend.  This is the ending
         value for the linear interpolation that will be added to the
         input data.
-
     start_index : int
         [optional, default is 0, transformation]
 
         The starting index where `start_offset` will be initiated.  Rows
         prior to `start_index` will not be affected.
-
     end_index : int
         [optional, default is -1, transformation]
 
         The ending index where `end_offset` will be set.  Rows after
         `end_index` will not be affected.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {dropna}
-
-    {clean}
-
-    {round_index}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {source_units}
-
-    {target_units}
-
-    {print_input}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${clean}
+    ${round_index}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${source_units}
+    ${target_units}
+    ${print_input}
+    ${tablefmt}
     """
     tsutils.printiso(
         add_trend(
@@ -121,6 +103,7 @@ def add_trend_cli(
 
 
 @typic.al
+@tsutils.copy_doc(add_trend_cli)
 def add_trend(
     start_offset: float,
     end_offset: float,
@@ -167,6 +150,3 @@ def add_trend(
 
     ntsd = tsutils.memory_optimize(ntsd)
     return tsutils.return_input(print_input, tsd, ntsd, "trend")
-
-
-add_trend.__doc__ = add_trend_cli.__doc__

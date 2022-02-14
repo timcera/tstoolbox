@@ -322,7 +322,6 @@ def gof_cli(
         | watt_m      | Watterson's M (M)                                     |
         |             | -1 <= watt_m < 1, larger is better                    |
         +-------------+-------------------------------------------------------+
-
     replace_nan: float
         If given, indicates which value to replace NaN values with in the two
         arrays. If None, when a NaN value is found at the i-th position in the
@@ -341,15 +340,15 @@ def gof_cli(
         If true, when a zero value is found at the i-th position in the
         observed OR simulated array, the i-th value of the observed AND
         simulated array are removed before the computation.
-    {start_date}
-    {end_date}
-    {round_index}
-    {clean}
-    {index_type}
-    {source_units}
-    {target_units}
-    {tablefmt}
-    {float_format}
+    ${start_date}
+    ${end_date}
+    ${round_index}
+    ${clean}
+    ${index_type}
+    ${source_units}
+    ${target_units}
+    ${tablefmt}
+    ${float_format}
     kge_sr: float
         [optional, defaults to 1.0]
 
@@ -487,9 +486,10 @@ stats_dict = {
 
 @tsutils.transform_args(stats=tsutils.make_list)
 @typic.al
+@tsutils.copy_doc(gof_cli)
 def gof(
-    obs_col: Union[tsutils.IntGreaterEqualToOne, str, pd.DataFrame, pd.Series] = 1,
-    sim_col: Union[tsutils.IntGreaterEqualToOne, str, pd.DataFrame, pd.Series] = 2,
+    obs_col=1,
+    sim_col=2,
     stats: List[
         Literal[
             "default",
@@ -684,6 +684,3 @@ and the second is the simulated.  """
         statval.append(["Standard deviation", None, obs.std(), sim.std()])
 
     return statval
-
-
-gof.__doc__ = gof_cli.__doc__

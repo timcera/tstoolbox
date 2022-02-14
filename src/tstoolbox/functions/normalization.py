@@ -69,69 +69,47 @@ def normalization_cli(
 
         robust
             Robust scale to ranked quantile ranges.
-
     min_limit : float
         [optional, defaults to 0, used for mode=minmax]
 
         Defines the minimum limit of the minmax normalization.
-
     max_limit : float
         [optional, defaults to 1, used for mode=minmax]
 
         Defines the maximum limit of the minmax normalization.
-
     pct_rank_method : str
         [optional, defaults to 'average']
 
         Defines how tied ranks are broken.  Can be 'average', 'min', 'max',
         'first', 'dense'.
-
     with_centering : bool
         [optional, defaults to True, used when mode=robust]
 
         If True, center the data before scaling.
-
     with_scaling : bool
         [optional, defaults to True, used when mode=robust]
 
         If True, scale the data to interquartile range.
-
     quantile_range : tuple
         [optional, defaults to (0.25, 0.75)
         (q_min, q_max), 0.0 < q_min < q_max < 100.0]
 
         Quantile range used to calculate scale.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {dropna}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {clean}
-
-    {print_input}
-
-    {float_format}
-
-    {source_units}
-
-    {target_units}
-
-    {round_index}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${print_input}
+    ${float_format}
+    ${source_units}
+    ${target_units}
+    ${round_index}
+    ${tablefmt}
     """
     tsutils.printiso(
         normalization(
@@ -162,6 +140,7 @@ def normalization_cli(
 
 
 @typic.al
+@tsutils.copy_doc(normalization_cli)
 def normalization(
     input_ts="-",
     columns=None,
@@ -234,6 +213,3 @@ def normalization(
         ).fit_transform(tsd)
     tsd = tsutils.memory_optimize(tsd)
     return tsutils.return_input(print_input, otsd, tsd, "{}".format(mode))
-
-
-normalization.__doc__ = normalization_cli.__doc__

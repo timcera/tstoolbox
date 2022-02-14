@@ -83,9 +83,7 @@ def rolling_window_cli(
         +----------+--------------------+
         | var      | variance           |
         +----------+--------------------+
-
-    {groupby}
-
+    ${groupby}
     window
         [optional, default = 2]
 
@@ -95,19 +93,16 @@ def rolling_window_cli(
         If it is an offset then this will be the time period of each window. Each
         window will be a variable sized based on the observations included in
         the time-period. This is only valid for datetimelike indexes.
-
     min_periods : int
         [optional, default is None]
 
         Minimum number of observations in window required to have a value
         (otherwise result is NA). For a window that is specified by an offset,
         this will default to 1.
-
     center : boolean
         [optional, default is False]
 
         Set the labels at the center of the window.
-
     win_type : str
         [optional, default is None]
 
@@ -130,13 +125,11 @@ def rolling_window_cli(
             general_gaussian (needs power, width)
             slepian (needs width)
             exponential (needs tau), center is set to None.
-
     on : str
         [optional, default is None]
 
         For a DataFrame, column on which to calculate the rolling window,
         rather than the index
-
     closed : str
         [optional, default is None]
 
@@ -144,38 +137,23 @@ def rolling_window_cli(
         endpoints. For offset-based windows, it defaults to 'right'. For fixed
         windows, defaults to 'both'. Remaining cases not implemented for fixed
         windows.
-
     span :
         [optional, default = 2]
 
         DEPRECATED: Changed to 'window' to be consistent with pandas.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {dropna}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {clean}
-
-    {source_units}
-
-    {target_units}
-
-    {print_input}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${source_units}
+    ${target_units}
+    ${print_input}
+    ${tablefmt}
     """
     tsutils.printiso(
         rolling_window(
@@ -207,6 +185,7 @@ def rolling_window_cli(
 
 @tsutils.transform_args(window=tsutils.make_list)
 @typic.al
+@tsutils.copy_doc(rolling_window_cli)
 def rolling_window(
     statistic: Literal[
         "corr",
@@ -302,6 +281,3 @@ def rolling_window(
         ntsd = ntsd.join(etsd, how="outer")
 
     return tsutils.return_input(print_input, tsd, ntsd, None)
-
-
-rolling_window.__doc__ = rolling_window_cli.__doc__

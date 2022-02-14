@@ -72,43 +72,27 @@ def expanding_window_cli(
         +-----------+----------------------+
         | var       | variance             |
         +-----------+----------------------+
-
     min_periods : int
         [optional, default is 1]
 
         Minimum number of observations in window required to have a value
-
     center : boolean
         [optional, default is False]
 
         Set the labels at the center of the window.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {dropna}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {clean}
-
-    {source_units}
-
-    {target_units}
-
-    {print_input}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${source_units}
+    ${target_units}
+    ${print_input}
+    ${tablefmt}
     """
     tsutils.printiso(
         expanding_window(
@@ -134,6 +118,7 @@ def expanding_window_cli(
 
 @tsutils.transform_args(statistic=tsutils.make_list)
 @typic.al
+@tsutils.copy_doc(expanding_window_cli)
 def expanding_window(
     input_ts="-",
     columns=None,
@@ -197,6 +182,3 @@ def expanding_window(
         nntsd = ntsd
 
     return tsutils.return_input(print_input, tsd, nntsd)
-
-
-expanding_window.__doc__ = expanding_window_cli.__doc__

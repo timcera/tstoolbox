@@ -76,7 +76,6 @@ def correlation_cli(
         Command line example::
 
             --lags='2,5,3'
-
     method : str
         [optional, default to "pearson"]
 
@@ -87,35 +86,20 @@ def correlation_cli(
             kendall : Kendall Tau correlation coefficient
 
             spearman : Spearman rank correlation
-
-    {print_input}
-
-    {input_ts}
-
-    {start_date}
-
-    {end_date}
-
-    {clean}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {source_units}
-
-    {target_units}
-
-    {columns}
-
-    {tablefmt}
-
-    {round_index}
-
-    {dropna}
-
+    ${print_input}
+    ${input_ts}
+    ${start_date}
+    ${end_date}
+    ${clean}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${source_units}
+    ${target_units}
+    ${columns}
+    ${tablefmt}
+    ${round_index}
+    ${dropna}
     """
     tsutils.printiso(
         correlation(
@@ -142,6 +126,7 @@ def correlation_cli(
 
 @tsutils.transform_args(lags=tsutils.make_list)
 @typic.al
+@tsutils.copy_doc(correlation_cli)
 def correlation(
     lags: List[tsutils.IntGreaterEqualToZero],
     method: Literal["pearson", "kendall", "spearman"] = "pearson",
@@ -194,6 +179,3 @@ def correlation(
         input_ts=tsd,
     )
     return ntsd.corr(method=method)
-
-
-correlation.__doc__ = correlation_cli.__doc__

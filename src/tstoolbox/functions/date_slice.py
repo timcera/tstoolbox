@@ -38,21 +38,20 @@ def date_slice_cli(
 
     Parameters
     ----------
-    {input_ts}
-    {columns}
-    {start_date}
-    {end_date}
-    {dropna}
-    {clean}
-    {skiprows}
-    {index_type}
-    {names}
-    {float_format}
-    {source_units}
-    {target_units}
-    {round_index}
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${clean}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${float_format}
+    ${source_units}
+    ${target_units}
+    ${round_index}
+    ${tablefmt}
     """
     tsutils.printiso(
         date_slice(
@@ -74,6 +73,7 @@ def date_slice_cli(
     )
 
 
+@tsutils.copy_doc(date_slice_cli)
 def date_slice(
     input_ts="-",
     columns=None,
@@ -103,6 +103,3 @@ def date_slice(
         target_units=target_units,
         clean=clean,
     )
-
-
-date_slice.__doc__ = date_slice_cli.__doc__

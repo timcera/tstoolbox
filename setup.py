@@ -43,7 +43,7 @@ install_requires = [
     "scikit-learn",
     "statsmodels",
     "setuptools",
-    "typical",
+    "typical>=2.6.0",
     "typing-extensions",
     "pyaf",
     "xlrd >= 1.0.0",

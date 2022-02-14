@@ -161,39 +161,22 @@ def equation_cli(
 
         to add to the current value 0.6 times the maximum row adjacent
         value.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {dropna}
-
-    {skiprows}
-
-    {index_type}
-
-    {clean}
-
-    {print_input}
-
-    {names}
-
-    {float_format}
-
-    {source_units}
-
-    {target_units}
-
-    {round_index}
-
-    {tablefmt}
-
-    {output_names}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${clean}
+    ${print_input}
+    ${names}
+    ${float_format}
+    ${source_units}
+    ${target_units}
+    ${round_index}
+    ${tablefmt}
+    ${output_names}
     """
     tsutils.printiso(
         equation(
@@ -220,6 +203,7 @@ def equation_cli(
 
 @tsutils.transform_args(output_names=tsutils.make_list)
 @typic.al
+@tsutils.copy_doc(equation_cli)
 def equation(
     equation_str: str,
     input_ts="-",
@@ -312,6 +296,3 @@ def equation(
     newy = tsutils.memory_optimize(newy)
 
     return tsutils.return_input(print_input, x, newy, output_names=output_names)
-
-
-equation.__doc__ = equation_cli.__doc__

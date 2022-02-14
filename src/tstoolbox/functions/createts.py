@@ -46,24 +46,17 @@ def createts_cli(
 
             --freq='A'
 
-        {pandas_offset_codes}
-
+        ${pandas_offset_codes}
     fillvalue
         [optional, default is None]
 
         The fill value for the time-series.  The default is None, which
         generates the date/time stamps only.
-
-    {input_ts}
-
-    {start_date}
-
-    {end_date}
-
-    {index_type}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${start_date}
+    ${end_date}
+    ${index_type}
+    ${tablefmt}
     """
     tsutils.printiso(
         createts(
@@ -80,6 +73,7 @@ def createts_cli(
 
 
 @typic.al
+@tsutils.copy_doc(createts_cli)
 def createts(
     freq: str = None,
     fillvalue: Union[float, int] = None,
@@ -119,6 +113,3 @@ freq = {}
         tindex = pd.date_range(start=start_date, end=end_date, freq=freq)
         tsd = pd.DataFrame([fillvalue] * len(tindex), index=tindex)
     return tsd
-
-
-createts.__doc__ = createts_cli.__doc__

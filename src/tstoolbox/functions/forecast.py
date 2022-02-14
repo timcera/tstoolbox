@@ -87,20 +87,20 @@ def forecast_cli(
 
     Parameters
     ----------
-    {input_ts}
-    {start_date}
-    {end_date}
-    {skiprows}
-    {names}
-    {columns}
-    {dropna}
-    {clean}
-    {source_units}
-    {target_units}
-    {round_index}
-    {index_type}
-    {print_input}
-    {tablefmt}
+    ${input_ts}
+    ${start_date}
+    ${end_date}
+    ${skiprows}
+    ${names}
+    ${columns}
+    ${dropna}
+    ${clean}
+    ${source_units}
+    ${target_units}
+    ${round_index}
+    ${index_type}
+    ${print_input}
+    ${tablefmt}
     horizon: int
         Number of intervals to forecast.
     print_cols: str
@@ -129,6 +129,7 @@ def forecast_cli(
     )
 
 
+@tsutils.copy_doc(forecast_cli)
 def forecast(
     input_ts="-",
     start_date=None,
@@ -231,20 +232,20 @@ To forecast multiple columns requires `print_cols` to be "forecast", not
 #
 #     Parameters
 #     ----------
-#     {input_ts}
-#     {start_date}
-#     {end_date}
-#     {skiprows}
-#     {names}
-#     {columns}
-#     {dropna}
-#     {clean}
-#     {source_units}
-#     {target_units}
-#     {round_index}
-#     {index_type}
-#     {print_input}
-#     {tablefmt}
+#     ${input_ts}
+#     ${start_date}
+#     ${end_date}
+#     ${skiprows}
+#     ${names}
+#     ${columns}
+#     ${dropna}
+#     ${clean}
+#     ${source_units}
+#     ${target_units}
+#     ${round_index}
+#     ${index_type}
+#     ${print_input}
+#     ${tablefmt}
 #     print_cols: str
 #         Identifies what columns to return.  One of "all" or "forecast"
 #

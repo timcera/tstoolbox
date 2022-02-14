@@ -38,31 +38,18 @@ def stdtozrxp_cli(
         [optional, default is None]
 
         The REXCHANGE ID to be written into the zrxp header.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {dropna}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {clean}
-
-    {source_units}
-
-    {target_units}
-
-    {round_index}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${source_units}
+    ${target_units}
+    ${round_index}
     """
     tsutils.printiso(
         stdtozrxp(
@@ -83,6 +70,7 @@ def stdtozrxp_cli(
     )
 
 
+@tsutils.copy_doc(stdtozrxp_cli)
 def stdtozrxp(
     input_ts="-",
     columns=None,
@@ -134,6 +122,3 @@ The "stdtozrxp" command can only accept a single
                 "{0.minute:02d}{0.second:02d}, {1}"
             ).format(tsd.index[i], tsd[tsd.columns[0]][i])
         )
-
-
-stdtozrxp.__doc__ = stdtozrxp_cli.__doc__

@@ -38,21 +38,20 @@ def remove_trend_cli(
 
     Parameters
     ----------
-    {input_ts}
-    {columns}
-    {start_date}
-    {end_date}
-    {dropna}
-    {skiprows}
-    {index_type}
-    {names}
-    {clean}
-    {round_index}
-    {source_units}
-    {target_units}
-    {print_input}
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${round_index}
+    ${source_units}
+    ${target_units}
+    ${print_input}
+    ${tablefmt}
     """
     tsutils.printiso(
         remove_trend(
@@ -74,6 +73,7 @@ def remove_trend_cli(
     )
 
 
+@tsutils.copy_doc(remove_trend_cli)
 def remove_trend(
     input_ts="-",
     columns=None,
@@ -112,6 +112,3 @@ def remove_trend(
         ntsd[col] = lin[0] * index + lin[1]
         ntsd[col] = tsd[col] - ntsd[col]
     return tsutils.return_input(print_input, tsd, ntsd, "remtrend")
-
-
-remove_trend.__doc__ = remove_trend_cli.__doc__

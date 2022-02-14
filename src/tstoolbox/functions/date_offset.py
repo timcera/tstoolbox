@@ -39,39 +39,24 @@ def date_offset_cli(
     intervals: int
         Number of intervals of `offset` to shift the time index.  A positive
         integer moves the index forward, negative moves it backwards.
-
     offset: str
         Any of the Pandas offset codes.  This is only the offset code
         and doesn't include a prefixed interval.
 
-        {pandas_offset_codes}
-
-    {input_ts}
-
-    {start_date}
-
-    {end_date}
-
-    {columns}
-
-    {round_index}
-
-    {dropna}
-
-    {clean}
-
-    {skiprows}
-
-    {index_type}
-
-    {source_units}
-
-    {target_units}
-
-    {names}
-
-    {tablefmt}
-
+        ${pandas_offset_codes}
+    ${input_ts}
+    ${start_date}
+    ${end_date}
+    ${columns}
+    ${round_index}
+    ${dropna}
+    ${clean}
+    ${skiprows}
+    ${index_type}
+    ${source_units}
+    ${target_units}
+    ${names}
+    ${tablefmt}
     """
     tsutils.printiso(
         date_offset(
@@ -95,6 +80,7 @@ def date_offset_cli(
     )
 
 
+@tsutils.copy_doc(date_offset_cli)
 def date_offset(
     intervals: tsutils.IntGreaterEqualToOne,
     offset: str,
@@ -128,6 +114,3 @@ def date_offset(
     )
 
     return tsd.shift(intervals, offset)
-
-
-date_offset.__doc__ = date_offset_cli.__doc__

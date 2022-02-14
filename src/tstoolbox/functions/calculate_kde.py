@@ -43,36 +43,23 @@ def calculate_kde_cli(
         [optional, defaults to True, input filter]
 
         Sort order.
-
     evaluate : bool
         [optional, defaults to False, transformation]
 
         Whether or not to return a time-series of KDE density values or
         the KDE curve.  Defaults to False, which would return the KDE
         curve.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {source_units}
-
-    {target_units}
-
-    {clean}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${source_units}
+    ${target_units}
+    ${clean}
+    ${tablefmt}
     """
     tsutils.printiso(
         calculate_kde(
@@ -94,6 +81,7 @@ def calculate_kde_cli(
 
 
 @typic.al
+@tsutils.copy_doc(calculate_kde_cli)
 def calculate_kde(
     ascending: bool = True,
     evaluate: bool = False,
@@ -149,6 +137,3 @@ You gave {}.
         ndf = pd.DataFrame(y)
 
     return ndf
-
-
-calculate_kde.__doc__ = calculate_kde_cli.__doc__

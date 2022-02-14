@@ -42,20 +42,19 @@ def pick_cli(
 
     Parameters
     ----------
-    {columns}
-    {input_ts}
-    {start_date}
-    {end_date}
-    {dropna}
-    {skiprows}
-    {index_type}
-    {names}
-    {clean}
-    {source_units}
-    {target_units}
-    {round_index}
-    {tablefmt}
-
+    ${columns}
+    ${input_ts}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${source_units}
+    ${target_units}
+    ${round_index}
+    ${tablefmt}
     """
     tsutils.printiso(
         pick(
@@ -76,6 +75,7 @@ def pick_cli(
     )
 
 
+@tsutils.copy_doc(pick_cli)
 def pick(
     columns,
     input_ts="-",
@@ -115,6 +115,3 @@ def pick(
         target_units=target_units,
         clean=clean,
     )
-
-
-pick.__doc__ = pick_cli.__doc__

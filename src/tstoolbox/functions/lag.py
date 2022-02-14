@@ -38,19 +38,18 @@ def lag_cli(
         If an integer will calculate all lags up to and including the
         lag number.  If a list will calculate each lag in the list.  If
         a string must be a comma separated list of integers.
-    {print_input}
-    {input_ts}
-    {start_date}
-    {end_date}
-    {clean}
-    {skiprows}
-    {index_type}
-    {names}
-    {source_units}
-    {target_units}
-    {columns}
-    {tablefmt}
-
+    ${print_input}
+    ${input_ts}
+    ${start_date}
+    ${end_date}
+    ${clean}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${source_units}
+    ${target_units}
+    ${columns}
+    ${tablefmt}
     """
     tsutils.printiso(
         lag(
@@ -78,6 +77,7 @@ class Lags(int):
 
 @tsutils.transform_args(lags=tsutils.make_list)
 @typic.al
+@tsutils.copy_doc(lag_cli)
 def lag(
     lags: List[Lags],
     input_ts="-",
@@ -138,6 +138,3 @@ def lag(
             dfn[c] = ntsd[k].shift(periods=i)
         ntsd = pd.concat([ntsd, dfn], axis=1).reindex(ntsd.index)
     return tsutils.return_input(print_input, tsd, ntsd, "lag")
-
-
-lag.__doc__ = lag_cli.__doc__

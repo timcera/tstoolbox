@@ -58,20 +58,19 @@ def stack_cli(
 
     Parameters
     ----------
-    {input_ts}
-    {columns}
-    {start_date}
-    {end_date}
-    {dropna}
-    {skiprows}
-    {index_type}
-    {names}
-    {clean}
-    {source_units}
-    {target_units}
-    {round_index}
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${source_units}
+    ${target_units}
+    ${round_index}
+    ${tablefmt}
     """
     tsutils.printiso(
         stack(
@@ -92,6 +91,7 @@ def stack_cli(
     )
 
 
+@tsutils.copy_doc(stack_cli)
 def stack(
     input_ts="-",
     columns=None,
@@ -131,6 +131,3 @@ def stack(
     # )
     newtsd.sort_values("Columns", inplace=True)
     return newtsd
-
-
-stack.__doc__ = stack_cli.__doc__

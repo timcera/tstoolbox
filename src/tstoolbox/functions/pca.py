@@ -38,31 +38,18 @@ def pca_cli(
 
         The columns in the input_ts will be grouped into `n_components`
         groups.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {clean}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {source_units}
-
-    {target_units}
-
-    {round_index}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${clean}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${source_units}
+    ${target_units}
+    ${round_index}
+    ${tablefmt}
     """
     tsutils.printiso(
         pca(
@@ -84,6 +71,7 @@ def pca_cli(
 
 
 @typic.al
+@tsutils.copy_doc(pca_cli)
 def pca(
     input_ts="-",
     columns=None,
@@ -118,6 +106,3 @@ def pca(
     pca = PCA(n_components)
     pca.fit(tsd.dropna(how="any"))
     return pca.components_
-
-
-pca.__doc__ = pca_cli.__doc__

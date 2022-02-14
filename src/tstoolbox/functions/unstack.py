@@ -63,20 +63,19 @@ def unstack_cli(
     column_names
         The column in the table that holds the column names
         of the unstacked data.
-    {input_ts}
-    {columns}
-    {start_date}
-    {end_date}
-    {dropna}
-    {skiprows}
-    {index_type}
-    {names}
-    {clean}
-    {source_units}
-    {target_units}
-    {round_index}
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${source_units}
+    ${target_units}
+    ${round_index}
+    ${tablefmt}
     """
     tsutils.printiso(
         unstack(
@@ -99,6 +98,7 @@ def unstack_cli(
 
 
 @typic.al
+@tsutils.copy_doc(unstack_cli)
 def unstack(
     column_names: Union[int, str],
     input_ts="-",
@@ -166,6 +166,3 @@ Found these duplicate indices:
     )
 
     return newtsd
-
-
-unstack.__doc__ = unstack_cli.__doc__

@@ -49,55 +49,36 @@ def pct_change_cli(
         [optional, default is 1]
 
         The number of intervals to calculate percent change across.
-
     fill_method : str
         [optional, defaults to 'pad']
 
         Fill method for NA.  Defaults to 'pad'.
-
     limit
         [optional, defaults to None]
 
         Is the minimum number of consecutive NA values where no more filling
         will be made.
-
     freq : str
         [optional, defaults to None]
 
         A pandas time offset string to represent the interval.
 
-        {pandas_offset_codes}
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {dropna}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {clean}
-
-    {source_units}
-
-    {target_units}
-
-    {print_input}
-
-    {float_format}
-
-    {round_index}
-
-    {tablefmt}
-
+        ${pandas_offset_codes}
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${source_units}
+    ${target_units}
+    ${print_input}
+    ${float_format}
+    ${round_index}
+    ${tablefmt}
     """
     tsutils.printiso(
         pct_change(
@@ -125,6 +106,7 @@ def pct_change_cli(
 
 
 @typic.al
+@tsutils.copy_doc(pct_change_cli)
 def pct_change(
     input_ts="-",
     columns=None,
@@ -175,6 +157,3 @@ def pct_change(
         ),
         "pctchange",
     )
-
-
-pct_change.__doc__ = pct_change_cli.__doc__

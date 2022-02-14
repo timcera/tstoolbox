@@ -56,7 +56,7 @@ def ewm_window_cli(
     the link at the end of this section for a detailed explanation.
 
     When `adjust` is True (default), weighted averages are calculated
-    using weights (1-alpha)**(n-1), (1-alpha)**(n-2), . . . , 1-alpha,
+    using weights `(1-alpha)**(n-1)`, `(1-alpha)**(n-2)`, . . . , `1-alpha`,
     1.
 
     When `adjust` is False, weighted averages are calculated recursively
@@ -97,21 +97,18 @@ def ewm_window_cli(
         +-----------+--------------------+
         | var       | variance           |
         +-----------+--------------------+
-
     alpha_com : float
         [optional, defaults to None]
 
         Specify decay in terms of center of mass::
 
             alpha = 1/(1+`alpha_com`), for `alpha_com` >= 0
-
     alpha_span : float
         [optional, defaults to None]
 
         Specify decay in terms of span::
 
             alpha = 2/(`alpha_span`+1), for `alpha_span` > 1
-
     alpha_halflife : float
         [optional, defaults to None]
 
@@ -119,54 +116,36 @@ def ewm_window_cli(
 
             alpha = 1-exp(log(0.5)/alpha_halflife), for
             alpha_halflife > 0
-
     alpha : float
         [optional, defaults to None]
 
         Specify smoothing factor "alpha" directly, 0<`alpha`<=1
-
     min_periods : int
         [optional, default is 0]
 
         Minimum number of observations in window required to have a value
         (otherwise result is NA).
-
     adjust : boolean
         [optional, default is True]
 
         Divide by decaying adjustment factor in beginning periods to account
         for imbalance in relative weightings (viewing EWMA as a moving average)
-
     ignore_na : boolean
         [optional, default is False]
         Ignore missing values when calculating weights.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {dropna}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {clean}
-
-    {source_units}
-
-    {target_units}
-
-    {print_input}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${source_units}
+    ${target_units}
+    ${print_input}
+    ${tablefmt}
     """
     tsutils.printiso(
         ewm_window(
@@ -197,6 +176,7 @@ def ewm_window_cli(
 
 @tsutils.transform_args(statistic=tsutils.make_list)
 @typic.al
+@tsutils.copy_doc(ewm_window_cli)
 def ewm_window(
     input_ts="-",
     columns=None,
@@ -254,6 +234,3 @@ def ewm_window(
         nntsd = ntsd
 
     return tsutils.return_input(print_input, tsd, nntsd)
-
-
-ewm_window.__doc__ = ewm_window_cli.__doc__

@@ -64,52 +64,48 @@ class TestFilter(TestCase):
         self.fft_highpass = self.ats.join(self.fft_highpass)
 
     def test_filter_flat(self):
-        with pytest.deprecated_call():
-            out = tstoolbox.filter(
-                "flat",
-                "lowpass",
-                input_ts="tests/data_sine.csv",
-                print_input=True,
-                window_len=5,
-            )
-            self.maxDiff = None
-            assert_frame_equal(out, self.flat_3, check_column_type=False)
+        out = tstoolbox.filter(
+            "flat",
+            "lowpass",
+            input_ts="tests/data_sine.csv",
+            print_input=True,
+            window_len=5,
+        )
+        self.maxDiff = None
+        assert_frame_equal(out, self.flat_3, check_column_type=False)
 
     def test_filter_hanning(self):
-        with pytest.deprecated_call():
-            out = tstoolbox.filter(
-                "hanning",
-                "lowpass",
-                input_ts="tests/data_sine.csv",
-                print_input=True,
-                window_len=5,
-            )
-            self.maxDiff = None
-            assert_frame_equal(out, self.hanning, check_column_type=False)
+        out = tstoolbox.filter(
+            "hanning",
+            "lowpass",
+            input_ts="tests/data_sine.csv",
+            print_input=True,
+            window_len=5,
+        )
+        self.maxDiff = None
+        assert_frame_equal(out, self.hanning, check_column_type=False)
 
     def test_filter_fft_lowpass(self):
-        with pytest.deprecated_call():
-            out = tstoolbox.filter(
-                "fft",
-                "lowpass",
-                input_ts="tests/data_sine.csv",
-                print_input=True,
-                lowpass_cutoff=50,
-                window_len=5,
-            )
-            self.maxDiff = None
-            assert_frame_equal(out, self.fft_lowpass, check_column_type=False)
+        out = tstoolbox.filter(
+            "fft",
+            "lowpass",
+            input_ts="tests/data_sine.csv",
+            print_input=True,
+            lowpass_cutoff=50,
+            window_len=5,
+        )
+        self.maxDiff = None
+        assert_frame_equal(out, self.fft_lowpass, check_column_type=False)
 
     @staticmethod
     def test_small_window_len():
-        with pytest.deprecated_call():
-            out = tstoolbox.filter(
-                "flat", "lowpass", input_ts="tests/data_sine.csv", window_len=2
-            )
-            out1 = tstoolbox.read("tests/data_sine.csv")
-            out1.columns = ["Value::filter"]
-            # NOp
-            assert_frame_equal(out, out1)
+        out = tstoolbox.filter(
+            "flat", "lowpass", input_ts="tests/data_sine.csv", window_len=2
+        )
+        out1 = tstoolbox.read("tests/data_sine.csv")
+        out1.columns = ["Value::filter"]
+        # NOp
+        assert_frame_equal(out, out1)
 
     @staticmethod
     def test_large_window_len():

@@ -46,42 +46,25 @@ def convert_cli(
         [optional, default is 1.0, transformation]
 
         Factor to multiply the time series values.
-
     offset : float
         [optional, default is 0.0, transformation]
 
         Offset to add to the time series values.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {dropna}
-
-    {clean}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {print_input}
-
-    {float_format}
-
-    {source_units}
-
-    {target_units}
-
-    {round_index}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${clean}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${print_input}
+    ${float_format}
+    ${source_units}
+    ${target_units}
+    ${round_index}
+    ${tablefmt}
     """
     tsutils.printiso(
         convert(
@@ -107,6 +90,7 @@ def convert_cli(
 
 
 @typic.al
+@tsutils.copy_doc(convert_cli)
 def convert(
     input_ts="-",
     columns=None,
@@ -142,6 +126,3 @@ def convert(
     )
     tmptsd = tsd * factor + offset
     return tsutils.return_input(print_input, tsd, tmptsd, "convert")
-
-
-convert.__doc__ = convert_cli.__doc__

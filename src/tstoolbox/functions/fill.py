@@ -125,57 +125,39 @@ def fill_cli(
         +----------------------+----------------------------------------------+
         | akima                | ...akima algorithm                           |
         +----------------------+----------------------------------------------+
-
-    {print_input}
-
-    {input_ts}
-
-    {start_date}
-
-    {end_date}
-
-    {clean}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {source_units}
-
-    {target_units}
-
-    {columns}
-
+    ${print_input}
+    ${input_ts}
+    ${start_date}
+    ${end_date}
+    ${clean}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${source_units}
+    ${target_units}
+    ${columns}
     from_columns : str or list
         [required if method='from', otherwise not used]
 
         List of column names/numbers from which good values will be
         taken to fill missing values in the `to_columns` keyword.
-
     to_columns : str or list
         [required if method='from', otherwise not used]
 
         List of column names/numbers that missing values will be
         replaced in from good values in the `from_columns` keyword.
-
     limit : int
         [default is None]
 
         Gaps of missing values greater than this number will not be filled.
-
     order : int
         [required if method is 'spline' or 'polynomial', otherwise not used,
         default is None]
 
         The order of the 'spline' or 'polynomial' fit for missing values.
-
-    {tablefmt}
-
-    {force_freq}
-        {pandas_offset_codes}
-
+    ${tablefmt}
+    ${force_freq}
+        ${pandas_offset_codes}
     """
     tsutils.printiso(
         fill(
@@ -203,6 +185,7 @@ def fill_cli(
 
 @tsutils.transform_args(from_columns=tsutils.make_list, to_columns=tsutils.make_list)
 # @typic.al
+@tsutils.copy_doc(fill_cli)
 def fill(
     input_ts="-",
     method: Union[
@@ -394,6 +377,3 @@ Instead there are {} source time series.
         stdevs = np.std(dna)
         print(means[1] + stdevs[1] / stdevs[0] * means[0])
         print(means, stdevs)
-
-
-fill.__doc__ = fill_cli.__doc__

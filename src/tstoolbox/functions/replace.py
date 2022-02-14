@@ -48,21 +48,20 @@ def replace_cli(
         All values in this comma separated list are the replacement
         values corresponding one-to-one to the items in from_values.
         Use the string 'None' to represent a missing value.
-    {input_ts}
-    {columns}
-    {start_date}
-    {end_date}
-    {dropna}
-    {skiprows}
-    {index_type}
-    {names}
-    {clean}
-    {round_index}
-    {source_units}
-    {target_units}
-    {print_input}
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${round_index}
+    ${source_units}
+    ${target_units}
+    ${print_input}
+    ${tablefmt}
     """
     tsutils.printiso(
         replace(
@@ -88,6 +87,7 @@ def replace_cli(
 
 @tsutils.transform_args(from_values=tsutils.make_list, to_values=tsutils.make_list)
 @typic.al
+@tsutils.copy_doc(replace_cli)
 def replace(
     from_values: Optional[List[Optional[Union[float, int, str]]]],
     to_values: Optional[List[Optional[Union[float, int, str]]]],
@@ -127,6 +127,3 @@ def replace(
     ntsd = tsd.replace(from_values, to_values)
 
     return tsutils.return_input(print_input, tsd, ntsd, "replace")
-
-
-replace.__doc__ = replace_cli.__doc__

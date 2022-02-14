@@ -81,33 +81,19 @@ def dtw_cli(
         [optional, default is 10000]
 
         Window length.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {round_index}
-
-    {dropna}
-
-    {skiprows}
-
-    {index_type}
-
-    {source_units}
-
-    {target_units}
-
-    {names}
-
-    {clean}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${round_index}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${source_units}
+    ${target_units}
+    ${names}
+    ${clean}
+    ${tablefmt}
     """
     tsutils.printiso(
         dtw(
@@ -130,6 +116,7 @@ def dtw_cli(
 
 
 @typic.al
+@tsutils.copy_doc(dtw_cli)
 def dtw(
     input_ts="-",
     columns=None,
@@ -172,6 +159,3 @@ def dtw(
     ncols = ["Variables"] + [str(i) + "DTW_score" for i in ncols[1:]]
     ntsd.columns = ncols
     return ntsd
-
-
-dtw.__doc__ = dtw_cli.__doc__

@@ -12,6 +12,7 @@ import sys
 from functools import reduce, wraps
 from io import BytesIO, StringIO
 from math import gcd
+from string import Template
 from textwrap import TextWrapper
 from typing import Any, Callable, List, Optional, Tuple, Union
 from urllib.parse import urlparse
@@ -693,6 +694,7 @@ def copy_doc(source: Callable) -> Callable:
 
     """
 
+    @wraps(source)
     def wrapper_copy_doc(func: Callable) -> Callable:
         if source.__doc__:
             func.__doc__ = source.__doc__  # noqa: WPS125
@@ -706,7 +708,8 @@ def doc(fdict: dict, **kwargs) -> Callable:
     """Return a decorator that formats a docstring."""
 
     def f(fn):
-        fn.__doc__ = _handle_curly_braces_in_docstring(fn.__doc__, **fdict)
+        fn.__doc__ = Template(fn.__doc__).safe_substitute(**fdict)
+
         # kwargs is currently always empty.
         # Could remove, but keeping in case useful in future.
         for attr in kwargs:
@@ -1973,7 +1976,7 @@ def read_iso_ts(
                 sep = ","
                 index_col = 0
                 usecols = None
-                fpi, _ = open_local(fname)
+                fpi = fname
                 _, ext = os.path.splitext(fname)
                 if ext.lower() == ".wdm":
                     from wdmtoolbox import wdmtoolbox
@@ -2067,28 +2070,20 @@ def read_iso_ts(
                 if fname == "-" and not stdin_df.empty:
                     res = stdin_df
                 else:
-                    try:
-                        res = pd.read_csv(
-                            fpi,
-                            engine="python",
-                            infer_datetime_format=True,
-                            keep_default_na=True,
-                            skipinitialspace=True,
-                            header=header,
-                            sep=sep,
-                            na_values=na_values,
-                            index_col=index_col,
-                            parse_dates=parse_dates,
-                            skiprows=skiprows,
-                            **newkwds,
-                        )
-                    except ValueError:
-                        raise ValueError(
-                            error_wrapper(
-                                f"""
-File or file-like object "{fname}" of type "{type(fname)}" does not exist."""
-                            )
-                        )
+                    res = pd.read_csv(
+                        fpi,
+                        engine="python",
+                        infer_datetime_format=True,
+                        keep_default_na=True,
+                        skipinitialspace=True,
+                        header=header,
+                        sep=sep,
+                        na_values=na_values,
+                        index_col=index_col,
+                        parse_dates=parse_dates,
+                        skiprows=skiprows,
+                        **newkwds,
+                    )
                 if fname == "-" and stdin_df.empty:
                     stdin_df = res
                 res = _pick(res, parameters)

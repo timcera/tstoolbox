@@ -37,27 +37,16 @@ def describe_cli(
         [optional, default is False, output format]
 
         If 'transpose' option is used, will transpose describe output.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {dropna}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {clean}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${tablefmt}
     """
     tsutils.printiso(
         describe(
@@ -78,6 +67,7 @@ def describe_cli(
 
 
 @typic.al
+@tsutils.copy_doc(describe_cli)
 def describe(
     input_ts="-",
     columns=None,
@@ -109,6 +99,3 @@ def describe(
 
     ntsd.index.name = "Statistic"
     return ntsd
-
-
-describe.__doc__ = describe_cli.__doc__

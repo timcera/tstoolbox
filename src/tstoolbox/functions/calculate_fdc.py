@@ -56,50 +56,34 @@ def calculate_fdc_cli(
 
         The distribution used to shift the plotting position values.
         Choose from 'norm', 'lognorm', 'weibull', and None.
-
     plotting_position : str
         [optional, default is 'weibull', transformation]
 
-        {plotting_position_table}
-
+        ${plotting_position_table}
     sort_values : str
         [optional, default is 'ascending', input filter]
 
         Sort order is either 'ascending' or 'descending'.
-
     sort_index : str
         [optional, default is 'ascending', input filter]
 
         Sort order is either 'ascending' or 'descending'.
-
-    {input_ts}
-
-    {columns}
-
-    {start_date}
-
-    {end_date}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {source_units}
-
-    {target_units}
-
-    {clean}
-
-    {tablefmt}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${source_units}
+    ${target_units}
+    ${clean}
+    ${tablefmt}
     add_index : bool
         [optional, default is False]
 
         Add a monotonically increasing index.
-
-    include_cd : bool
+    include_sd : bool
         [optional, default is False]
 
         Include a standard deviation column for each column in the
@@ -111,7 +95,6 @@ def calculate_fdc_cli(
 
             Pc is the cumulative probability
             N is the number of values
-
     include_cl : bool
         [optional, default is False]
 
@@ -127,7 +110,6 @@ def calculate_fdc_cli(
             t is the Student's "t" value for number of samples and
                 confidence interval as defined with `ci` keyword
             Sd is the standard deviation with the equation above
-
     ci : float
         [optional, default is 0.9]
 
@@ -163,6 +145,7 @@ def calculate_fdc_cli(
 
 
 @typic.al
+@tsutils.copy_doc(calculate_fdc_cli)
 def calculate_fdc(
     input_ts="-",
     columns=None,
@@ -230,6 +213,3 @@ def calculate_fdc(
     if add_index is True:
         newts.reset_index(inplace=True)
     return newts
-
-
-calculate_fdc.__doc__ = calculate_fdc_cli.__doc__

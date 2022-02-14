@@ -127,26 +127,25 @@ def _transform(vector, filter_pass, lowpass_cutoff, highpass_cutoff, window_len)
 def filter_cli(
     filter_type,
     filter_pass,
-    butterworth_stages=1,
-    reverse_second_stage=True,
     lowpass_cutoff=None,
     highpass_cutoff=None,
+    window_len=3,
+    butterworth_stages=1,
+    reverse_second_stage=True,
     input_ts="-",
-    columns=None,
     start_date=None,
     end_date=None,
+    columns=None,
+    float_format="g",
     dropna="no",
     skiprows=None,
     index_type="datetime",
     names=None,
     clean=False,
-    print_input=False,
-    cutoff_period=None,
-    window_len=3,
-    float_format="g",
+    round_index=None,
     source_units=None,
     target_units=None,
-    round_index=None,
+    print_input=False,
     tablefmt="csv",
 ):
     """Apply different filters to the time-series.
@@ -155,34 +154,23 @@ def filter_cli(
     ----------
     filter_type: str
         OneOf("fft", "butterworth")
-
         The "fft" and "butterworth" types are defined by cutoff frequencies.
-
+        The "fft" is the Fast Fourier Transform filter in the frequency domain.
     filter_pass: str
         OneOf("lowpass", "highpass", "bandpass", "bandstop")
-
         Indicates what frequencies to block.
-
-    cutoff_period
-        [optional, default is None]
-
-        DEPRECATED: Use `lowpass_cutoff` if `filter_pass` equals "lowpass"
-        and `highpass_cutoff` if `filter_pass` equals "highpass".
-
     lowpass_cutoff: float
         [optional, default is None, used only if `filter_pass` equals
          "lowpass", "bandpass" or "bandstop"]
 
         The low frequency cutoff when `filter_pass` equals "vertical",
         "bandpass", or "bandstop".
-
     highpass_cutoff: float
         [optional, default is None, used only if `filter_pass` equals
          "highpass", "bandpass" or "bandstop"]
 
         The high frequency cutoff when `filter_pass` equals "highpass",
         "bandpass", or "bandstop".
-
     window_len: int
         [optional, default is 3]
 
@@ -190,54 +178,30 @@ def filter_cli(
         The larger the number the softer the filter edges.  A value of 1
         will have a brick wall step function which may introduce
         frequencies into the filtered output.
-
     butterworth_stages: int
         [optional, default is 1]
 
         The order of the butterworth filter.
-
     reverse_second_stage: bool
         [optional, default is True]
 
         Will perform a second filter in reverse to eliminate shifting
         in time caused by the first filter.
-
-    {input_ts}
-
-    {start_date}
-
-    {end_date}
-
-    {columns}
-
-    {float_format}
-
-    {dropna}
-
-    {skiprows}
-
-    {index_type}
-
-    {names}
-
-    {clean}
-
-    {round_index}
-
-    {source_units}
-
-    {target_units}
-
-    {print_input}
-
-    cutoff_period
-        [optional, default is None]
-
-        DEPRECATED: Use `lowpass_cutoff` if `filter_pass` equals "lowpass"
-        and `highpass_cutoff` if `filter_pass` equals "highpass".
-
-    {tablefmt}
-
+    ${input_ts}
+    ${start_date}
+    ${end_date}
+    ${columns}
+    ${float_format}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${round_index}
+    ${source_units}
+    ${target_units}
+    ${print_input}
+    ${tablefmt}
     """
     tsutils.printiso(
         filter(
@@ -257,7 +221,6 @@ def filter_cli(
             names=names,
             clean=clean,
             print_input=print_input,
-            cutoff_period=cutoff_period,
             window_len=window_len,
             source_units=source_units,
             target_units=target_units,
@@ -284,6 +247,7 @@ class FloatGreaterThanOrEqualToZero(float):
 
 
 @typic.al
+@tsutils.copy_doc(filter_cli)
 def filter(
     filter_type: Literal[
         "flat",
@@ -309,7 +273,6 @@ def filter(
     print_input=False,
     lowpass_cutoff: FloatGreaterThanOrEqualToZero = None,
     highpass_cutoff: FloatGreaterThanOrEqualToZero = None,
-    cutoff_period: FloatGreaterThanOrEqualToZero = None,
     window_len: IntGreaterThanOrEqualToOne = 3,
     source_units=None,
     target_units=None,
@@ -363,22 +326,6 @@ function in tstoolbox.  Eventually they will be removed from the "filter" functi
             lowpass_cutoff = 1
             highpass_cutoff = 1
 
-    if cutoff_period is None:
-        warnings.warn(
-            tsutils.error_wrapper(
-                """
-The `cutoff_period` is deprecated in favor of using `lowpass_cutoff` if
-`filter_pass` is "lowpass", "bandpass" or "bandstop" and `highpass_cutoff`
-if `filter_pass` is "highpass", "bandpass", or "bandstop".  The
-`lowpass_cutoff` or `highpass_cutoff` options are set to `cutoff_period`
-according to `filter_pass`."""
-            ),
-            DeprecationWarning,
-        )
-        if filter_pass == "lowpass" and lowpass_cutoff is None:
-            lowpass_cutoff = cutoff_period
-        if filter_pass == "highpass" and highpass_cutoff is None:
-            highpass_cutoff = cutoff_period
     if filter_pass in ["bandpass", "bandstop"]:
         # Need both low_cutoff and highpass_cutoff for "bandpass" and "bandstop".
         if lowpass_cutoff is None or highpass_cutoff is None:
@@ -536,8 +483,6 @@ The "lowpass_cutoff" and "highpass_cutoff" must be greater than 0.5/interval_in_
 
     return tsutils.return_input(print_input, tsd, ntsd, "filter")
 
-
-filter.__doc__ = filter_cli.__doc__
 
 if __name__ == "__main__":
     from tstoolbox import tstoolbox

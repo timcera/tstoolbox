@@ -39,19 +39,18 @@ def tstopickle_cli(
     ----------
     filename : str
         The filename to store the pickled data.
-    {input_ts}
-    {columns}
-    {start_date}
-    {end_date}
-    {dropna}
-    {skiprows}
-    {index_type}
-    {names}
-    {clean}
-    {source_units}
-    {target_units}
-    {round_index}
-
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
+    ${source_units}
+    ${target_units}
+    ${round_index}
     """
     tsutils.printiso(
         tstopickle(
@@ -72,6 +71,7 @@ def tstopickle_cli(
     )
 
 
+@tsutils.copy_doc(tstopickle_cli)
 def tstopickle(
     filename,
     input_ts="-",
@@ -103,6 +103,3 @@ def tstopickle(
         clean=clean,
     )
     tsd.to_pickle(filename)
-
-
-tstopickle.__doc__ = tstopickle_cli.__doc__
