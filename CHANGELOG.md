@@ -1,3 +1,9 @@
+## 103.17.1 (2022-02-14)
+
+### Fix
+
+- **_date_slice**: fixed some situations where needed tz_localize rather than tz_convert
+
 ## 103.17.0 (2022-02-13)
 
 ### Feat
