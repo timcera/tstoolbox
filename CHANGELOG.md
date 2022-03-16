@@ -1,3 +1,9 @@
+## 103.18.0 (2022-03-16)
+
+### Feat
+
+- **calculate_fdc**: added recurrence (return) interval
+
 ## 103.17.1 (2022-02-14)
 
 ### Fix

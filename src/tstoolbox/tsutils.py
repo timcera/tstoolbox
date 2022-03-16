@@ -630,7 +630,7 @@ PPDICT = {
 }
 
 
-# @typic.al
+@typic.al
 def set_plotting_position(
     n: Union[int, int64],
     plotting_position: Union[
@@ -655,10 +655,7 @@ def set_plotting_position(
     """Create plotting position 1D array using linspace."""
     if plotting_position == "california":
         return np.linspace(1.0 / n, 1.0, n)
-    try:
-        a = PPDICT[plotting_position]
-    except KeyError:
-        a = float(plotting_position)
+    a = PPDICT.get(plotting_position, plotting_position)
     i = np.arange(1, n + 1)
     return (i - a) / float(n + 1 - 2 * a)
 
@@ -1200,9 +1197,9 @@ def common_kwds(
     bestfreq: bool = True,
     parse_dates: bool = True,
     extended_columns: bool = False,
-    skiprows: Optional[Union[int, List[int]]] = None,
+    skiprows: Optional[Union[List[int], int]] = None,
     index_type: Literal["datetime", "number"] = "datetime",
-    names: Optional[Union[str, List[str]]] = None,
+    names: Optional[Union[List[str], str]] = None,
     usecols: Optional[List[Union[int, str]]] = None,
     por: bool = False,
 ):
