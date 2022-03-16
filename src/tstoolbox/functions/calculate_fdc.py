@@ -41,6 +41,7 @@ def calculate_fdc_cli(
     sort_index="ascending",
     tablefmt="csv",
     add_index=False,
+    include_ri=False,
     include_sd=False,
     include_cl=False,
     ci=0.9,
@@ -83,6 +84,12 @@ def calculate_fdc_cli(
         [optional, default is False]
 
         Add a monotonically increasing index.
+    include_ri : bool
+        [optional, default is False]
+
+        Include the recurrence interval (sometimes called the return interval).
+        This is the inverse of the calculated plotting position defined by the
+        equations available with the `plotting_position` keyword.
     include_sd : bool
         [optional, default is False]
 
@@ -135,6 +142,7 @@ def calculate_fdc_cli(
             sort_values=sort_values,
             sort_index=sort_index,
             add_index=add_index,
+            include_ri=include_ri,
             include_sd=include_sd,
             include_cl=include_cl,
             ci=ci,
@@ -162,6 +170,7 @@ def calculate_fdc(
     sort_values: Literal["ascending", "descending"] = "ascending",
     sort_index: Literal["ascending", "descending"] = "ascending",
     add_index: bool = False,
+    include_ri: bool = False,
     include_sd: bool = False,
     include_cl: bool = False,
     ci: tsutils.FloatBetweenZeroAndOne = 0.9,
@@ -187,10 +196,15 @@ def calculate_fdc(
     for col in tsd:
         tmptsd = tsd[col].dropna()
         if len(tmptsd) > 1:
-            xdat = ppf(tsutils.set_plotting_position(tmptsd.count(), plotting_position))
+            return_interval = tsutils.set_plotting_position(
+                tmptsd.count(), plotting_position
+            )
+            xdat = ppf(return_interval)
             tmptsd.sort_values(ascending=sort_values, inplace=True)
             tmptsd.index = xdat * 100
             tmptsd = pd.DataFrame(tmptsd)
+            if include_ri is True:
+                tmptsd[col + "_ri"] = 1.0 / xdat
             if include_sd is True or include_cl is True:
                 sd = (xdat * (1 - xdat) / len(xdat)) ** 0.5
             if include_sd is True:
