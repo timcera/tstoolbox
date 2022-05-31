@@ -75,9 +75,9 @@ def createts_cli(
 @typic.al
 @tsutils.copy_doc(createts_cli)
 def createts(
+    input_ts=None,
     freq: str = None,
     fillvalue: Union[float, int] = None,
-    input_ts=None,
     index_type="datetime",
     start_date=None,
     end_date=None,

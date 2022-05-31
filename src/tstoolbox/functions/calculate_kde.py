@@ -83,9 +83,9 @@ def calculate_kde_cli(
 @typic.al
 @tsutils.copy_doc(calculate_kde_cli)
 def calculate_kde(
+    input_ts="-",
     ascending: bool = True,
     evaluate: bool = False,
-    input_ts="-",
     columns=None,
     start_date=None,
     end_date=None,

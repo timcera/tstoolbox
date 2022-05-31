@@ -684,7 +684,7 @@ def copy_doc(source: Callable) -> Callable:
 
     Examples
     --------
-    >>> @decorit.copy_doc_params(func_to_copy_from)
+    >>> @decorit.copy_doc(func_to_copy_docstring_from)
     >>> def func(args):
     ...     pass  # function goes here
     # Function uses parameters of given func
@@ -1430,11 +1430,8 @@ def asbestfreq(data: DataFrame, force_freq: Optional[str] = None) -> DataFrame:
     if force_freq is not None:
         return data.asfreq(force_freq)
 
-    ndata = data.sort_index()
-    ndata = ndata[~ndata.index.duplicated()]
-
     ndiff = (
-        ndata.index.values.astype("int64")[1:] - ndata.index.values.astype("int64")[:-1]
+        data.index.values.astype("int64")[1:] - data.index.values.astype("int64")[:-1]
     )
 
     if np.any(ndiff <= 0):
@@ -1447,7 +1444,7 @@ Duplicate or time reversal index entry at record {1} (start count at 0):
 Perhaps use the "--clean" keyword on the CLI or "clean=True" if using Python or edit the
 input data..
 """.format(
-                    ndata.index[:-1][ndiff <= 0][0], np.where(ndiff <= 0)[0][0] + 1
+                    data.index[:-1][ndiff <= 0][0], np.where(ndiff <= 0)[0][0] + 1
                 )
             )
         )
@@ -1657,7 +1654,7 @@ def _printiso(
                 tsd.index.name = "Datetime"
 
         print_index = True
-        if tsd.index.inferred_type == "datetime64":
+        if tsd.index.inferred_type in ["datetime64", "period"]:
             if not tsd.index.name:
                 tsd.index.name = "Datetime"
             # Someone made the decision about the name

@@ -18,7 +18,7 @@
     :alt: tstoolbox downloads
     :target: https://pypi.python.org/pypi/tstoolbox/
 
-TSToolbox - Quick Guide
+tstoolbox - Quick Guide
 =======================
 The tstoolbox is a Python script to manipulate time-series on the command line
 or by function calls within Python.  Uses pandas (http://pandas.pydata.org/)

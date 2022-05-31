@@ -17,8 +17,8 @@ warnings.filterwarnings("ignore")
 @mando.command(formatter_class=RSTHelpFormatter, doctype="numpy")
 @tsutils.doc(tsutils.docstrings)
 def convert_index_to_julian(
-    epoch="julian",
     input_ts="-",
+    epoch="julian",
     columns=None,
     start_date=None,
     end_date=None,
