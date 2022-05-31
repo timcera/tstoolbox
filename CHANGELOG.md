@@ -1,3 +1,9 @@
+## 103.18.1 (2022-05-30)
+
+### Fix
+
+- allow for a period Datetime index in printiso
+
 ## 103.18.0 (2022-03-16)
 
 ### Feat
