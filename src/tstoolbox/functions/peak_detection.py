@@ -295,7 +295,6 @@ def _peakdetect(
             max_peaks.pop(0)
         else:
             min_peaks.pop(0)
-        del dump
     except IndexError:
         # no peaks were found, should the function return empty lists?
         pass
@@ -517,7 +516,6 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
 
         def func(x, a, hz, tau):
             return a * np.sin(2 * np.pi * hz * (x - tau) + (np.pi // 2))
-
 
     # get peaks
     fitted_peaks = []

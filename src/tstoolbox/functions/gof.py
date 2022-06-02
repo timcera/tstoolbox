@@ -9,7 +9,6 @@ from typing import List, Union
 import HydroErr as he
 import mando
 import numpy as np
-import pandas as pd
 import typic
 from mando.rst_text_formatter import RSTHelpFormatter
 

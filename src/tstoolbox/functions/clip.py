@@ -6,8 +6,6 @@ from __future__ import absolute_import, division, print_function
 import warnings
 
 import mando
-import numpy as np
-import pandas as pd
 import typic
 from mando.rst_text_formatter import RSTHelpFormatter
 

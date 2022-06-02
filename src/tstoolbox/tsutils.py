@@ -21,7 +21,6 @@ import dateparser
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-import pint_pandas
 import typic
 from _io import TextIOWrapper
 from numpy import int64, ndarray
@@ -2134,7 +2133,6 @@ def read_iso_ts(
             res.index.name = "Datetime:{}".format(words[1])
         else:
             res.index.name = "Datetime"
-
 
     if dropna in ["any", "all"]:
         res.dropna(how=dropna, inplace=True)

@@ -8,7 +8,6 @@ import warnings
 from argparse import RawTextHelpFormatter
 
 import mando
-import pandas as pd
 import typic
 
 from .. import tsutils
