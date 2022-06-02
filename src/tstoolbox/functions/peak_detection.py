@@ -383,8 +383,6 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
     max_peaks, min_peaks = _peakdetect(
         y_axis_ifft, x_axis_ifft, 500, delta=abs(np.diff(y_axis).max() * 2)
     )
-    # max_peaks, min_peaks = _peakdetect_zero_crossing(y_axis_ifft,
-    # x_axis_ifft)
 
     return [max_peaks, min_peaks]
 
@@ -435,9 +433,7 @@ def _peakdetect_parabola(y_axis, x_axis, points=9):
     min_ = _peakdetect_parabola_fitter(min_raw, x_axis, y_axis, points)
 
     max_peaks = [[x[0], x[1]] for x in max_]
-    # max_fitted = map(lambda x: x[-1], max_)
     min_peaks = [[x[0], x[1]] for x in min_]
-    # min_fitted = map(lambda x: x[-1], min_)
 
     return [max_peaks, min_peaks]
 
@@ -522,7 +518,6 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         def func(x, a, hz, tau):
             return a * np.sin(2 * np.pi * hz * (x - tau) + (np.pi // 2))
 
-    # func = lambda x, a, hz, tau: a * np.cos(2 * np.pi * hz * (x - tau))
 
     # get peaks
     fitted_peaks = []
@@ -565,9 +560,7 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
 
     # structure date for output
     max_peaks = [[xval[0], xval[1]] for xval in fitted_peaks[0]]
-    # max_fitted = map(lambda x: x[-1], fitted_peaks[0])
     min_peaks = [[xval[0], xval[1]] for xval in fitted_peaks[1]]
-    # min_fitted = map(lambda x: x[-1], fitted_peaks[1])
 
     return [max_peaks, min_peaks]
 
@@ -723,7 +716,6 @@ def _smooth(
         return x
 
     s = np.r_[x[window_len - 1 : 0 : -1], x, x[-1:-window_len:-1]]
-    # print(len(s))
     if window == "flat":  # moving average
         w = np.ones(window_len, "d")
     else:

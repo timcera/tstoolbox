@@ -122,30 +122,3 @@ class TestFilter(TestCase):
         assert r"Given value <'flatter'> fails constraints:" in str(e_info.value)
 
 
-#    def test_filter_fft_highpass(self):
-#        out = tstoolbox.filter('fft_highpass',
-#                               input_ts='tests/data_sine.csv',
-#                               print_input=True,
-#                               cutoff_period=12)
-#        self.maxDiff = None
-#        assert_frame_equal(out, self.fft_highpass)
-#
-#    def test_filter_flat_cli(self):
-#        args = "tstoolbox filter flat --input_ts='tests/data_sine.csv' --print_input"
-#        args = shlex.split(args)
-#        out = subprocess.Popen(args,
-#            stdout=subprocess.PIPE,
-#            stdin=subprocess.PIPE).communicate(input=os.path.join('tests', 'data_sine.csv'))[0]
-#        self.maxDiff = None
-#        self.assertEqual(out, self.flat_3)
-#
-#    def test_filter_hanning_cli(self):
-#        args = ('tstoolbox filter  hanning '
-#                '--input_ts=self.ats, '
-#                '--print_input=True)')
-#        args = shlex.split(args)
-#        out = subprocess.Popen(args,
-#            stdout=subprocess.PIPE,
-#            stdin=subprocess.PIPE).communicate(input=self.ats_cli)[0]
-#        self.maxDiff = None
-#        self.assertEqual(out, test_sinwave)

@@ -2114,12 +2114,6 @@ def read_iso_ts(
     first = [[i.strip()] for i in dedupIndex(first)]
     res.columns = [":".join(i + j + k) for i, j, k in zip(first, second, rest)]
 
-    # tmpc = res.columns.values
-    # for index, i in enumerate(res.columns):
-    #    if "Unnamed:" in i:
-    #        words = i.split(":")
-    #        tmpc[index] = words[0].strip() + words[1].strip()
-    # res.columns = tmpc
     res = memory_optimize(res)
 
     if res.index.inferred_type != "datetime64":
@@ -2141,7 +2135,6 @@ def read_iso_ts(
         else:
             res.index.name = "Datetime"
 
-        # res = asbestfreq(res, force_freq=force_freq)
 
     if dropna in ["any", "all"]:
         res.dropna(how=dropna, inplace=True)

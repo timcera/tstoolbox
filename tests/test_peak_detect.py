@@ -136,13 +136,6 @@ class TestPeakDetect(TestCase):
         out.columns = cols
         assert_frame_equal(out, self.compare)
 
-    #    def test_peak_parabola_direct(self):
-    #        out = tstoolbox.peak_detection(method='parabola',
-    #                                       input_ts=self.ats,
-    #                                       print_input=True,
-    #                                       extrema='both')
-    #        self.maxDiff = None
-    #        assert_frame_equal(out, self.compare)
 
     def test_peak_sine_direct(self):
         """Test peak detection API using the 'sine' method."""
@@ -181,7 +174,6 @@ class TestPeakDetect(TestCase):
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate(input=input_peak_detection)[0]
         out = tsutils.read_iso_ts(out)
-        # input_peak_detection.to_csv("input.csv")
         output_peak_detection.to_csv("output.csv")
         out.to_csv("out.csv")
         assert_frame_equal(out, output_peak_detection)
@@ -203,15 +195,6 @@ class TestPeakDetect(TestCase):
         out = tsutils.read_iso_ts(out)
         assert_frame_equal(out, output_peak_detection)
 
-    # def test_peak_parabola_cli(self):
-    #     args = ('tstoolbox peak_detection '
-    #             '--method="parabola" --extrema="both" --print_input=True')
-    #     args = shlex.split(args)
-    #     out = subprocess.Popen(args,
-    #         stdout=subprocess.PIPE,
-    #         stdin=subprocess.PIPE).communicate(input=input_peak_detection)[0]
-    #     self.maxDiff = None
-    #     self.assertEqual(out, output_peak_detection)
 
     @staticmethod
     def test_peak_sine_cli():

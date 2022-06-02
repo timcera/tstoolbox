@@ -233,9 +233,6 @@ def regression_cli(
     )
 
 
-# @tsutils.validator(
-#    method=[str, ["domain", _FUNCS.keys()], None],
-# )
 @tsutils.transform_args(
     x_train_cols=tsutils.make_list,
     y_train_col=tsutils.make_list,
