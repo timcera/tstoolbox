@@ -877,19 +877,6 @@ def plot_cli(
     )
 
 
-#    linestyles=[str, ["domain", ["auto", None, "", " ", "  "] + LINE_LIST], None],
-#    markerstyles=[str, ["domain", ["auto", None, "", " ", "  "] + MARKER_LIST], None],
-#    bar_hatchstyles=[str, ["domain", ["auto", None, "", " ", "  "] + HATCH_LIST], None],
-#    hlines_linestyles=[
-#        str,
-#        ["domain", ["auto", None, "", " ", "  "] + LINE_LIST],
-#        None,
-#    ],
-#    vlines_linestyles=[
-#        str,
-#        ["domain", ["auto", None, "", " ", "  "] + LINE_LIST],
-#        None,
-#    ],
 @tsutils.transform_args(
     xlim=tsutils.make_list,
     ylim=tsutils.make_list,
@@ -1762,18 +1749,6 @@ The "heatmap" plot type can only work with daily time series.
     elif type == "histogram":
         tsd.hist(figsize=figsize, sharey=sharey, sharex=sharex)
 
-    #    if hlines_y is not None:
-    #        hlines_y = tsutils.make_list(hlines_y)
-    #        hlines_xmin = tsutils.make_list(hlines_xmin)
-    #        hlines_xmax = tsutils.make_list(hlines_xmax)
-    #        hlines_colors = tsutils.make_list(hlines_colors)
-    #        hlines_linestyles = tsutils.make_list(hlines_colors)
-    #    if vlines_x is not None:
-    #        vlines_x = tsutils.make_list(vlines_x)
-    #        vlines_ymin = tsutils.make_list(vlines_ymin)
-    #        vlines_ymax = tsutils.make_list(vlines_ymax)
-    #        vlines_colors = tsutils.make_list(vlines_colors)
-    #        vlines_linestyles = tsutils.make_list(vlines_colors)
     if type in [
         "time",
         "xy",

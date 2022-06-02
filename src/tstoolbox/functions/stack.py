@@ -124,10 +124,5 @@ def stack(
 
     newtsd = pd.DataFrame(tsd.stack()).reset_index(1)
     newtsd.columns = ["Columns", "Values"]
-    # newtsd = (
-    #     newtsd.groupby("Columns")
-    #     .apply(lambda d: d.sort_values("Columns"))
-    #     .reset_index("Columns", drop=True)
-    # )
     newtsd.sort_values("Columns", inplace=True)
     return newtsd
