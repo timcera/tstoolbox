@@ -9,7 +9,6 @@ from typing import Union
 import mando
 import numpy as np
 import pandas as pd
-import typic
 from mando.rst_text_formatter import RSTHelpFormatter
 from pandas.tseries.frequencies import to_offset
 
