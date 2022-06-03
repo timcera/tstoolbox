@@ -32,7 +32,7 @@ def check_taylor_stats(stds, crmsds, cors, threshold=0.01):
     Created on Dec 3, 2016
     """
     if threshold < 1e-7:
-        ValueError("threshold value must be positive: " + str(threshold))
+        ValueError(f"threshold value must be positive: {str(threshold)}")
 
     diff = np.square(crmsds[1:]) - (
         np.square(stds[1:])
@@ -56,16 +56,14 @@ def check_taylor_stats(stds, crmsds, cors, threshold=0.01):
             )
         else:
             ValueError(
-                """
+                f"""
 *
-*   Incompatible data indices: {}
+*   Incompatible data indices: {ii}
 *
 *   You must have:
 *       crmsds - sqrt(stds.^2 + stds(1)^2 - 2*stds*stds(1).*cors) = 0
 *
-""".format(
-                    ii
-                )
+"""
             )
 
     return diff

@@ -283,39 +283,33 @@ The "to" option can be one of "datetime" or "number" not "{to}"."""
         words = interval.split("-")
         if len(words) == 2:
             warnings.warn(
-                """
+                f"""
 *
-*   The epoch keyword "{}" overrides the anchoring suffix "{}".
+*   The epoch keyword "{epoch}" overrides the anchoring suffix "{words[1]}".
 *
-""".format(
-                    epoch, words[1]
-                )
+"""
             )
 
             interval = words[0]
 
     if epoch == "unix" and interval not in ["S", "s"]:
         warnings.warn(
-            """
+            f"""
 *
 *   Typically the unix epoch would has an interval of 'S' (seconds).
-*   Instead you gave {}.
+*   Instead you gave {interval}.
 *
-""".format(
-                interval
-            )
+"""
         )
 
     if epoch in dailies and interval != "D":
         warnings.warn(
-            """
+            f"""
 *
-*   Typically the {} epoch would has an interval of 'D' (days).
-*   Instead you gave {}.
+*   Typically the {epoch} epoch would has an interval of 'D' (days).
+*   Instead you gave {interval}.
 *
-""".format(
-                epoch, interval
-            )
+"""
         )
 
     if to == "number":
@@ -340,7 +334,7 @@ The "to" option can be one of "datetime" or "number" not "{to}"."""
         )
 
     if names is None:
-        tsd.index.name = "{}_date".format(epoch)
+        tsd.index.name = f"{epoch}_date"
 
     if to == "datetime":
         index_type = "number"

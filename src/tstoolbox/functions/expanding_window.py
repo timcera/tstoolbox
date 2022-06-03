@@ -173,9 +173,9 @@ def expanding_window(
     if statistic:
         nntsd = pd.DataFrame()
         for stat in statistic:
-            ntsd = eval("ntsd.{}()".format(stat))
+            ntsd = eval(f"ntsd.{stat}()")
             ntsd.columns = [
-                tsutils.renamer(i, "expanding.{}".format(stat)) for i in ntsd.columns
+                tsutils.renamer(i, f"expanding.{stat}") for i in ntsd.columns
             ]
             nntsd = nntsd.join(ntsd, how="outer")
     else:

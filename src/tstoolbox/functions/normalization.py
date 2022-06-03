@@ -212,4 +212,4 @@ def normalization(
             quantile_range=quantile_range,
         ).fit_transform(tsd)
     tsd = tsutils.memory_optimize(tsd)
-    return tsutils.return_input(print_input, otsd, tsd, "{}".format(mode))
+    return tsutils.return_input(print_input, otsd, tsd, f"{mode}")

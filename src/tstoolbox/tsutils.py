@@ -740,11 +740,9 @@ def parsedate(
     if pdate is None:
         raise ValueError(
             error_wrapper(
-                """
-Could not parse date string '{}'.
-""".format(
-                    dstr
-                )
+                f"""
+Could not parse date string '{dstr}'.
+"""
             )
         )
 
@@ -771,21 +769,19 @@ def about(name):
     namever = str(pkg_resources.get_distribution(name.split(".")[0]))
     print("package name = {}\npackage version = {}".format(*namever.split()))
 
-    print("platform architecture = {}".format(platform.architecture()))
-    print("platform machine = {}".format(platform.machine()))
-    print("platform = {}".format(platform.platform()))
-    print("platform processor = {}".format(platform.processor()))
-    print("platform python_build = {}".format(platform.python_build()))
-    print("platform python_compiler = {}".format(platform.python_compiler()))
-    print("platform python branch = {}".format(platform.python_branch()))
-    print(
-        "platform python implementation = {}".format(platform.python_implementation())
-    )
-    print("platform python revision = {}".format(platform.python_revision()))
-    print("platform python version = {}".format(platform.python_version()))
-    print("platform release = {}".format(platform.release()))
-    print("platform system = {}".format(platform.system()))
-    print("platform version = {}".format(platform.version()))
+    print(f"platform architecture = {platform.architecture()}")
+    print(f"platform machine = {platform.machine()}")
+    print(f"platform = {platform.platform()}")
+    print(f"platform processor = {platform.processor()}")
+    print(f"platform python_build = {platform.python_build()}")
+    print(f"platform python_compiler = {platform.python_compiler()}")
+    print(f"platform python branch = {platform.python_branch()}")
+    print(f"platform python implementation = {platform.python_implementation()}")
+    print(f"platform python revision = {platform.python_revision()}")
+    print(f"platform python version = {platform.python_version()}")
+    print(f"platform release = {platform.release()}")
+    print(f"platform system = {platform.system()}")
+    print(f"platform version = {platform.version()}")
 
 
 def _round_index(ntsd: DataFrame, round_index: Optional[str] = None) -> DataFrame:
@@ -842,11 +838,9 @@ def make_list(*strorlist, **kwds: Any) -> Any:
     if isinstance(strorlist, (list, tuple)) and n is not None and len(strorlist) != n:
         raise ValueError(
             error_wrapper(
-                """
-The list {0} for "{2}" should have {1} members according to function requirements.
-""".format(
-                    strorlist, n, kwdname
-                )
+                f"""
+The list {strorlist} for "{kwdname}" should have {n} members according to function requirements.
+"""
             )
         )
 
@@ -911,11 +905,9 @@ The list {0} for "{2}" should have {1} members according to function requirement
     if len(strorlist) != n:
         raise ValueError(
             error_wrapper(
-                """
-The list {0} for "{2}" should have {1} members according to function requirements.
-""".format(
-                    strorlist, n, kwdname
-                )
+                f"""
+The list {strorlist} for "{kwdname}" should have {n} members according to function requirements.
+"""
             )
         )
 
@@ -1080,7 +1072,7 @@ second ":" delimited field in the column name.  Instead you have {su}.
             if unit:
                 tmpname = ":".join([words[0], unit])
                 if len(words) > 2:
-                    tmpname = tmpname + ":" + ":".join(words[2:])
+                    tmpname = f"{tmpname}:{':'.join(words[2:])}"
                 names.append(tmpname)
             else:
                 names.append(":".join(words))
@@ -1126,10 +1118,8 @@ to the `target_units`: {target_units}
                 except AttributeError:
                     raise ValueError(
                         error_wrapper(
-                            """
-No conversion between {} and {}.""".format(
-                                words[1], target_units[inx]
-                            )
+                            f"""
+No conversion between {words[1]} and {target_units[inx]}."""
                         )
                     )
             ncolumns.append(":".join(words))
@@ -1226,7 +1216,6 @@ def common_kwds(
         parse_dates=parse_dates,
         extended_columns=extended_columns,
         dropna=dropna,
-        force_freq=force_freq,
         skiprows=skiprows,
         index_type=index_type,
         usecols=usecols,
@@ -1297,34 +1286,28 @@ def _pick(tsd: DataFrame, columns: Any) -> DataFrame:
         except ValueError:
             raise ValueError(
                 error_wrapper(
-                    """
-The name {} isn't in the list of column names
-{}.
-""".format(
-                        i, tsd.columns
-                    )
+                    f"""
+The name {i} isn't in the list of column names
+{tsd.columns}.
+"""
                 )
             )
         if target_col < -1:
             raise ValueError(
                 error_wrapper(
-                    """
-The requested column "{}" must be greater than or equal to 0.
+                    f"""
+The requested column "{i}" must be greater than or equal to 0.
 First data column is 1, index is column 0.
-""".format(
-                        i
-                    )
+"""
                 )
             )
         if target_col > len(tsd.columns):
             raise ValueError(
                 error_wrapper(
-                    """
-The request column index {} must be less than or equal to the
-number of columns {}.
-""".format(
-                        i, len(tsd.columns)
-                    )
+                    f"""
+The request column index {i} must be less than or equal to the
+number of columns {len(tsd.columns)}.
+"""
                 )
             )
 
@@ -1346,7 +1329,7 @@ number of columns {}.
             except IndexError:
                 jtsd = pd.DataFrame(tsd.loc[:, col], index=tsd.index)
 
-        newtsd = newtsd.join(jtsd, lsuffix="_{}".format(index), how="outer")
+        newtsd = newtsd.join(jtsd, lsuffix=f"_{index}", how="outer")
     return newtsd
 
 
@@ -1436,15 +1419,13 @@ def asbestfreq(data: DataFrame, force_freq: Optional[str] = None) -> DataFrame:
     if np.any(ndiff <= 0):
         raise ValueError(
             error_wrapper(
-                """
-Duplicate or time reversal index entry at record {1} (start count at 0):
-"{0}".
+                f"""
+Duplicate or time reversal index entry at record {np.where(ndiff <= 0)[0][0] + 1} (start count at 0):
+"{data.index[:-1][ndiff <= 0][0]}".
 
-Perhaps use the "--clean" keyword on the CLI or "clean=True" if using Python or edit the
-input data..
-""".format(
-                    data.index[:-1][ndiff <= 0][0], np.where(ndiff <= 0)[0][0] + 1
-                )
+Perhaps use the "--clean" keyword on the CLI or "clean=True" if using
+Python or edit the input data..
+"""
             )
         )
 
@@ -1488,13 +1469,13 @@ input data..
     elif np.alltrue(data.index.is_month_end):
         if np.all(data.index.month == data.index[0].month):
             # Actually yearly with different ends
-            infer_freq = "A-{}".format(_ANNUALS[data.index[0].month])
+            infer_freq = f"A-{_ANNUALS[data.index[0].month]}"
         else:
             infer_freq = "M"
     elif np.alltrue(data.index.is_month_start):
         if np.all(data.index.month == data.index[0].month):
             # Actually yearly with different start
-            infer_freq = "A-{}".format(_ANNUALS[data.index[0].month] - 1)
+            infer_freq = f"A-{_ANNUALS[data.index[0].month] - 1}"
         else:
             infer_freq = "MS"
 
@@ -1512,23 +1493,23 @@ input data..
     else:
         ngcd = reduce(gcd, ndiff)
     if ngcd < 1000:
-        infer_freq = "{}N".format(ngcd)
+        infer_freq = f"{ngcd}N"
     elif ngcd < 1000000:
-        infer_freq = "{}U".format(ngcd // 1000)
+        infer_freq = f"{ngcd // 1000}U"
     elif ngcd < 1000000000:
-        infer_freq = "{}L".format(ngcd // 1000000)
+        infer_freq = f"{ngcd // 1000000}L"
     elif ngcd < 60000000000:
-        infer_freq = "{}S".format(ngcd // 1000000000)
+        infer_freq = f"{ngcd // 1000000000}S"
     elif ngcd < 3600000000000:
-        infer_freq = "{}T".format(ngcd // 60000000000)
+        infer_freq = f"{ngcd // 60000000000}T"
     elif ngcd < 86400000000000:
-        infer_freq = "{}H".format(ngcd // 3600000000000)
+        infer_freq = f"{ngcd // 3600000000000}H"
     elif ngcd < 604800000000000:
-        infer_freq = "{}D".format(ngcd // 86400000000000)
+        infer_freq = f"{ngcd // 86400000000000}D"
     elif ngcd < 2419200000000000:
-        infer_freq = "{}W".format(ngcd // 604800000000000)
+        infer_freq = f"{ngcd // 604800000000000}W"
         if np.all(data.index.dayofweek == data.index[0].dayofweek):
-            infer_freq = infer_freq + "-{}".format(_WEEKLIES[data.index[0].dayofweek])
+            infer_freq = f"{infer_freq}-{_WEEKLIES[data.index[0].dayofweek]}"
         else:
             infer_freq = "D"
 
@@ -1571,7 +1552,7 @@ def renamer(xloc: str, suffix: Optional[str] = "") -> str:
         words.append(suffix)
     elif len(words) == 3 and suffix:
         if words[2]:
-            words[2] = words[2] + "_" + suffix
+            words[2] = f"{words[2]}_{suffix}"
         else:
             words[2] = suffix
     return ":".join(words)
@@ -1682,7 +1663,7 @@ def _printiso(
             try:
                 tsd.to_csv(
                     sys.stdout,
-                    float_format="%{}".format(float_format),
+                    float_format=f"%{float_format}",
                     date_format=date_format,
                     sep=sep,
                     index=print_index,
@@ -1823,7 +1804,6 @@ def is_valid_url(url: Union[bytes, str], qualifying: Optional[Any] = None) -> bo
 def read_iso_ts(
     *inindat,
     dropna: Literal["no", "any", "all"] = None,
-    force_freq: Optional[str] = None,
     extended_columns: bool = False,
     parse_dates: bool = True,
     skiprows: Optional[Union[int, List[int]]] = None,
@@ -1897,7 +1877,7 @@ def read_iso_ts(
     for spc in range(20)[1:]:
         spcs = " " * spc
         na_values.append(spcs)
-        na_values.append(spcs + "nan")
+        na_values.append(f"{spcs}nan")
 
     fstr = "{1}"
     if extended_columns is True:
@@ -2130,7 +2110,7 @@ def read_iso_ts(
                 res.index = res.index.tz_localize(words[1])
             except TypeError:
                 pass
-            res.index.name = "Datetime:{}".format(words[1])
+            res.index.name = f"Datetime:{words[1]}"
         else:
             res.index.name = "Datetime"
 

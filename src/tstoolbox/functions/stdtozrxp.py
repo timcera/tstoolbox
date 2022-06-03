@@ -104,17 +104,15 @@ def stdtozrxp(
     if len(tsd.columns) != 1:
         raise ValueError(
             tsutils.error_wrapper(
-                """
+                f"""
 The "stdtozrxp" command can only accept a single
-'time-series, instead it is seeing {}.
-""".format(
-                    len(tsd.columns)
-                )
+'time-series, instead it is seeing {len(tsd.columns)}.
+"""
             )
         )
 
     if rexchange:
-        print("#REXCHANGE{}|*|".format(rexchange))
+        print(f"#REXCHANGE{rexchange}|*|")
     for i in range(len(tsd)):
         print(
             (

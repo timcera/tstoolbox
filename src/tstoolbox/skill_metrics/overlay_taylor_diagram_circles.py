@@ -66,7 +66,7 @@ def overlay_taylor_diagram_circles(axes, cax, option):
     )
 
     # Define label format
-    labelFormat = "{" + option["rmslabelformat"] + "}"
+    labelFormat = f"{{{option['rmslabelformat']}}}"
 
     for iradius in option["tickrms"]:
         phi = th[np.where(radius >= iradius)]
@@ -85,7 +85,7 @@ def overlay_taylor_diagram_circles(axes, cax, option):
             plt.text(
                 xtextpos,
                 ytextpos,
-                "  " + labelFormat.format(iradius),
+                f"  {labelFormat.format(iradius)}",
                 verticalalignment="baseline",
                 color=option["colrms"],
                 rotation=tickRMSAngle - 90,

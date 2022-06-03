@@ -156,6 +156,6 @@ def dtw(
 
     ntsd = pd.DataFrame(list(process.items()))
     ncols = ntsd.columns
-    ncols = ["Variables"] + [str(i) + "DTW_score" for i in ncols[1:]]
+    ncols = ["Variables"] + [f"{str(i)}DTW_score" for i in ncols[1:]]
     ntsd.columns = ncols
     return ntsd

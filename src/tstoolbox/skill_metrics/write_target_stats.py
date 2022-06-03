@@ -50,7 +50,7 @@ def write_target_stats(filename, data, **kwargs):
         if option["overwrite"]:
             os.remove(filename)
         else:
-            ValueError("File already exists: " + filename)
+            ValueError(f"File already exists: {filename}")
 
     # Covert data to list if necessary
     if not isinstance(data, list):
@@ -162,7 +162,7 @@ def get_write_target_stats_options(**kwargs):
     for optname, optvalue in kwargs.items():
         optname = optname.lower()
         if optname not in option:
-            raise ValueError("Unrecognized option: " + optname)
+            raise ValueError(f"Unrecognized option: {optname}")
         # Replace option value with that from arguments
         option[optname] = optvalue
 

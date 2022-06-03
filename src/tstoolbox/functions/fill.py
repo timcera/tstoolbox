@@ -358,14 +358,12 @@ def fill_by_correlation(
     if method.lower() in single_source_ts and len(basets.columns) != 1:
         raise ValueError(
             tsutils.error_wrapper(
-                """
-For methods in {}
+                f"""
+For methods in {single_source_ts}
 You can only have a single source column.  You can pass in onlu 2
 time-series or use the flag 'choose_best' along with 'maximum_lag'.
-Instead there are {} source time series.
-""".format(
-                    single_source_ts, len(basets.columns)
-                )
+Instead there are {len(basets.columns)} source time series.
+"""
             )
         )
 

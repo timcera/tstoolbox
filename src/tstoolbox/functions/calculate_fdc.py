@@ -204,19 +204,19 @@ def calculate_fdc(
             tmptsd.index = xdat * 100
             tmptsd = pd.DataFrame(tmptsd)
             if include_ri is True:
-                tmptsd[col + "_ri"] = 1.0 / xdat
+                tmptsd[f"{col}_ri"] = 1.0 / xdat
             if include_sd is True or include_cl is True:
                 sd = (xdat * (1 - xdat) / len(xdat)) ** 0.5
             if include_sd is True:
-                tmptsd[col + "_sd"] = sd
+                tmptsd[f"{col}_sd"] = sd
             if include_cl is True:
                 tval = t.ppf(ci, df=len(xdat) - 1)
                 ul = 2 * (1 - xdat) * tval * sd
                 ll = 2 * xdat * tval * sd
-                tmptsd[col + "_ul"] = (xdat + ul) * 100
-                tmptsd[col + "_ll"] = (xdat - ll) * 100
-                tmptsd[col + "_vul"] = tmptsd[col] + ul * tmptsd[col]
-                tmptsd[col + "_vll"] = tmptsd[col] - ll * tmptsd[col]
+                tmptsd[f"{col}_ul"] = (xdat + ul) * 100
+                tmptsd[f"{col}_ll"] = (xdat - ll) * 100
+                tmptsd[f"{col}_vul"] = tmptsd[col] + ul * tmptsd[col]
+                tmptsd[f"{col}_vll"] = tmptsd[col] - ll * tmptsd[col]
         else:
             tmptsd = pd.DataFrame()
         newts = newts.join(tmptsd, how="outer")

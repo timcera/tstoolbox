@@ -276,9 +276,9 @@ consistent with other tstoolbox commands.
     for method in statistic:
         if groupby == "all":
             try:
-                tmptsd = pd.DataFrame(eval("""tsd.aggregate({})""".format(method))).T
+                tmptsd = pd.DataFrame(eval(f"""tsd.aggregate({method})""")).T
             except NameError:
-                tmptsd = pd.DataFrame(eval("""tsd.aggregate('{}')""".format(method))).T
+                tmptsd = pd.DataFrame(eval(f"""tsd.aggregate('{method}')""")).T
             tmptsd.index = [tsd.index[-1]]
         elif groupby == "months_across_years":
             tmptsd = tsd.groupby(lambda x: x.month).agg(method)

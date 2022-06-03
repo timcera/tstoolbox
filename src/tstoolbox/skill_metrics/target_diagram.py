@@ -84,7 +84,7 @@ def target_diagram(*args, **kwargs):
     elif lowcase == "colorbar":
         plot_pattern_diagram_colorbar(rmsds, bs, rmsdxz, option)
     else:
-        raise ValueError("Unrecognized option: " + option["markerdisplayed"])
+        raise ValueError(f"Unrecognized option: {option['markerdisplayed']}")
 
 
 def _get_target_diagram_arguments(*args):
@@ -155,25 +155,18 @@ def _display_target_diagram_options():
     _disp("General options:")
     _dispopt(
         "'overlay'",
-        "'on' / 'off' (default): "
-        + "Switch to overlay current statistics on target diagram. "
-        + "\n\t\tOnly markers will be displayed.",
+        f"'on' / 'off' (default): Switch to overlay current statistics on target diagram. \n		Only markers will be displayed.",
     )
     _dispopt(
         "'colormap'",
-        "'on'/ 'off' (default): "
-        + "Switch to map color shading of markers to colormap ('on')\n\t\t"
-        + "or min to max range of rmsdxz values ('off').\n\t\t"
-        + "Set to same value as option['nonrmsdxz'].",
+        f"'on'/ 'off' (default): Switch to map color shading of markers to colormap ('on')\n		or min to max range of rmsdxz values ('off').\n		Set to same value as option['nonrmsdxz'].",
     )
     _disp("")
 
     _disp("Marker options:")
     _dispopt(
         "'MarkerDisplayed'",
-        "'marker' (default): Experiments are represented by individual symbols\n\t\t"
-        + "'colorBar': Experiments are represented by a color described "
-        + "in a colorbar",
+        f"'marker' (default): Experiments are represented by individual symbols\n		'colorBar': Experiments are represented by a color described in a colorbar",
     )
     _disp("OPTIONS when 'MarkerDisplayed' == 'marker'")
     _dispopt("'markerLabel'", "Labels for markers")
@@ -184,24 +177,22 @@ def _display_target_diagram_options():
     _disp("OPTIONS when 'MarkerDisplayed' == 'colorbar'")
     _dispopt(
         "'nonrmsdxz'",
-        "'on'/ 'off' (default): "
-        + "Values in rmsds do not correspond to total RMS Differences.\n\t\t"
-        + "(Used to make range of rmsds values appear above color bar.)",
+        f"'on'/ 'off' (default): Values in rmsds do not correspond to total RMS Differences.\n		(Used to make range of rmsds values appear above color bar.)",
     )
     _dispopt("'titleColorBar'", "Title of the colorbar.")
     _disp("")
 
     _disp("Axes options:")
     _dispopt(
-        "'ticks'", "define tick positions " + "(default is that used by axis function)"
+        "'ticks'", f"define tick positions (default is that used by axis function)"
     )
     _dispopt(
         "'xtickLabelPos'",
-        "position of the tick labels " + "along the x-axis (empty by default)",
+        f"position of the tick labels along the x-axis (empty by default)",
     )
     _dispopt(
         "'ytickLabelPos'",
-        "position of the tick labels " + "along the y-axis (empty by default)",
+        f"position of the tick labels along the y-axis (empty by default)",
     )
     _dispopt("'equalAxes'", "'on' (default) / 'off': Set axes to be equal")
     _dispopt("'limitAxis'", "Max for the Bias & uRMSD axis")
@@ -210,19 +201,16 @@ def _display_target_diagram_options():
     _disp("Diagram options:")
     _dispopt(
         "'alpha'",
-        "Blending of symbol face color (0.0 transparent through 1.0 opaque)"
-        + "\n\t\t"
-        + "(Default: 1.0)",
+        f"Blending of symbol face color (0.0 transparent through 1.0 opaque)\n		(Default: 1.0)",
     )
     _dispopt("'axismax'", "Maximum for the Bias & uRMSD axis")
     _dispopt(
         "'circles'",
-        "define the radii of circles to draw "
-        + "(default of (maximum rmsds)*[.7 1], [.7 1] when normalized diagram)",
+        f"define the radii of circles to draw (default of (maximum rmsds)*[.7 1], [.7 1] when normalized diagram)",
     )
     _dispopt(
         "'circleLineSpec'",
-        "Circle line specification (default " + "dashed black, '--k')",
+        f"Circle line specification (default dashed black, '--k')",
     )
     _dispopt("'circleLineWidth'", "Circle line width")
     _dispopt("'obsUncertainty'", "Observational Uncertainty (default of 0)")
@@ -241,5 +229,5 @@ def _dispopt(optname, optval):
     It displays the option name OPTNAME on a line by itself followed by its
     value OPTVAL on the following line.
     """
-    _disp("\t%s" % optname)
-    _disp("\t\t%s" % optval)
+    _disp(f"\t{optname}")
+    _disp(f"\t\t{optval}")

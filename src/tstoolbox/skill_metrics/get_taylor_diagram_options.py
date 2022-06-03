@@ -188,7 +188,7 @@ def get_taylor_diagram_options(*args, **kwargs):
     for optname, optvalue in kwargs.items():
         optname = optname.lower()
         if optname not in option:
-            raise ValueError("Unrecognized option: " + optname)
+            raise ValueError(f"Unrecognized option: {optname}")
         # Replace option value with that from arguments
         if optname == "tickcor":
             list1 = option["tickcor"][0]
@@ -206,7 +206,7 @@ def get_taylor_diagram_options(*args, **kwargs):
             option["checkstats"] = check_on_off(option["checkstats"])
         elif optname == "markerlabel":
             if not isinstance(optvalue, list):
-                raise ValueError("Option value is not a list: " + str(optvalue))
+                raise ValueError(f"Option value is not a list: {str(optvalue)}")
             option["markerlabel"] = optvalue[1:]
         elif optname == "markerlegend":
             option["markerlegend"] = check_on_off(option["markerlegend"])
@@ -214,18 +214,16 @@ def get_taylor_diagram_options(*args, **kwargs):
             option["overlay"] = check_on_off(option["overlay"])
         elif optname == "rmslabelformat":
             # Check for valid string format
-            labelformat = "{" + optvalue + "}"
+            labelformat = f"{{{optvalue}}}"
             try:
                 labelformat.format(99.0)
             except ValueError:
                 raise ValueError(
-                    """
+                    f"""
         *
-        *   Invalid string format for rmslabelformat: {}
+        *   Invalid string format for rmslabelformat: {optvalue}
         *
-        """.format(
-                        optvalue
-                    )
+        """
                 )
         elif optname == "showlabelscor":
             option["showlabelscor"] = check_on_off(option["showlabelscor"])

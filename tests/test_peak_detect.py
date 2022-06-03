@@ -136,7 +136,6 @@ class TestPeakDetect(TestCase):
         out.columns = cols
         assert_frame_equal(out, self.compare)
 
-
     def test_peak_sine_direct(self):
         """Test peak detection API using the 'sine' method."""
         out = tstoolbox.peak_detection(
@@ -194,7 +193,6 @@ class TestPeakDetect(TestCase):
         ).communicate(input=input_peak_detection)[0]
         out = tsutils.read_iso_ts(out)
         assert_frame_equal(out, output_peak_detection)
-
 
     @staticmethod
     def test_peak_sine_cli():

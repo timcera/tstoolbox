@@ -113,13 +113,11 @@ def calculate_kde(
     if len(tsd.columns) > 1:
         raise ValueError(
             tsutils.error_wrapper(
-                """
+                f"""
 Right now "calculate_kde" only support one time-series at a time.
 
-You gave {}.
-""".format(
-                    tsd.columns
-                )
+You gave {tsd.columns}.
+"""
             )
         )
 

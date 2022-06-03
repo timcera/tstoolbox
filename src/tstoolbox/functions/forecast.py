@@ -197,7 +197,7 @@ To forecast multiple columns requires `print_cols` to be "forecast", not
         df_forecast = df_forecast.set_index(index_name)
 
         if print_cols == "forecast":
-            rtsd = rtsd.join(df_forecast[col + "_Forecast"], how="outer")
+            rtsd = rtsd.join(df_forecast[f"{col}_Forecast"], how="outer")
 
     if print_cols == "forecast":
         return tsutils.return_input(print_input, tsd, rtsd)
@@ -205,4 +205,3 @@ To forecast multiple columns requires `print_cols` to be "forecast", not
 
 
 # placeholder for future arima...
-

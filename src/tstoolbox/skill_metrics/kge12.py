@@ -56,24 +56,12 @@ def kge12(predicted, reference, sr=1.0, sgamma=1.0, sbeta=1.0):
     pdims = predicted.shape
     rdims = reference.shape
     if not np.array_equal(pdims, rdims):
-        message = (
-            "predicted and reference field dimensions do not"
-            + " match.\n"
-            + "shape(predicted)= "
-            + str(pdims)
-            + ", "
-            + "shape(reference)= "
-            + str(rdims)
-            + "\npredicted type: "
-            + str(type(predicted))
-        )
+        message = f"predicted and reference field dimensions do not match.\nshape(predicted)= {str(pdims)}, shape(reference)= {str(rdims)}\npredicted type: {str(type(predicted))}"
         raise ValueError(message)
 
     for name, term in [("sr", sr), ("sgamma", sgamma), ("sbeta", sbeta)]:
         if term > 1 or term < 0:
-            raise ValueError(
-                "'{}' must be between 0 and 1, you gave {}".format(name, term)
-            )
+            raise ValueError(f"'{name}' must be between 0 and 1, you gave {term}")
 
     std_ref = np.std(reference)
     if std_ref == 0:

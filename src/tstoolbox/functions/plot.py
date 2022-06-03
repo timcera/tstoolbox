@@ -107,14 +107,12 @@ def _know_your_limits(xylimits, axis="arithmetic"):
         if nlim[0] < 0 or nlim[0] > 1 or nlim[1] < 0 or nlim[1] > 1:
             raise ValueError(
                 tsutils.error_wrapper(
-                    """
+                    f"""
 Both limits must be between 0 and 1 for the 'normal', 'lognormal', or 'weibull'
 axis.
 
-Instead you have {}.
-""".format(
-                        nlim
-                    )
+Instead you have {nlim}.
+"""
                 )
             )
 
@@ -124,13 +122,11 @@ Instead you have {}.
     if nlim[0] is not None and nlim[1] is not None and nlim[0] >= nlim[1]:
         raise ValueError(
             tsutils.error_wrapper(
-                """
+                f"""
 The second limit must be greater than the first.
 
-You gave {}.
-""".format(
-                    nlim
-                )
+You gave {nlim}.
+"""
             )
         )
 
@@ -141,13 +137,11 @@ You gave {}.
     ):
         raise ValueError(
             tsutils.error_wrapper(
-                """
+                f"""
 If log plot cannot have limits less than or equal to 0.
 
-You have {}.
-""".format(
-                    nlim
-                )
+You have {nlim}.
+"""
             )
         )
 
@@ -1070,12 +1064,10 @@ def plot(
     ):
         raise ValueError(
             tsutils.error_wrapper(
-                """
-The '{1}' plot can only work with 1 time-series in the DataFrame.
-The DataFrame that you supplied has {0} time-series.
-""".format(
-                    len(tsd.columns), type
-                )
+                f"""
+The '{type}' plot can only work with 1 time-series in the DataFrame.
+The DataFrame that you supplied has {len(tsd.columns)} time-series.
+"""
             )
         )
 
@@ -1093,7 +1085,7 @@ The DataFrame that you supplied has {0} time-series.
             short_freq = ""
         else:
             # short freq string (day) OR (2 day)
-            short_freq = "({})".format(pltfreq[beginstr:-1])
+            short_freq = f"({pltfreq[beginstr:-1]})"
     except AttributeError:
         short_freq = ""
 
@@ -1117,17 +1109,15 @@ Each name in legend_names must be unique.
         else:
             raise ValueError(
                 tsutils.error_wrapper(
-                    """
+                    f"""
 For 'legend_names' and most plot types you must have the same number of comma
-separated names as columns in the input data.  The input data has {} where the
-number of 'legend_names' is {}.
+separated names as columns in the input data.  The input data has {len(tsd.columns)} where the
+number of 'legend_names' is {len(lnames)}.
 
 If `type` is 'xy' or 'double_mass' you need to have legend names as
 l1,l2,l3,...  where l1 is the legend for x1,y1, l2 is the legend for x2,y2,
 ...etc.
-""".format(
-                        len(tsd.columns), len(lnames)
-                    )
+"""
                 )
             )
         tsd.rename(columns=renamedict, inplace=True)
@@ -1158,13 +1148,11 @@ l1,l2,l3,...  where l1 is the legend for x1,y1, l2 is the legend for x2,y2,
         if len(nstyle) != len(tsd.columns):
             raise ValueError(
                 tsutils.error_wrapper(
-                    """
+                    f"""
 You have to have the same number of style strings as time-series to plot.
-You supplied '{}' for style which has {} style strings,
-but you have {} time-series.
-""".format(
-                        style, len(nstyle), len(tsd.columns)
-                    )
+You supplied '{style}' for style which has {len(nstyle)} style strings,
+but you have {len(tsd.columns)} time-series.
+"""
                 )
             )
         colors = []
@@ -1291,12 +1279,10 @@ a datetime index.
         if tsd.shape[1] > 1 and tsd.shape[1] % 2 != 0:
             raise AttributeError(
                 tsutils.error_wrapper(
-                    """
+                    f"""
 The 'xy' and 'double_mass' types must have an even number of columns arranged
-as x,y pairs or an x-index and one y data column.  You supplied {} columns.
-""".format(
-                        tsd.shape[1]
-                    )
+as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} columns.
+"""
                 )
             )
         colcnt = tsd.shape[1] // 2
@@ -1432,8 +1418,8 @@ as x,y pairs or an x-index and one y data column.  You supplied {} columns.
             ax.legend(loc="best")
 
         if type == "double_mass":
-            xtitle = xtitle or "Cumulative {}".format(tsd.columns[0])
-            ytitle = ytitle or "Cumulative {}".format(tsd.columns[1])
+            xtitle = xtitle or f"Cumulative {tsd.columns[0]}"
+            ytitle = ytitle or f"Cumulative {tsd.columns[1]}"
 
     elif type in [
         "norm_xaxis",
@@ -1634,12 +1620,12 @@ as x,y pairs or an x-index and one y data column.  You supplied {} columns.
 
         lag_plot(tsd.dropna(), lag=lag_plot_lag, ax=ax)
         xtitle = xtitle or "y(t)"
-        ytitle = ytitle or "y(t+{})".format(short_freq or 1)
+        ytitle = ytitle or f"y(t+{short_freq or 1})"
     elif type == "autocorrelation":
         from pandas.plotting import autocorrelation_plot
 
         autocorrelation_plot(tsd.dropna(), ax=ax)
-        xtitle = xtitle or "Time Lag {}".format(short_freq)
+        xtitle = xtitle or f"Time Lag {short_freq}"
     elif type == "bootstrap":
         from pandas.plotting import bootstrap_plot
 
@@ -1659,7 +1645,7 @@ The "heatmap" plot type can only work with daily time series.
 """
                 )
             )
-        dr = pd.date_range("{}-01-01".format(byear), "{}-12-31".format(eyear), freq="D")
+        dr = pd.date_range(f"{byear}-01-01", f"{eyear}-12-31", freq="D")
         ntsd = tsd.reindex(index=dr).astype(float)
         groups = ntsd.iloc[:, 0].groupby(pd.Grouper(freq="A"))
         years = pd.DataFrame()

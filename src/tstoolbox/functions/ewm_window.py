@@ -227,8 +227,8 @@ def ewm_window(
     if statistic:
         nntsd = pd.DataFrame()
         for stat in statistic:
-            ntsd = eval("ntsd.{}()".format(stat))
-            ntsd = [tsutils.renamer(i, "ewm.{}".format(stat)) for i in ntsd.columns]
+            ntsd = eval(f"ntsd.{stat}()")
+            ntsd = [tsutils.renamer(i, f"ewm.{stat}") for i in ntsd.columns]
             nntsd = nntsd.join(ntsd, how="outer")
     else:
         nntsd = ntsd

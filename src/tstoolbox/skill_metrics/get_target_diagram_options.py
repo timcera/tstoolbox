@@ -101,7 +101,7 @@ def get_target_diagram_options(**kwargs):
     for optname, optvalue in kwargs.items():
         optname = optname.lower()
         if optname not in option:
-            raise ValueError("Unrecognized option: " + optname)
+            raise ValueError(f"Unrecognized option: {optname}")
         # Replace option value with that from arguments
         option[optname] = optvalue
 

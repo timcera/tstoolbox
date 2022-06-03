@@ -88,16 +88,14 @@ def createts(
     ):
         raise ValueError(
             tsutils.error_wrapper(
-                """
+                f"""
 If input_ts is None, then start_date, end_date, and freq must be supplied.
 
 Instead you have:
-start_date = {},
-end_date = {},
-freq = {}
-""".format(
-                    start_date, end_date, freq
-                )
+start_date = {start_date},
+end_date = {end_date},
+freq = {freq}
+"""
             )
         )
 

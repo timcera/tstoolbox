@@ -134,7 +134,7 @@ def accumulate(
     ntsd = pd.DataFrame()
 
     for stat in statistic:
-        tmptsd = eval("tsd.cum{}()".format(stat))
+        tmptsd = eval(f"tsd.cum{stat}()")
         tmptsd.columns = [tsutils.renamer(i, stat) for i in tmptsd.columns]
         ntsd = ntsd.join(tmptsd, how="outer")
     return tsutils.return_input(print_input, tsd, ntsd)

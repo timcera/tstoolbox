@@ -45,7 +45,7 @@ def write_stats(filename, data, **kwargs):
         if option["overwrite"]:
             os.remove(filename)
         else:
-            ValueError("File already exists: " + filename)
+            ValueError(f"File already exists: {filename}")
 
     # Write title information to file
     workbook = xlsxwriter.Workbook(filename)
@@ -62,7 +62,7 @@ def write_stats(filename, data, **kwargs):
     worksheet.write(3, 0, "Skill Metric")
     ncell = len(list(data.items())[0]) - 1
     for i in range(ncell):
-        worksheet.write(3, i + 1, "Case " + str(i + 1))
+        worksheet.write(3, i + 1, f"Case {str(i + 1)}")
 
     # Write data of all the fields
     row = 4
@@ -128,7 +128,7 @@ def get_write_stats_options(**kwargs):
     for optname, optvalue in kwargs.items():
         optname = optname.lower()
         if optname not in option:
-            raise ValueError("Unrecognized option: " + optname)
+            raise ValueError(f"Unrecognized option: {optname}")
         # Replace option value with that from arguments
         option[optname] = optvalue
 

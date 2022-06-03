@@ -297,11 +297,9 @@ def filter(
     if len(tsd.values) < window_len:
         raise ValueError(
             tsutils.error_wrapper(
-                """
-Input vector (length={}) needs to be bigger than window size ({}).
-""".format(
-                    len(tsd.values), window_len
-                )
+                f"""
+Input vector (length={len(tsd.values)}) needs to be bigger than window size ({window_len}).
+"""
             )
         )
 
@@ -478,7 +476,7 @@ The "lowpass_cutoff" and "highpass_cutoff" must be greater than 0.5/interval_in_
             if filter_type == "flat":  # moving average
                 w = np.ones(window_len, "d")
             else:
-                w = eval("np." + filter_type + "(window_len)")
+                w = eval(f"np.{filter_type}(window_len)")
             ntsd[col] = np.convolve(w / w.sum(), s, mode="valid")
 
     return tsutils.return_input(print_input, tsd, ntsd, "filter")

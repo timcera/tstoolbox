@@ -23,7 +23,7 @@ def check_duplicate_stats(stats1, stats2, threshold=0.01):
     Created on Apr 23, 2017
     """
     if threshold < 1e-7:
-        ValueError("threshold value must be positive: " + str(threshold))
+        ValueError(f"threshold value must be positive: {str(threshold)}")
 
     # Check for non-empty lists
     if len(stats1) == 0:
@@ -34,14 +34,12 @@ def check_duplicate_stats(stats1, stats2, threshold=0.01):
     # Check for matching list lengths
     if len(stats1) != len(stats2):
         ValueError(
-            """
+            f"""
 *
 *   Arguments stats1 and stats2 have different list lengths.
-*   len(stats1) = {} != len(stats2) = {}
+*   len(stats1) = {len(stats1)} != len(stats2) = {len(stats2)}
 *
-*""".format(
-                len(stats1), len(stats2)
-            )
+*"""
         )
 
     # Search for duplicate pairs of statistics

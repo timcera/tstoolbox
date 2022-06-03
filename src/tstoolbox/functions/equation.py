@@ -242,7 +242,7 @@ def equation(
     def returnval(t, x, testeval, nequation):
         """Return the 'eval'uated equation.
 
-        Need "x" and "t" as those variables since will be used in "equation"
+        Need "t" and "x" as those variables since will be used in "equation"
         even if they do not directly appear in the "returnval" function.
         """
         for tst in testeval:
@@ -278,19 +278,17 @@ def equation(
                 y.iloc[:, 0] = eval(nequation)
             except IndexError:
                 raise IndexError(
-                    """
+                    f"""
 *
-*   There are {} columns, but the equation you are trying to apply is trying
+*   There are {y.shape[1]} columns, but the equation you are trying to apply is trying
 *   to access a column greater than that.
 *
-""".format(
-                        y.shape[1]
-                    )
+"""
                 )
 
         else:
             y = eval(eqn)
-        y.columns = [tsutils.renamer(i, "equation{}_".format(cnt)) for i in y.columns]
+        y.columns = [tsutils.renamer(i, f"equation{cnt}_") for i in y.columns]
         newy = newy.join(y, how="outer")
 
     newy = tsutils.memory_optimize(newy)

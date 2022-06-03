@@ -137,12 +137,10 @@ def _datacheck_peakdetect(x_axis, y_axis):
     if len(y_axis) != len(x_axis):
         raise ValueError(
             tsutils.error_wrapper(
-                """
+                f"""
 The length of y values must equal the length of x values.  Instead the
-length of y values is {} and the length of x values is {}.
-""".format(
-                    len(y_axis), len(x_axis)
-                )
+length of y values is {len(y_axis)} and the length of x values is {len(x_axis)}.
+"""
             )
         )
 
@@ -717,7 +715,7 @@ def _smooth(
     if window == "flat":  # moving average
         w = np.ones(window_len, "d")
     else:
-        w = eval("np." + window + "(window_len)")
+        w = eval(f"np.{window}(window_len)")
 
     y = np.convolve((w / w.sum()), s, mode="valid")
     return y

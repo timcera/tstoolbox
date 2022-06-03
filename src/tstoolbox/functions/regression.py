@@ -294,20 +294,20 @@ keywords.  Instead you have "{to}" in both.
 
     testfreqstr = ntsd.index.freqstr.lstrip("0123456789")
     if testfreqstr[0] == "A":
-        ntsd[ntsd.index.name + "_"] = ntsd.index.year - ntsd.index[0].year
+        ntsd[f"{ntsd.index.name}_"] = ntsd.index.year - ntsd.index[0].year
     elif testfreqstr[0] == "M":
-        ntsd[ntsd.index.name + "_"] = (ntsd.index.year - ntsd.index[0].year) * 12 + (
+        ntsd[f"{ntsd.index.name}_"] = (ntsd.index.year - ntsd.index[0].year) * 12 + (
             ntsd.index.month - ntsd.index[0].month
         )
     else:
         try:
             # In case ntsd.index.freqstr is a multiple, for example "15T".
-            ntsd[ntsd.index.name + "_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
+            ntsd[f"{ntsd.index.name}_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
                 ntsd.index.freqstr
             )
         except ValueError:
-            ntsd[ntsd.index.name + "_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
-                "1" + ntsd.index.freqstr
+            ntsd[f"{ntsd.index.name}_"] = (ntsd.index - ntsd.index[0]) // pd.Timedelta(
+                f"1{ntsd.index.freqstr}"
             )
 
     if x_pred_cols is None:
@@ -340,7 +340,12 @@ keywords.  Instead you have "{to}" in both.
     if x_pred_cols is None:
         if method == "RANSAC":
             regr = regr.estimator_
-        rdata = [["Coefficients", regr.coef_], ["Intercept", regr.intercept_], ["Mean squared error", mean_squared_error(y_train, y_pred)], ["Coefficient of determination", r2_score(y_train, y_pred)]]
+        rdata = [
+            ["Coefficients", regr.coef_],
+            ["Intercept", regr.intercept_],
+            ["Mean squared error", mean_squared_error(y_train, y_pred)],
+            ["Coefficient of determination", r2_score(y_train, y_pred)],
+        ]
         return rdata
     result = pd.DataFrame(y_pred, index=x_pred.index)
     result = result.reindex(index=wtsd.index)

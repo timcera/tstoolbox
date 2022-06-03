@@ -128,7 +128,7 @@ def lag(
     for i in lags:
         for x in list(ntsd.columns):
             parts = x.split(":")
-            parts[0] = "{}_{}".format(parts[0], i)
+            parts[0] = f"{parts[0]}_{i}"
             cols.setdefault(x, []).append(":".join(parts))
             nlags.append(i)
     for k, v in cols.items():

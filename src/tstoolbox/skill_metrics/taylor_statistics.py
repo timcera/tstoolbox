@@ -61,7 +61,7 @@ def taylor_statistics(predicted, reference, field=""):
         if field in predicted:
             p = predicted[field]
         else:
-            raise ValueError("Field is not in PREDICTED dictionary: " + field)
+            raise ValueError(f"Field is not in PREDICTED dictionary: {field}")
     elif isinstance(predicted, list):
         p = np.array(predicted)
     elif isinstance(predicted, np.ndarray):
@@ -75,7 +75,7 @@ def taylor_statistics(predicted, reference, field=""):
         if field in reference:
             r = reference[field]
         else:
-            raise ValueError("Field is not in REFERENCE dictionary: " + field)
+            raise ValueError(f"Field is not in REFERENCE dictionary: {field}")
     elif isinstance(reference, list):
         r = np.array(reference)
     elif isinstance(reference, np.ndarray):

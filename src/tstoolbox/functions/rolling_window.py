@@ -274,8 +274,7 @@ def rolling_window(
                                  )"""
         )
         etsd.columns = [
-            tsutils.renamer(i, "rolling.{}.{}".format(win, statistic))
-            for i in etsd.columns
+            tsutils.renamer(i, f"rolling.{win}.{statistic}") for i in etsd.columns
         ]
 
         ntsd = ntsd.join(etsd, how="outer")
