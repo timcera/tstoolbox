@@ -661,9 +661,9 @@ and the second is the simulated.  """
         if stat in ["crmsd", "murphyss", "brierss", "pc_bias", "apc_bias"]:
             extra_args = {}
         proc = stats_dict[stat]
-        if "kge09" == stat:
+        if stat == "kge09":
             extra_args = {"s": (kge_sr, kge09_salpha, kge_sbeta)}
-        if "kge12" == stat:
+        if stat == "kge12":
             extra_args = {"s": (kge_sr, kge12_sgamma, kge_sbeta)}
         statval.append(
             [
