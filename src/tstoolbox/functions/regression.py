@@ -340,11 +340,7 @@ keywords.  Instead you have "{to}" in both.
     if x_pred_cols is None:
         if method == "RANSAC":
             regr = regr.estimator_
-        rdata = []
-        rdata.append(["Coefficients", regr.coef_])
-        rdata.append(["Intercept", regr.intercept_])
-        rdata.append(["Mean squared error", mean_squared_error(y_train, y_pred)])
-        rdata.append(["Coefficient of determination", r2_score(y_train, y_pred)])
+        rdata = [["Coefficients", regr.coef_], ["Intercept", regr.intercept_], ["Mean squared error", mean_squared_error(y_train, y_pred)], ["Coefficient of determination", r2_score(y_train, y_pred)]]
         return rdata
     result = pd.DataFrame(y_pred, index=x_pred.index)
     result = result.reindex(index=wtsd.index)
