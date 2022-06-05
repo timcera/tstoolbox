@@ -1,3 +1,13 @@
+## 103.18.2 (2022-06-04)
+
+### Fix
+
+- reversed start of using numpy.typing because needs a too recent numpy
+
+### Refactor
+
+- changed .format() string to f strings
+
 ## 103.18.1 (2022-05-30)
 
 ### Fix

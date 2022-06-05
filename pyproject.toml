@@ -8,7 +8,7 @@ ignore = ["docs/_function_autosummary/*",
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "103.18.1"
+version = "103.18.2"
 tag_format = "$version"
 version_files = ["VERSION"]
 update_changelog_on_bump = true
