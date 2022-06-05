@@ -19,7 +19,6 @@ from urllib.parse import urlparse
 
 import dateparser
 import numpy as np
-import numpy.typing as npt
 import pandas as pd
 import typic
 from _io import TextIOWrapper
@@ -602,13 +601,13 @@ def set_ppf(ptype: Optional[Literal["norm", "lognorm", "weibull"]]) -> Callable:
         ppf = lognorm.freeze(0.5, loc=0).ppf
     elif ptype == "weibull":
 
-        def ppf(y: Union[List[float], npt.ArrayLike]) -> npt.ArrayLike:
+        def ppf(y):
             """Percentage Point Function for the weibull distibution."""
             return np.log(-np.log(1 - np.array(y)))
 
     elif ptype is None:
 
-        def ppf(y: npt.ArrayLike) -> npt.ArrayLike:
+        def ppf(y):
             return y
 
     return ppf
