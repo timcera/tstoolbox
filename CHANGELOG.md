@@ -1,3 +1,9 @@
+## 103.18.3 (2022-06-05)
+
+### Fix
+
+- missed that had to import pint_pandas even though not used directly
+
 ## 103.18.2 (2022-06-04)
 
 ### Fix
