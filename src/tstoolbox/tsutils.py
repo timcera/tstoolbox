@@ -20,6 +20,7 @@ from urllib.parse import urlparse
 import dateparser
 import numpy as np
 import pandas as pd
+import pint_pandas  # not used directly, but required to use pint in pandas
 import typic
 from _io import TextIOWrapper
 from numpy import int64, ndarray
@@ -1107,9 +1108,9 @@ to the `target_units`: {target_units}
                     # This single command uses pint to convert units and
                     # the "np.array(..., dtype=float)" command removes pint
                     # units from the converted pandas Series.
-                    ntsd[str(colname)] = np.array(
+                    ntsd[colname] = np.array(
                         pd.Series(
-                            ntsd[str(colname)].astype(float), dtype=f"pint[{words[1]}]"
+                            ntsd[colname].astype(float), dtype=f"pint[{words[1]}]"
                         ).pint.to(target_units[inx]),
                         dtype=float,
                     )
