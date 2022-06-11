@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
-from __future__ import absolute_import, division, print_function
-
 import warnings
 from typing import List
 

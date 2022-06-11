@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """A collection of filling routines."""
 
-from __future__ import absolute_import, print_function
-
 from typing import List, Optional, Union
 
 import mando

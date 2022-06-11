@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """A lag routine."""
 
-from __future__ import absolute_import, print_function
-
 from typing import List
 
 import mando

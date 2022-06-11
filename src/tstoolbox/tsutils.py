@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """A collection of functions used by tstoolbox, wdmtoolbox, ...etc."""
 
-from __future__ import division, print_function
 
 import bz2
 import datetime

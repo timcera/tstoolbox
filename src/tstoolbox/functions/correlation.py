@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """A correlation routine."""
 
-from __future__ import absolute_import, print_function
-
 from typing import List
 
 import mando
