@@ -48,8 +48,11 @@ install_requires = [
     "pyaf",
     "xlrd >= 1.0.0",
     "openpyxl",
-    "plottoolbox",
+    "odfpy",
     "HydroErr",
+    "plottoolbox",
+    "wdmtoolbox",
+    "hspfbintoolbox",
 ]
 
 extras_require = {
