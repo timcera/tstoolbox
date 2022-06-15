@@ -1983,23 +1983,36 @@ def read_iso_ts(
                 ]:
                     if len(parameters) == 0:
                         sheet = [0]
-                    elif len(parameters) == 1:
-                        sheet = parameters[0]
                     else:
-                        sheet = make_list(parameters)
+                        sheet = parameters
 
-                    res = pd.read_excel(
-                        fname,
-                        sheet_name=sheet,
-                        keep_default_na=True,
-                        header=header,
-                        na_values=na_values,
-                        index_col=index_col,
-                        usecols=usecols,
-                        parse_dates=parse_dates,
-                        skiprows=skiprows,
-                        **newkwds,
-                    )
+                    try:
+                        res = pd.read_excel(
+                            fname,
+                            sheet_name=sheet,
+                            keep_default_na=True,
+                            header=header,
+                            na_values=na_values,
+                            index_col=index_col,
+                            usecols=usecols,
+                            parse_dates=parse_dates,
+                            skiprows=skiprows,
+                            **newkwds,
+                        )
+                    except ValueError:
+                        sheet = int(sheet)
+                        res = pd.read_excel(
+                            fname,
+                            sheet_name=sheet,
+                            keep_default_na=True,
+                            header=header,
+                            na_values=na_values,
+                            index_col=index_col,
+                            usecols=usecols,
+                            parse_dates=parse_dates,
+                            skiprows=skiprows,
+                            **newkwds,
+                        )
                     if isinstance(res, dict):
                         res = pd.concat(res, axis="columns")
                         # Collapse columns MultiIndex
