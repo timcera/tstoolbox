@@ -59,18 +59,16 @@ def plot_pattern_diagram_markers(X, Y, option):
                 "The " "marker" " character array need to be extended inside the code."
             )
 
+        # Define markers with specified color
+        marker = []
         if len(X) <= len(kind):
-            # Define markers with specified color
-            marker = []
             markercolor = []
-            for color in colorm:
+            for _ in colorm:
                 for symbol in kind:
                     marker.append(symbol + option["markercolor"])
                     rgba = clr.to_rgb(option["markercolor"]) + (alpha,)
                     markercolor.append(rgba)
         else:
-            # Define markers and colors using predefined list
-            marker = []
             for color in colorm:
                 for symbol in kind:
                     marker.append(symbol + color)
@@ -96,7 +94,7 @@ def plot_pattern_diagram_markers(X, Y, option):
                 markerlabel.append(option["markerlabel"][i])
 
         # Add legend
-        if len(markerlabel) > 0:
+        if markerlabel:
             markerlabel = tuple(markerlabel)
             plt.legend(
                 hp, markerlabel, loc="upper right", fontsize="medium", numpoints=1

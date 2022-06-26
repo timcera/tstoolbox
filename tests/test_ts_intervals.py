@@ -73,9 +73,7 @@ class TestAddTrend(TestCase):
             sdate, periods, nintervals = pd_tstep_minterval[testpc]
             for tstep in range(1, nintervals):
                 aperiods = periods // tstep
-                dr = pd.date_range(
-                    sdate, periods=aperiods, freq="{}{}".format(tstep, testpc)
-                )
+                dr = pd.date_range(sdate, periods=aperiods, freq=f"{tstep}{testpc}")
                 df = pd.DataFrame(np.arange(aperiods), index=dr)
                 df.index.name = "index"
                 df.columns = ["data"]
@@ -158,7 +156,7 @@ class TestAddTrend(TestCase):
             if inferred_code[0] not in "123456789":
                 inferred_code = "1" + inferred_code
             testcode = matches.get(testcode, testcode)
-            logging.warning("{} {}".format(testcode, inferred_code))
+            logging.warning(f"{testcode} {inferred_code}")
             try:
                 self.assertEqual(testcode, inferred_code.split("-")[0])
             except AssertionError:

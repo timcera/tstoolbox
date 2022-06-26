@@ -148,10 +148,7 @@ def get_write_target_stats_options(**kwargs):
     nargin = len(kwargs)
 
     #  Set default parameters
-    option = {}
-    option["overwrite"] = False
-    option["label"] = []
-    option["title"] = ""
+    option = {"overwrite": False, "label": [], "title": ""}
     if nargin == 0:
         # No options requested, so return with only defaults
         return option

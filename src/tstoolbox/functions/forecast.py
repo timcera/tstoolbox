@@ -169,7 +169,7 @@ def forecast(
 
     multiple_cols = len(tsd.columns) > 1
 
-    if multiple_cols is True and print_cols != "forecast":
+    if multiple_cols and print_cols != "forecast":
         raise ValueError(
             tsutils.error_wrapper(
                 f"""

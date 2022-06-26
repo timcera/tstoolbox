@@ -257,33 +257,35 @@ def _peakdetect(
             mnpos = x
 
         # ####look for max####
-        if y < mx - delta and mx != np.Inf:
-            # Maxima peak candidate found
-            # look ahead in signal to ensure that this is a peak and not jitter
-            if y_axis[index : index + window].max() < mx:
-                max_peaks.append([mxpos, mx])
-                dump.append(True)
-                # set algorithm to only find minima now
-                mx = np.Inf
-                mn = np.Inf
-                if index + window >= length:
-                    # end is within window no more peaks can be found
-                    break
-                continue
+        if (
+            y < mx - delta
+            and mx != np.Inf
+            and y_axis[index : index + window].max() < mx
+        ):
+            max_peaks.append([mxpos, mx])
+            dump.append(True)
+            # set algorithm to only find minima now
+            mx = np.Inf
+            mn = np.Inf
+            if index + window >= length:
+                # end is within window no more peaks can be found
+                break
+            continue
 
         # ####look for min####
-        if y > mn + delta and mn != -np.Inf:
-            # Minima peak candidate found
-            # look ahead in signal to ensure that this is a peak and not jitter
-            if y_axis[index : index + window].min() > mn:
-                min_peaks.append([mnpos, mn])
-                dump.append(False)
-                # set algorithm to only find maxima now
-                mn = -np.Inf
-                mx = -np.Inf
-                if index + window >= length:
-                    # end is within window no more peaks can be found
-                    break
+        if (
+            y > mn + delta
+            and mn != -np.Inf
+            and y_axis[index : index + window].min() > mn
+        ):
+            min_peaks.append([mnpos, mn])
+            dump.append(False)
+            # set algorithm to only find maxima now
+            mn = -np.Inf
+            mx = -np.Inf
+            if index + window >= length:
+                # end is within window no more peaks can be found
+                break
 
     # Remove the false hit on the first value of the y_axis
     try:
@@ -639,18 +641,29 @@ def _peakdetect_zero_crossing(y_axis, x_axis=None, window=5):
         hi_peaks = [bin.max() for bin in even_bins_y]
         lo_peaks = [bin.min() for bin in odd_bins_y]
         # get x values for peak
-        for bin_x, bin_y, peak in zip(even_bins_x, even_bins_y, hi_peaks):
-            hi_peaks_x.append(bin_x[np.where(bin_y == peak)[0][0]])
-        for bin_x, bin_y, peak in zip(odd_bins_x, odd_bins_y, lo_peaks):
-            lo_peaks_x.append(bin_x[np.where(bin_y == peak)[0][0]])
+        hi_peaks_x.extend(
+            bin_x[np.where(bin_y == peak)[0][0]]
+            for bin_x, bin_y, peak in zip(even_bins_x, even_bins_y, hi_peaks)
+        )
+
+        lo_peaks_x.extend(
+            bin_x[np.where(bin_y == peak)[0][0]]
+            for bin_x, bin_y, peak in zip(odd_bins_x, odd_bins_y, lo_peaks)
+        )
+
     else:
         hi_peaks = [bin.max() for bin in odd_bins_y]
         lo_peaks = [bin.min() for bin in even_bins_y]
         # get x values for peak
-        for bin_x, bin_y, peak in zip(odd_bins_x, odd_bins_y, hi_peaks):
-            hi_peaks_x.append(bin_x[np.where(bin_y == peak)[0][0]])
-        for bin_x, bin_y, peak in zip(even_bins_x, even_bins_y, lo_peaks):
-            lo_peaks_x.append(bin_x[np.where(bin_y == peak)[0][0]])
+        hi_peaks_x.extend(
+            bin_x[np.where(bin_y == peak)[0][0]]
+            for bin_x, bin_y, peak in zip(odd_bins_x, odd_bins_y, hi_peaks)
+        )
+
+        lo_peaks_x.extend(
+            bin_x[np.where(bin_y == peak)[0][0]]
+            for bin_x, bin_y, peak in zip(even_bins_x, even_bins_y, lo_peaks)
+        )
 
     # peaks or valley cannot be at 0
     max_peaks = [[x, y] for x, y in zip(hi_peaks_x, hi_peaks) if x != 0]
@@ -715,8 +728,7 @@ def _smooth(
     else:
         w = eval(f"np.{window}(window_len)")
 
-    y = np.convolve((w / w.sum()), s, mode="valid")
-    return y
+    return np.convolve((w / w.sum()), s, mode="valid")
 
 
 def zero_crossings(y_axis, window=11):
@@ -937,34 +949,34 @@ def peak_detection(
 
     window = int(window)
     kwds = {}
-    if method == "rel":
-        func = _argrel
-        window = window / 2
-        if window == 0:
-            window = 1
-        kwds["window"] = int(window)
+    if method == "fft":
+        func = _peakdetect_fft
+        kwds["pad_len"] = int(pad_len)
+
     elif method == "minmax":
         func = _peakdetect
-        window = int(window / 2)
+        window //= 2
         if window == 0:
             window = 1
-        kwds["window"] = int(window)
-    elif method == "zero_crossing":
-        func = _peakdetect_zero_crossing
-        if not window % 2:
-            window = window + 1
-        kwds["window"] = int(window)
+        kwds["window"] = window
     elif method == "parabola":
         func = _peakdetect_parabola
         kwds["points"] = int(points)
+    elif method == "rel":
+        func = _argrel
+        window /= 2
+        if window == 0:
+            window = 1
+        kwds["window"] = window
     elif method == "sine":
         func = _peakdetect_sine
         kwds["points"] = int(points)
         kwds["lock_frequency"] = lock_frequency
-    elif method == "fft":  # currently would never be used.
-        func = _peakdetect_fft
-        kwds["pad_len"] = int(pad_len)
-
+    elif method == "zero_crossing":
+        func = _peakdetect_zero_crossing
+        if not window % 2:
+            window += 1
+        kwds["window"] = window
     tmptsd = tsd.copy()
     if extrema == "both":
         tmptsd.columns = [tsutils.renamer(i, "peak") for i in tsd.columns]

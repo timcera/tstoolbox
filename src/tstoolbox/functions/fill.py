@@ -181,7 +181,6 @@ def fill_cli(
 
 
 @tsutils.transform_args(from_columns=tsutils.make_list, to_columns=tsutils.make_list)
-# @typic.al
 @tsutils.copy_doc(fill_cli)
 def fill(
     input_ts="-",
@@ -245,10 +244,7 @@ def fill(
         force_freq=force_freq,
         clean=clean,
     )
-    if print_input is True:
-        ntsd = tsd.copy()
-    else:
-        ntsd = tsd
+    ntsd = tsd.copy() if print_input is True else tsd
     ntsd = tsutils.asbestfreq(ntsd)
     offset = ntsd.index[1] - ntsd.index[0]
     predf = pd.DataFrame(
@@ -328,10 +324,7 @@ def fill_by_correlation(
         format or '-' for stdin.
     """
     tsd = tsutils.common_kwds(input_ts)
-    if print_input is True:
-        ntsd = tsd.copy()
-    else:
-        ntsd = tsd
+    ntsd = tsd.copy() if print_input is True else tsd
     ntsd = tsutils.asbestfreq(ntsd)
 
     if transform == "log10":

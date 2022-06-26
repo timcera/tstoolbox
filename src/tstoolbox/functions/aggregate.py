@@ -216,11 +216,7 @@ consistent with other tstoolbox commands.
         )
         groupby = aggd.get(agg_interval, agg_interval)
 
-    if groupby is None:
-        groupby = "D"
-    else:
-        groupby = aggd.get(groupby, groupby)
-
+    groupby = "D" if groupby is None else aggd.get(groupby, groupby)
     if ninterval is not None:
         ninterval = int(ninterval)
 
@@ -281,13 +277,12 @@ consistent with other tstoolbox commands.
         elif groupby == "months_across_years":
             tmptsd = tsd.groupby(lambda x: x.month).agg(method)
             tmptsd.index = list(range(1, 13))
+        elif method in ["first", "last", "max", "min", "prod", "sum"]:
+            tmptsd = tsd.resample(f"{ninterval}{groupby}").agg(
+                method, min_count=min_count
+            )
         else:
-            if method in ["first", "last", "max", "min", "prod", "sum"]:
-                tmptsd = tsd.resample(f"{ninterval}{groupby}").agg(
-                    method, min_count=min_count
-                )
-            else:
-                tmptsd = tsd.resample(f"{ninterval}{groupby}").agg(method)
+            tmptsd = tsd.resample(f"{ninterval}{groupby}").agg(method)
         tmptsd.columns = [tsutils.renamer(i, method) for i in tmptsd.columns]
         newts = newts.join(tmptsd, how="outer")
     if groupby == "all":

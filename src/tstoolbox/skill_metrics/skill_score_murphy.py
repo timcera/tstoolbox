@@ -56,7 +56,4 @@ def skill_score_murphy(predicted, reference):
     # Calculate standard deviation
     sdev2 = np.std(reference, ddof=1) ** 2
 
-    # Calculate skill score
-    ss = 1 - rmse2 / sdev2
-
-    return ss
+    return 1 - rmse2 / sdev2

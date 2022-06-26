@@ -72,11 +72,8 @@ def kge09(predicted, reference, sr=1.0, salpha=1.0, sbeta=1.0):
     beta = np.sum(predicted) / sum_ref
     cc = np.corrcoef(reference, predicted)[0, 1]
 
-    # Calculate the kge09
-    kge09 = 1.0 - np.sqrt(
+    return 1.0 - np.sqrt(
         (sr * (cc - 1.0)) ** 2
         + (salpha * (alpha - 1.0)) ** 2
         + (sbeta * (beta - 1.0)) ** 2
     )
-
-    return kge09

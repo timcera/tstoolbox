@@ -283,11 +283,7 @@ keywords.  Instead you have "{to}" in both.
         por=por,
     )
 
-    if print_input is True:
-        ntsd = tsd.copy()
-    else:
-        ntsd = tsd
-
+    ntsd = tsd.copy() if print_input is True else tsd
     ntsd = tsutils.asbestfreq(ntsd)
 
     testfreqstr = ntsd.index.freqstr.lstrip("0123456789")
@@ -308,11 +304,7 @@ keywords.  Instead you have "{to}" in both.
                 f"1{ntsd.index.freqstr}"
             )
 
-    if x_pred_cols is None:
-        nx_pred_cols = x_train_cols
-    else:
-        nx_pred_cols = x_pred_cols
-
+    nx_pred_cols = x_train_cols if x_pred_cols is None else x_pred_cols
     x_train_cols = tsutils.make_iloc(ntsd.columns, x_train_cols)
     y_train_col = tsutils.make_iloc(ntsd.columns, y_train_col)
 
@@ -338,17 +330,16 @@ keywords.  Instead you have "{to}" in both.
     if x_pred_cols is None:
         if method == "RANSAC":
             regr = regr.estimator_
-        rdata = [
+        return [
             ["Coefficients", regr.coef_],
             ["Intercept", regr.intercept_],
             ["Mean squared error", mean_squared_error(y_train, y_pred)],
             ["Coefficient of determination", r2_score(y_train, y_pred)],
         ]
-        return rdata
+
     result = pd.DataFrame(y_pred, index=x_pred.index)
     result = result.reindex(index=wtsd.index)
     return tsutils.return_input(print_input, tsd, result)
 
 
-if __name__ == "__init__":
-    pass
+pass

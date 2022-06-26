@@ -174,7 +174,7 @@ def calculate_fdc(
     ci: tsutils.FloatBetweenZeroAndOne = 0.9,
 ):
     """Return the frequency distribution curve."""
-    sort_values = bool(sort_values == "ascending")
+    sort_values = sort_values == "ascending"
 
     tsd = tsutils.common_kwds(
         input_ts,
@@ -201,13 +201,13 @@ def calculate_fdc(
             tmptsd.sort_values(ascending=sort_values, inplace=True)
             tmptsd.index = xdat * 100
             tmptsd = pd.DataFrame(tmptsd)
-            if include_ri is True:
+            if include_ri:
                 tmptsd[f"{col}_ri"] = 1.0 / xdat
-            if include_sd is True or include_cl is True:
+            if include_sd or include_cl:
                 sd = (xdat * (1 - xdat) / len(xdat)) ** 0.5
-            if include_sd is True:
+            if include_sd:
                 tmptsd[f"{col}_sd"] = sd
-            if include_cl is True:
+            if include_cl:
                 tval = t.ppf(ci, df=len(xdat) - 1)
                 ul = 2 * (1 - xdat) * tval * sd
                 ll = 2 * xdat * tval * sd
@@ -222,6 +222,6 @@ def calculate_fdc(
     newts = newts.groupby(newts.index).first()
     if sort_index == "descending":
         return newts.iloc[::-1]
-    if add_index is True:
+    if add_index:
         newts.reset_index(inplace=True)
     return newts

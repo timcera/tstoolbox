@@ -180,11 +180,7 @@ def normalization(
     )
 
     # Trying to save some memory
-    if print_input:
-        otsd = tsd.copy()
-    else:
-        otsd = pd.DataFrame()
-
+    otsd = tsd.copy() if print_input else pd.DataFrame()
     if mode == "minmax":
         tsd = min_limit + (tsd - tsd.min()) / (tsd.max() - tsd.min()) * (
             max_limit - min_limit

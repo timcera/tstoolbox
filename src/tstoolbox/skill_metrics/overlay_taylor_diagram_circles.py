@@ -49,7 +49,7 @@ def overlay_taylor_diagram_circles(axes, cax, option):
     # now really force points on x/y axes to lie on them exactly
     inds = range(0, len(th), (len(th) - 1) // 4)
     xunit[inds[1:5:2]] = np.zeros(2)
-    yunit[inds[0:6:2]] = np.zeros(3)
+    yunit[inds[:6:2]] = np.zeros(3)
 
     # DRAW RMS CIRCLES:
     # ANGLE OF THE TICK LABELS

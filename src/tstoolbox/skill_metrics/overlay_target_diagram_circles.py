@@ -42,13 +42,12 @@ def overlay_target_diagram_circles(option):
     # Set range for target circles
     if option["normalized"] == "on":
         circles = [0.5, 1]
+    elif len(option["circles"]) > 0:
+        circles = np.asarray(option["circles"])
+        index = np.where(circles <= option["axismax"])
+        circles = [option["circles"][i] for i in index[0]]
     else:
-        if len(option["circles"]) > 0:
-            circles = np.asarray(option["circles"])
-            index = np.where(circles <= option["axismax"])
-            circles = [option["circles"][i] for i in index[0]]
-        else:
-            circles = [option["axismax"] * x for x in [0.7, 1]]
+        circles = [option["axismax"] * x for x in [0.7, 1]]
 
     # 2 - secondary circles
     for c in circles:

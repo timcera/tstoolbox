@@ -114,11 +114,7 @@ def lag(
     if lags == 0:
         return tsd
 
-    if print_input is True:
-        ntsd = tsd.copy()
-    else:
-        ntsd = tsd
-
+    ntsd = tsd.copy() if print_input is True else tsd
     ntsd = tsutils.asbestfreq(ntsd)
 
     cols = {}

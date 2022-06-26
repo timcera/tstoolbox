@@ -64,15 +64,11 @@ def write_stats(filename, data, **kwargs):
     for i in range(ncell):
         worksheet.write(3, i + 1, f"Case {str(i + 1)}")
 
-    # Write data of all the fields
-    row = 4
     col = 0
-    for key, value in data.items():
+    for row, (key, value) in enumerate(data.items(), start=4):
         worksheet.write(row, col, key)
         for i, v in enumerate([value]):
             worksheet.write(row, col + 1 + i, v)
-        row += 1
-
     workbook.close()
 
 
@@ -115,9 +111,7 @@ def get_write_stats_options(**kwargs):
     nargin = len(kwargs)
 
     #  Set default parameters
-    option = {}
-    option["title"] = ""
-    option["overwrite"] = False
+    option = {"title": "", "overwrite": False}
     if nargin == 0:
         # No options requested, so return with only defaults
         return option

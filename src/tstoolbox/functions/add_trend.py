@@ -140,8 +140,8 @@ def add_trend(
     ntsd = tsd.copy().astype("float64")
 
     ntsd.iloc[:, :] = np.nan
-    ntsd.iloc[start_index, :] = float(start_offset)
-    ntsd.iloc[end_index, :] = float(end_offset)
+    ntsd.iloc[start_index, :] = start_offset
+    ntsd.iloc[end_index, :] = end_offset
     ntsd = ntsd.interpolate(method="values")
 
     ntsd = ntsd + tsd

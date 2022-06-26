@@ -322,18 +322,18 @@ function in tstoolbox.  Eventually they will be removed from the "filter" functi
             lowpass_cutoff = 1
             highpass_cutoff = 1
 
-    if filter_pass in ["bandpass", "bandstop"]:
-        # Need both low_cutoff and highpass_cutoff for "bandpass" and "bandstop".
-        if lowpass_cutoff is None or highpass_cutoff is None:
-            raise ValueError(
-                tsutils.error_wrapper(
-                    f"""
+    if filter_pass in ["bandpass", "bandstop"] and (
+        lowpass_cutoff is None or highpass_cutoff is None
+    ):
+        raise ValueError(
+            tsutils.error_wrapper(
+                f"""
 The "bandpass" and "bandstop" options for `filter_pass` require values
 for the `lowpass_cutoff` and `highpass_cutoff` keywords.  You have
 "{lowpass_cutoff}" for `lowpass_cutoff` and "{highpass_cutoff}" for
 `highpass_cutoff`."""
-                )
             )
+        )
 
     if filter_pass == "lowpass":
         if lowpass_cutoff is None:
@@ -424,17 +424,15 @@ The "lowpass_cutoff" and "highpass_cutoff" must be greater than 0.5/interval_in_
                 af = a[k]
                 bf = b[k]
                 cf = c[k]
-                if (k == 1) and (butterworth_reverse_second_stage is True):
+                if k == 1 and butterworth_reverse_second_stage:
                     af = a[0]
                     bf = b[0]
                     cf = c[0]
                 if filter_pass == "bandpass":
                     df = d[k]
                     ef = e[k]
-                if filter_pass == "lowpass":
-                    gval = rval
-                else:
-                    gval = rval
+                gval = rval
+                if filter_pass != "lowpass":
                     gval[:4] = 0.0
                 if filter_pass == "lowpass":
                     gval[4:] = (
@@ -458,11 +456,8 @@ The "lowpass_cutoff" and "highpass_cutoff" must be greater than 0.5/interval_in_
                     )
                 gval = gval[4:]
                 if k + 1 != butterworth_stages:
-                    if k == 0 and butterworth_reverse_second_stage is True:
-                        rval = np.flip(gval)
-                    else:
-                        rval = gval
-                elif butterworth_reverse_second_stage is True:
+                    rval = np.flip(gval) if k == 0 and butterworth_reverse_second_stage else gval
+                elif butterworth_reverse_second_stage:
                     gval = np.flip(gval)
             ntsd[col] = gval
 

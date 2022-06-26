@@ -122,15 +122,12 @@ def read(
     if isinstance(filenames, (list, tuple)) and len(filenames) == 1:
         filenames = filenames[0]
 
-    # Check for older style where comma delimited list of only files.
-    # If so, rework as space delimited.
-    isspacedelimited = False
-    for fname in tsutils.make_list(filenames, sep=","):
-        if not os.path.exists(str(fname)):
-            isspacedelimited = True
-            break
+    isspacedelimited = any(
+        not os.path.exists(str(fname))
+        for fname in tsutils.make_list(filenames, sep=",")
+    )
 
-    if isspacedelimited is True:
+    if isspacedelimited:
         filenames = tsutils.make_list(filenames, sep=" ", flat=False)
     else:
         # All filenames are real files.  Therefore old style and just make
@@ -143,7 +140,7 @@ Using "," separated files is deprecated in favor of space delimited files."""
             )
         )
 
-    tsd = tsutils.common_kwds(
+    return tsutils.common_kwds(
         input_tsd=filenames,
         skiprows=skiprows,
         index_type=index_type,
@@ -158,5 +155,3 @@ Using "," separated files is deprecated in favor of space delimited files."""
         target_units=target_units,
         usecols=columns,
     )
-
-    return tsd

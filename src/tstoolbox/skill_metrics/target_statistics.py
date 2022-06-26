@@ -99,11 +99,9 @@ def target_statistics(predicted, reference, field="", norm=False):
         crmsd = crmsd / sigma_ref
         rmsd = rmsd / sigma_ref
 
-    # Store statistics in a dictionary
-    stats = {"bias": bias, "crmsd": crmsd, "rmsd": rmsd}
-    if norm is True:
-        stats["type"] = "normalized"
-    else:
-        stats["type"] = "unnormalized"
-
-    return stats
+    return {
+        "bias": bias,
+        "crmsd": crmsd,
+        "rmsd": rmsd,
+        "type": "normalized" if norm is True else "unnormalized",
+    }

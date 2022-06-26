@@ -34,19 +34,13 @@ def get_taylor_diagram_axes(rho, option):
 
     Created on Dec 3, 2016
     """
-    axes = {}
-    axes["dx"] = rho[0]
-
+    axes = {"dx": rho[0]}
     cax = plt.gca()
     axes["tc"] = cax.xaxis.label.get_color()
     axes["next"] = "replace"  # needed?
 
     # make a radial grid
-    if option["axismax"] == 0.0:
-        maxrho = max(abs(rho))
-    else:
-        maxrho = option["axismax"]
-
+    maxrho = max(abs(rho)) if option["axismax"] == 0.0 else option["axismax"]
     # Determine default number of tick marks
     yticks = ticker.AutoLocator().tick_values(-1.0 * maxrho, maxrho)
     ticks = np.sum(yticks >= 0)

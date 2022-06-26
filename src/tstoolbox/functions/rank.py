@@ -176,11 +176,7 @@ def rank(
     )
 
     # Trying to save some memory
-    if print_input:
-        otsd = tsd.copy()
-    else:
-        otsd = pd.DataFrame()
-
+    otsd = tsd.copy() if print_input else pd.DataFrame()
     return tsutils.return_input(
         print_input,
         otsd,

@@ -100,6 +100,4 @@ def taylor_statistics(predicted, reference, field=""):
     sdevr = np.std(r)
     sdev = [sdevr, sdevp]
 
-    # Store statistics in a dictionary
-    stats = {"ccoef": ccoef, "crmsd": crmsd, "sdev": sdev}
-    return stats
+    return {"ccoef": ccoef, "crmsd": crmsd, "sdev": sdev}
