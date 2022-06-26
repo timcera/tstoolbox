@@ -125,7 +125,7 @@ You gave {tsd.columns}.
     ndf = tmptsd.sort_values(tmptsd.columns[0], ascending=ascending)
     gkde = gaussian_kde(ndf.iloc[:, 0])
 
-    if evaluate is True:
+    if evaluate:
         y = gkde.evaluate(tmptsd.iloc[:, 0])
         ndf = pd.DataFrame(y, index=tmptsd.index)
     else:

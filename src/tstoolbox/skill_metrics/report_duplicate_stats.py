@@ -23,4 +23,4 @@ def report_duplicate_stats(duplicates):
     # Report duplicates to screen
     print("Duplicate pairs of statistics:")
     for pair in duplicates:
-        print(str(pair))
+        print(pair)

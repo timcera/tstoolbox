@@ -52,7 +52,4 @@ def brier_score(forecast, observed):
     if np.sum(index) > 0:
         raise ValueError("Observed has values not equal to 0 or 1.")
 
-    # Calculate score
-    bs = np.sum(np.square(forecast - observed)) / len(forecast)
-
-    return bs
+    return np.sum(np.square(forecast - observed)) / len(forecast)

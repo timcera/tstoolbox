@@ -49,10 +49,7 @@ def nse(simulated, observed):
     # Check that dimensions of simulated and observed fields match
     utils.check_arrays(simulated, observed)
 
-    # Calculate the NSE
-    nse = 1 - (
+    return 1 - (
         np.sum((simulated - observed) ** 2)
         / np.sum((observed - np.mean(observed)) ** 2)
     )
-
-    return nse

@@ -43,8 +43,7 @@ def error_wrapper(estr: str) -> str:
     wrapper = TextWrapper(initial_indent="*   ", subsequent_indent="*   ")
     nestr = ["", "*"]
     for paragraph in estr.split("\n\n"):
-        nestr.append("\n".join(wrapper.wrap(paragraph.strip())))
-        nestr.append("*")
+        nestr.extend(("\n".join(wrapper.wrap(paragraph.strip())), "*"))
     nestr.append("")
     return "\n".join(nestr)
 
@@ -585,10 +584,7 @@ def stride_and_unit(sunit: str) -> Tuple[str, int]:
         return sunit
     unit = sunit.lstrip("+-. 1234567890")
     stride = sunit[: sunit.index(unit)]
-    if len(stride) > 0:
-        stride = int(stride)
-    else:
-        stride = 1
+    stride = int(stride) if len(stride) > 0 else 1
     return unit, stride
 
 
@@ -727,10 +723,7 @@ def parsedate(
 
     # The API should boomerang a datetime.datetime instance and None.
     if isinstance(dstr, datetime.datetime):
-        if strftime is None:
-            return dstr
-        return dstr.strftime(strftime)
-
+        return dstr if strftime is None else dstr.strftime(strftime)
     try:
         pdate = pd.to_datetime(dstr)
     except ValueError:
@@ -755,7 +748,7 @@ def merge_dicts(*dict_args: dict) -> dict:
     """Merge multiple dictionaries."""
     result = {}
     for d in dict_args:
-        result.update(d)
+        result |= d
     return result
 
 
@@ -826,7 +819,7 @@ def make_list(*strorlist, **kwds: Any) -> Any:
 
     if isinstance(strorlist, (list, tuple)):
         # The following will fix ((tuples, in, a, tuple, problem),)
-        if flat is True:
+        if flat:
             strorlist = flatten(strorlist)
 
         if len(strorlist) == 1:
@@ -860,15 +853,13 @@ The list {strorlist} for "{kwdname}" should have {n} members according to functi
         #
         return [strorlist]
 
-    if isinstance(strorlist, (str, bytes)) and (
-        strorlist in ["None", "", b"None", b""]
-    ):
-        # 'None' -> None
-        # ''     -> None
-        #
-        return None
-
     if isinstance(strorlist, (str, bytes)):
+        if strorlist in ["None", "", b"None", b""]:
+            # 'None' -> None
+            # ''     -> None
+            #
+            return None
+
         # '1'   -> [1]
         # '5.7' -> [5.7]
 
@@ -887,7 +878,7 @@ The list {strorlist} for "{kwdname}" should have {n} members according to functi
         if isinstance(strorlist, str):
             if "\r" in strorlist or "\n" in strorlist:
                 return [StringIO(strorlist)]
-            strorlist = strorlist.split(str(sep))
+            strorlist = strorlist.split(sep)
 
         if isinstance(strorlist, bytes):
             if b"\r" in strorlist or b"\n" in strorlist:
@@ -925,7 +916,7 @@ The list {strorlist} for "{kwdname}" should have {n} members according to functi
         if isinstance(each, (type(None), int, float, pd.DataFrame, pd.Series)):
             ret.append(each)
             continue
-        if flat is False and isinstance(each, list):
+        if not flat and isinstance(each, list):
             ret.append(each)
             continue
         if each is None or each.strip() == "" or each == "None":
@@ -1055,7 +1046,7 @@ Column name source units are {tsource_units}
     else:
         su = [""] * len(ntsd.columns)
 
-    if source_units_required is True and "" in su:
+    if source_units_required and "" in su:
         raise ValueError(
             error_wrapper(
                 f"""
@@ -1207,7 +1198,7 @@ def common_kwds(
     # The "por" keyword is stupid, since it is a synonym for "dropna" equal
     # to "no".  Discovered this after implementation and should deprecate
     # and remove in the future.
-    if por is True:
+    if por:
         dropna = "no"
 
     ntsd = read_iso_ts(
@@ -1230,13 +1221,13 @@ def common_kwds(
         ntsd, source_units, target_units, source_units_required=source_units_required
     )
 
-    if clean is True:
+    if clean:
         ntsd = ntsd.sort_index()
         ntsd = ntsd[~ntsd.index.duplicated()]
 
     ntsd = _round_index(ntsd, round_index=round_index)
 
-    if bestfreq is True:
+    if bestfreq:
         ntsd = asbestfreq(ntsd, force_freq=force_freq)
 
     ntsd = _date_slice(ntsd, start_date=start_date, end_date=end_date, por=por)
@@ -1248,7 +1239,7 @@ def common_kwds(
         ntsd = ntsd.dropna(axis="index", how=dropna)
     else:
         try:
-            if bestfreq is True:
+            if bestfreq:
                 ntsd = asbestfreq(ntsd, force_freq=force_freq)
         except ValueError:
             pass
@@ -1443,10 +1434,7 @@ Python or edit the input data..
             pass
 
     # pd.infer_freq would fail if given a large dataset
-    if len(data.index) > 1000:
-        slic = slice(None, 999)
-    else:
-        slic = slice(None, None)
+    slic = slice(None, 999) if len(data.index) > 1000 else slice(None, None)
     try:
         infer_freq = pd.infer_freq(data.index[slic])
     except ValueError:
@@ -1487,10 +1475,7 @@ Python or edit the input data..
     mininterval = np.min(ndiff)
     if mininterval <= 0:
         raise ValueError
-    if len(ndiff) == 1:
-        ngcd = ndiff[0]
-    else:
-        ngcd = reduce(gcd, ndiff)
+    ngcd = ndiff[0] if len(ndiff) == 1 else reduce(gcd, ndiff)
     if ngcd < 1000:
         infer_freq = f"{ngcd}N"
     elif ngcd < 1000000:
@@ -1545,15 +1530,11 @@ def renamer(xloc: str, suffix: Optional[str] = "") -> str:
         suffix = ""
     words = xloc.split(":")
     if len(words) == 1:
-        words.append("")
-        words.append(suffix)
+        words.extend(("", suffix))
     elif len(words) == 2:
         words.append(suffix)
     elif len(words) == 3 and suffix:
-        if words[2]:
-            words[2] = f"{words[2]}_{suffix}"
-        else:
-            words[2] = suffix
+        words[2] = f"{words[2]}_{suffix}" if words[2] else suffix
     return ":".join(words)
 
 
@@ -1594,7 +1575,7 @@ def return_input(
         return memory_optimize(
             intds.join(output, lsuffix="_1", rsuffix="_2", how="outer")
         )
-    if reverse_index is True:
+    if reverse_index:
         return memory_optimize(output.iloc[::-1])
     return memory_optimize(output)
 
@@ -1623,23 +1604,15 @@ def _printiso(
         if tsd.columns.empty:
             tsd = pd.DataFrame(index=tsd.index)
 
-        # Not perfectly true, but likely will use showindex for indices
-        # that are not time stamps.
-        if showindex is True:
-            if not tsd.index.name:
-                tsd.index.name = "UniqueID"
-        else:
-            if not tsd.index.name:
-                tsd.index.name = "Datetime"
-
+        if not tsd.index.name:
+            tsd.index.name = "UniqueID" if showindex is True else "Datetime"
         print_index = True
         if tsd.index.inferred_type in ["datetime64", "period"]:
-            if not tsd.index.name:
-                tsd.index.name = "Datetime"
-            # Someone made the decision about the name
-            # This is how I include time zone info by tacking on to the
-            # index.name.
-            elif "datetime" not in tsd.index.name.lower():
+            if (
+                not tsd.index.name
+                or tsd.index.name
+                and "datetime" not in tsd.index.name.lower()
+            ):
                 tsd.index.name = "Datetime"
         else:
             # This might be overkill, but tstoolbox is for time-series.
@@ -1649,7 +1622,7 @@ def _printiso(
         if tsd.index.name == "UniqueID":
             print_index = False
 
-        if showindex in ["always", "default"]:
+        if showindex in {"always", "default"}:
             print_index = True
 
     elif isinstance(tsd, (int, float, tuple, np.ndarray)):
@@ -1743,8 +1716,7 @@ def reduce_mem_usage(props):
             # they need to remain float.
             result = False
 
-        # Make Integer/unsigned Integer datatypes
-        if result is True:
+        if result:
             if mn >= 0:
                 if mx < np.iinfo(np.uint8).max:
                     props[col] = props[col].astype(np.uint8)
@@ -1754,21 +1726,14 @@ def reduce_mem_usage(props):
                     props[col] = props[col].astype(np.uint32)
                 else:
                     props[col] = props[col].astype(np.uint64)
-            else:
-                if mn > np.iinfo(np.int8).min and mx < np.iinfo(np.int8).max:
-                    props[col] = props[col].astype(np.int8)
-                elif mn > np.iinfo(np.int16).min and mx < np.iinfo(np.int16).max:
-                    props[col] = props[col].astype(np.int16)
-                elif mn > np.iinfo(np.int32).min and mx < np.iinfo(np.int32).max:
-                    props[col] = props[col].astype(np.int32)
-                elif mn > np.iinfo(np.int64).min and mx < np.iinfo(np.int64).max:
-                    props[col] = props[col].astype(np.int64)
-
-        else:
-            # Put here whatever I come up with for float types.
-            # Algorithm problem because just looking at limits doesn't help
-            # with precision.
-            pass
+            elif mn > np.iinfo(np.int8).min and mx < np.iinfo(np.int8).max:
+                props[col] = props[col].astype(np.int8)
+            elif mn > np.iinfo(np.int16).min and mx < np.iinfo(np.int16).max:
+                props[col] = props[col].astype(np.int16)
+            elif mn > np.iinfo(np.int32).min and mx < np.iinfo(np.int32).max:
+                props[col] = props[col].astype(np.int32)
+            elif mn > np.iinfo(np.int64).min and mx < np.iinfo(np.int64).max:
+                props[col] = props[col].astype(np.int64)
 
     return props
 

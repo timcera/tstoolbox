@@ -57,15 +57,11 @@ def get_target_diagram_axes(x, y, option):
         # retrieval in function calls
         get_target_diagram_axes.nxticks = nxticks
         get_target_diagram_axes.nyticks = nyticks
+    elif hasattr(get_target_diagram_axes, "nxticks"):
+        nxticks = get_target_diagram_axes.nxticks
+        nyticks = get_target_diagram_axes.nyticks
     else:
-        # Use function attributes for nxticks and nyticks
-        if hasattr(get_target_diagram_axes, "nxticks") and hasattr(
-            get_target_diagram_axes, "nxticks"
-        ):
-            nxticks = get_target_diagram_axes.nxticks
-            nyticks = get_target_diagram_axes.nyticks
-        else:
-            raise ValueError("No saved values for nxticks & nyticks.")
+        raise ValueError("No saved values for nxticks & nyticks.")
 
     # Set default tick increment and maximum axis values
     if foundmax == 0:
@@ -111,7 +107,7 @@ def get_target_diagram_axes(x, y, option):
     ylabel = []
 
     # Set x tick labels
-    for i, item in enumerate(xtick):
+    for item in xtick:
         index = np.where(option["xticklabelpos"] == item)
         if len(index) > 0:
             xlabel.append(str(item))
@@ -136,11 +132,4 @@ def get_target_diagram_axes(x, y, option):
     index = np.asscalar(index[0])
     ylabel[index] = ""
 
-    # Store output variables in data structure
-    axes = {}
-    axes["xtick"] = xtick
-    axes["ytick"] = ytick
-    axes["xlabel"] = xlabel
-    axes["ylabel"] = ylabel
-
-    return axes
+    return {"xtick": xtick, "ytick": ytick, "xlabel": xlabel, "ylabel": ylabel}

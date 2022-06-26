@@ -184,16 +184,20 @@ def _display_target_diagram_options():
 
     _disp("Axes options:")
     _dispopt(
-        "'ticks'", f"define tick positions (default is that used by axis function)"
+        "'ticks'",
+        "define tick positions (default is that used by axis function)",
     )
+
     _dispopt(
         "'xtickLabelPos'",
-        f"position of the tick labels along the x-axis (empty by default)",
+        "position of the tick labels along the x-axis (empty by default)",
     )
+
     _dispopt(
         "'ytickLabelPos'",
-        f"position of the tick labels along the y-axis (empty by default)",
+        "position of the tick labels along the y-axis (empty by default)",
     )
+
     _dispopt("'equalAxes'", "'on' (default) / 'off': Set axes to be equal")
     _dispopt("'limitAxis'", "Max for the Bias & uRMSD axis")
     _disp("")
@@ -206,12 +210,14 @@ def _display_target_diagram_options():
     _dispopt("'axismax'", "Maximum for the Bias & uRMSD axis")
     _dispopt(
         "'circles'",
-        f"define the radii of circles to draw (default of (maximum rmsds)*[.7 1], [.7 1] when normalized diagram)",
+        "define the radii of circles to draw (default of (maximum rmsds)*[.7 1], [.7 1] when normalized diagram)",
     )
+
     _dispopt(
         "'circleLineSpec'",
-        f"Circle line specification (default dashed black, '--k')",
+        "Circle line specification (default dashed black, '--k')",
     )
+
     _dispopt("'circleLineWidth'", "Circle line width")
     _dispopt("'obsUncertainty'", "Observational Uncertainty (default of 0)")
     _dispopt("'normalized'", "'on' / 'off' (default): normalized target diagram")

@@ -50,7 +50,4 @@ def kge(simulated, observed):
     beta = np.sum(simulated) / np.sum(observed)
     cc = np.corrcoef(observed, simulated)[0, 1]
 
-    # Calculate the kge
-    kge = 1.0 - np.sqrt((cc - 1.0) ** 2 + (alpha - 1.0) ** 2 + (beta - 1.0) ** 2)
-
-    return kge
+    return 1.0 - np.sqrt((cc - 1.0) ** 2 + (alpha - 1.0) ** 2 + (beta - 1.0) ** 2)

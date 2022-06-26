@@ -30,7 +30,4 @@ def bias(predicted, reference):
     # Check that dimensions of predicted and reference fields match
     utils.check_arrays(predicted, reference)
 
-    # Calculate bias in means
-    b = np.mean(predicted) - np.mean(reference)
-
-    return b
+    return np.mean(predicted) - np.mean(reference)

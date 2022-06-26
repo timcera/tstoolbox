@@ -113,47 +113,37 @@ def get_taylor_diagram_options(*args, **kwargs):
     cors = args[0]
     nargin = len(kwargs)
 
-    # Set default parameters for all options
-    option = {}
-    option["alpha"] = 1.0
-    option["axismax"] = 0.0
-    option["checkstats"] = "off"
-
-    option["colcor"] = (0, 0, 1)  # blue
-    option["colobs"] = "m"  # magenta
-    option["colrms"] = (0, 0.6, 0)  # medium green
-    option["colstd"] = (0, 0, 0)  # black
-
-    option["colormap"] = "off"
-
-    option["markercolor"] = "r"
-    option["markerdisplayed"] = "marker"
-    option["markerlabel"] = ""
-    option["markerlabelcolor"] = "k"
-    option["markerlegend"] = "off"
-    option["markerobs"] = "none"
-    option["markersize"] = 10
-
-    option["nonrmsdz"] = "off"
     negative = cors[np.where(cors < 0.0)]
-    if len(negative) > 0:
-        option["numberpanels"] = 2  # double panel
-    else:
-        option["numberpanels"] = 1  # single panel
-
-    option["overlay"] = "off"
-    option["rincrms"] = []
-    option["rincstd"] = []
-    option["rmslabelformat"] = "0"
-
-    option["showlabelscor"] = "on"
-    option["showlabelsrms"] = "on"
-    option["showlabelsstd"] = "on"
-
-    option["stylecor"] = "-."
-    option["styleobs"] = ""
-    option["stylerms"] = "--"
-    option["stylestd"] = ":"
+    option = {
+        "alpha": 1.0,
+        "axismax": 0.0,
+        "checkstats": "off",
+        "colcor": (0, 0, 1),
+        "colobs": "m",
+        "colrms": (0, 0.6, 0),
+        "colstd": (0, 0, 0),
+        "colormap": "off",
+        "markercolor": "r",
+        "markerdisplayed": "marker",
+        "markerlabel": "",
+        "markerlabelcolor": "k",
+        "markerlegend": "off",
+        "markerobs": "none",
+        "markersize": 10,
+        "nonrmsdz": "off",
+        "numberpanels": 2 if len(negative) > 0 else 1,
+        "overlay": "off",
+        "rincrms": [],
+        "rincstd": [],
+        "rmslabelformat": "0",
+        "showlabelscor": "on",
+        "showlabelsrms": "on",
+        "showlabelsstd": "on",
+        "stylecor": "-.",
+        "styleobs": "",
+        "stylerms": "--",
+        "stylestd": ":",
+    }
 
     # Note that "0" must be explicitly given or a scientific number is
     # stored

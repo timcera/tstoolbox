@@ -31,8 +31,7 @@ def index_agreement(simulated, observed):
     # Check that dimensions of simulated and observed fields match
     utils.check_arrays(simulated, observed)
 
-    # Calculate the index_agreement
-    index_agreement = 1.0 - (
+    return 1.0 - (
         np.sum((observed - simulated) ** 2)
         / (
             np.sum(
@@ -44,5 +43,3 @@ def index_agreement(simulated, observed):
             )
         )
     )
-
-    return index_agreement

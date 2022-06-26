@@ -114,23 +114,18 @@ def _getColorBarLocation(hc, option, **kwargs):
     # Get current position of color bar
     cp = hc.ax.get_position()
 
-    # ToDo: Find better way of determining location
-    # Calculate location
-    if "checkSTATS" in option:
-        # Taylor diagram
-        location = [
+    return (
+        [
             cp.x0 + xscale * 0.8 * cp.width,
             yscale * cp.y0,
             cxscale * cp.width / 6,
             cp.height,
         ]
-    else:
-        # target diagram
-        location = [
+        if "checkSTATS" in option
+        else [
             cp.x0 + xscale * cp.width,
             yscale * cp.y0,
             cxscale * cp.width / 6,
             cp.height,
         ]
-
-    return location
+    )

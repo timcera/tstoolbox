@@ -670,9 +670,12 @@ and the second is the simulated.  """
             ]
         )
 
-    statval.append(["Common count observed and simulated", len(tsd.index)])
-
-    statval.append(["Count of NaNs", None, lennao, lennas])
+    statval.extend(
+        (
+            ["Common count observed and simulated", len(tsd.index)],
+            ["Count of NaNs", None, lennao, lennas],
+        )
+    )
 
     if "mean" in stats:
         statval.append(["Mean", None, obs.mean(), sim.mean()])

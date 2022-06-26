@@ -23,7 +23,4 @@ def pc_bias(simulated, observed):
     # Check that dimensions of simulated and observed fields match
     utils.check_arrays(simulated, observed)
 
-    # Calculate bias in means
-    b = 100.0 * np.sum(simulated - observed) / np.sum(observed)
-
-    return b
+    return 100.0 * np.sum(simulated - observed) / np.sum(observed)

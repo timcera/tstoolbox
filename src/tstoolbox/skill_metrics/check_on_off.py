@@ -26,10 +26,7 @@ def check_on_off(value):
             return lowcase
         raise ValueError(f"Invalid value: {str(value)}")
     if isinstance(value, bool):
-        if not value:
-            value = "off"
-        elif value:
-            value = "on"
+        value = "on" if value else "off"
     else:
         raise ValueError(f"Invalid value: {str(value)}")
 

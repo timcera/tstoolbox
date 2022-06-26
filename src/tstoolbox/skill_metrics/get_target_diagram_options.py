@@ -69,30 +69,30 @@ def get_target_diagram_options(**kwargs):
     nargin = len(kwargs)
 
     # Set default parameters for all options
-    option = {}
-    option["alpha"] = 1.0
-    option["axismax"] = 0.0
-    option["circlelinespec"] = "k--"
-    option["circlelinewidth"] = 1.5
-    option["circles"] = []
-    option["colormap"] = "off"
-    option["equalaxes"] = "on"
+    option = {
+        "alpha": 1.0,
+        "axismax": 0.0,
+        "circlelinespec": "k--",
+        "circlelinewidth": 1.5,
+        "circles": [],
+        "colormap": "off",
+        "equalaxes": "on",
+        "markercolor": "r",
+        "markerdisplayed": "marker",
+        "markerlabel": "",
+        "markerlabelcolor": "k",
+        "markerlegend": "off",
+        "markersize": 10,
+        "nonrmsdz": "off",
+        "normalized": "off",
+        "obsuncertainty": 0.0,
+        "overlay": "off",
+        "ticks": [],
+        "titlecolorbar": "",
+        "xticklabelpos": [],
+        "yticklabelpos": [],
+    }
 
-    option["markercolor"] = "r"
-    option["markerdisplayed"] = "marker"
-    option["markerlabel"] = ""
-    option["markerlabelcolor"] = "k"
-    option["markerlegend"] = "off"
-    option["markersize"] = 10
-
-    option["nonrmsdz"] = "off"
-    option["normalized"] = "off"
-    option["obsuncertainty"] = 0.0
-    option["overlay"] = "off"
-    option["ticks"] = []
-    option["titlecolorbar"] = ""
-    option["xticklabelpos"] = []
-    option["yticklabelpos"] = []
     if nargin == 0:
         # No options requested, so return with only defaults
         return option

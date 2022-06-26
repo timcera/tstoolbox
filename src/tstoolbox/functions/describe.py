@@ -90,10 +90,6 @@ def describe(
         dropna=dropna,
         clean=clean,
     )
-    if transpose is True:
-        ntsd = tsd.describe().transpose()
-    else:
-        ntsd = tsd.describe()
-
+    ntsd = tsd.describe().transpose() if transpose else tsd.describe()
     ntsd.index.name = "Statistic"
     return ntsd
