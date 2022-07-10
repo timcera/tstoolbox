@@ -46,10 +46,10 @@ jobs:
         run: |
           python -m pytest --cov --mpl
 
-      - name: Coveralls Parallel
-        uses: coverallsapp/github-action@master
+      - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@develop
         with:
-          GITHUB-TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           flag-name: run-${{ matrix.test_number }}
           parallel: true
 
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
-        uses: coverallsapp/github-action@master
+        uses: AndreMiras/coveralls-python-action@develop
         with:
-          GITHUB-TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true
