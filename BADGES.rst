@@ -2,8 +2,8 @@
     :target: https://github.com/timcera/tstoolbox/actions/workflows/python-package.yml
     :height: 20
 
-.. image:: https://coveralls.io/repos/timcera/tstoolbox/badge.png?branch=master
-    :target: https://coveralls.io/r/timcera/tstoolbox?branch=master
+.. image:: https://coveralls.io/repos/timcera/tstoolbox/badge.png?branch=main
+    :target: https://coveralls.io/r/timcera/tstoolbox?branch=main
     :height: 20
 
 .. image:: https://img.shields.io/pypi/v/tstoolbox.svg

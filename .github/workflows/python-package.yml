@@ -7,9 +7,9 @@ name: Python package
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
 
 
@@ -35,6 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
+          sudo apt-get install gdal-bin libgdal-dev libgdal-doc proj-bin
           python -m pip install --upgrade pip
           python -m pip install flake8 pytest pytest-cov pytest-mpl
           python -m pip install coverage[toml]
@@ -45,8 +46,19 @@ jobs:
         run: |
           python -m pytest --cov --mpl
 
-      - name: Coveralls
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-            coveralls --service=github
+      - name: Coveralls Parallel
+        uses: coverallsapp/github-action@master
+        with:
+          GITHUB-TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: run-${{ matrix.test_number }}
+          parallel: true
+
+  finish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          GITHUB-TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
