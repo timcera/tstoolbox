@@ -1,3 +1,10 @@
+[build-system]
+requires = [
+    "setuptools",
+    "oldest-supported-numpy",
+]
+build-backend = "setuptools.build_meta"
+
 
 [tool.check-manifest]
 ignore = ["docs/_function_autosummary/*",
@@ -10,19 +17,8 @@ ignore = ["docs/_function_autosummary/*",
 name = "cz_conventional_commits"
 version = "103.18.3"
 tag_format = "$version"
-version_files = ["VERSION"]
+version_files = [
+    "VERSION",
+    "pyproject.toml:version"
+    ]
 update_changelog_on_bump = true
-
-
-[build-system]
-requires = [
-    "setuptools",
-    "oldest-supported-numpy",
-]
-build-backend = "setuptools.build_meta"
-
-# This can't be specified in pyproject.toml because can't figure out how to add
-# toml support to coverage in github actions, but the equivalent setting can be
-# in setup.cfg.
-# [tool.coverage.run]
-# relative_files = true

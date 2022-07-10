@@ -26,10 +26,10 @@ or numpy (http://numpy.scipy.org) for any heavy lifting.
 
 Installation
 ------------
-Should be as easy as running ``pip install tstoolbox`` or ``easy_install
-tstoolbox`` at any command line.  Not sure on Windows whether this will bring
-in pandas, but as mentioned above, if you start with scientific Python
-distribution then you shouldn't have a problem.
+Should be as easy as running ``pip install tstoolbox`` or
+``easy_install tstoolbox`` at any command line.  Not sure on Windows whether
+this will bring in pandas, but as mentioned above, if you start with scientific
+Python distribution then you shouldn't have a problem.
 
 Usage - Command Line
 --------------------
