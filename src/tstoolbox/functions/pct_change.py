@@ -3,10 +3,10 @@
 
 from typing import Optional
 
-import mando
+import cltoolbox
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -16,7 +16,7 @@ except ImportError:
     from typing_extensions import Literal
 
 
-@mando.command("pct_change", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("pct_change", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def pct_change_cli(
     input_ts="-",

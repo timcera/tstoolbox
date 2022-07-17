@@ -4,11 +4,11 @@
 import warnings
 from typing import List, Union
 
+import cltoolbox
 import HydroErr as he
-import mando
 import numpy as np
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import skill_metrics as sm
 from .. import tsutils
@@ -22,7 +22,7 @@ except ImportError:
 warnings.filterwarnings("ignore")
 
 
-@mando.command("gof", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("gof", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def gof_cli(
     obs_col=None,

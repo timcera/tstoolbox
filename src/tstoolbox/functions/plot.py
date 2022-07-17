@@ -6,11 +6,11 @@ import os
 import warnings
 from typing import List, Optional, Tuple
 
-import mando
+import cltoolbox
 import numpy as np
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -146,7 +146,7 @@ You have {nlim}.
     return nlim
 
 
-@mando.command("plot", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("plot", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def plot_cli(
     input_ts="-",
@@ -1020,17 +1020,17 @@ def plot(
     hlines_y: Optional[List[float]] = None,
     hlines_xmin: Optional[List[float]] = None,
     hlines_xmax: Optional[List[float]] = None,
-    hlines_colors: List[str] = "auto",
-    hlines_linestyles: List[Optional[str]] = "auto",
+    hlines_colors: List[str] = None,
+    hlines_linestyles: List[Optional[str]] = "-",
     vlines_x: Optional[List[float]] = None,
     vlines_ymin: Optional[List[float]] = None,
     vlines_ymax: Optional[List[float]] = None,
-    vlines_colors: List[str] = "auto",
-    vlines_linestyles: List[Optional[str]] = "auto",
+    vlines_colors: List[str] = None,
+    vlines_linestyles: List[Optional[str]] = "-",
 ):
     r"""Plot data."""
     # Need to work around some old option defaults with the implementation of
-    # mando
+    # cltoolbox
     legend = bool(legend == "" or legend == "True" or legend is None)
 
     import matplotlib
@@ -1311,7 +1311,923 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             (False, False): ax.plot,
         }
 
-    if type == "time":
+    if type == "autocorrelation":
+        plottoolbox.autocorrelation(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+        )
+    elif type == "bar":
+        plottoolbox.bar(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            bar_hatchstyles=bar_hatchstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            label_rotation=label_rotation,
+            label_skip=label_skip,
+            force_freq=force_freq,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "bar_stacked":
+        plottoolbox.bar_stacked(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            bar_hatchstyles=bar_hatchstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            label_rotation=label_rotation,
+            label_skip=label_skip,
+            force_freq=force_freq,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "barh":
+        plottoolbox.barh(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            bar_hatchstyles=bar_hatchstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            label_rotation=label_rotation,
+            label_skip=label_skip,
+            force_freq=force_freq,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "barh_stacked":
+        plottoolbox.barh_stacked(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            bar_hatchstyles=bar_hatchstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            label_rotation=label_rotation,
+            label_skip=label_skip,
+            force_freq=force_freq,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "bootstrap":
+        plottoolbox.bootstrap(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            bootstrap_size=bootstrap_size,
+            bootstrap_samples=bootstrap_samples,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "boxplot":
+        plottoolbox.boxplot(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "double_mass":
+        plottoolbox.double_mass(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "heatmap":
+        plottoolbox.heatmap(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "histogram":
+        plottoolbox.histogram(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "kde":
+        plottoolbox.kde(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "kde_time":
+        plottoolbox.kde_time(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "lag_plot":
+        plottoolbox.lag_plot(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "lognorm_xaxis":
+        plottoolbox.lognorm_xaxis(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "lognorm_yaxis":
+        plottoolbox.lognorm_yaxis(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "norm_xaxis":
+        plottoolbox.norm_xaxis(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "norm_yaxis":
+        plottoolbox.norm_yaxis(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "probability_density":
+        plottoolbox.probability_density(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "scatter_matrix":
+        plottoolbox.scatter_matrix(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "target":
+        plottoolbox.target(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "taylor":
+        plottoolbox.taylor(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "time":
         plottoolbox.time(
             tsd,
             legend=legend,
@@ -1329,487 +2245,137 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             figsize=figsize,
             drawstyle=drawstyle,
         )
-        for index, line in enumerate(ax.lines):
-            if icolors is not None:
-                c = next(icolors)
-            else:
-                c = None
-            if imarkerstyles is not None:
-                m = next(imarkerstyles)
-            else:
-                m = None
-            if ilinestyles is not None:
-                l = next(ilinestyles)
-            else:
-                l = None
-            if c is not None:
-                plt.setp(line, color=c)
-            plt.setp(line, marker=m)
-            plt.setp(line, linestyle=l)
-        xtitle = xtitle or "Time"
-        if legend is True:
-            plt.legend(loc="best")
-    elif type in ["taylor"]:
-        from ..skill_metrics import centered_rms_dev, taylor_diagram
-
-        ref = tsd.iloc[:, 0]
-        std = [np.std(ref)]
-        ccoef = [1.0]
-        crmsd = [0.0]
-        for col in range(1, len(tsd.columns)):
-            std.append(np.std(tsd.iloc[:, col]))
-            ccoef.append(np.corrcoef(tsd.iloc[:, col], ref)[0][1])
-            crmsd.append(centered_rms_dev(tsd.iloc[:, col].values, ref.values))
-        taylor_diagram(np.array(std), np.array(crmsd), np.array(ccoef))
-    elif type in ["target"]:
-        from ..skill_metrics import bias, centered_rms_dev, rmsd, target_diagram
-
-        biases = []
-        rmsds = []
-        crmsds = []
-        ref = tsd.iloc[:, 0].values
-        for col in range(1, len(tsd.columns)):
-            biases.append(bias(tsd.iloc[:, col].values, ref))
-            crmsds.append(centered_rms_dev(tsd.iloc[:, col].values, ref))
-            rmsds.append(rmsd(tsd.iloc[:, col].values, ref))
-        target_diagram(np.array(biases), np.array(crmsds), np.array(rmsds))
-    elif type in ["xy", "double_mass"]:
-        # PANDAS was not doing the right thing with xy plots
-        # if you wanted lines between markers.
-        # Fell back to using raw matplotlib.
-        # Boy I do not like matplotlib.
-
-        for colindex in range(colcnt):
-            if colcnt == 0:
-                ndf = tsd.reset_index()
-            else:
-                ndf = tsd.iloc[:, colindex * 2 : colindex * 2 + 2]
-
-            ndf = ndf.dropna()
-
-            if type == "double_mass":
-                ndf.iloc[:, 0] = ndf.iloc[:, 0].cumsum()
-                ndf.iloc[:, 1] = ndf.iloc[:, 1].cumsum()
-
-            oxdata = np.squeeze(ndf.iloc[:, 0].values)
-            oydata = np.squeeze(ndf.iloc[:, 1].values)
-
-            if icolors is not None:
-                c = next(icolors)
-            else:
-                c = None
-
-            plotdict[(logx, logy)](
-                oxdata,
-                oydata,
-                linestyle=next(ilinestyles),
-                color=c,
-                marker=next(imarkerstyles),
-                label=lnames[colindex],
-                drawstyle=drawstyle,
-            )
-
-        ax.set_xlim(xlim)
-        ax.set_ylim(ylim)
-
-        if legend is True:
-            ax.legend(loc="best")
-
-        if type == "double_mass":
-            xtitle = xtitle or f"Cumulative {tsd.columns[0]}"
-            ytitle = ytitle or f"Cumulative {tsd.columns[1]}"
-
-    elif type in [
-        "norm_xaxis",
-        "norm_yaxis",
-        "lognorm_xaxis",
-        "lognorm_yaxis",
-        "weibull_xaxis",
-        "weibull_yaxis",
-    ]:
-        ppf = tsutils.set_ppf(type.split("_")[0])
-        ys = tsd.iloc[:, :]
-
-        for colindex in range(colcnt):
-            oydata = np.array(ys.iloc[:, colindex].dropna())
-            if prob_plot_sort_values == "ascending":
-                oydata = np.sort(oydata)
-            elif prob_plot_sort_values == "descending":
-                oydata = np.sort(oydata)[::-1]
-            n = len(oydata)
-
-            norm_axis = ax.xaxis
-            oxdata = ppf(tsutils.set_plotting_position(n, plotting_position))
-            if type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
-                oxdata, oydata = oydata, oxdata
-                norm_axis = ax.yaxis
-
-            if icolors is not None:
-                c = next(icolors)
-            else:
-                c = None
-            plotdict[(logx, logy)](
-                oxdata,
-                oydata,
-                linestyle=next(ilinestyles),
-                color=c,
-                marker=next(imarkerstyles),
-                label=lnames[colindex],
-                drawstyle=drawstyle,
-            )
-
-        # Make it pretty
-        xtmaj = np.array([0.01, 0.1, 0.5, 0.9, 0.99])
-        xtmaj_str = ["1", "10", "50", "90", "99"]
-        xtmin = np.concatenate(
-            [
-                np.linspace(0.001, 0.01, 10),
-                np.linspace(0.01, 0.1, 10),
-                np.linspace(0.1, 0.9, 9),
-                np.linspace(0.9, 0.99, 10),
-                np.linspace(0.99, 0.999, 10),
-            ]
-        )
-        xtmaj = ppf(xtmaj)
-        xtmin = ppf(xtmin)
-
-        norm_axis.set_major_locator(FixedLocator(xtmaj))
-        norm_axis.set_minor_locator(FixedLocator(xtmin))
-
-        if type in ["norm_xaxis", "lognorm_xaxis", "weibull_xaxis"]:
-            ax.set_xticklabels(xtmaj_str)
-            ax.set_ylim(ylim)
-            ax.set_xlim(ppf(xlim))
-
-        elif type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
-            ax.set_yticklabels(xtmaj_str)
-            ax.set_xlim(xlim)
-            ax.set_ylim(ppf(ylim))
-
-        if type in ["norm_xaxis", "norm_yaxis"]:
-            xtitle = xtitle or "Normal Distribution"
-            ytitle = ytitle or tsd.columns[0]
-        elif type in ["lognorm_xaxis", "lognorm_yaxis"]:
-            xtitle = xtitle or "Log Normal Distribution"
-            ytitle = ytitle or tsd.columns[0]
-        elif type in ["weibull_xaxis", "weibull_yaxis"]:
-            xtitle = xtitle or "Weibull Distribution"
-            ytitle = ytitle or tsd.columns[0]
-
-        if type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
-            xtitle, ytitle = ytitle, xtitle
-
-        if legend is True:
-            ax.legend(loc="best")
-
-    elif type in ["kde", "probability_density"]:
-        ax = tsd.plot.kde(
+    elif type == "weibull_xaxis":
+        plottoolbox.weibull_xaxis(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
+            figsize=figsize,
             legend=legend,
-            subplots=subplots,
-            sharex=sharex,
-            sharey=sharey,
-            style=None,
-            logx=logx,
-            logy=logy,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
             xlim=xlim,
             ylim=ylim,
-            figsize=figsize,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
         )
-        for index, line in enumerate(ax.lines):
-            if icolors is not None:
-                c = next(icolors)
-            else:
-                c = None
-            if imarkerstyles is not None:
-                m = next(imarkerstyles)
-            else:
-                m = None
-            if ilinestyles is not None:
-                l = next(ilinestyles)
-            else:
-                l = None
-            if c is not None:
-                plt.setp(line, color=c)
-            plt.setp(line, marker=m)
-            plt.setp(line, linestyle=l)
-        ytitle = ytitle or "Density"
-        if legend is True:
-            plt.legend(loc="best")
-    elif type == "kde_time":
-        from scipy.stats.kde import gaussian_kde
-
-        _, (ax0, ax1) = plt.subplots(
-            nrows=1,
-            ncols=2,
-            sharey=True,
+    elif type == "weibull_yaxis":
+        plottoolbox.weibull_yaxis(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
             figsize=figsize,
-            gridspec_kw={"width_ratios": [1, 4]},
-        )
-        tsd.plot(
             legend=legend,
-            subplots=subplots,
-            sharex=sharex,
-            sharey=sharey,
-            style=None,
-            logx=logx,
-            logy=logy,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
             xlim=xlim,
             ylim=ylim,
-            mark_right=mark_right,
+            grid=grid,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
+        )
+    elif type == "xy":
+        plottoolbox.xy(
+            input_ts=input_ts,
+            columns=columns,
+            start_date=start_date,
+            end_date=end_date,
+            clean=clean,
+            skiprows=skiprows,
+            index_type=index_type,
+            names=names,
+            ofilename=ofilename,
+            xtitle=xtitle,
+            ytitle=ytitle,
+            title=title,
             figsize=figsize,
+            legend=legend,
+            legend_names=legend_names,
+            colors=colors,
+            linestyles=linestyles,
+            markerstyles=markerstyles,
+            style=style,
+            xaxis=xaxis,
+            yaxis=yaxis,
+            xlim=xlim,
+            ylim=ylim,
+            xy_match_line=xy_match_line,
+            grid=grid,
             drawstyle=drawstyle,
-            ax=ax1,
+            por=por,
+            invert_xaxis=invert_xaxis,
+            invert_yaxis=invert_yaxis,
+            round_index=round_index,
+            source_units=source_units,
+            target_units=target_units,
+            plot_styles=plot_styles,
+            hlines_y=hlines_y,
+            hlines_xmin=hlines_xmin,
+            hlines_xmax=hlines_xmax,
+            hlines_colors=hlines_colors,
+            hlines_linestyles=hlines_linestyles,
+            vlines_x=vlines_x,
+            vlines_ymin=vlines_ymin,
+            vlines_ymax=vlines_ymax,
+            vlines_colors=vlines_colors,
+            vlines_linestyles=vlines_linestyles,
         )
-        for index, line in enumerate(ax1.lines):
-            if icolors is not None:
-                c = next(icolors)
-            else:
-                c = None
-            if imarkerstyles is not None:
-                m = next(imarkerstyles)
-            else:
-                m = None
-            if ilinestyles is not None:
-                l = next(ilinestyles)
-            else:
-                l = None
-            if c is not None:
-                plt.setp(line, color=c)
-            plt.setp(line, marker=m)
-            plt.setp(line, linestyle=l)
-        xtitle = xtitle or "Time"
-        ylimits = ax1.get_ylim()
-        ny = np.linspace(ylimits[0], ylimits[1], 1000)
-
-        # reset to beginning of iterator
-        if icolors is not None:
-            icolors = itertools.cycle(colors)
-        else:
-            icolors = None
-        imarkerstyles = itertools.cycle(markerstyles)
-        ilinestyles = itertools.cycle(linestyles)
-        for col, item in enumerate(tsd.columns):
-            xvals = tsd.iloc[:, col].dropna().values
-            pdf = gaussian_kde(xvals)
-            if icolors is not None:
-                c = next(icolors)
-            ax0.plot(
-                pdf(ny),
-                ny,
-                linestyle=next(ilinestyles),
-                color=c,
-                marker=next(imarkerstyles),
-                label=item,
-                drawstyle=drawstyle,
-            )
-        ax0.set(xlabel="Probability Density", ylabel=ytitle)
-    elif type == "boxplot":
-        tsd.boxplot(figsize=figsize)
-    elif type == "scatter_matrix":
-        from pandas.plotting import scatter_matrix
-
-        tsd = tsd.dropna()
-
-        if scatter_matrix_diagonal == "probablity_density":
-            scatter_matrix_diagonal = "kde"
-        scatter_matrix(tsd, diagonal=scatter_matrix_diagonal, figsize=figsize)
-    elif type == "lag_plot":
-        from pandas.plotting import lag_plot
-
-        lag_plot(tsd.dropna(), lag=lag_plot_lag, ax=ax)
-        xtitle = xtitle or "y(t)"
-        ytitle = ytitle or f"y(t+{short_freq or 1})"
-    elif type == "autocorrelation":
-        from pandas.plotting import autocorrelation_plot
-
-        autocorrelation_plot(tsd.dropna(), ax=ax)
-        xtitle = xtitle or f"Time Lag {short_freq}"
-    elif type == "bootstrap":
-        from pandas.plotting import bootstrap_plot
-
-        bootstrap_plot(
-            tsd, size=bootstrap_size, samples=bootstrap_samples, color="gray"
-        )
-    elif type == "heatmap":
-        # Find beginning and end years
-        byear = tsd.index[0].year
-        eyear = tsd.index[-1].year
-        tsd = tsutils.asbestfreq(tsd)
-        if tsd.index.freqstr != "D":
-            raise ValueError(
-                tsutils.error_wrapper(
-                    """
-The "heatmap" plot type can only work with daily time series.
-"""
-                )
-            )
-        dr = pd.date_range(f"{byear}-01-01", f"{eyear}-12-31", freq="D")
-        ntsd = tsd.reindex(index=dr).astype(float)
-        groups = ntsd.iloc[:, 0].groupby(pd.Grouper(freq="A"))
-        years = pd.DataFrame()
-        for name, group in groups:
-            ngroup = group.values
-            if len(group.values) == 365:
-                ngroup = np.append(group.values, [np.nan])
-            years[name.year] = ngroup
-        years = years.T
-        plt.imshow(years, interpolation=None, aspect="auto")
-        plt.colorbar()
-        yticks = list(range(byear, eyear + 1))
-        skip = len(yticks) // 20 + 1
-        plt.yticks(range(0, len(yticks), skip), yticks[::skip])
-        mnths = [0, 30, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
-        mnths_labels = [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-        ]
-        plt.xticks(mnths, mnths_labels)
-        grid = False
-    elif type in ("bar", "bar_stacked", "barh", "barh_stacked"):
-        stacked = False
-        if "stacked" in type:
-            stacked = True
-        kind = "bar"
-        if "barh" in type:
-            kind = "barh"
-        if icolors is not None:
-            c = [next(icolors) for i in range(len(tsd.columns))]
-        else:
-            c = None
-        tsd.plot(
-            ax=ax,
-            kind=kind,
-            legend=legend,
-            stacked=stacked,
-            logx=logx,
-            logy=logy,
-            xlim=xlim,
-            ylim=ylim,
-            linestyle=None,
-            color=c,
-        )
-
-        hatches = [next(ibar_hatchstyles) for i in range(len(tsd.columns))]
-        hatches = "".join(h * len(tsd.index) for h in hatches)
-        for patch, hatch in zip(ax.patches, hatches):
-            patch.set_hatch(hatch)
-
-        freq = tsutils.asbestfreq(tsd, force_freq=force_freq).index.freqstr
-        if freq is not None:
-            if "A" in freq:
-                endchar = 4
-            elif "M" in freq:
-                endchar = 7
-            elif "D" in freq:
-                endchar = 10
-            elif "H" in freq:
-                endchar = 13
-            else:
-                endchar = None
-            nticklabels = []
-            if kind == "bar":
-                taxis = ax.xaxis
-            else:
-                taxis = ax.yaxis
-            for index, i in enumerate(taxis.get_majorticklabels()):
-                if index % label_skip:
-                    nticklabels.append(" ")
-                else:
-                    nticklabels.append(i.get_text()[:endchar])
-            taxis.set_ticklabels(nticklabels)
-            plt.setp(taxis.get_majorticklabels(), rotation=label_rotation)
-        if legend is True:
-            plt.legend(loc="best")
-    elif type == "histogram":
-        tsd.hist(figsize=figsize, sharey=sharey, sharex=sharex)
-
-    if type in [
-        "time",
-        "xy",
-        "bar",
-        "bar_stacked",
-        "histogram",
-        "norm_xaxis",
-        "lognorm_xaxis",
-        "weibull_xaxis",
-        "norm_yaxis",
-        "lognorm_yaxis",
-        "weibull_yaxis",
-    ]:
-        if hlines_y is not None:
-            if type in ["norm_yaxis", "lognorm_yaxis", "weibull_yaxis"]:
-                hlines_y = ppf(hlines_y)
-            if hlines_xmin is None:
-                hlines_xmin = ax.get_xlim()[0]
-            if hlines_xmax is None:
-                hlines_xmax = ax.get_xlim()[1]
-            if hlines_colors == "auto":
-                hlines_colors = icolors
-            else:
-                hlines_colors = itertools.cycle(hlines_colors)
-            if hlines_linestyles == "auto":
-                hlines_linestyles = ax._get_lines.prop_cycler
-            else:
-                hlines_linestyles = itertools.cycle(hlines_linestyles)
-            for index, line in enumerate(hlines_y):
-                try:
-                    val = hlines_xmin[index]
-                except KeyError:
-                    hlines_xmin.append(hlines_xmin[-1])
-                try:
-                    val = hlines_xmax[index]
-                except KeyError:
-                    hlines_xmax.append(hlines_xmax[-1])
-            for l, xmin, xmax, c, ls in zip(
-                hlines_y, hlines_xmin, hlines_xmax, hlines_colors, hlines_linestyles
-            ):
-                ax.plot([xmin, l], [xmax, l], colors=c, linestyles=l)
-        if vlines_x is not None:
-            if type in ["norm_xaxis", "lognorm_xaxis", "weibull_xaxis"]:
-                vlines_x = ppf(vlines_x)
-            plt.vlines(
-                vlines_x,
-                vlines_ymin,
-                vlines_ymax,
-                colors=vlines_colors,
-                linestyles=vlines_linestyles,
-            )
-
-    if type == "xy" and xy_match_line:
-        if isinstance(xy_match_line, str):
-            xymsty = xy_match_line
-        else:
-            xymsty = "g--"
-        nxlim = ax.get_xlim()
-        nylim = ax.get_ylim()
-        maxt = max(nxlim[1], nylim[1])
-        mint = min(nxlim[0], nylim[0])
-        ax.plot([mint, maxt], [mint, maxt], xymsty, zorder=1)
-        ax.set_ylim(nylim)
-        ax.set_xlim(nxlim)
-
-    plt.xlabel(xtitle)
-    plt.ylabel(ytitle)
-
-    if invert_xaxis is True:
-        plt.gca().invert_xaxis()
-    if invert_yaxis is True:
-        plt.gca().invert_yaxis()
-
-    plt.grid(grid)
-
-    plt.title(title)
-    plt.tight_layout()
-    if ofilename is not None:
-        plt.savefig(ofilename)
-    return plt

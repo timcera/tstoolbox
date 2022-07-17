@@ -3,10 +3,10 @@
 
 import warnings
 
-import mando
+import cltoolbox
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from scipy.stats import t
 
 from .. import tsutils
@@ -20,7 +20,7 @@ except ImportError:
 warnings.filterwarnings("ignore")
 
 
-@mando.command("calculate_fdc", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("calculate_fdc", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def calculate_fdc_cli(
     input_ts="-",

@@ -5,16 +5,16 @@
 import warnings
 from typing import List, Optional, Union
 
-import mando
+import cltoolbox
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@mando.command("replace", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("replace", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def replace_cli(
     from_values,

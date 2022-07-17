@@ -4,10 +4,10 @@
 import warnings
 from typing import Union
 
-import mando
+import cltoolbox
 import numpy as np
 import pandas as pd
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pandas.tseries.frequencies import to_offset
 
 from .. import tsutils
@@ -18,7 +18,7 @@ except ImportError:
     from typing_extensions import Literal
 
 
-@mando.command("convert_index", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("convert_index", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def convert_index_cli(
     to,

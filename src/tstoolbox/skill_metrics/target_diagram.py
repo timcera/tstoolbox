@@ -155,18 +155,18 @@ def _display_target_diagram_options():
     _disp("General options:")
     _dispopt(
         "'overlay'",
-        f"'on' / 'off' (default): Switch to overlay current statistics on target diagram. \n		Only markers will be displayed.",
+        "'on' / 'off' (default): Switch to overlay current statistics on target diagram. \n		Only markers will be displayed.",
     )
     _dispopt(
         "'colormap'",
-        f"'on'/ 'off' (default): Switch to map color shading of markers to colormap ('on')\n		or min to max range of rmsdxz values ('off').\n		Set to same value as option['nonrmsdxz'].",
+        "'on'/ 'off' (default): Switch to map color shading of markers to colormap ('on')\n		or min to max range of rmsdxz values ('off').\n		Set to same value as option['nonrmsdxz'].",
     )
     _disp("")
 
     _disp("Marker options:")
     _dispopt(
         "'MarkerDisplayed'",
-        f"'marker' (default): Experiments are represented by individual symbols\n		'colorBar': Experiments are represented by a color described in a colorbar",
+        "'marker' (default): Experiments are represented by individual symbols\n		'colorBar': Experiments are represented by a color described in a colorbar",
     )
     _disp("OPTIONS when 'MarkerDisplayed' == 'marker'")
     _dispopt("'markerLabel'", "Labels for markers")
@@ -177,7 +177,7 @@ def _display_target_diagram_options():
     _disp("OPTIONS when 'MarkerDisplayed' == 'colorbar'")
     _dispopt(
         "'nonrmsdxz'",
-        f"'on'/ 'off' (default): Values in rmsds do not correspond to total RMS Differences.\n		(Used to make range of rmsds values appear above color bar.)",
+        "'on'/ 'off' (default): Values in rmsds do not correspond to total RMS Differences.\n		(Used to make range of rmsds values appear above color bar.)",
     )
     _dispopt("'titleColorBar'", "Title of the colorbar.")
     _disp("")
@@ -205,7 +205,7 @@ def _display_target_diagram_options():
     _disp("Diagram options:")
     _dispopt(
         "'alpha'",
-        f"Blending of symbol face color (0.0 transparent through 1.0 opaque)\n		(Default: 1.0)",
+        "Blending of symbol face color (0.0 transparent through 1.0 opaque)\n		(Default: 1.0)",
     )
     _dispopt("'axismax'", "Maximum for the Bias & uRMSD axis")
     _dispopt(

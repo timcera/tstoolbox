@@ -4,10 +4,10 @@
 import warnings
 from typing import List, Optional, Union
 
-import mando
+import cltoolbox
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -20,7 +20,7 @@ except ImportError:
 warnings.filterwarnings("ignore")
 
 
-@mando.command("accumulate", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("accumulate", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def accumulate_cli(
     input_ts="-",
@@ -105,7 +105,7 @@ def accumulate(
     end_date=None,
     dropna="no",
     clean=False,
-    statistic: List[Literal["sum", "max", "min", "prod"]] = ["sum"],
+    statistic: List[Literal["sum", "max", "min", "prod"]] = "sum",
     round_index=None,
     skiprows=None,
     index_type="datetime",
@@ -115,6 +115,7 @@ def accumulate(
     print_input=False,
 ):
     """Calculate accumulating statistics."""
+    statistic = tsutils.make_list(statistic)
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

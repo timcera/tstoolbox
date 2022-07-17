@@ -4,15 +4,15 @@
 
 import warnings
 
-import mando
-from mando.rst_text_formatter import RSTHelpFormatter
+import cltoolbox
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@mando.command("stdtozrxp", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("stdtozrxp", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def stdtozrxp_cli(
     input_ts="-",

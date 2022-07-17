@@ -5,7 +5,7 @@ import os
 import warnings
 from argparse import RawTextHelpFormatter
 
-import mando
+import cltoolbox
 import typic
 
 from .. import tsutils
@@ -19,7 +19,7 @@ except ImportError:
 warnings.filterwarnings("ignore")
 
 
-@mando.command("read", formatter_class=RawTextHelpFormatter)
+@cltoolbox.command("read", formatter_class=RawTextHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def read_cli(
     force_freq=None,

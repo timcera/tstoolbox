@@ -5,10 +5,10 @@
 import warnings
 from typing import List, Optional
 
-import mando
+import cltoolbox
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -21,7 +21,7 @@ except ImportError:
 warnings.filterwarnings("ignore")
 
 
-@mando.command("rolling_window", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("rolling_window", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def rolling_window_cli(
     statistic,

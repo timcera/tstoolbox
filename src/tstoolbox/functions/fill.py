@@ -3,10 +3,10 @@
 
 from typing import List, Optional, Union
 
-import mando
+import cltoolbox
 import numpy as np
 import pandas as pd
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -33,7 +33,7 @@ keywords.  Instead you have "{to}" in both.
     return from_columns, to_columns
 
 
-@mando.command("fill", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("fill", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def fill_cli(
     input_ts="-",
@@ -301,7 +301,7 @@ def fill(
     return tsutils.return_input(print_input, tsd, ntsd, "fill")
 
 
-# @mando.command(formatter_class=RSTHelpFormatter)
+# @cltoolbox.command(formatter_class=RSTHelpFormatter)
 def fill_by_correlation(
     method="move2",
     maximum_lag=0,

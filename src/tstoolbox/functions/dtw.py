@@ -3,11 +3,11 @@
 
 import sys
 
-import mando
+import cltoolbox
 import numpy as np
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -53,7 +53,7 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x - y), window=10000):
     return cost[-1, -1]
 
 
-@mando.command("dtw", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("dtw", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def dtw_cli(
     input_ts="-",

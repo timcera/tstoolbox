@@ -3,8 +3,8 @@
 
 import warnings
 
-import mando
-from mando.rst_text_formatter import RSTHelpFormatter
+import cltoolbox
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 from .convert_index import convert_index
@@ -12,7 +12,7 @@ from .convert_index import convert_index
 warnings.filterwarnings("ignore")
 
 
-@mando.command(formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command(formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def convert_index_to_julian(
     input_ts="-",

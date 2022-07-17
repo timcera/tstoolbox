@@ -3,15 +3,15 @@
 
 from typing import List
 
-import mando
+import cltoolbox
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 
-@mando.command("lag", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("lag", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def lag_cli(
     lags,

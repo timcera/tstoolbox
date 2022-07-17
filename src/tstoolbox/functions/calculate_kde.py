@@ -3,17 +3,17 @@
 
 import warnings
 
-import mando
+import cltoolbox
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@mando.command("calculate_kde", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("calculate_kde", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def calculate_kde_cli(
     ascending=True,

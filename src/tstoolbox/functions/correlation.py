@@ -3,11 +3,11 @@
 
 from typing import List
 
-import mando
+import cltoolbox
 import numpy as np
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 from . import lag
@@ -33,7 +33,7 @@ def autocorrelation(series):
     return y
 
 
-@mando.command("correlation", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("correlation", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def correlation_cli(
     lags,

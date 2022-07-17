@@ -4,17 +4,17 @@
 import warnings
 from typing import Union
 
-import mando
+import cltoolbox
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@mando.command("createts", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("createts", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def createts_cli(
     freq=None,

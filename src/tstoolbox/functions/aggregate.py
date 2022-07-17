@@ -4,10 +4,10 @@
 import warnings
 from typing import List
 
-import mando
+import cltoolbox
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -20,7 +20,7 @@ except ImportError:
 warnings.filterwarnings("ignore")
 
 
-@mando.command("aggregate", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("aggregate", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def aggregate_cli(
     input_ts="-",

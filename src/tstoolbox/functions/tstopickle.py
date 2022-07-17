@@ -4,15 +4,15 @@
 
 import warnings
 
-import mando
-from mando.rst_text_formatter import RSTHelpFormatter
+import cltoolbox
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@mando.command("tstopickle", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("tstopickle", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def tstopickle_cli(
     filename,

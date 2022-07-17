@@ -167,6 +167,6 @@ class TestAddTrend(TestCase):
 
     def tearDown(self):
         """Remove the temporary files."""
-        for key, fname in self.fps.items():
+        for _, fname in self.fps.items():
             if os.path.exists(fname[1]):
                 os.remove(fname[1])

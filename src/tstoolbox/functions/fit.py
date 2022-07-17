@@ -4,11 +4,11 @@
 import warnings
 from typing import List
 
-import mando
+import cltoolbox
 import numpy as np
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from .. import tsutils
@@ -22,7 +22,7 @@ except ImportError:
 warnings.filterwarnings("ignore")
 
 
-@mando.command("fit", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("fit", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def fit_cli(
     method,

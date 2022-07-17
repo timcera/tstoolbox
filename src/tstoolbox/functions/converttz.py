@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
-import mando
+import cltoolbox
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 
-@mando.command("converttz", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("converttz", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def converttz_cli(
     fromtz,

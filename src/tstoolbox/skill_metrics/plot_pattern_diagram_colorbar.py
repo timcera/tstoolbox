@@ -59,7 +59,6 @@ def plot_pattern_diagram_colorbar(X, Y, Z, option):
             hc = plt.colorbar(
                 orientation="horizontal", aspect=6, fraction=0.04, pad=0.04
             )
-            #                 hc.set_ticks([min(Z), max(Z)])
             hc.set_ticklabels("Min. RMSD", "Max. RMSD")
     else:
         raise ValueError(f"Invalid option for option.colormap: {option['colormap']}")

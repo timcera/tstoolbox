@@ -3,10 +3,10 @@
 
 import warnings
 
-import mando
+import cltoolbox
 import numpy as np
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -754,8 +754,8 @@ def zero_crossings(y_axis, window=11):
 
     # discard tail of smoothed signal
     y_axis = _smooth(y_axis, window)[:length]
-    zero_crossings = np.where(np.diff(np.sign(y_axis)))[0]
-    indices = [x_axis[index] for index in zero_crossings]
+    nzero_crossings = np.where(np.diff(np.sign(y_axis)))[0]
+    indices = [x_axis[index] for index in nzero_crossings]
 
     # check if zero-crossings are valid
     # diff = np.diff(indices)
@@ -766,7 +766,7 @@ def zero_crossings(y_axis, window=11):
     #            "False zero-crossings found, indicates problem {0} or {1}".format(
     #            "with smoothing window", "problem with offset"))
     # check if any zero crossings were found
-    if len(zero_crossings) < 1:
+    if len(nzero_crossings) < 1:
         raise ValueError
 
     try:
@@ -792,7 +792,7 @@ def zero_crossings(y_axis, window=11):
 ##############################################################################
 
 
-@mando.command("peak_detection", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("peak_detection", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def peak_detection_cli(
     input_ts="-",

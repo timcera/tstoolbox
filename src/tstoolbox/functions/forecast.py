@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import mando
+import cltoolbox
 import pandas as pd
 import pyaf.ForecastEngine as autof
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 # Placeholder for future forecast subcommand.
-# mando.main.add_subprog("forecast", help="Forecast algorithms")
+# cltoolbox.main.add_subprog("forecast", help="Forecast algorithms")
 
 
-@mando.command("forecast", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("forecast", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def forecast_cli(
     input_ts="-",

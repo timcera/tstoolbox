@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
-import mando
-from mando.rst_text_formatter import RSTHelpFormatter
+import cltoolbox
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 
-@mando.command("date_offset", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("date_offset", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def date_offset_cli(
     intervals,

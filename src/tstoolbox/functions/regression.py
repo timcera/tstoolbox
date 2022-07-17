@@ -4,10 +4,10 @@
 import warnings
 from typing import List, Optional, Union
 
-import mando
+import cltoolbox
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 
@@ -47,7 +47,7 @@ _FUNCS = {
 }
 
 
-@mando.command("regression", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("regression", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def regression_cli(
     method,

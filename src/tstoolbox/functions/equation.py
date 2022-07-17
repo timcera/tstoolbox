@@ -5,11 +5,11 @@ import re
 import warnings
 from typing import List
 
-import mando
+import cltoolbox
 import numpy as np
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from numpy import *  # nopycln: import
 
 from .. import tsutils
@@ -78,7 +78,7 @@ def _parse_equation(equation_str):
     return tsearch, nsearch, testeval, nequation
 
 
-@mando.command("equation", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("equation", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def equation_cli(
     equation_str,

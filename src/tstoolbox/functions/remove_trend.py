@@ -4,16 +4,16 @@
 
 import warnings
 
-import mando
+import cltoolbox
 import numpy as np
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@mando.command("remove_trend", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("remove_trend", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def remove_trend_cli(
     input_ts="-",

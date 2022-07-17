@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
-import mando
+import cltoolbox
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -14,7 +14,7 @@ except ImportError:
     from typing_extensions import Literal
 
 
-@mando.command("normalization", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("normalization", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def normalization_cli(
     input_ts="-",

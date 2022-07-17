@@ -3,11 +3,11 @@
 
 import warnings
 
-import mando
+import cltoolbox
 import numpy as np
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -100,9 +100,7 @@ def _transform(vector, filter_pass, lowpass_cutoff, highpass_cutoff, window_len)
     if filter_pass in ["highpass", "bandpass"]:
         factor[freq < 1.0 / float(highpass_cutoff)] = 0.0
     if filter_pass == "bandstop":
-        factor[
-            freq < 1.0 / float(lowpass_cutoff) and freq > 1.0 / float(highpass_cutoff)
-        ] = 0.0
+        factor[1.0 / float(highpass_cutoff) < freq < 1.0 / float(lowpass_cutoff)] = 0.0
 
     factor = np.pad(
         factor,
@@ -120,7 +118,7 @@ def _transform(vector, filter_pass, lowpass_cutoff, highpass_cutoff, window_len)
     return np.atleast_1d(rvector)
 
 
-@mando.command("filter", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("filter", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def filter_cli(
     filter_type,
@@ -456,7 +454,11 @@ The "lowpass_cutoff" and "highpass_cutoff" must be greater than 0.5/interval_in_
                     )
                 gval = gval[4:]
                 if k + 1 != butterworth_stages:
-                    rval = np.flip(gval) if k == 0 and butterworth_reverse_second_stage else gval
+                    rval = (
+                        np.flip(gval)
+                        if k == 0 and butterworth_reverse_second_stage
+                        else gval
+                    )
                 elif butterworth_reverse_second_stage:
                     gval = np.flip(gval)
             ntsd[col] = gval

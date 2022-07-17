@@ -5,7 +5,7 @@ import os.path as _os_path
 import sys as _sys
 import warnings as _warnings
 
-import mando
+import cltoolbox
 
 from . import tsutils as _tsutils
 
@@ -98,17 +98,17 @@ from .functions.unstack import unstack
 _warnings.filterwarnings("ignore")
 
 
-@mando.command()
+@cltoolbox.command()
 def about():
     """Display version number and system information."""
     _tsutils.about(__name__)
 
 
 def main():
-    """Set debug and run mando.main function."""
+    """Set debug and run cltoolbox.main function."""
     if not _os_path.exists("debug_tstoolbox"):
         _sys.tracebacklimit = 0
-    mando.main()
+    cltoolbox.main()
 
 
 if __name__ == "__main__":

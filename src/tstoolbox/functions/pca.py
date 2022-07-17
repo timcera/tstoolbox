@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
-import mando
+import cltoolbox
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 
-@mando.command("pca", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("pca", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def pca_cli(
     input_ts="-",
@@ -85,7 +85,7 @@ def pca(
     round_index=None,
 ):
     """Return the principal components analysis of the time series."""
-    from sklearn.decomposition import PCA
+    from sklearn.decomposition import PCA as skPCA
 
     tsd = tsutils.common_kwds(
         input_ts,
@@ -101,6 +101,6 @@ def pca(
         clean=clean,
     )
 
-    pca = PCA(n_components)
-    pca.fit(tsd.dropna(how="any"))
-    return pca.components_
+    npca = skPCA(n_components)
+    npca.fit(tsd.dropna(how="any"))
+    return npca.components_

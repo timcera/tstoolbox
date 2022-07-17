@@ -4,16 +4,16 @@
 
 import warnings
 
-import mando
+import cltoolbox
 import pandas as pd
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@mando.command("stack", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("stack", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def stack_cli(
     input_ts="-",

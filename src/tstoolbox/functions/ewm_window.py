@@ -4,10 +4,10 @@
 import warnings
 from typing import List, Optional
 
-import mando
+import cltoolbox
 import pandas as pd
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
@@ -20,7 +20,7 @@ except ImportError:
 warnings.filterwarnings("ignore")
 
 
-@mando.command("ewm_window", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("ewm_window", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def ewm_window_cli(
     input_ts="-",
@@ -54,17 +54,17 @@ def ewm_window_cli(
     the link at the end of this section for a detailed explanation.
 
     When `adjust` is True (default), weighted averages are calculated
-    using weights `(1-alpha)**(n-1)`, `(1-alpha)**(n-2)`, . . . , `1-alpha`,
-    1.
+    using weights ``(1-alpha)**(n-1), (1-alpha)**(n-2), . . . , 1-alpha, 1``.
 
     When `adjust` is False, weighted averages are calculated recursively
-    as: weighted_average[0] = arg[0]; weighted_average[i]
-    = (1-alpha)*weighted_average[i-1] + alpha*arg[i].
+    as:
+    ``weighted_average[0] = arg[0]``
+    ``weighted_average[i] = (1-alpha)*weighted_average[i-1] + alpha*arg[i]``
 
     When `ignore_na` is False (default), weights are based on absolute
     positions.  For example, the weights of x and y used in calculating
-    the final weighted average of [x, None, y] are (1-alpha)**2 and
-    1 (if `adjust` is True), and (1-alpha)**2 and alpha (if `adjust` is
+    the final weighted average of [x, None, y] are ``(1-alpha)**2`` and
+    1 (if `adjust` is True), and ``(1-alpha)**2`` and alpha (if `adjust` is
     False).
 
     When `ignore_na` is True weights are based on relative positions.
@@ -117,7 +117,7 @@ def ewm_window_cli(
     alpha : float
         [optional, defaults to None]
 
-        Specify smoothing factor "alpha" directly, 0<`alpha`<=1
+        Specify smoothing factor ``alpha`` directly, ``0<alpha<=1``
     min_periods : int
         [optional, default is 0]
 

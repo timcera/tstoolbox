@@ -3,17 +3,17 @@
 
 import warnings
 
-import mando
+import cltoolbox
 import numpy as np
 import typic
-from mando.rst_text_formatter import RSTHelpFormatter
+from cltoolbox.rst_text_formatter import RSTHelpFormatter
 
 from .. import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@mando.command("add_trend", formatter_class=RSTHelpFormatter, doctype="numpy")
+@cltoolbox.command("add_trend", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def add_trend_cli(
     start_offset,

@@ -11,15 +11,15 @@ import sys
 from functools import reduce, wraps
 from io import BytesIO, StringIO
 from math import gcd
-from string import Template
 from textwrap import TextWrapper
 from typing import Any, Callable, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
 import dateparser
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
-import pint_pandas  # not used directly, but required to use pint in pandas
+import pint_pandas
 import typic
 from _io import TextIOWrapper
 from numpy import int64, ndarray
@@ -43,7 +43,8 @@ def error_wrapper(estr: str) -> str:
     wrapper = TextWrapper(initial_indent="*   ", subsequent_indent="*   ")
     nestr = ["", "*"]
     for paragraph in estr.split("\n\n"):
-        nestr.extend(("\n".join(wrapper.wrap(paragraph.strip())), "*"))
+        nestr.append("\n".join(wrapper.wrap(paragraph.strip())))
+        nestr.append("*")
     nestr.append("")
     return "\n".join(nestr)
 
@@ -167,14 +168,11 @@ _CODES["ANNUAL"]: {
 
 docstrings = {
     "por": r"""por
-        [optional, default is False]
-
         The `por` keyword adjusts the operation of `start_date` and `end_date`
         If "False" (the default) choose the indices in the time-series between
         `start_date` and `end_date`.  If "True" and if `start_date` or
-        `end_date` is outside of the existing time-series will fill the time-
-        series with missing values to include the exterior `start_date` or
-        `end_date`.""",
+        `end_date` is outside of the time-series will extend the time-series by
+        inserting the exterior date(s).""",
     "lat": r"""lat
         The latitude of the point. North hemisphere is positive from 0 to 90. South
         hemisphere is negative from 0 to -90.""",
@@ -223,76 +221,52 @@ docstrings = {
         [optional though required if using within Python, default is '-'
         (stdin)]
 
-        Whether from a file or standard input, data requires a single line
-        header of column names.  The default header is the first line of the
-        input, but this can be changed for CSV files using the 'skiprows'
-        option.
+        Whether from a file or standard input, data requires a header of
+        column names.  The default header is the first line of the
+        input, but this can be changed using the 'skiprows' option.
 
-        For CSV files separators will be automatically detected.
+        Most separators will be automatically detected. Most common date
+        formats can be used, but the closer to ISO 8601 date/time
+        standard the better.
 
-        Most common date formats can be used, but the closer to ISO 8601
-        date/time standard the better.
+        Command line:
 
-        Comma-separated values (CSV) files or tab-separated values (TSV):
-            File separators will be automatically detected.  Columns can be
-            selected by name or index, where the index for data columns starts
-            at 1.
+            +-------------------------+------------------------+
+            | Keyword Example         | Description            |
+            +=========================+========================+
+            | --input_ts=filename.csv | to read 'filename.csv' |
+            +-------------------------+------------------------+
+            | --input_ts='-'          | to read from standard  |
+            |                         | input (stdin)          |
+            +-------------------------+------------------------+
 
-        Command line examples:
-
-            +-----------------------------------+------------------------------+
-            | Keyword Example                   | Description                  |
-            +===================================+==============================+
-            | --input_ts=fname.csv              | read all columns             |
-            |                                   | from 'fname.csv'             |
-            +-----------------------------------+------------------------------+
-            | --input_ts=fname.csv,2,1          | read data columns 2 and 1    |
-            |                                   | from 'fname.csv'             |
-            +-----------------------------------+------------------------------+
-            | --input_ts=fname.csv,2,skiprows=2 | read data column 2           |
-            |                                   | from 'fname.csv', skipping   |
-            |                                   | first 2 rows so header is    |
-            |                                   | read from third row          |
-            +-----------------------------------+------------------------------+
-            | --input_ts=fname.xlsx,2,Sheet21   | read all data from 2nd sheet |
-            |                                   | then all data from "Sheet21" |
-            |                                   | of 'fname.xlsx'              |
-            +-----------------------------------+------------------------------+
-            | --input_ts=fname.hdf5,Table12,T2  | read all data from table     |
-            |                                   | "Table12" then all data from |
-            |                                   | table "T2" of 'fname.hdf5'   |
-            +-----------------------------------+------------------------------+
-            | --input_ts=fname.wdm,210,110      | read DSNs 210, then 110      |
-            |                                   | from 'fname.wdm'             |
-            +-----------------------------------+------------------------------+
-            | --input_ts='-'                    | read all columns from        |
-            |                                   | standard input (stdin)       |
-            +-----------------------------------+------------------------------+
-            | --input_ts='-' --columns=4,1      | read column 4 and 1 from     |
-            |                                   | standard input (stdin)       |
-            +-----------------------------------+------------------------------+
-
-            If working with CSV or TSV files it is better to use redirection
-            rather than use `--input_ts=fname.csv`.  The following are
-            identical:
+            In many cases it is better to use redirection rather that
+            use `--input_ts=filename.csv`.  The following are identical:
 
             From a file:
 
-                command subcmd --input_ts=fname.csv
+                command subcmd --input_ts=filename.csv
 
-            From standard input (since '--input_ts=-' is the default:
+            From standard input:
 
-                command subcmd < fname.csv
+                command subcmd --input_ts=- < filename.csv
+
+            The BEST way since you don't have to include `--input_ts=-`
+            because that is the default:
+
+                command subcmd < file.csv
 
             Can also combine commands by piping:
 
                 command subcmd < filein.csv | command subcmd1 > fileout.csv
 
-        Python library examples::
+        As Python Library::
 
-            You must use the `input_ts=...` option where `input_ts` can
+            You MUST use the `input_ts=...` option where `input_ts` can
             be one of a [pandas DataFrame, pandas Series, dict, tuple,
-            list, StringIO, or file name].""",
+            list, StringIO, or file name].
+
+            If result is a time series, returns a pandas DataFrame.""",
     "columns": r"""columns
         [optional, defaults to all columns, input filter]
 
@@ -350,8 +324,8 @@ docstrings = {
         [optional, default is 'default', output format]
 
         This is if you want a different header than is the default for
-        this output table.  Pass a list with string column names for each
-        column in the table.""",
+        this output table.  Pass a list of strings for each column in
+        the table.""",
     "pandas_offset_codes": r"""+-------+---------------+
         | Alias | Description   |
         +=======+===============+
@@ -509,13 +483,13 @@ docstrings = {
         [optional, default is None which will infer header from first
         line, input filter]
 
-        Line numbers to skip (0-indexed) if a list or number of lines to skip
-        at the start of the file if an integer.
+        Line numbers to skip (0-indexed) or number of lines to skip
+        (int) at the start of the file.
 
-        If used in Python can be a callable, the callable function will be
-        evaluated against the row indices, returning True if the row should
-        be skipped and False otherwise.  An example of a valid callable
-        argument would be
+        If callable, the callable function will be evaluated against the
+        row indices, returning True if the row should be skipped and
+        False otherwise.  An example of a valid callable argument would
+        be
 
         ``lambda x: x in [0, 2]``.""",
     "groupby": r"""groupby: str
@@ -611,7 +585,10 @@ def stride_and_unit(sunit: str) -> Tuple[str, int]:
         return sunit
     unit = sunit.lstrip("+-. 1234567890")
     stride = sunit[: sunit.index(unit)]
-    stride = int(stride) if len(stride) > 0 else 1
+    if len(stride) > 0:
+        stride = int(stride)
+    else:
+        stride = 1
     return unit, stride
 
 
@@ -624,13 +601,13 @@ def set_ppf(ptype: Optional[Literal["norm", "lognorm", "weibull"]]) -> Callable:
         ppf = lognorm.freeze(0.5, loc=0).ppf
     elif ptype == "weibull":
 
-        def ppf(y):
+        def ppf(y: Union[List[float], npt.ArrayLike]) -> npt.ArrayLike:
             """Percentage Point Function for the weibull distibution."""
             return np.log(-np.log(1 - np.array(y)))
 
     elif ptype is None:
 
-        def ppf(y):
+        def ppf(y: npt.ArrayLike) -> npt.ArrayLike:
             return y
 
     return ppf
@@ -651,7 +628,7 @@ PPDICT = {
 }
 
 
-@typic.al
+# @typic.al
 def set_plotting_position(
     n: Union[int, int64],
     plotting_position: Union[
@@ -676,7 +653,10 @@ def set_plotting_position(
     """Create plotting position 1D array using linspace."""
     if plotting_position == "california":
         return np.linspace(1.0 / n, 1.0, n)
-    a = PPDICT.get(plotting_position, plotting_position)
+    try:
+        a = PPDICT[plotting_position]
+    except KeyError:
+        a = float(plotting_position)
     i = np.arange(1, n + 1)
     return (i - a) / float(n + 1 - 2 * a)
 
@@ -705,14 +685,13 @@ def copy_doc(source: Callable) -> Callable:
 
     Examples
     --------
-    >>> @decorit.copy_doc(func_to_copy_docstring_from)
+    >>> @decorit.copy_doc_params(func_to_copy_from)
     >>> def func(args):
     ...     pass  # function goes here
     # Function uses parameters of given func
 
     """
 
-    @wraps(source)
     def wrapper_copy_doc(func: Callable) -> Callable:
         if source.__doc__:
             func.__doc__ = source.__doc__  # noqa: WPS125
@@ -726,8 +705,7 @@ def doc(fdict: dict, **kwargs) -> Callable:
     """Return a decorator that formats a docstring."""
 
     def f(fn):
-        fn.__doc__ = Template(fn.__doc__).safe_substitute(**fdict)
-
+        fn.__doc__ = _handle_curly_braces_in_docstring(fn.__doc__, **fdict)
         # kwargs is currently always empty.
         # Could remove, but keeping in case useful in future.
         for attr in kwargs:
@@ -750,7 +728,10 @@ def parsedate(
 
     # The API should boomerang a datetime.datetime instance and None.
     if isinstance(dstr, datetime.datetime):
-        return dstr if strftime is None else dstr.strftime(strftime)
+        if strftime is None:
+            return dstr
+        return dstr.strftime(strftime)
+
     try:
         pdate = pd.to_datetime(dstr)
     except ValueError:
@@ -759,9 +740,11 @@ def parsedate(
     if pdate is None:
         raise ValueError(
             error_wrapper(
-                f"""
-Could not parse date string '{dstr}'.
-"""
+                """
+Could not parse date string '{}'.
+""".format(
+                    dstr
+                )
             )
         )
 
@@ -788,19 +771,21 @@ def about(name):
     namever = str(pkg_resources.get_distribution(name.split(".")[0]))
     print("package name = {}\npackage version = {}".format(*namever.split()))
 
-    print(f"platform architecture = {platform.architecture()}")
-    print(f"platform machine = {platform.machine()}")
-    print(f"platform = {platform.platform()}")
-    print(f"platform processor = {platform.processor()}")
-    print(f"platform python_build = {platform.python_build()}")
-    print(f"platform python_compiler = {platform.python_compiler()}")
-    print(f"platform python branch = {platform.python_branch()}")
-    print(f"platform python implementation = {platform.python_implementation()}")
-    print(f"platform python revision = {platform.python_revision()}")
-    print(f"platform python version = {platform.python_version()}")
-    print(f"platform release = {platform.release()}")
-    print(f"platform system = {platform.system()}")
-    print(f"platform version = {platform.version()}")
+    print("platform architecture = {}".format(platform.architecture()))
+    print("platform machine = {}".format(platform.machine()))
+    print("platform = {}".format(platform.platform()))
+    print("platform processor = {}".format(platform.processor()))
+    print("platform python_build = {}".format(platform.python_build()))
+    print("platform python_compiler = {}".format(platform.python_compiler()))
+    print("platform python branch = {}".format(platform.python_branch()))
+    print(
+        "platform python implementation = {}".format(platform.python_implementation())
+    )
+    print("platform python revision = {}".format(platform.python_revision()))
+    print("platform python version = {}".format(platform.python_version()))
+    print("platform release = {}".format(platform.release()))
+    print("platform system = {}".format(platform.system()))
+    print("platform version = {}".format(platform.version()))
 
 
 def _round_index(ntsd: DataFrame, round_index: Optional[str] = None) -> DataFrame:
@@ -846,7 +831,7 @@ def make_list(*strorlist, **kwds: Any) -> Any:
 
     if isinstance(strorlist, (list, tuple)):
         # The following will fix ((tuples, in, a, tuple, problem),)
-        if flat:
+        if flat is True:
             strorlist = flatten(strorlist)
 
         if len(strorlist) == 1:
@@ -857,9 +842,11 @@ def make_list(*strorlist, **kwds: Any) -> Any:
     if isinstance(strorlist, (list, tuple)) and n is not None and len(strorlist) != n:
         raise ValueError(
             error_wrapper(
-                f"""
-The list {strorlist} for "{kwdname}" should have {n} members according to function requirements.
-"""
+                """
+The list {0} for "{2}" should have {1} members according to function requirements.
+""".format(
+                    strorlist, n, kwdname
+                )
             )
         )
 
@@ -880,13 +867,15 @@ The list {strorlist} for "{kwdname}" should have {n} members according to functi
         #
         return [strorlist]
 
-    if isinstance(strorlist, (str, bytes)):
-        if strorlist in ["None", "", b"None", b""]:
-            # 'None' -> None
-            # ''     -> None
-            #
-            return None
+    if isinstance(strorlist, (str, bytes)) and (
+        strorlist in ["None", "", b"None", b""]
+    ):
+        # 'None' -> None
+        # ''     -> None
+        #
+        return None
 
+    if isinstance(strorlist, (str, bytes)):
         # '1'   -> [1]
         # '5.7' -> [5.7]
 
@@ -905,7 +894,7 @@ The list {strorlist} for "{kwdname}" should have {n} members according to functi
         if isinstance(strorlist, str):
             if "\r" in strorlist or "\n" in strorlist:
                 return [StringIO(strorlist)]
-            strorlist = strorlist.split(sep)
+            strorlist = strorlist.split(str(sep))
 
         if isinstance(strorlist, bytes):
             if b"\r" in strorlist or b"\n" in strorlist:
@@ -922,9 +911,11 @@ The list {strorlist} for "{kwdname}" should have {n} members according to functi
     if len(strorlist) != n:
         raise ValueError(
             error_wrapper(
-                f"""
-The list {strorlist} for "{kwdname}" should have {n} members according to function requirements.
-"""
+                """
+The list {0} for "{2}" should have {1} members according to function requirements.
+""".format(
+                    strorlist, n, kwdname
+                )
             )
         )
 
@@ -943,7 +934,7 @@ The list {strorlist} for "{kwdname}" should have {n} members according to functi
         if isinstance(each, (type(None), int, float, pd.DataFrame, pd.Series)):
             ret.append(each)
             continue
-        if not flat and isinstance(each, list):
+        if flat is False and isinstance(each, list):
             ret.append(each)
             continue
         if each is None or each.strip() == "" or each == "None":
@@ -1073,7 +1064,7 @@ Column name source units are {tsource_units}
     else:
         su = [""] * len(ntsd.columns)
 
-    if source_units_required and "" in su:
+    if source_units_required is True and "" in su:
         raise ValueError(
             error_wrapper(
                 f"""
@@ -1089,7 +1080,7 @@ second ":" delimited field in the column name.  Instead you have {su}.
             if unit:
                 tmpname = ":".join([words[0], unit])
                 if len(words) > 2:
-                    tmpname = f"{tmpname}:{':'.join(words[2:])}"
+                    tmpname = tmpname + ":" + ":".join(words[2:])
                 names.append(tmpname)
             else:
                 names.append(":".join(words))
@@ -1125,9 +1116,9 @@ to the `target_units`: {target_units}
                     # This single command uses pint to convert units and
                     # the "np.array(..., dtype=float)" command removes pint
                     # units from the converted pandas Series.
-                    ntsd[colname] = np.array(
+                    ntsd[str(colname)] = np.array(
                         pd.Series(
-                            ntsd[colname].astype(float), dtype=f"pint[{words[1]}]"
+                            ntsd[str(colname)].astype(float), dtype=f"pint[{words[1]}]"
                         ).pint.to(target_units[inx]),
                         dtype=float,
                     )
@@ -1135,8 +1126,10 @@ to the `target_units`: {target_units}
                 except AttributeError:
                     raise ValueError(
                         error_wrapper(
-                            f"""
-No conversion between {words[1]} and {target_units[inx]}."""
+                            """
+No conversion between {} and {}.""".format(
+                                words[1], target_units[inx]
+                            )
                         )
                     )
             ncolumns.append(":".join(words))
@@ -1203,9 +1196,9 @@ def common_kwds(
     bestfreq: bool = True,
     parse_dates: bool = True,
     extended_columns: bool = False,
-    skiprows: Optional[Union[List[int], int]] = None,
+    skiprows: Optional[Union[int, List[int]]] = None,
     index_type: Literal["datetime", "number"] = "datetime",
-    names: Optional[Union[List[str], str]] = None,
+    names: Optional[Union[str, List[str]]] = None,
     usecols: Optional[List[Union[int, str]]] = None,
     por: bool = False,
 ):
@@ -1225,19 +1218,23 @@ def common_kwds(
     # The "por" keyword is stupid, since it is a synonym for "dropna" equal
     # to "no".  Discovered this after implementation and should deprecate
     # and remove in the future.
-    if por:
+    if por is True:
         dropna = "no"
 
-    ntsd = read_iso_ts(
-        input_tsd,
-        parse_dates=parse_dates,
-        extended_columns=extended_columns,
-        dropna=dropna,
-        skiprows=skiprows,
-        index_type=index_type,
-        usecols=usecols,
-        clean=clean,
-    )
+    if isinstance(input_tsd, pd.DataFrame):
+        ntsd = input_tsd
+    else:
+        ntsd = read_iso_ts(
+            input_tsd,
+            parse_dates=parse_dates,
+            extended_columns=extended_columns,
+            dropna=dropna,
+            force_freq=force_freq,
+            skiprows=skiprows,
+            index_type=index_type,
+            usecols=usecols,
+            clean=clean,
+        )
 
     if names is not None:
         ntsd.columns = names
@@ -1248,13 +1245,13 @@ def common_kwds(
         ntsd, source_units, target_units, source_units_required=source_units_required
     )
 
-    if clean:
+    if clean is True:
         ntsd = ntsd.sort_index()
         ntsd = ntsd[~ntsd.index.duplicated()]
 
     ntsd = _round_index(ntsd, round_index=round_index)
 
-    if bestfreq:
+    if bestfreq is True:
         ntsd = asbestfreq(ntsd, force_freq=force_freq)
 
     ntsd = _date_slice(ntsd, start_date=start_date, end_date=end_date, por=por)
@@ -1266,7 +1263,7 @@ def common_kwds(
         ntsd = ntsd.dropna(axis="index", how=dropna)
     else:
         try:
-            if bestfreq:
+            if bestfreq is True:
                 ntsd = asbestfreq(ntsd, force_freq=force_freq)
         except ValueError:
             pass
@@ -1303,28 +1300,34 @@ def _pick(tsd: DataFrame, columns: Any) -> DataFrame:
         except ValueError:
             raise ValueError(
                 error_wrapper(
-                    f"""
-The name {i} isn't in the list of column names
-{tsd.columns}.
-"""
+                    """
+The name {} isn't in the list of column names
+{}.
+""".format(
+                        i, tsd.columns
+                    )
                 )
             )
         if target_col < -1:
             raise ValueError(
                 error_wrapper(
-                    f"""
-The requested column "{i}" must be greater than or equal to 0.
+                    """
+The requested column "{}" must be greater than or equal to 0.
 First data column is 1, index is column 0.
-"""
+""".format(
+                        i
+                    )
                 )
             )
         if target_col > len(tsd.columns):
             raise ValueError(
                 error_wrapper(
-                    f"""
-The request column index {i} must be less than or equal to the
-number of columns {len(tsd.columns)}.
-"""
+                    """
+The request column index {} must be less than or equal to the
+number of columns {}.
+""".format(
+                        i, len(tsd.columns)
+                    )
                 )
             )
 
@@ -1346,7 +1349,7 @@ number of columns {len(tsd.columns)}.
             except IndexError:
                 jtsd = pd.DataFrame(tsd.loc[:, col], index=tsd.index)
 
-        newtsd = newtsd.join(jtsd, lsuffix=f"_{index}", how="outer")
+        newtsd = newtsd.join(jtsd, lsuffix="_{}".format(index), how="outer")
     return newtsd
 
 
@@ -1368,14 +1371,8 @@ def _date_slice(
             start_date = pd.Timestamp(start_date)
             end_date = pd.Timestamp(end_date)
         else:
-            try:
-                start_date = pd.Timestamp(start_date).tz_convert(input_tsd.index.tz)
-            except TypeError:
-                start_date = pd.Timestamp(start_date).tz_localize(input_tsd.index.tz)
-            try:
-                end_date = pd.Timestamp(end_date).tz_convert(input_tsd.index.tz)
-            except TypeError:
-                end_date = pd.Timestamp(end_date).tz_localize(input_tsd.index.tz)
+            start_date = pd.Timestamp(start_date).tz_convert(input_tsd.index.tz)
+            end_date = pd.Timestamp(end_date).tz_convert(input_tsd.index.tz)
 
         input_tsd = input_tsd.loc[
             (input_tsd.index >= start_date) & (input_tsd.index <= end_date), :
@@ -1429,20 +1426,25 @@ def asbestfreq(data: DataFrame, force_freq: Optional[str] = None) -> DataFrame:
     if force_freq is not None:
         return data.asfreq(force_freq)
 
+    ndata = data.sort_index()
+    ndata = ndata[~ndata.index.duplicated()]
+
     ndiff = (
-        data.index.values.astype("int64")[1:] - data.index.values.astype("int64")[:-1]
+        ndata.index.values.astype("int64")[1:] - ndata.index.values.astype("int64")[:-1]
     )
 
     if np.any(ndiff <= 0):
         raise ValueError(
             error_wrapper(
-                f"""
-Duplicate or time reversal index entry at record {np.where(ndiff <= 0)[0][0] + 1} (start count at 0):
-"{data.index[:-1][ndiff <= 0][0]}".
+                """
+Duplicate or time reversal index entry at record {1} (start count at 0):
+"{0}".
 
-Perhaps use the "--clean" keyword on the CLI or "clean=True" if using
-Python or edit the input data..
-"""
+Perhaps use the "--clean" keyword on the CLI or "clean=True" if using Python or edit the
+input data..
+""".format(
+                    ndata.index[:-1][ndiff <= 0][0], np.where(ndiff <= 0)[0][0] + 1
+                )
             )
         )
 
@@ -1461,7 +1463,10 @@ Python or edit the input data..
             pass
 
     # pd.infer_freq would fail if given a large dataset
-    slic = slice(None, 999) if len(data.index) > 1000 else slice(None, None)
+    if len(data.index) > 1000:
+        slic = slice(None, 999)
+    else:
+        slic = slice(None, None)
     try:
         infer_freq = pd.infer_freq(data.index[slic])
     except ValueError:
@@ -1483,13 +1488,13 @@ Python or edit the input data..
     elif np.alltrue(data.index.is_month_end):
         if np.all(data.index.month == data.index[0].month):
             # Actually yearly with different ends
-            infer_freq = f"A-{_ANNUALS[data.index[0].month]}"
+            infer_freq = "A-{}".format(_ANNUALS[data.index[0].month])
         else:
             infer_freq = "M"
     elif np.alltrue(data.index.is_month_start):
         if np.all(data.index.month == data.index[0].month):
             # Actually yearly with different start
-            infer_freq = f"A-{_ANNUALS[data.index[0].month] - 1}"
+            infer_freq = "A-{}".format(_ANNUALS[data.index[0].month] - 1)
         else:
             infer_freq = "MS"
 
@@ -1502,25 +1507,28 @@ Python or edit the input data..
     mininterval = np.min(ndiff)
     if mininterval <= 0:
         raise ValueError
-    ngcd = ndiff[0] if len(ndiff) == 1 else reduce(gcd, ndiff)
+    if len(ndiff) == 1:
+        ngcd = ndiff[0]
+    else:
+        ngcd = reduce(gcd, ndiff)
     if ngcd < 1000:
-        infer_freq = f"{ngcd}N"
+        infer_freq = "{}N".format(ngcd)
     elif ngcd < 1000000:
-        infer_freq = f"{ngcd // 1000}U"
+        infer_freq = "{}U".format(ngcd // 1000)
     elif ngcd < 1000000000:
-        infer_freq = f"{ngcd // 1000000}L"
+        infer_freq = "{}L".format(ngcd // 1000000)
     elif ngcd < 60000000000:
-        infer_freq = f"{ngcd // 1000000000}S"
+        infer_freq = "{}S".format(ngcd // 1000000000)
     elif ngcd < 3600000000000:
-        infer_freq = f"{ngcd // 60000000000}T"
+        infer_freq = "{}T".format(ngcd // 60000000000)
     elif ngcd < 86400000000000:
-        infer_freq = f"{ngcd // 3600000000000}H"
+        infer_freq = "{}H".format(ngcd // 3600000000000)
     elif ngcd < 604800000000000:
-        infer_freq = f"{ngcd // 86400000000000}D"
+        infer_freq = "{}D".format(ngcd // 86400000000000)
     elif ngcd < 2419200000000000:
-        infer_freq = f"{ngcd // 604800000000000}W"
+        infer_freq = "{}W".format(ngcd // 604800000000000)
         if np.all(data.index.dayofweek == data.index[0].dayofweek):
-            infer_freq = f"{infer_freq}-{_WEEKLIES[data.index[0].dayofweek]}"
+            infer_freq = infer_freq + "-{}".format(_WEEKLIES[data.index[0].dayofweek])
         else:
             infer_freq = "D"
 
@@ -1557,11 +1565,15 @@ def renamer(xloc: str, suffix: Optional[str] = "") -> str:
         suffix = ""
     words = xloc.split(":")
     if len(words) == 1:
-        words.extend(("", suffix))
+        words.append("")
+        words.append(suffix)
     elif len(words) == 2:
         words.append(suffix)
     elif len(words) == 3 and suffix:
-        words[2] = f"{words[2]}_{suffix}" if words[2] else suffix
+        if words[2]:
+            words[2] = words[2] + "_" + suffix
+        else:
+            words[2] = suffix
     return ":".join(words)
 
 
@@ -1602,7 +1614,7 @@ def return_input(
         return memory_optimize(
             intds.join(output, lsuffix="_1", rsuffix="_2", how="outer")
         )
-    if reverse_index:
+    if reverse_index is True:
         return memory_optimize(output.iloc[::-1])
     return memory_optimize(output)
 
@@ -1619,11 +1631,10 @@ def _printiso(
     date_format: Optional[Any] = None,
     sep: str = ",",
     float_format: str = "g",
-    showindex: Union[str, bool] = "never",
+    showindex: str = "never",
     headers: str = "keys",
-    tablefmt: Optional[str] = "csv",
+    tablefmt: str = "csv",
 ) -> None:
-    showindex = {"always": True, "never": False, True: True, False: False}[showindex]
     """Separate so can use in tests."""
     if isinstance(tsd, (pd.DataFrame, pd.Series)):
         if isinstance(tsd, pd.Series):
@@ -1632,29 +1643,36 @@ def _printiso(
         if tsd.columns.empty:
             tsd = pd.DataFrame(index=tsd.index)
 
-        if not tsd.index.name:
-            tsd.index.name = "UniqueID" if showindex is True else "Datetime"
-        showindex = True
-        if tsd.index.inferred_type in ["datetime64", "period"]:
-            if (
-                not tsd.index.name
-                or tsd.index.name
-                and "datetime" not in tsd.index.name.lower()
-            ):
+        # Not perfectly true, but likely will use showindex for indices
+        # that are not time stamps.
+        if showindex is True:
+            if not tsd.index.name:
+                tsd.index.name = "UniqueID"
+        else:
+            if not tsd.index.name:
+                tsd.index.name = "Datetime"
+
+        print_index = True
+        if tsd.index.inferred_type == "datetime64":
+            if not tsd.index.name:
+                tsd.index.name = "Datetime"
+            # Someone made the decision about the name
+            # This is how I include time zone info by tacking on to the
+            # index.name.
+            elif "datetime" not in tsd.index.name.lower():
                 tsd.index.name = "Datetime"
         else:
             # This might be overkill, but tstoolbox is for time-series.
             # Revisit if necessary.
-            showindex = False
+            print_index = False
 
         if tsd.index.name == "UniqueID":
-            showindex = False
+            print_index = False
 
-        if showindex in {"always", "default"}:
-            showindex = True
+        if showindex in ["always", "default"]:
+            print_index = True
 
     elif isinstance(tsd, (int, float, tuple, np.ndarray)):
-        showindex = True
         tablefmt = None
 
     ntablefmt = None
@@ -1664,10 +1682,10 @@ def _printiso(
             try:
                 tsd.to_csv(
                     sys.stdout,
-                    float_format=f"%{float_format}",
+                    float_format="%{}".format(float_format),
                     date_format=date_format,
                     sep=sep,
-                    index=showindex,
+                    index=print_index,
                 )
                 return
             except IOError:
@@ -1745,7 +1763,8 @@ def reduce_mem_usage(props):
             # they need to remain float.
             result = False
 
-        if result:
+        # Make Integer/unsigned Integer datatypes
+        if result is True:
             if mn >= 0:
                 if mx < np.iinfo(np.uint8).max:
                     props[col] = props[col].astype(np.uint8)
@@ -1755,14 +1774,21 @@ def reduce_mem_usage(props):
                     props[col] = props[col].astype(np.uint32)
                 else:
                     props[col] = props[col].astype(np.uint64)
-            elif mn > np.iinfo(np.int8).min and mx < np.iinfo(np.int8).max:
-                props[col] = props[col].astype(np.int8)
-            elif mn > np.iinfo(np.int16).min and mx < np.iinfo(np.int16).max:
-                props[col] = props[col].astype(np.int16)
-            elif mn > np.iinfo(np.int32).min and mx < np.iinfo(np.int32).max:
-                props[col] = props[col].astype(np.int32)
-            elif mn > np.iinfo(np.int64).min and mx < np.iinfo(np.int64).max:
-                props[col] = props[col].astype(np.int64)
+            else:
+                if mn > np.iinfo(np.int8).min and mx < np.iinfo(np.int8).max:
+                    props[col] = props[col].astype(np.int8)
+                elif mn > np.iinfo(np.int16).min and mx < np.iinfo(np.int16).max:
+                    props[col] = props[col].astype(np.int16)
+                elif mn > np.iinfo(np.int32).min and mx < np.iinfo(np.int32).max:
+                    props[col] = props[col].astype(np.int32)
+                elif mn > np.iinfo(np.int64).min and mx < np.iinfo(np.int64).max:
+                    props[col] = props[col].astype(np.int64)
+
+        else:
+            # Put here whatever I come up with for float types.
+            # Algorithm problem because just looking at limits doesn't help
+            # with precision.
+            pass
 
     return props
 
@@ -1793,10 +1819,27 @@ def is_valid_url(url: Union[bytes, str], qualifying: Optional[Any] = None) -> bo
     return all(getattr(token, qualifying_attr) for qualifying_attr in qualifying)
 
 
+_supported_formats = [
+    ".wdm",
+    ".hbn",
+    ".csv",
+    ".h5",
+    ".hdf5",
+    ".xls",
+    ".xlsx",
+    ".xlsm",
+    ".xlsb",
+    ".odf",
+    ".ods",
+    ".odt",
+]
+
+
 # @typic.al
 def read_iso_ts(
     *inindat,
     dropna: Literal["no", "any", "all"] = None,
+    force_freq: Optional[str] = None,
     extended_columns: bool = False,
     parse_dates: bool = True,
     skiprows: Optional[Union[int, List[int]]] = None,
@@ -1826,32 +1869,77 @@ def read_iso_ts(
 
     """
     # inindat
+    # -                               [["-"]]
+    #                                     all columns from standard input
     #
-    # CLI                              API                             TRANSFORM
-    # ("-",)                           "-"                             [["-"]]
-    #                                                                  all columns from standard input
+    # 1,2,Value                       [["-", 1, 2, "Value"]]
+    #                                     extract columns from standard input
     #
-    # ("1,2,Value",)                   [1, 2, "Value"]                 [["-", 1, 2, "Value"]]
-    #                                                                  extract columns from standard input
+    # fn.csv,skiprows=4               [["fn.csv", "skiprows=4"]]
+    #                                     all columns from "fn.csv"
+    #                                     skipping to the 5th row
     #
-    # ("fn.csv,skiprows=4",)           ["fn.csv", {"skiprow":4}]       [["fn.csv", "skiprows=4"]]
-    #                                                                  all columns from "fn.csv"
-    #                                                                  skipping the 5th row
+    # fn.csv,1,4,Val                  [["fn.csv", 1, 4, "Val"]]
+    #                                     extract columns from fn.csv
     #
-    # ("fn.csv,1,4,Val",)              ["fn.csv", 1, 4, "Val"]         [["fn.csv", 1, 4, "Val"]]
-    #                                                                  extract columns from fn.csv
+    # fn.wdm,1002,20000               [["fn.wdm", 1002, 20000]]
+    #                                     WDM files MUST have DSNs
+    #                                     extract DSNs from "fn.wdm"
     #
-    # ("fn.wdm,1002,20000",)           ["fn.wdm", 1002, 20000]         [["fn.wdm", 1002, 20000]]
-    #                                                                  WDM files MUST have DSNs
-    #                                                                  extract DSNs from "fn.wdm"
-    #
-    # ("fn.csv,Val1,Q,4 fn.wdm,201",)  [["fn.csv", "Val1", "Q", 4], ["fn.wdm", 101, 201]]
-    #                                                                  extract columns from fn.csv
-    #                                                                  extract DSNs from fn.wdm
-    #
-    #                                  dataframe                       dataframe
-    #
-    #                                  series                          dataframe
+    # fn.csv,Val1,Q,t4 fn.wdm,101,201  [["fn.csv", "Val1", "Q", 4], ["fn.wdm", 101, 201]]
+    #                                     extract columns from fn.csv
+    #                                     extract DSNs from fn.wdm
+
+    if inindat is None:
+        inindat = [["-"]]
+
+    nindat = []
+    for src in inindat:
+
+        nsrc = make_list(src)
+
+        # Figure out if nsrc[0] is a column number or name in stdin.
+        fname = ""
+        # If int must be column number
+        if isinstance(nsrc[0], int):
+            fname = "-"
+        # If str then check for file name extension or url.
+        if isinstance(nsrc[0], str):
+            basename, ext = os.path.splitext(nsrc[0])
+            if ext in _supported_formats or is_valid_url(nsrc[0]):
+                fname = nsrc.pop(0)
+            else:
+                fname = "-"
+
+        fname = fname or nsrc.pop(0)
+
+        # Store keywords for each source.
+        pars = [str(i) for i in nsrc]
+        newpars = [i for i in pars if "=" not in i]
+        kwds = [i for i in pars if "=" in i]
+        kwds = [i.split("=") for i in kwds]
+        newkwds = {}
+        for key, val in kwds:
+            newkwds[key] = val
+
+        if fname == "-":
+            nindat.append(pd.read_csv(sys.stdin, *newkwds))
+            continue
+
+        if isinstance(fname, (pd.DataFrame, pd.Series)):
+            nindat.append(pd.DataFrame(fname, *newkwds))
+            continue
+
+        if isinstance(fname, (StringIO, BytesIO)):
+            newkwds["header"] = 0
+            nindat.append(pd.read_csv(fname, *newkwds))
+            continue
+
+        _, ext = os.path.splitext(fname)
+        if ext in [".csv", ".tsv"]:
+            nindat.append(pd.read_csv(fname, *newkwds))
+            continue
+
     newkwds = {}
     # Olde global way that applies to all sources.
     # usecols = kwds.get("usecols", None)
@@ -1864,15 +1952,14 @@ def read_iso_ts(
     clean = kwds.get("clean", False)
     names = kwds.get("names")
 
-    if not inindat:
-        inindat = "-"
+    inindat = inindat or "-"
 
     # Would want this to be more generic...
     na_values = []
     for spc in range(20)[1:]:
         spcs = " " * spc
         na_values.append(spcs)
-        na_values.append(f"{spcs}nan")
+        na_values.append(spcs + "nan")
 
     fstr = "{1}"
     if extended_columns is True:
@@ -1885,12 +1972,11 @@ def read_iso_ts(
     if index_type == "number":
         parse_dates = False
 
-    if (
-        isinstance(inindat[0], (tuple, list, pd.DataFrame, pd.Series))
-        and len(inindat) == 1
-    ):
+    if isinstance(inindat[0], (tuple, list)) and len(inindat) == 1:
         inindat = inindat[0]
+
     sources = make_list(inindat, sep=" ", flat=False)
+
     if not isinstance(sources, (list, tuple)):
         sources = [sources]
     lresult_list = []
@@ -1905,6 +1991,7 @@ def read_iso_ts(
         else:
             fname = parameters
             parameters = []
+
         # Python API
         if isinstance(fname, pd.DataFrame):
             if len(parameters) > 0:
@@ -1950,7 +2037,7 @@ def read_iso_ts(
                 sep = ","
                 index_col = 0
                 usecols = None
-                fpi = fname
+                fpi, _ = open_local(fname)
                 _, ext = os.path.splitext(fname)
                 if ext.lower() == ".wdm":
                     from wdmtoolbox import wdmtoolbox
@@ -1979,36 +2066,23 @@ def read_iso_ts(
                 ]:
                     if len(parameters) == 0:
                         sheet = [0]
+                    elif len(parameters) == 1:
+                        sheet = parameters[0]
                     else:
-                        sheet = parameters
+                        sheet = make_list(parameters)
 
-                    try:
-                        res = pd.read_excel(
-                            fname,
-                            sheet_name=sheet,
-                            keep_default_na=True,
-                            header=header,
-                            na_values=na_values,
-                            index_col=index_col,
-                            usecols=usecols,
-                            parse_dates=parse_dates,
-                            skiprows=skiprows,
-                            **newkwds,
-                        )
-                    except ValueError:
-                        sheet = int(sheet)
-                        res = pd.read_excel(
-                            fname,
-                            sheet_name=sheet,
-                            keep_default_na=True,
-                            header=header,
-                            na_values=na_values,
-                            index_col=index_col,
-                            usecols=usecols,
-                            parse_dates=parse_dates,
-                            skiprows=skiprows,
-                            **newkwds,
-                        )
+                    res = pd.read_excel(
+                        fname,
+                        sheet_name=sheet,
+                        keep_default_na=True,
+                        header=header,
+                        na_values=na_values,
+                        index_col=index_col,
+                        usecols=usecols,
+                        parse_dates=parse_dates,
+                        skiprows=skiprows,
+                        **newkwds,
+                    )
                     if isinstance(res, dict):
                         res = pd.concat(res, axis="columns")
                         # Collapse columns MultiIndex
@@ -2026,22 +2100,12 @@ def read_iso_ts(
                     # a string?
                     header = 0
                     fpi = BytesIO(fname)
-                else:
-                    parameters.insert(0, fname)
-                    fname = "-"
-                    header = 0
-                    fpi = sys.stdin
             elif isinstance(fname, str):
                 # Python API
                 if "\n" in fname or "\r" in fname:
                     # a string?
                     header = 0
                     fpi = StringIO(fname)
-                else:
-                    parameters.insert(0, fname)
-                    header = 0
-                    fpi = sys.stdin
-                    fname = "-"
             elif isinstance(fname, (StringIO, BytesIO)):
                 # Python API
                 header = "infer"
@@ -2101,6 +2165,12 @@ def read_iso_ts(
     first = [[i.strip()] for i in dedupIndex(first)]
     res.columns = [":".join(i + j + k) for i, j, k in zip(first, second, rest)]
 
+    # tmpc = res.columns.values
+    # for index, i in enumerate(res.columns):
+    #    if "Unnamed:" in i:
+    #        words = i.split(":")
+    #        tmpc[index] = words[0].strip() + words[1].strip()
+    # res.columns = tmpc
     res = memory_optimize(res)
 
     if res.index.inferred_type != "datetime64":
@@ -2118,9 +2188,11 @@ def read_iso_ts(
                 res.index = res.index.tz_localize(words[1])
             except TypeError:
                 pass
-            res.index.name = f"Datetime:{words[1]}"
+            res.index.name = "Datetime:{}".format(words[1])
         else:
             res.index.name = "Datetime"
+
+        # res = asbestfreq(res, force_freq=force_freq)
 
     if dropna in ["any", "all"]:
         res.dropna(how=dropna, inplace=True)
