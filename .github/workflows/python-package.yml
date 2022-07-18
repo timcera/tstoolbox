@@ -46,19 +46,22 @@ jobs:
         run: |
           python -m pytest --cov --mpl
 
-      - name: Coveralls
-        uses: AndreMiras/coveralls-python-action@develop
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          flag-name: run-${{ matrix.test_number }}
-          parallel: true
+      - name: Upload coverage data to coveralls.io
+        run: coveralls --service=github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_FLAG_NAME: ${{ matrix.test-name }}
+          COVERALLS_PARALLEL: true
 
-  finish:
+  coveralls:
+    name: Indicate completion to coveralls.io
     needs: test
     runs-on: ubuntu-latest
+    container: python:3-slim
     steps:
-      - name: Coveralls Finished
-        uses: AndreMiras/coveralls-python-action@develop
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          parallel-finished: true
+    - name: Finished
+      run: |
+        pip3 install --upgrade coveralls
+        coveralls --service=github --finish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
