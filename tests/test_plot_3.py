@@ -121,32 +121,32 @@ def test_weibull_yaxis():
     )
 
 
-# @pytest.mark.mpl_image_compare(tolerance=6)
-# def test_kde_time():
-#     plt.close("all")
-#     return tstoolbox.plot(
-#         type="kde_time",
-#         columns=2,
-#         clean=True,
-#         input_ts="tests/02234500_65_65.csv",
-#         ofilename=None,
-#         plot_styles="classic",
-#     )
+@pytest.mark.mpl_image_compare(tolerance=6)
+def test_kde_time():
+    plt.close("all")
+    return tstoolbox.plot(
+        type="kde_time",
+        columns=2,
+        clean=True,
+        input_ts="tests/02234500_65_65.csv",
+        ofilename=None,
+        plot_styles="classic",
+    )
 
 
-# @pytest.mark.mpl_image_compare(tolerance=6)
-# def test_kde_time_multiple_traces():
-#     plt.close("all")
-#     ndf = tstoolbox.read(["tests/daily.csv", "tests/02325000_flow.csv"])
-#     return tstoolbox.plot(
-#         type="kde_time",
-#         columns=[2, 3],
-#         clean=True,
-#         input_ts=ndf,
-#         ytitle="Flow",
-#         ofilename=None,
-#         plot_styles="classic",
-#     )
+@pytest.mark.mpl_image_compare(tolerance=6)
+def test_kde_time_multiple_traces():
+    plt.close("all")
+    ndf = tstoolbox.read(["tests/daily.csv", "tests/02325000_flow.csv"])
+    return tstoolbox.plot(
+        type="kde_time",
+        columns=[2, 3],
+        clean=True,
+        input_ts=ndf,
+        ytitle="Flow",
+        ofilename=None,
+        plot_styles="classic",
+    )
 
 
 @pytest.mark.mpl_image_compare(tolerance=6)

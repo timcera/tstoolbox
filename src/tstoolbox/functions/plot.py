@@ -4,7 +4,7 @@
 import itertools
 import os
 import warnings
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import cltoolbox
 import numpy as np
@@ -798,7 +798,7 @@ def plot_cli(
         be same length as `vlines_x`.  If None will take for the standard
         linestyles list.
     """
-    plt = plot(
+    pltr = plot(
         input_ts=input_ts,
         columns=columns,
         start_date=start_date,
@@ -867,6 +867,7 @@ def plot_cli(
         vlines_colors=vlines_colors,
         vlines_linestyles=vlines_linestyles,
     )
+    return pltr
 
 
 @tsutils.transform_args(
@@ -934,7 +935,7 @@ def plot(
     xtitle: str = "",
     ytitle: str = "",
     title: str = "",
-    figsize: Tuple[float, float] = "10,6.0",
+    figsize: Union[Tuple[float, float], List[float], str] = "10,6.0",
     legend: Optional[bool] = None,
     legend_names: Optional[List[str]] = None,
     subplots: bool = False,
@@ -1079,7 +1080,7 @@ The DataFrame that you supplied has {len(tsd.columns)} time-series.
             beginstr = 3
         else:
             beginstr = 1
-        if pltfreq == "none":
+        if pltfreq == None:
             short_freq = ""
         else:
             # short freq string (day) OR (2 day)
@@ -1312,7 +1313,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
         }
 
     if type == "autocorrelation":
-        plottoolbox.autocorrelation(
+        pltr = plottoolbox.autocorrelation(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1338,7 +1339,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             plot_styles=plot_styles,
         )
     elif type == "bar":
-        plottoolbox.bar(
+        pltr = plottoolbox.bar(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1386,7 +1387,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "bar_stacked":
-        plottoolbox.bar_stacked(
+        pltr = plottoolbox.bar_stacked(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1434,7 +1435,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "barh":
-        plottoolbox.barh(
+        pltr = plottoolbox.barh(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1482,7 +1483,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "barh_stacked":
-        plottoolbox.barh_stacked(
+        pltr = plottoolbox.barh_stacked(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1530,7 +1531,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "bootstrap":
-        plottoolbox.bootstrap(
+        pltr = plottoolbox.bootstrap(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1572,7 +1573,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "boxplot":
-        plottoolbox.boxplot(
+        pltr = plottoolbox.boxplot(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1616,7 +1617,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "double_mass":
-        plottoolbox.double_mass(
+        pltr = plottoolbox.double_mass(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1660,7 +1661,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "heatmap":
-        plottoolbox.heatmap(
+        pltr = plottoolbox.heatmap(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1704,7 +1705,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "histogram":
-        plottoolbox.histogram(
+        pltr = plottoolbox.histogram(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1720,6 +1721,8 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             figsize=figsize,
             legend=legend,
             legend_names=legend_names,
+            sharex=sharex,
+            sharey=sharey,
             colors=colors,
             linestyles=linestyles,
             markerstyles=markerstyles,
@@ -1748,7 +1751,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "kde":
-        plottoolbox.kde(
+        pltr = plottoolbox.kde(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1790,9 +1793,11 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_ymax=vlines_ymax,
             vlines_colors=vlines_colors,
             vlines_linestyles=vlines_linestyles,
+            secondary_y=secondary_y,
+            secondary_x=secondary_x,
         )
     elif type == "kde_time":
-        plottoolbox.kde_time(
+        pltr = plottoolbox.kde_time(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1834,9 +1839,11 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_ymax=vlines_ymax,
             vlines_colors=vlines_colors,
             vlines_linestyles=vlines_linestyles,
+            secondary_y=secondary_y,
+            secondary_x=secondary_x,
         )
     elif type == "lag_plot":
-        plottoolbox.lag_plot(
+        pltr = plottoolbox.lag_plot(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1878,9 +1885,10 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_ymax=vlines_ymax,
             vlines_colors=vlines_colors,
             vlines_linestyles=vlines_linestyles,
+            lag_plot_lag=lag_plot_lag,
         )
     elif type == "lognorm_xaxis":
-        plottoolbox.lognorm_xaxis(
+        pltr = plottoolbox.lognorm_xaxis(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1922,9 +1930,11 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_ymax=vlines_ymax,
             vlines_colors=vlines_colors,
             vlines_linestyles=vlines_linestyles,
+            plotting_position=plotting_position,
+            prob_plot_sort_values=prob_plot_sort_values,
         )
     elif type == "lognorm_yaxis":
-        plottoolbox.lognorm_yaxis(
+        pltr = plottoolbox.lognorm_yaxis(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1966,9 +1976,11 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_ymax=vlines_ymax,
             vlines_colors=vlines_colors,
             vlines_linestyles=vlines_linestyles,
+            plotting_position=plotting_position,
+            prob_plot_sort_values=prob_plot_sort_values,
         )
     elif type == "norm_xaxis":
-        plottoolbox.norm_xaxis(
+        pltr = plottoolbox.norm_xaxis(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -2010,9 +2022,11 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_ymax=vlines_ymax,
             vlines_colors=vlines_colors,
             vlines_linestyles=vlines_linestyles,
+            plotting_position=plotting_position,
+            prob_plot_sort_values=prob_plot_sort_values,
         )
     elif type == "norm_yaxis":
-        plottoolbox.norm_yaxis(
+        pltr = plottoolbox.norm_yaxis(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -2054,9 +2068,11 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_ymax=vlines_ymax,
             vlines_colors=vlines_colors,
             vlines_linestyles=vlines_linestyles,
+            plotting_position=plotting_position,
+            prob_plot_sort_values=prob_plot_sort_values,
         )
     elif type == "probability_density":
-        plottoolbox.probability_density(
+        pltr = plottoolbox.probability_density(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -2098,9 +2114,11 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_ymax=vlines_ymax,
             vlines_colors=vlines_colors,
             vlines_linestyles=vlines_linestyles,
+            secondary_y=secondary_y,
+            secondary_x=secondary_x,
         )
     elif type == "scatter_matrix":
-        plottoolbox.scatter_matrix(
+        pltr = plottoolbox.scatter_matrix(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -2142,9 +2160,10 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_ymax=vlines_ymax,
             vlines_colors=vlines_colors,
             vlines_linestyles=vlines_linestyles,
+            scatter_matrix_diagonal=scatter_matrix_diagonal,
         )
     elif type == "target":
-        plottoolbox.target(
+        pltr = plottoolbox.target(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -2188,7 +2207,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "taylor":
-        plottoolbox.taylor(
+        pltr = plottoolbox.taylor(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -2228,7 +2247,7 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "time":
-        plottoolbox.time(
+        pltr = plottoolbox.time(
             tsd,
             legend=legend,
             subplots=subplots,
@@ -2244,9 +2263,11 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             mark_right=mark_right,
             figsize=figsize,
             drawstyle=drawstyle,
+            secondary_y=secondary_y,
+            secondary_x=secondary_x,
         )
     elif type == "weibull_xaxis":
-        plottoolbox.weibull_xaxis(
+        pltr = plottoolbox.weibull_xaxis(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -2288,9 +2309,11 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_ymax=vlines_ymax,
             vlines_colors=vlines_colors,
             vlines_linestyles=vlines_linestyles,
+            plotting_position=plotting_position,
+            prob_plot_sort_values=prob_plot_sort_values,
         )
     elif type == "weibull_yaxis":
-        plottoolbox.weibull_yaxis(
+        pltr = plottoolbox.weibull_yaxis(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -2332,9 +2355,11 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_ymax=vlines_ymax,
             vlines_colors=vlines_colors,
             vlines_linestyles=vlines_linestyles,
+            plotting_position=plotting_position,
+            prob_plot_sort_values=prob_plot_sort_values,
         )
     elif type == "xy":
-        plottoolbox.xy(
+        pltr = plottoolbox.xy(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -2379,3 +2404,4 @@ as x,y pairs or an x-index and one y data column.  You supplied {tsd.shape[1]} c
             vlines_colors=vlines_colors,
             vlines_linestyles=vlines_linestyles,
         )
+    return pltr
