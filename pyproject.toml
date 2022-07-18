@@ -15,7 +15,7 @@ ignore = ["docs/_function_autosummary/*",
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "103.18.3"
+version = "103.18.4"
 tag_format = "$version"
 version_files = [
     "VERSION",
