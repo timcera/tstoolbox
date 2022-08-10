@@ -16,6 +16,7 @@ class TestDate_slice(TestCase):
     def setUp(self):
         dr = pd.date_range("2011-01-01T12:00:00", periods=3, freq="H")
         self.date_slice = pd.DataFrame([2, 2, 2], index=dr, columns=["Value"])
+        self.date_slice.index.name = "Datetime"
         self.date_slice = tsutils.memory_optimize(self.date_slice)
 
         self.date_slice_cli = capture.capture(tsutils.printiso, self.date_slice)

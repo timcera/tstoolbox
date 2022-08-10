@@ -134,7 +134,7 @@ def test_read_xlsx():
     """Test read API for xlsx"""
     out = tstoolbox.read("tests/data_flow_stage.xlsx")
     comp = tstoolbox.read("tests/data.wdm,2")
-    comp.columns = ["0_Lake Helen"]
+    comp.columns = ["Lake Helen"]
     assert_frame_equal(out, comp)
 
 

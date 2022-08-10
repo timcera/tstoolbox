@@ -37,6 +37,10 @@ except ImportError:
     from typing_extensions import Literal
 
 
+if __name__ == "__main__":
+    pass
+
+
 @typic.al
 def error_wrapper(estr: str) -> str:
     """Wrap estr into error format used by toolboxes."""
@@ -46,6 +50,48 @@ def error_wrapper(estr: str) -> str:
         nestr.extend(("\n".join(wrapper.wrap(paragraph.strip())), "*"))
     nestr.append("")
     return "\n".join(nestr)
+
+
+def tssplit(s, quote="\"'", quote_keep=False, delimiter=":;,", escape="/^", trim=""):
+    """Split a string by delimiters with quotes and escaped characters, optionally trimming results
+
+    :param s: A string to split into chunks
+    :param quote: Quote chars to protect a part of s from parsing
+    :param quote_keep: Preserve quote characters in the output or not
+    :param delimiter: A chunk separator character
+    :param escape: An escape character
+    :param trim: Trim characters from chunks
+    :return: A list of chunks
+    """
+
+    in_quotes = in_escape = False
+    token = ""
+    result = []
+
+    for c in s:
+        if in_escape:
+            token += c
+            in_escape = False
+        elif c in escape:
+            in_escape = True
+            if in_quotes:
+                token += c
+        elif c in quote and not in_escape:
+            in_quotes = False if in_quotes else True
+            if quote_keep:
+                token += c
+        elif c in delimiter and not in_quotes:
+            if trim:
+                token = token.strip(trim)
+            result.append(token)
+            token = ""
+        else:
+            token += c
+
+    if trim:
+        token = token.strip(trim)
+    result.append(token)
+    return result
 
 
 _CODES = {}
@@ -105,6 +151,7 @@ _CODES["QUARTERLY"]: {
     "QS-AUG": "Quarterly, quarter Starts end of AUGust",
     "QS-SEP": "Quarterly, quarter Starts end of SEPtember",
     "QS-OCT": "Quarterly, quarter Starts end of OCTober",
+    "QS-NOV": "Quarterly, quarter Starts end of NOVember",
     "QS-NOV": "Quarterly, quarter Starts end of NOVember",
     "QS-DEC": "Quarterly, quarter Starts end of DECember",
     "BQ": "Business Quarter end",
@@ -471,7 +518,6 @@ docstrings = {
         | weibull    | 0      | i/(n+1)              | mean of sampling      |
         | (default)  |        |                      | distribution          |
         +------------+--------+----------------------+-----------------------+
-        | benard     | 0.3    | (i-0.3)/(n+0.4)      | approx. median of     |
         |            |        |                      | sampling distribution |
         +------------+--------+----------------------+-----------------------+
         | filliben   | 0.3175 | (i-0.3175)/(n+0.365) |                       |
@@ -499,7 +545,9 @@ docstrings = {
         +------------+--------+----------------------+-----------------------+
 
         Where 'i' is the sorted rank of the y value, and 'n' is the
-        total number of values to be plotted.""",
+        total number of values to be plotted.
+
+        The 'blom' plotting position is also known as the 'Sevruk and Geiger'.""",
     "clean": r"""clean
         [optional, default is False, input filter]
 
@@ -536,6 +584,7 @@ docstrings = {
         override.  Use PANDAS offset codes.""",
     "output_names": r"""output_names: str
         [optional, output_format]
+
 
         The tstoolbox will change the names of the output columns to include
         some record of the operations used on each column.  The `output_names`
@@ -594,7 +643,23 @@ class IntBetweenOneAndThree(int):
     """1 <= int <= 3"""
 
 
-def flatten(list_of_lists):
+@typic.constrained(ge=-90, le=90)
+class FloatLatitude(float):
+    """-90 <= float <= 90"""
+
+
+@typic.constrained(ge=-180, le=180)
+class FloatLongitude(float):
+    """-180 <= float <= 180"""
+
+
+@typic.constrained(gt=0)
+class FloatGreaterThanZero(float):
+    """0 < float"""
+
+
+def flatten(list_of_lists) -> List:
+    """Recursively flatten a list of lists or tuples into a single list."""
     if isinstance(list_of_lists, (list, tuple)):
         if len(list_of_lists) == 0:
             return list_of_lists
@@ -625,7 +690,7 @@ def set_ppf(ptype: Optional[Literal["norm", "lognorm", "weibull"]]) -> Callable:
     elif ptype == "weibull":
 
         def ppf(y):
-            """Percentage Point Function for the weibull distibution."""
+            """Percentage Point Function for the weibull distribution."""
             return np.log(-np.log(1 - np.array(y)))
 
     elif ptype is None:
@@ -960,7 +1025,7 @@ The list {strorlist} for "{kwdname}" should have {n} members according to functi
 
 
 def make_iloc(columns, col_list):
-    """Imitates the .ix option with subtracting one to convert."""
+    """Imitates the .ix option with subtracting 1 to convert."""
     # ["1", "Value2"]    ->    [0, "Value2"]
     # [1, 2, 3]          ->    [0, 1, 2]
     col_list = make_list(col_list)
@@ -1146,6 +1211,7 @@ No conversion between {words[1]} and {target_units[inx]}."""
 
 
 def get_default_args(func):
+    """Get default arguments of the function through inspection."""
     signature = inspect.signature(func)
     return {
         k: v.default
@@ -1619,12 +1685,12 @@ def _printiso(
     date_format: Optional[Any] = None,
     sep: str = ",",
     float_format: str = "g",
-    showindex: Union[str, bool] = "never",
+    showindex: Union[str, bool] = True,
     headers: str = "keys",
     tablefmt: Optional[str] = "csv",
 ) -> None:
+    """Separate this function so can use in tests."""
     showindex = {"always": True, "never": False, True: True, False: False}[showindex]
-    """Separate so can use in tests."""
     if isinstance(tsd, (pd.DataFrame, pd.Series)):
         if isinstance(tsd, pd.Series):
             tsd = pd.DataFrame(tsd)
@@ -1633,28 +1699,12 @@ def _printiso(
             tsd = pd.DataFrame(index=tsd.index)
 
         if not tsd.index.name:
-            tsd.index.name = "UniqueID" if showindex is True else "Datetime"
-        showindex = True
-        if tsd.index.inferred_type in ["datetime64", "period"]:
-            if (
-                not tsd.index.name
-                or tsd.index.name
-                and "datetime" not in tsd.index.name.lower()
-            ):
-                tsd.index.name = "Datetime"
-        else:
-            # This might be overkill, but tstoolbox is for time-series.
-            # Revisit if necessary.
-            showindex = False
+            tsd.index.name = "UniqueID"
 
-        if tsd.index.name == "UniqueID":
-            showindex = False
-
-        if showindex in {"always", "default"}:
-            showindex = True
+        if isinstance(tsd.index, (pd.DatetimeIndex, pd.PeriodIndex)):
+            tsd.index.name = "Datetime"
 
     elif isinstance(tsd, (int, float, tuple, np.ndarray)):
-        showindex = True
         tablefmt = None
 
     ntablefmt = None
@@ -1802,13 +1852,11 @@ def read_iso_ts(
     skiprows: Optional[Union[int, List[int]]] = None,
     index_type: Literal["datetime", "number"] = "datetime",
     names: Optional[str] = None,
-    header: Optional[str] = "infer",
+    header: Optional[Union[int, str]] = "infer",
     sep: Optional[str] = ",",
     index_col=0,
     usecols=None,
     **kwds,
-    # skiprows: Optional[Union[int, List[int]]] = None,
-    # usecols: Optional[List[Union[int, str]]] = None,
 ) -> pd.DataFrame:
     """Read the format printed by 'printiso' and maybe other formats.
 
@@ -1853,14 +1901,6 @@ def read_iso_ts(
     #
     #                                  series                          dataframe
     newkwds = {}
-    # Olde global way that applies to all sources.
-    # usecols = kwds.get("usecols", None)
-    # skiprows = kwds.get("skiprows", None)
-    # index_col = kwds.get("index_col", 0)
-    # parse_dates = kwds.get("parse_dates", True)
-    # index_type = kwds.get("index_type", "datetime")
-    # sep = kwds.get("sep", ",")
-    # header = kwds.get("header", 0)
     clean = kwds.get("clean", False)
     names = kwds.get("names")
 
@@ -1922,13 +1962,29 @@ def read_iso_ts(
             # Store keywords for each source.
             newkwds = {}
 
-            pars = [str(i) for i in parameters]
-            pars = [i for i in pars if "=" in i]
-            pars = [i.split("=") for i in pars]
-            for key, val in pars:
-                newkwds[key] = val
+            parameters = [str(p) for p in parameters]
 
-            parameters = [i for i in parameters if "=" not in str(i)]
+            args = []
+            for prm in parameters:
+                if "=" in prm:
+                    break
+                args.append(prm)
+
+            parameters = parameters[len(args) :]
+
+            newkwds = tssplit(
+                ",".join(parameters),
+                quote="[]",
+                quote_keep=True,
+                delimiter=",",
+                escape="/^",
+                trim="",
+            )
+            newkwds = [i.split("=") for i in newkwds]
+            if newkwds[0][0]:
+                newkwds = {k: eval(v) for k, v in newkwds}
+            else:
+                newkwds = {}
 
             # Command line API
             # Uses wdmtoolbox, hspfbintoolbox, or pd.read_* functions.
@@ -1956,15 +2012,15 @@ def read_iso_ts(
                     from wdmtoolbox import wdmtoolbox
 
                     nres = []
-                    for par in parameters:
+                    for par in args:
                         nres.append(wdmtoolbox.extract(",".join([fname] + [str(par)])))
                     res = pd.concat(nres, axis="columns")
                 elif ext.lower() == ".hdf5":
-                    if len(parameters) == 0:
+                    if len(args) == 0:
                         res = pd.read_hdf(fpi, **newkwds)
                     else:
                         res = pd.DataFrame()
-                        for i in parameters:
+                        for i in args:
                             res = res.join(
                                 pd.read_hdf(fname, key=i, **newkwds), how="outer"
                             )
@@ -1977,10 +2033,10 @@ def read_iso_ts(
                     ".ods",
                     ".odt",
                 ]:
-                    if len(parameters) == 0:
-                        sheet = [0]
+                    if len(args) == 0:
+                        sheet = 0
                     else:
-                        sheet = parameters
+                        sheet = make_list(args)
 
                     try:
                         res = pd.read_excel(
@@ -2027,7 +2083,7 @@ def read_iso_ts(
                     header = 0
                     fpi = BytesIO(fname)
                 else:
-                    parameters.insert(0, fname)
+                    args.insert(0, fname)
                     fname = "-"
                     header = 0
                     fpi = sys.stdin
@@ -2038,7 +2094,7 @@ def read_iso_ts(
                     header = 0
                     fpi = StringIO(fname)
                 else:
-                    parameters.insert(0, fname)
+                    args.insert(0, fname)
                     header = 0
                     fpi = sys.stdin
                     fname = "-"
@@ -2047,8 +2103,8 @@ def read_iso_ts(
                 header = "infer"
                 fpi = fname
             else:
-                # Maybe fname and parameters are actual column names of standard input.
-                parameters.insert(0, fname)
+                # Maybe fname and args are actual column names of standard input.
+                args.insert(0, fname)
                 fname = "-"
                 header = 0
                 fpi = sys.stdin
@@ -2068,12 +2124,11 @@ def read_iso_ts(
                         na_values=na_values,
                         index_col=index_col,
                         parse_dates=parse_dates,
-                        skiprows=skiprows,
                         **newkwds,
                     )
                 if fname == "-" and stdin_df.empty:
                     stdin_df = res
-                res = _pick(res, parameters)
+                res = _pick(res, args)
 
         lresult_list.append(res)
         try:
