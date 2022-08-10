@@ -1,3 +1,9 @@
+## 103.18.5 (2022-08-10)
+
+### Fix
+
+- fixed skiprows option along with updates to read documentation
+
 ## 103.18.4 (2022-07-18)
 
 ### Refactor
