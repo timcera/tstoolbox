@@ -49,9 +49,8 @@ def read_cli(
     Parameters
     ----------
     filenames : str
-        From the command line a list of comma or space delimited filenames to
-        read time series from.  Using the Python API a list or tuple of
-        filenames.
+        From the command line a list of space delimited filenames to read time
+        series from.  Using the Python API a list or tuple of filenames.
 
         The supported file formats are CSV, Excel, WDM (Watershed Data
         Management), and HDF5.  The file formats are determined by the file
@@ -71,76 +70,59 @@ def read_cli(
             date/time standard the better.  ISO 8601 is roughly
             "YYYY-MM-DDTHH:MM:SS".
 
-        Excel files (*.xls, *.xlsx, *.xlsm, *.xlsb, *.odf, *.ods, *.odt)::
+        Excel files (xls, xlsx, xlsm, xlsb, odf, ods, odt)::
 
             The time-series data is read in from one or more sheets.  The first
             row is assumed to be the header.  The first column is assumed to be
             the index.  The top left cell of the table should be the name of
             the date/time index and must be in cell A1.
 
-        WDM files (*.wdm)::
+        WDM files::
 
             One of more Data Set Numbers (DSN) can be specified in any order.
 
-        HDF5 files (*.h5, *.hdf5, *.hdf)::
+        HDF5 files (h5, hdf5, hdf)::
 
             One or more tables can be read from the HDF5 file.
 
         Command line examples:
 
-            +-----------------------------------+------------------------------+
-            | Keyword Example                   | Description                  |
-            +===================================+==============================+
-            | --input_ts=fname.csv              | read all columns             |
-            |                                   | from 'fname.csv'             |
-            +-----------------------------------+------------------------------+
-            | --input_ts=fname.csv,2,1          | read data columns 2 and 1    |
-            |                                   | from 'fname.csv'             |
-            +-----------------------------------+------------------------------+
-            | --input_ts=fname.csv,2,skiprows=2 | read data column 2           |
-            |                                   | from 'fname.csv', skipping   |
-            |                                   | first 2 rows so header is    |
-            |                                   | read from third row          |
-            +-----------------------------------+------------------------------+
-            | --input_ts=fname.xlsx,2,Sheet21   | read all data from 2nd sheet |
-            |                                   | then all data from "Sheet21" |
-            |                                   | of 'fname.xlsx'              |
-            +-----------------------------------+------------------------------+
-            | --input_ts=fname.hdf5,Table12,T2  | read all data from table     |
-            |                                   | "Table12" then all data from |
-            |                                   | table "T2" of 'fname.hdf5'   |
-            +-----------------------------------+------------------------------+
-            | --input_ts=fname.wdm,210,110      | read DSNs 210, then 110      |
-            |                                   | from 'fname.wdm'             |
-            +-----------------------------------+------------------------------+
-            | --input_ts='-'                    | read all columns from        |
-            |                                   | standard input (stdin)       |
-            +-----------------------------------+------------------------------+
-            | --input_ts='-' --columns=4,1      | read column 4 and 1 from     |
-            |                                   | standard input (stdin)       |
-            +-----------------------------------+------------------------------+
-
-            If working with CSV or TSV files you can use redirection and piping
-            rather than the `--input_ts=fname.csv` keyword.  The following are
-            identical:
-
-            From a file:
-
-                command subcmd --input_ts=fname.csv
-
-            From standard input (since '--input_ts=-' is the default:
-
-                command subcmd < fname.csv
-
-            Can also combine commands by piping:
-
-                command subcmd < filein.csv | command subcmd1 > fileout.csv
+            +--------------------------+------------------------------+
+            | Keyword Example          | Description                  |
+            +==========================+==============================+
+            | fname.csv                | read all columns             |
+            |                          | from 'fname.csv'             |
+            +--------------------------+------------------------------+
+            | fname.csv,2,1            | read data columns 2 and 1    |
+            |                          | from 'fname.csv'             |
+            +--------------------------+------------------------------+
+            | fname.csv,2,skiprows=2   | read data column 2           |
+            |                          | from 'fname.csv', skipping   |
+            |                          | first 2 rows so header is    |
+            |                          | read from third row          |
+            +--------------------------+------------------------------+
+            | fname.xlsx,2,Sheet21     | read all data from 2nd sheet |
+            |                          | then all data from "Sheet21" |
+            |                          | of 'fname.xlsx'              |
+            +--------------------------+------------------------------+
+            | fname.hdf5,Table12,T2    | read all data from table     |
+            |                          | "Table12" then all data from |
+            |                          | table "T2" of 'fname.hdf5'   |
+            +--------------------------+------------------------------+
+            | fname.wdm,210,110        | read DSNs 210, then 110      |
+            |                          | from 'fname.wdm'             |
+            +--------------------------+------------------------------+
+            | -                        | read all columns from        |
+            |                          | standard input (stdin)       |
+            +--------------------------+------------------------------+
 
         Python library examples::
 
-            You must use the `input_ts=...` option where `input_ts` can
-            be one of a [pandas DataFrame, pandas Series, dict, tuple,
-            list, StringIO, or file name].
+            Each entry in the list can be one of a pandas DataFrame, pandas
+            Series, dict, tuple, list, StringIO, or file name with the options
+            listed above.
+
+            newdf = tstoolbox.read(['fname.csv,4,1', 'fname.xlsx', 'fname.hdf5'])
 
     append : str
         [optional, default is 'columns']
