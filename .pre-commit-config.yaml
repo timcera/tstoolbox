@@ -71,10 +71,10 @@ repos:
 #        types_or: [python]
 #        args: ["--write","--no-fixers"]
 
-  - repo: https://github.com/regebro/pyroma
-    rev: "4.0"
-    hooks:
-      - id: pyroma
+        #  - repo: https://github.com/regebro/pyroma
+        #    rev: "4.0"
+        #    hooks:
+        #      - id: pyroma
 
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v2.31.0

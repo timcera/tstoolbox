@@ -1,10 +1,110 @@
+[project]
+name = "tstoolbox"
+dynamic = ["version"]
+readme = "README.rst"
+description = "Command line script and Python library to manipulate time series."
+requires-python = ">=3.7.1"
+dependencies = [
+    "dateparser",
+    "tabulate",
+    "docutils",
+    "cltoolbox >= 1.0.0",
+    "rst2ansi >= 0.1.5",
+    "python-dateutil >= 2.1",
+    "numpy",
+    "scipy",
+    "pandas",
+    "pint-pandas",
+    "xlsxwriter",
+    "scikit-learn",
+    "statsmodels",
+    "setuptools",
+    "setuptools_scm",
+    "typical>=2.6.0",
+    "typing-extensions",
+    "pyaf",
+    "xlrd >= 1.0.0",
+    "openpyxl",
+    "odfpy",
+    "HydroErr",
+    "plottoolbox >= 101.6.2",
+    "wdmtoolbox",
+    "hspfbintoolbox",
+    "toolbox_utils",
+    ]
+license = {file = "LICENSE.txt"}
+authors = [
+    {name = "Tim Cera", email = "tim@cerazone.net"}
+    ]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Developers",
+    "Environment :: Console",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    ]
+keywords = ["time-series",
+            "cli-app",
+            "aggregate",
+            "fill",
+            "filter",
+            ]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "cleanpy",
+    "twine",
+    "pytest",
+    "coverage",
+    "flake8",
+    "pytest-cov",
+    "pytest-mpl",
+    "pre-commit",
+    "black-nbconvert",
+    "blacken-docs",
+    "velin",
+    "isort",
+    "pyroma",
+    "pyupgrade",
+    "commitizen",
+    ]
+
+[project.scripts]
+tstoolbox = "tstoolbox.tstoolbox:main"
+
+[project_urls]
+documentation = "https://timcera.bitbucket.io/tstoolbox/docs/index.html#tstoolbox-documentation"
+github = "https://github.com/timcera/tstoolbox"
+bitbucket = "https://bitbucket.org/timcera/tstoolbox/src/main/"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["examples*", "tools*", "docs*", "tstoolbox.tests*"]
+
 [build-system]
 requires = [
     "setuptools",
+    "wheel",
     "oldest-supported-numpy",
 ]
 build-backend = "setuptools.build_meta"
-
 
 [tool.check-manifest]
 ignore = ["docs/_function_autosummary/*",
@@ -12,13 +112,9 @@ ignore = ["docs/_function_autosummary/*",
           ".deepsource.toml",
           ".ipynb_checkpoints/*"]
 
-
 [tool.commitizen]
 name = "cz_conventional_commits"
 version = "103.18.5"
 tag_format = "$version"
-version_files = [
-    "VERSION",
-    "pyproject.toml:version"
-    ]
+version_files = ["VERSION"]
 update_changelog_on_bump = true

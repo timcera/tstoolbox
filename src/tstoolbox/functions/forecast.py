@@ -4,8 +4,7 @@ import cltoolbox
 import pandas as pd
 import pyaf.ForecastEngine as autof
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
-
-from .. import tsutils
+from toolbox_utils import tsutils
 
 # Placeholder for future forecast subcommand.
 # cltoolbox.main.add_subprog("forecast", help="Forecast algorithms")

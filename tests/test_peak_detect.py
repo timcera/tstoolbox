@@ -8,8 +8,9 @@ import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
+from toolbox_utils import tsutils
 
-from tstoolbox import tstoolbox, tsutils
+from tstoolbox import tstoolbox
 
 output_peak_detection = tsutils.read_iso_ts(
     b"""Datetime,0,0::peak,0::valley

@@ -9,8 +9,7 @@ import numpy as np
 import pandas as pd
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pandas.tseries.frequencies import to_offset
-
-from .. import tsutils
+from toolbox_utils import tsutils
 
 try:
     from typing import Literal

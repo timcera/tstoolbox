@@ -6,8 +6,7 @@ import sys as _sys
 import warnings as _warnings
 
 import cltoolbox
-
-from . import tsutils as _tsutils
+from toolbox_utils import tsutils as _tsutils
 
 __all__ = [
     "unstack",

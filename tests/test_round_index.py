@@ -6,8 +6,9 @@ from unittest import TestCase
 
 import pandas
 from pandas.testing import assert_frame_equal
+from toolbox_utils import tsutils
 
-from tstoolbox import tstoolbox, tsutils
+from tstoolbox import tstoolbox
 
 
 class Testround_index(TestCase):

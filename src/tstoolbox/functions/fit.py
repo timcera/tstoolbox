@@ -10,8 +10,7 @@ import pandas as pd
 import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from statsmodels.nonparametric.smoothers_lowess import lowess
-
-from .. import tsutils
+from toolbox_utils import tsutils
 
 try:
     from typing import Literal

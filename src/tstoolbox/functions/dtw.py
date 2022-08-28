@@ -8,8 +8,7 @@ import numpy as np
 import pandas as pd
 import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
-
-from .. import tsutils
+from toolbox_utils import tsutils
 
 
 def _dtw(ts_a, ts_b, d=lambda x, y: abs(x - y), window=10000):

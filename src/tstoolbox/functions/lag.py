@@ -7,8 +7,7 @@ import cltoolbox
 import pandas as pd
 import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
-
-from .. import tsutils
+from toolbox_utils import tsutils
 
 
 @cltoolbox.command("lag", formatter_class=RSTHelpFormatter)

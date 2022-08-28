@@ -5,8 +5,8 @@ import warnings
 
 import cltoolbox
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from toolbox_utils import tsutils
 
-from .. import tsutils
 from .convert_index import convert_index
 
 warnings.filterwarnings("ignore")

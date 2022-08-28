@@ -3,8 +3,7 @@
 
 import cltoolbox
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
-
-from .. import tsutils
+from toolbox_utils import tsutils
 
 
 @cltoolbox.command("date_offset", formatter_class=RSTHelpFormatter)

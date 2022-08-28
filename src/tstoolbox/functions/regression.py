@@ -10,8 +10,7 @@ import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, r2_score
-
-from .. import tsutils
+from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 

@@ -6,8 +6,9 @@ from unittest import TestCase
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
+from toolbox_utils import tsutils
 
-from tstoolbox import tstoolbox, tsutils
+from tstoolbox import tstoolbox
 
 test_sinwave = r"""Datetime,Value
 1999-12-31 23:00:00,0

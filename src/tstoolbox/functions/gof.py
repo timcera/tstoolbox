@@ -9,9 +9,9 @@ import HydroErr as he
 import numpy as np
 import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from toolbox_utils import tsutils
 
 from .. import skill_metrics as sm
-from .. import tsutils
 from .read import read
 
 try:
@@ -595,6 +595,27 @@ def gof(
     kge_sbeta: float = 1.0,
 ):
     """Will calculate goodness of fit statistics between two time-series."""
+
+    #  > tstoolbox gof < x.csv
+    #  tstoolbox.gof(input_ts="x.csv", obs_col=1, sim_col=2)
+    #
+    #  > tstoolbox gof --obs_col gagedata --simcol modeldata < x.csv
+    #  tstoolbox.gof(input_ts="x.csv", obs_col='gagedata', sim_col='modeldata')
+    #
+    #  New: input_ts new file types
+    #  > tstoolbox gof --input_ts x.xlsx
+    #  > tstoolbox gof --input_ts x.xlsx --obs_col 2 --sim_col 1
+    #  > tstoolbox gof --input_ts x.wdm,101,111
+    #  > tstoolbox gof --input_ts x.wdm,101,111 --obs_col 2 --sim_col 1
+    #  > tstoolbox gof --input_ts x.xlsx,Sheet1
+    #  > tstoolbox gof --input_ts x.xlsx,Sheet1 --obs_col 2 --sim_col 1
+    #
+    #  New: specifiy obs_col and sim_col as file references
+    #  > tstoolbox gof --obs_col x.wdm,101 --sim_col x.wdm,111
+    #
+    #  > tstoolbox gof --input_ts obs.csv --obs_col 1 --sim_col x.csv,2        ???
+    #  > tstoolbox gof --obs_col 2 --sim_col x.wdm,111 < x.csv                    ???
+    #
     if "default" in stats:
         stats = [
             "me",

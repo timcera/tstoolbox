@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from toolbox_utils import tsutils
 
-from .. import tsutils
 from . import lag
 
 try:

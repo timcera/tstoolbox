@@ -11,8 +11,7 @@ import pandas as pd
 import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from numpy import *  # nopycln: import
-
-from .. import tsutils
+from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 

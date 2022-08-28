@@ -7,8 +7,7 @@ from argparse import RawTextHelpFormatter
 
 import cltoolbox
 import typic
-
-from .. import tsutils
+from toolbox_utils import tsutils
 
 try:
     from typing import Literal
