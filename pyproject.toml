@@ -28,9 +28,8 @@ dependencies = [
     "odfpy",
     "HydroErr",
     "plottoolbox >= 101.6.2",
-    "wdmtoolbox",
-    "hspfbintoolbox",
     "toolbox_utils",
+    "hspf_reader < 1.0.0",
     ]
 license = {file = "LICENSE.txt"}
 authors = [
