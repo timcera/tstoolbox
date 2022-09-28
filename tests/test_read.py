@@ -136,7 +136,7 @@ def test_read_xlsx():
     out = tstoolbox.read("tests/data_flow_stage.xlsx")
     comp = tstoolbox.read("tests/data.wdm,2")
     comp.columns = ["Lake Helen"]
-    assert_frame_equal(out, comp)
+    assert_frame_equal(out, comp, check_dtype=False)
 
 
 def test_read_xlsx_sheet_name():
@@ -144,7 +144,7 @@ def test_read_xlsx_sheet_name():
     out = tstoolbox.read("tests/data_flow_stage.xlsx,in")
     comp = tstoolbox.read("tests/data.wdm,2")
     comp.columns = ["in_Lake Helen"]
-    assert_frame_equal(out, comp)
+    assert_frame_equal(out, comp, check_dtype=False)
 
 
 def test_read_xlsx_sheet_number():
@@ -152,4 +152,4 @@ def test_read_xlsx_sheet_number():
     out = pandas.DataFrame(tstoolbox.read("tests/data_flow_stage.xlsx,0,in").iloc[:, 0])
     comp = tstoolbox.read("tests/data.wdm,2")
     comp.columns = ["0_Lake Helen"]
-    assert_frame_equal(out, comp)
+    assert_frame_equal(out, comp, check_dtype=False)

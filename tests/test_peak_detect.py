@@ -174,8 +174,6 @@ class TestPeakDetect(TestCase):
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate(input=input_peak_detection)[0]
         out = tsutils.read_iso_ts(out)
-        output_peak_detection.to_csv("output.csv")
-        out.to_csv("out.csv")
         assert_frame_equal(out, output_peak_detection)
 
     @staticmethod

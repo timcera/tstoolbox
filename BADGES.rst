@@ -10,7 +10,7 @@
 
 .. image:: https://img.shields.io/pypi/v/tstoolbox.svg
     :alt: Latest release
-    :target: https://pypi.python.org/pypi/tstoolbox
+    :target: https://pypi.python.org/pypi/tstoolbox/
     :height: 20
 
 .. image:: http://img.shields.io/pypi/l/tstoolbox.svg
