@@ -4,7 +4,7 @@ import shlex
 import subprocess
 from unittest import TestCase
 
-import pandas
+import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 from toolbox_utils import tsutils
@@ -14,17 +14,21 @@ from tstoolbox import tstoolbox
 
 class TestAggregate(TestCase):
     def setUp(self):
-        dr = pandas.date_range("2011-01-01", periods=2, freq="D")
+        dr = pd.date_range("2011-01-01", periods=2, freq="D")
 
-        ts = pandas.Series([2, 2], index=dr)
-        self.aggregate_direct_mean = pandas.DataFrame(ts, columns=["Value::mean"])
+        ts = pd.Series([2, 2], index=dr)
+        self.aggregate_direct_mean = pd.DataFrame(ts, columns=["Value::mean"])
         self.aggregate_direct_mean.index.name = "Datetime"
-        self.aggregate_direct_mean = tsutils.memory_optimize(self.aggregate_direct_mean)
+        self.aggregate_direct_mean = tsutils.memory_optimize(
+            self.aggregate_direct_mean
+        ).astype("Float64")
 
-        ts = pandas.Series([48, 48], index=dr)
-        self.aggregate_direct_sum = pandas.DataFrame(ts, columns=["Value::sum"])
+        ts = pd.Series([48, 48], index=dr)
+        self.aggregate_direct_sum = pd.DataFrame(ts, columns=["Value::sum"])
         self.aggregate_direct_sum.index.name = "Datetime"
-        self.aggregate_direct_sum = tsutils.memory_optimize(self.aggregate_direct_sum)
+        self.aggregate_direct_sum = tsutils.memory_optimize(
+            self.aggregate_direct_sum
+        ).astype("Float64")
 
         self.aggregate_cli_mean = b"""Datetime,Value::mean
 2011-01-01,2.0
@@ -40,14 +44,14 @@ class TestAggregate(TestCase):
         """Test daily mean aggregation."""
         out = tstoolbox.aggregate(
             statistic="mean", groupby="daily", input_ts="tests/data_flat.csv"
-        ).astype("Int64")
+        ).astype("Float64")
         assert_frame_equal(out, self.aggregate_direct_mean)
 
     def test_aggregate_direct_sum(self):
         """Test daily mean summation."""
         out = tstoolbox.aggregate(
             statistic="sum", groupby="daily", input_ts="tests/data_flat.csv"
-        )
+        ).astype("Float64")
         assert_frame_equal(out, self.aggregate_direct_sum)
 
     def test_aggregate_cli_mean(self):
