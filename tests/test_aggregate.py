@@ -2,6 +2,7 @@
 
 import shlex
 import subprocess
+from io import BytesIO
 from unittest import TestCase
 
 import pandas as pd
@@ -23,7 +24,7 @@ class TestAggregate(TestCase):
             self.aggregate_direct_mean
         ).astype("Int64")
 
-        ts = pd.Series([48, 48], index=dr)
+        ts = pd.Series([48.0, 48.0], index=dr)
         self.aggregate_direct_sum = pd.DataFrame(ts, columns=["Value::sum"])
         self.aggregate_direct_sum.index.name = "Datetime"
         self.aggregate_direct_sum = tsutils.memory_optimize(
@@ -62,8 +63,12 @@ class TestAggregate(TestCase):
             '--input_ts="tests/data_flat.csv"'
         )
         args = shlex.split(args)
-        out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
-        self.assertEqual(out, self.aggregate_cli_mean)
+        out = pd.read_csv(
+            BytesIO(subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0])
+        )
+        assert_frame_equal(
+            out, pd.read_csv(BytesIO(self.aggregate_cli_mean)), check_dtype=False
+        )
 
     def test_aggregate_cli_sum(self):
         """Test CLI summation, daily (by default) aggregation."""
