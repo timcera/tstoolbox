@@ -21,7 +21,7 @@ class TestAggregate(TestCase):
         self.aggregate_direct_mean.index.name = "Datetime"
         self.aggregate_direct_mean = tsutils.memory_optimize(
             self.aggregate_direct_mean
-        ).astype("Float64")
+        ).astype("Int64")
 
         ts = pd.Series([48, 48], index=dr)
         self.aggregate_direct_sum = pd.DataFrame(ts, columns=["Value::sum"])
@@ -45,14 +45,14 @@ class TestAggregate(TestCase):
         out = tstoolbox.aggregate(
             statistic="mean", groupby="daily", input_ts="tests/data_flat.csv"
         ).astype("Float64")
-        assert_frame_equal(out, self.aggregate_direct_mean)
+        assert_frame_equal(out, self.aggregate_direct_mean, check_dtype=False)
 
     def test_aggregate_direct_sum(self):
         """Test daily mean summation."""
         out = tstoolbox.aggregate(
             statistic="sum", groupby="daily", input_ts="tests/data_flat.csv"
         ).astype("Float64")
-        assert_frame_equal(out, self.aggregate_direct_sum)
+        assert_frame_equal(out, self.aggregate_direct_sum, check_dtype=False)
 
     def test_aggregate_cli_mean(self):
         """Test CLI mean, daily (by default) aggregation."""

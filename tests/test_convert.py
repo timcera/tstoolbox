@@ -32,8 +32,8 @@ class TestConvert(TestCase):
 2000-01-02,4.6
 """
         self.compare_cli_02 = b"""Datetime,Value::convert
-2000-01-01,11.0
-2000-01-02,11.2
+2000-01-01,11.9
+2000-01-02,12.12
 """
 
     def test_convert_direct_01(self):
@@ -59,7 +59,7 @@ class TestConvert(TestCase):
         """Test of CLI convert set factor and offset."""
         args = (
             "tstoolbox convert "
-            "--factor=2 "
+            "--factor=2.2 "
             "--offset=2 "
             '--input_ts="tests/data_simple.csv"'
         )
