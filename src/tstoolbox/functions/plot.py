@@ -760,7 +760,6 @@ def plot_cli(
     vlines_ymax=tsutils.make_list,
     vlines_colors=tsutils.make_list,
     vlines_linestyles=tsutils.make_list,
-    plot_styles=tsutils.make_list,
 )
 @validate_arguments
 @tsutils.copy_doc(plot_cli)
