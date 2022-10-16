@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 """A lag routine."""
 
 from typing import List
 
 import cltoolbox
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import PositiveInt, validate_arguments
 from toolbox_utils import tsutils
 
 
@@ -67,16 +66,11 @@ def lag_cli(
     )
 
 
-@typic.constrained(ge=0)
-class Lags(int):
-    """'lags' constraint"""
-
-
 @tsutils.transform_args(lags=tsutils.make_list)
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(lag_cli)
 def lag(
-    lags: List[Lags],
+    lags: List[PositiveInt],
     input_ts="-",
     print_input=False,
     start_date=None,

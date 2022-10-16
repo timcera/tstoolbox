@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import cltoolbox
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import PositiveInt
 from toolbox_utils import tsutils
 
 
@@ -78,7 +78,7 @@ def date_offset_cli(
 
 @tsutils.copy_doc(date_offset_cli)
 def date_offset(
-    intervals: tsutils.IntGreaterEqualToOne,
+    intervals: PositiveInt,
     offset: str,
     columns=None,
     dropna="no",

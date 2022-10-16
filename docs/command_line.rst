@@ -5,7 +5,7 @@ Command Line
 
 Help::
 
-     tstoolbox –help
+    tstoolbox --help
 
 about
 ~~~~~
@@ -48,7 +48,7 @@ convert
    :prompt:
 
 convert_index
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
 .. program-output:: tstoolbox convert_index --help
    :prompt:
 

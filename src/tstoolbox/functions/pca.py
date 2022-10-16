@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import cltoolbox
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import PositiveInt, validate_arguments
 from toolbox_utils import tsutils
 
 
@@ -67,7 +66,7 @@ def pca_cli(
     )
 
 
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(pca_cli)
 def pca(
     input_ts="-",
@@ -78,7 +77,7 @@ def pca(
     skiprows=None,
     index_type="datetime",
     names=None,
-    n_components: tsutils.IntGreaterEqualToOne = None,
+    n_components: PositiveInt = None,
     source_units=None,
     target_units=None,
     round_index=None,

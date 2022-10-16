@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 def report_duplicate_stats(duplicates):
     """
     Report list of pairs of statistics that are duplicates.

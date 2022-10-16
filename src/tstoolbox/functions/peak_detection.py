@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import warnings
 
 import cltoolbox
 import numpy as np
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import PositiveInt, conint, validate_arguments
 from toolbox_utils import tsutils
 
 try:
@@ -18,10 +17,8 @@ except ImportError:
 warnings.filterwarnings("ignore")
 
 
-@typic.al
-def _boolrelextrema(
-    data, comparator, axis=0, order: tsutils.IntGreaterEqualToOne = 1, mode="clip"
-):
+@validate_arguments
+def _boolrelextrema(data, comparator, axis=0, order: PositiveInt = 1, mode="clip"):
     """Calculate the relative extrema of `data`.
 
     Relative extrema are calculated by finding locations where
@@ -193,12 +190,12 @@ def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
     return fitted_peaks
 
 
-@typic.al
+@validate_arguments
 def _peakdetect(
     y_axis,
     x_axis=None,
-    window: tsutils.IntGreaterEqualToOne = 24,
-    delta: tsutils.IntGreaterEqualToZero = 0,
+    window: PositiveInt = 24,
+    delta: conint(ge=0) = 0,
 ):
     """Private peak detection algorithm.
 
@@ -671,7 +668,7 @@ def _peakdetect_zero_crossing(y_axis, x_axis=None, window=5):
     return [max_peaks, min_peaks]
 
 
-@typic.al
+@validate_arguments
 def _smooth(
     x,
     window_len=11,
@@ -905,7 +902,7 @@ def peak_detection_cli(
     )
 
 
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(peak_detection_cli)
 def peak_detection(
     input_ts="-",
@@ -919,9 +916,9 @@ def peak_detection(
     clean=False,
     method: Literal["rel", "minmax", "zero_crossing", "parabola", "sine"] = "rel",
     extrema: Literal["peak", "valley", "both"] = "peak",
-    window: tsutils.IntGreaterEqualToOne = 24,
-    pad_len: tsutils.IntGreaterEqualToOne = 5,
-    points: tsutils.IntGreaterEqualToOne = 9,
+    window: PositiveInt = 24,
+    pad_len: PositiveInt = 5,
+    points: PositiveInt = 9,
     lock_frequency: bool = False,
     round_index=None,
     source_units=None,

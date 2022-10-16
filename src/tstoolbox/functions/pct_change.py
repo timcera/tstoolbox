@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from typing import Optional
 
 import cltoolbox
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import PositiveInt, conint, validate_arguments
 from toolbox_utils import tsutils
 
 try:
@@ -102,7 +101,7 @@ def pct_change_cli(
     )
 
 
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(pct_change_cli)
 def pct_change(
     input_ts="-",
@@ -114,9 +113,9 @@ def pct_change(
     index_type="datetime",
     names=None,
     clean=False,
-    periods: tsutils.IntGreaterEqualToOne = 1,
+    periods: PositiveInt = 1,
     fill_method: Literal["backfill", "bfill", "ffill", "pad"] = "pad",
-    limit: Optional[tsutils.IntGreaterEqualToZero] = None,
+    limit: Optional[conint(ge=0)] = None,
     freq: str = None,
     print_input=False,
     round_index=None,

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import warnings
@@ -161,7 +160,7 @@ def convert_index_cli(
     tsutils.printiso(tsd, tablefmt=tablefmt)
 
 
-# @typic.al
+# @validate_arguments
 @tsutils.copy_doc(convert_index_cli)
 def convert_index(
     to: Literal["datetime", "number"],

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 import os
 from unittest import TestCase
 
@@ -118,4 +115,4 @@ class TestFilter(TestCase):
     def test_filter_type():
         with pytest.raises(ValueError) as e_info:
             _ = tstoolbox.filter("flatter", "lowpass", input_ts="tests/data_sine.csv")
-        assert r"Given value <'flatter'> fails constraints:" in str(e_info.value)
+        assert r"validation error for" in str(e_info.value)

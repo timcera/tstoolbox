@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Clean dist files after tox -e check"""
 from pathlib import Path
 

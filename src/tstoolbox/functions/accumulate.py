@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import warnings
@@ -6,8 +5,8 @@ from typing import List, Optional, Union
 
 import cltoolbox
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 try:
@@ -95,7 +94,7 @@ def accumulate_cli(
     source_units=tsutils.make_list,
     target_units=tsutils.make_list,
 )
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(accumulate_cli)
 def accumulate(
     input_ts="-",

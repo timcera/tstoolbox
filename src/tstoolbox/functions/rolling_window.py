@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 
@@ -7,8 +6,8 @@ from typing import List, Optional
 
 import cltoolbox
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import conint, validate_arguments
 from toolbox_utils import tsutils
 
 try:
@@ -182,7 +181,7 @@ def rolling_window_cli(
 
 
 @tsutils.transform_args(window=tsutils.make_list)
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(rolling_window_cli)
 def rolling_window(
     statistic: Literal[
@@ -201,7 +200,7 @@ def rolling_window(
         "var",
     ],
     groupby=None,
-    window: Optional[List[tsutils.IntGreaterEqualToZero]] = None,
+    window: Optional[List[conint(ge=0)]] = None,
     input_ts="-",
     columns=None,
     start_date=None,
@@ -212,7 +211,7 @@ def rolling_window(
     names=None,
     clean=False,
     span=None,
-    min_periods: Optional[tsutils.IntGreaterEqualToZero] = None,
+    min_periods: Optional[conint(ge=0)] = None,
     center: bool = False,
     win_type: Optional[str] = None,
     on: Optional[str] = None,

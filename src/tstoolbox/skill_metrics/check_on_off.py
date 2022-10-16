@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 def check_on_off(value):
     """
     Check whether variable contains a value of 'on', 'off', True, or False.

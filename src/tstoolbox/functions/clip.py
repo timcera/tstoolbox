@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import warnings
 
 import cltoolbox
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
@@ -82,7 +81,7 @@ def clip_cli(
     )
 
 
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(clip_cli)
 def clip(
     input_ts="-",

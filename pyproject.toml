@@ -1,3 +1,11 @@
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+    "oldest-supported-numpy",
+]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "tstoolbox"
 dynamic = ["readme", "version"]
@@ -18,7 +26,7 @@ dependencies = [
     "statsmodels",
     "setuptools",
     "setuptools_scm",
-    "typical>=2.6.0",
+    "pydantic",
     "typing-extensions",
     "pyaf",
     "xlrd >= 1.0.0",
@@ -26,8 +34,7 @@ dependencies = [
     "odfpy",
     "HydroErr",
     "plottoolbox >= 101.6.2",
-    "toolbox_utils",
-    "hspf_reader < 1.0.0",
+    "toolbox_utils >= 1.0.0, < 2.0.0",
     ]
 license = {text = "BSD-3-Clause"}
 authors = [
@@ -80,30 +87,12 @@ dev = [
 [project.scripts]
 tstoolbox = "tstoolbox.tstoolbox:main"
 
-[project_urls]
+[project.urls]
 documentation = "https://timcera.bitbucket.io/tstoolbox/docs/index.html#tstoolbox-documentation"
 github = "https://github.com/timcera/tstoolbox"
 bitbucket = "https://bitbucket.org/timcera/tstoolbox/src/main/"
 
-[tool.setuptools]
-license-files = ["LICENSE.txt"]
-include-package-data = true
-
-[tool.setuptools.dynamic]
-readme = {file = "README.rst"}
-version = {file = "VERSION"}
-
-[tool.setuptools.packages.find]
-where = ["src"]
-exclude = ["examples*", "tools*", "docs*", "tstoolbox.tests*"]
-
-[build-system]
-requires = [
-    "setuptools",
-    "wheel",
-    "oldest-supported-numpy",
-]
-build-backend = "setuptools.build_meta"
+[tool]
 
 [tool.check-manifest]
 ignore = ["docs/_function_autosummary/*",
@@ -117,3 +106,15 @@ version = "103.18.7"
 tag_format = "$version"
 version_files = ["VERSION"]
 update_changelog_on_bump = true
+
+[tool.setuptools]
+license-files = ["LICENSE.txt"]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+readme = {file = "README.rst"}
+version = {file = "VERSION"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["examples*", "tools*", "docs*", "tstoolbox.tests*"]

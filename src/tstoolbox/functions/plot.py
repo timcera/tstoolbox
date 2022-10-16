@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import itertools
@@ -10,9 +9,9 @@ import cltoolbox
 import numpy as np
 import pandas as pd
 import plottoolbox
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from plottoolbox import plotutils
+from pydantic import PositiveInt, validate_arguments
 from toolbox_utils import tsutils
 
 try:
@@ -769,7 +768,7 @@ def plot_cli(
     vlines_linestyles=tsutils.make_list,
     plot_styles=tsutils.make_list,
 )
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(plot_cli)
 def plot(
     input_ts="-",
@@ -833,8 +832,8 @@ def plot(
     secondary_x=False,
     mark_right: bool = True,
     scatter_matrix_diagonal: Literal["kde", "hist"] = "kde",
-    bootstrap_size: tsutils.IntGreaterEqualToOne = 50,
-    bootstrap_samples: tsutils.IntGreaterEqualToOne = 500,
+    bootstrap_size: PositiveInt = 50,
+    bootstrap_samples: PositiveInt = 500,
     norm_xaxis: bool = False,
     norm_yaxis: bool = False,
     lognorm_xaxis: bool = False,
@@ -842,7 +841,7 @@ def plot(
     xy_match_line: str = "",
     grid: bool = False,
     label_rotation: Optional[float] = None,
-    label_skip: tsutils.IntGreaterEqualToOne = 1,
+    label_skip: PositiveInt = 1,
     force_freq: Optional[str] = None,
     drawstyle: str = "default",
     por: bool = False,
@@ -855,7 +854,7 @@ def plot(
     prob_plot_sort_values: Literal["ascending", "descending"] = "descending",
     source_units=None,
     target_units=None,
-    lag_plot_lag: tsutils.IntGreaterEqualToOne = 1,
+    lag_plot_lag: PositiveInt = 1,
     plot_styles: List[
         Literal[
             "classic",

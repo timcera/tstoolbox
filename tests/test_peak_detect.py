@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import shlex
 import subprocess
 from unittest import TestCase
@@ -8,6 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
+from pydantic.error_wrappers import ValidationError
 from toolbox_utils import tsutils
 
 from tstoolbox import tstoolbox
@@ -211,7 +210,7 @@ class TestPeakDetect(TestCase):
         assert_frame_equal(out, output_peak_detection)
 
     def test_peak_type_error(self):
-        with pytest.raises(ValueError) as e_info:
+        with pytest.raises(ValidationError) as e_info:
             _ = tstoolbox.peak_detection(
                 method="sine",
                 points=9,
@@ -219,9 +218,9 @@ class TestPeakDetect(TestCase):
                 print_input=True,
                 extrema="booth",
             )
-        assert "Given value <'booth'> fails constraints:" in str(e_info.value)
+        assert "validation error for" in str(e_info.value)
 
-        with pytest.raises(ValueError) as e_info:
+        with pytest.raises(ValidationError) as e_info:
             _ = tstoolbox.peak_detection(
                 method="sin",
                 points=9,
@@ -229,4 +228,4 @@ class TestPeakDetect(TestCase):
                 print_input=True,
                 extrema="both",
             )
-        assert "Given value <'sin'> fails constraints:" in str(e_info.value)
+        assert "validation error for" in str(e_info.value)

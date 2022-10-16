@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import cltoolbox
 import pandas as pd
 import pyaf.ForecastEngine as autof

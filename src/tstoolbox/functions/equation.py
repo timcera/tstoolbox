@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import re
@@ -8,9 +7,9 @@ from typing import List
 import cltoolbox
 import numpy as np
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from numpy import *  # nopycln: import
+from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
@@ -199,7 +198,7 @@ def equation_cli(
 
 
 @tsutils.transform_args(output_names=tsutils.make_list)
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(equation_cli)
 def equation(
     equation_str: str,

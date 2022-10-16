@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import warnings
@@ -6,8 +5,8 @@ import warnings
 import cltoolbox
 import numpy as np
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import PositiveFloat, PositiveInt, conint, validate_arguments
 from toolbox_utils import tsutils
 
 try:
@@ -226,22 +225,7 @@ def filter_cli(
     )
 
 
-@typic.constrained(ge=1)
-class IntGreaterThanOrEqualToOne(int):
-    """Integer greater than zero."""
-
-
-@typic.constrained(ge=1, le=3)
-class IntBetweenOneAndThree(int):
-    """Integer between 1 and 3 inclusive."""
-
-
-@typic.constrained(ge=0)
-class FloatGreaterThanOrEqualToZero(float):
-    """Positive float value."""
-
-
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(filter_cli)
 def filter(
     filter_type: Literal[
@@ -254,7 +238,7 @@ def filter(
         "butterworth",
     ],
     filter_pass: Literal["lowpass", "highpass", "bandpass", "bandstop"],
-    butterworth_stages: IntBetweenOneAndThree = 1,
+    butterworth_stages: conint(ge=1, le=3) = 1,
     butterworth_reverse_second_stage: bool = True,
     input_ts="-",
     columns=None,
@@ -266,9 +250,9 @@ def filter(
     names=None,
     clean=False,
     print_input=False,
-    lowpass_cutoff: FloatGreaterThanOrEqualToZero = None,
-    highpass_cutoff: FloatGreaterThanOrEqualToZero = None,
-    window_len: IntGreaterThanOrEqualToOne = 3,
+    lowpass_cutoff: PositiveFloat = None,
+    highpass_cutoff: PositiveFloat = None,
+    window_len: PositiveInt = 3,
     source_units=None,
     target_units=None,
     round_index=None,

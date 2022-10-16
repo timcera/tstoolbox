@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import warnings
@@ -6,8 +5,8 @@ from typing import Union
 
 import cltoolbox
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
@@ -69,7 +68,7 @@ def createts_cli(
     )
 
 
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(createts_cli)
 def createts(
     input_ts=None,

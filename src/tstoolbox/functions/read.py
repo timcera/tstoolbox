@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import os
@@ -6,7 +5,7 @@ import warnings
 from argparse import RawTextHelpFormatter
 
 import cltoolbox
-import typic
+from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 try:
@@ -168,7 +167,7 @@ def read_cli(
     )
 
 
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(read_cli)
 def read(
     *filenames,

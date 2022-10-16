@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import warnings
@@ -7,8 +6,8 @@ from typing import List
 import cltoolbox
 import numpy as np
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import confloat, validate_arguments
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from toolbox_utils import tsutils
 
@@ -92,11 +91,11 @@ def fit_cli(
 
 
 @tsutils.transform_args(method=tsutils.make_list)
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(fit_cli)
 def fit(
     method: List[Literal["lowess", "linear"]],
-    lowess_frac: tsutils.FloatBetweenZeroAndOne = 0.01,
+    lowess_frac: confloat(gt=0, le=1) = 0.01,
     input_ts="-",
     columns=None,
     start_date=None,

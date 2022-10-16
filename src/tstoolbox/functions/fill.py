@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """A collection of filling routines."""
 
 from typing import List, Optional, Union
@@ -7,6 +6,7 @@ import cltoolbox
 import numpy as np
 import pandas as pd
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import conint
 from toolbox_utils import tsutils
 
 try:
@@ -224,8 +224,8 @@ def fill(
     skiprows=None,
     from_columns: Optional[List[Union[int, str]]] = None,
     to_columns: Optional[List[Union[int, str]]] = None,
-    limit: Optional[tsutils.IntGreaterEqualToZero] = None,
-    order: Optional[tsutils.IntGreaterEqualToZero] = None,
+    limit: Optional[conint(ge=0)] = None,
+    order: Optional[conint(ge=0)] = None,
     force_freq: str = None,
 ):
     """Fill missing values (NaN) with different methods."""

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import warnings
@@ -6,8 +5,8 @@ from typing import List, Optional, Union
 
 import cltoolbox
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import validate_arguments
 from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 from toolbox_utils import tsutils
@@ -235,7 +234,7 @@ def regression_cli(
     y_train_col=tsutils.make_list,
     x_pred_cols=tsutils.make_list,
 )
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(regression_cli)
 def regression(
     method,

@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 from typing import List, Optional
 
 import cltoolbox
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import PositiveInt, validate_arguments
 from toolbox_utils import tsutils
 
 try:
@@ -114,7 +113,7 @@ def expanding_window_cli(
 
 
 @tsutils.transform_args(statistic=tsutils.make_list)
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(expanding_window_cli)
 def expanding_window(
     input_ts="-",
@@ -144,7 +143,7 @@ def expanding_window(
             ]
         ]
     ] = None,
-    min_periods: tsutils.IntGreaterEqualToZero = 1,
+    min_periods: PositiveInt = 1,
     center: bool = False,
     source_units=None,
     target_units=None,

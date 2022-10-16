@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from array import array
 
 import numpy as np

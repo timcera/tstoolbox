@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Certify the developer has input all requirements for PR.
 
@@ -11,7 +10,7 @@ from pathlib import Path
 folder = Path(__file__).resolve().parents[1]
 changelog = Path(folder, "docs", "CHANGELOG.rst")
 
-with open(changelog, "r") as fin:
+with open(changelog) as fin:
     for line in fin:
         if line.startswith("v"):
             raise ValueError(

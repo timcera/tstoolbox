@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # tstoolbox documentation build configuration file, created by
 # sphinx-quickstart on Wed Nov  6 14:04:36 2013.

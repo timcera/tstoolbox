@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import sys
@@ -6,8 +5,8 @@ import sys
 import cltoolbox
 import numpy as np
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 
@@ -112,7 +111,7 @@ def dtw_cli(
     )
 
 
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(dtw_cli)
 def dtw(
     input_ts="-",

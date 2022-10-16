@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """A correlation routine."""
 
 from typing import List
@@ -6,8 +5,8 @@ from typing import List
 import cltoolbox
 import numpy as np
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import conint, validate_arguments
 from toolbox_utils import tsutils
 
 from . import lag
@@ -123,10 +122,10 @@ def correlation_cli(
 
 
 @tsutils.transform_args(lags=tsutils.make_list)
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(correlation_cli)
 def correlation(
-    lags: List[tsutils.IntGreaterEqualToZero],
+    lags: List[conint(ge=0)],
     method: Literal["pearson", "kendall", "spearman"] = "pearson",
     input_ts="-",
     print_input=False,

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import warnings
@@ -6,8 +5,8 @@ from typing import List, Optional
 
 import cltoolbox
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import confloat, conint, validate_arguments
 from toolbox_utils import tsutils
 
 try:
@@ -172,7 +171,7 @@ def ewm_window_cli(
 
 
 @tsutils.transform_args(statistic=tsutils.make_list)
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(ewm_window_cli)
 def ewm_window(
     input_ts="-",
@@ -185,11 +184,11 @@ def ewm_window(
     names=None,
     clean=False,
     statistic: List[Optional[Literal["corr", "cov", "mean", "std", "var"]]] = "mean",
-    alpha_com: Optional[tsutils.FloatGreaterEqualToZero] = None,
-    alpha_span: Optional[tsutils.FloatGreaterEqualToOne] = None,
-    alpha_halflife: Optional[tsutils.FloatGreaterEqualToZero] = None,
-    alpha: Optional[tsutils.FloatBetweenZeroAndOneInclusive] = None,
-    min_periods: Optional[tsutils.IntGreaterEqualToZero] = 0,
+    alpha_com: Optional[confloat(ge=0)] = None,
+    alpha_span: Optional[confloat(ge=0)] = None,
+    alpha_halflife: Optional[confloat(ge=0)] = None,
+    alpha: Optional[confloat(ge=0, le=1)] = None,
+    min_periods: Optional[conint(ge=0)] = 0,
     adjust: bool = True,
     ignore_na: bool = False,
     source_units=None,

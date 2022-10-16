@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 def check_duplicate_stats(stats1, stats2, threshold=0.01):
     """
     Check two lists of paired statistics for duplicates.

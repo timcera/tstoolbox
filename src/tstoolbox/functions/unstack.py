@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 
@@ -6,8 +5,8 @@ import warnings
 from typing import Union
 
 import cltoolbox
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
@@ -95,7 +94,7 @@ def unstack_cli(
     )
 
 
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(unstack_cli)
 def unstack(
     column_names: Union[int, str],

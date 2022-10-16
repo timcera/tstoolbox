@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 
@@ -6,8 +5,8 @@ import warnings
 from typing import List, Optional, Union
 
 import cltoolbox
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
@@ -84,7 +83,7 @@ def replace_cli(
 
 
 @tsutils.transform_args(from_values=tsutils.make_list, to_values=tsutils.make_list)
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(replace_cli)
 def replace(
     from_values: Optional[List[Optional[Union[float, int, str]]]],

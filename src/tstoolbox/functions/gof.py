@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import warnings
@@ -7,8 +6,8 @@ from typing import List, Union
 import cltoolbox
 import HydroErr as he
 import numpy as np
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 from .. import skill_metrics as sm
@@ -482,7 +481,7 @@ stats_dict = {
 
 
 @tsutils.transform_args(stats=tsutils.make_list)
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(gof_cli)
 def gof(
     obs_col=1,

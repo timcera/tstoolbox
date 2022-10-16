@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """A collection of functions used by tstoolbox, wdmtoolbox, ...etc."""
 
 
@@ -20,13 +19,13 @@ import dateparser
 import numpy as np
 import pandas as pd
 import pint_pandas  # not used directly, but required to use pint in pandas
-import typic
 from _io import TextIOWrapper
 from numpy import int64, ndarray
 from pandas._libs.tslibs.timestamps import Timestamp
 from pandas.core.frame import DataFrame
 from pandas.core.indexes.base import Index
 from pandas.tseries.frequencies import to_offset
+from pydantic import validate_arguments
 from scipy.stats.distributions import lognorm, norm
 from tabulate import simple_separated_format
 from tabulate import tabulate as tb
@@ -41,7 +40,7 @@ if __name__ == "__main__":
     pass
 
 
-@typic.al
+@validate_arguments
 def error_wrapper(estr: str) -> str:
     """Wrap estr into error format used by toolboxes."""
     wrapper = TextWrapper(initial_indent="*   ", subsequent_indent="*   ")
@@ -608,56 +607,6 @@ docstrings = {
 # docstrings["pandas_offset_codes"] = codes_table
 
 
-@typic.constrained(gt=0, lt=1)
-class FloatBetweenZeroAndOne(float):
-    """0.0 < float < 1.0"""
-
-
-@typic.constrained(ge=0, le=1)
-class FloatBetweenZeroAndOneInclusive(float):
-    """0.0 <= float <= 1.0"""
-
-
-@typic.constrained(ge=0)
-class FloatGreaterEqualToZero(float):
-    """float >= 0.0"""
-
-
-@typic.constrained(ge=1)
-class FloatGreaterEqualToOne(float):
-    """float >= 1.0"""
-
-
-@typic.constrained(ge=0)
-class IntGreaterEqualToZero(int):
-    """int >= 0"""
-
-
-@typic.constrained(ge=1)
-class IntGreaterEqualToOne(int):
-    """int >= 1"""
-
-
-@typic.constrained(ge=1, le=3)
-class IntBetweenOneAndThree(int):
-    """1 <= int <= 3"""
-
-
-@typic.constrained(ge=-90, le=90)
-class FloatLatitude(float):
-    """-90 <= float <= 90"""
-
-
-@typic.constrained(ge=-180, le=180)
-class FloatLongitude(float):
-    """-180 <= float <= 180"""
-
-
-@typic.constrained(gt=0)
-class FloatGreaterThanZero(float):
-    """0 < float"""
-
-
 def flatten(list_of_lists) -> List:
     """Recursively flatten a list of lists or tuples into a single list."""
     if isinstance(list_of_lists, (list, tuple)):
@@ -669,7 +618,7 @@ def flatten(list_of_lists) -> List:
     return list_of_lists
 
 
-@typic.al
+@validate_arguments
 def stride_and_unit(sunit: str) -> Tuple[str, int]:
     """Split a stride/unit combination into component parts."""
     if sunit is None:
@@ -680,7 +629,7 @@ def stride_and_unit(sunit: str) -> Tuple[str, int]:
     return unit, stride
 
 
-@typic.al
+@validate_arguments
 def set_ppf(ptype: Optional[Literal["norm", "lognorm", "weibull"]]) -> Callable:
     """Return correct Percentage Point Function for `ptype`."""
     if ptype == "norm":
@@ -716,7 +665,7 @@ PPDICT = {
 }
 
 
-@typic.al
+@validate_arguments(config=dict(arbitrary_types_allowed=True))
 def set_plotting_position(
     n: Union[int, int64],
     plotting_position: Union[
@@ -746,7 +695,7 @@ def set_plotting_position(
     return (i - a) / float(n + 1 - 2 * a)
 
 
-@typic.al
+@validate_arguments
 def _handle_curly_braces_in_docstring(s: str, **kwargs) -> str:
     """Replace missing keys with a pattern."""
     RET = "{{{}}}"
@@ -759,7 +708,7 @@ def _handle_curly_braces_in_docstring(s: str, **kwargs) -> str:
         )
 
 
-@typic.al
+@validate_arguments
 def copy_doc(source: Callable) -> Callable:
     """Copy docstring from source.
 
@@ -786,7 +735,7 @@ def copy_doc(source: Callable) -> Callable:
     return wrapper_copy_doc
 
 
-@typic.al
+@validate_arguments
 def doc(fdict: dict, **kwargs) -> Callable:
     """Return a decorator that formats a docstring."""
 
@@ -802,7 +751,7 @@ def doc(fdict: dict, **kwargs) -> Callable:
     return f
 
 
-@typic.al
+@validate_arguments
 def parsedate(
     dstr: Optional[str], strftime: Optional[Any] = None, settings: Optional[Any] = None
 ) -> Timestamp:
@@ -835,7 +784,7 @@ Could not parse date string '{dstr}'.
     return pdate.strftime(strftime)
 
 
-@typic.al
+@validate_arguments
 def merge_dicts(*dict_args: dict) -> dict:
     """Merge multiple dictionaries."""
     result = {}
@@ -1252,7 +1201,7 @@ def transform_args(**trans_func_for_arg):
 @transform_args(
     pick=make_list, names=make_list, source_units=make_list, target_units=make_list
 )
-@typic.al
+@validate_arguments
 def common_kwds(
     input_tsd=None,
     start_date=None,
@@ -1616,7 +1565,7 @@ def dedupIndex(
     return pd.Index(idx)
 
 
-@typic.al
+@validate_arguments
 def renamer(xloc: str, suffix: Optional[str] = "") -> str:
     """Print the suffix into the third ":" separated field of the header."""
     if suffix is None:
@@ -1720,7 +1669,7 @@ def _printiso(
                     index=showindex,
                 )
                 return
-            except IOError:
+            except OSError:
                 return
         else:
             ntablefmt = simple_separated_format(sep)
@@ -1767,7 +1716,7 @@ def open_local(filein: str) -> TextIOWrapper:
         return gzip.open(filein, "rb"), base
     if ext in [".bz", ".bz2"]:
         return bz2.BZ2File(filein, "rb"), base
-    return open(filein, "r"), os.path.basename(filein)
+    return open(filein), os.path.basename(filein)
 
 
 def reduce_mem_usage(props):
@@ -1843,7 +1792,7 @@ def is_valid_url(url: Union[bytes, str], qualifying: Optional[Any] = None) -> bo
     return all(getattr(token, qualifying_attr) for qualifying_attr in qualifying)
 
 
-# @typic.al
+# @validate_arguments
 def read_iso_ts(
     *inindat,
     dropna: Literal["no", "any", "all"] = None,

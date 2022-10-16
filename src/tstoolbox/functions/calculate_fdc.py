@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 """Collection of functions for the manipulation of time series."""
 
 import warnings
 
 import cltoolbox
 import pandas as pd
-import typic
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
+from pydantic import confloat, validate_arguments
 from scipy.stats import t
 from toolbox_utils import tsutils
 
@@ -149,7 +148,7 @@ def calculate_fdc_cli(
     )
 
 
-@typic.al
+@validate_arguments
 @tsutils.copy_doc(calculate_fdc_cli)
 def calculate_fdc(
     input_ts="-",
@@ -170,7 +169,7 @@ def calculate_fdc(
     include_ri: bool = False,
     include_sd: bool = False,
     include_cl: bool = False,
-    ci: tsutils.FloatBetweenZeroAndOne = 0.9,
+    ci: confloat(gt=0, lt=1) = 0.9,
 ):
     """Return the frequency distribution curve."""
     sort_values = sort_values == "ascending"
