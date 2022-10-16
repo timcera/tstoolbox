@@ -8,9 +8,8 @@ from typing import List, Optional, Tuple, Union
 import cltoolbox
 import numpy as np
 import pandas as pd
-import plottoolbox
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
-from plottoolbox import plotutils
+from plottoolbox import plottoolbox, plotutils
 from pydantic import PositiveInt, validate_arguments
 from toolbox_utils import tsutils
 
@@ -751,9 +750,7 @@ def plot_cli(
     ylim=tsutils.make_list,
     legend_names=tsutils.make_list,
     markerstyles=tsutils.make_list,
-    colors=tsutils.make_list,
     linestyles=tsutils.make_list,
-    bar_hatchstyles=tsutils.make_list,
     style=tsutils.make_list,
     figsize=tsutils.make_list,
     hlines_y=tsutils.make_list,
@@ -817,11 +814,11 @@ def plot(
     subplots: bool = False,
     sharex: bool = True,
     sharey: bool = False,
-    colors: Optional[List[Optional[str]]] = "auto",
-    linestyles: Optional[List[Optional[str]]] = "auto",
-    markerstyles: Optional[List[Optional[str]]] = " ",
-    bar_hatchstyles: Optional[List[Optional[str]]] = "auto",
-    style: Optional[List[str]] = "auto",
+    colors: Optional[Union[str, List[Optional[str]]]] = "auto",
+    linestyles: Optional[Union[str, List[Optional[str]]]] = "auto",
+    markerstyles: Optional[Union[str, List[Optional[str]]]] = " ",
+    bar_hatchstyles: Optional[Union[str, List[Optional[str]]]] = "auto",
+    style: Optional[Union[str, List[str]]] = "auto",
     logx: bool = False,
     logy: bool = False,
     xaxis: Literal["arithmetic", "log"] = "arithmetic",
