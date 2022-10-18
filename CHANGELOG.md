@@ -1,3 +1,13 @@
+## 104.0.0 (2022-10-18)
+
+### Fix
+
+- fixed type hint for plot
+- another try to get plot tests to pass on github
+- plot tests are failing on github that I can't reproduce locally
+- **plot**: reinstated plot tests which are almost identical to plottoolbox tests but use tstoolbox.plot which uses plottoolbox in the background
+- moved to the breaking change move in toolbox_utils from typic to pydantic and misc. modernizations
+
 ## 103.18.7 (2022-09-28)
 
 ## 103.18.6 (2022-09-28)
