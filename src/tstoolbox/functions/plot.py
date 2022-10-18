@@ -848,7 +848,7 @@ def plot(
     source_units=None,
     target_units=None,
     lag_plot_lag: PositiveInt = 1,
-    plot_styles: List[
+    plot_styles: Union[
         Literal[
             "classic",
             "Solarize_Light2",
@@ -885,7 +885,46 @@ def plot(
             "vibrant",
             "muted",
             "retro",
-        ]
+        ],
+        List[
+            Literal[
+                "classic",
+                "Solarize_Light2",
+                "bmh",
+                "dark_background",
+                "fast",
+                "fivethirtyeight",
+                "ggplot",
+                "grayscale",
+                "seaborn",
+                "seaborn-bright",
+                "seaborn-colorblind",
+                "seaborn-dark",
+                "seaborn-dark-palette",
+                "seaborn-darkgrid",
+                "seaborn-deep",
+                "seaborn-muted",
+                "seaborn-notebook",
+                "seaborn-paper",
+                "seaborn-pastel",
+                "seaborn-poster",
+                "seaborn-talk",
+                "seaborn-ticks",
+                "seaborn-white",
+                "seaborn-whitegrid",
+                "tableau-colorblind10",
+                "science",
+                "grid",
+                "ieee",
+                "scatter",
+                "notebook",
+                "high-vis",
+                "bright",
+                "vibrant",
+                "muted",
+                "retro",
+            ]
+        ],
     ] = "bright",
     hlines_y: Optional[List[float]] = None,
     hlines_xmin: Optional[List[float]] = None,
@@ -1872,6 +1911,7 @@ def plot(
             drawstyle=drawstyle,
             secondary_y=secondary_y,
             secondary_x=secondary_x,
+            plot_styles=plot_styles,
         )
     elif type == "weibull_xaxis":
         pltr = plottoolbox.weibull_xaxis(
