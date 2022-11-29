@@ -4,9 +4,9 @@ from unittest import TestCase
 
 import numpy as np
 import pandas
+import toolbox_utils.tsutils as tsutils
 from pandas.testing import assert_frame_equal
 
-import tstoolbox.tsutils as tsutils
 from tstoolbox import tstoolbox
 
 from . import capture

@@ -6,6 +6,7 @@ import cltoolbox
 import pandas as pd
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import validate_arguments
+from scipy.stats import gaussian_kde
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
@@ -116,8 +117,6 @@ You gave {tsd.columns}.
 """
             )
         )
-
-    from scipy.stats import gaussian_kde
 
     tmptsd = tsd.dropna()
     ndf = tmptsd.sort_values(tmptsd.columns[0], ascending=ascending)

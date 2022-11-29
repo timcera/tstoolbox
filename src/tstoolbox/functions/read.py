@@ -13,7 +13,6 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-
 warnings.filterwarnings("ignore")
 
 
@@ -206,7 +205,9 @@ def read(
         warnings.warn(
             tsutils.error_wrapper(
                 """
-Using "," separated files is deprecated in favor of space delimited files."""
+                Using "," separated files is deprecated in favor of space
+                delimited files.
+                """
             )
         )
 

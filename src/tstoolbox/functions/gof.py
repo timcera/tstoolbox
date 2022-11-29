@@ -1,7 +1,7 @@
 """Collection of functions for the manipulation of time series."""
 
 import warnings
-from typing import List, Union
+from typing import List
 
 import cltoolbox
 import HydroErr as he
@@ -9,14 +9,9 @@ import numpy as np
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import validate_arguments
 from toolbox_utils import tsutils
+from typing_extensions import Literal
 
-from .. import skill_metrics as sm
 from .read import read
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
 warnings.filterwarnings("ignore")
 
@@ -393,13 +388,27 @@ def gof_cli(
 
 stats_dict = {
     "bias": ["Mean error or bias", he.me],
-    "pc_bias": ["Percent bias", sm.pc_bias],
-    "apc_bias": ["Absolute percent bias", sm.apc_bias],
+    "pc_bias": [
+        "Percent bias",
+        lambda sim, obs: 100.0 * np.sum(sim - obs) / np.sum(obs),
+    ],
+    "apc_bias": [
+        "Absolute percent bias",
+        lambda sim, obs: 100.0 * np.sum(np.abs(sim - obs)) / np.sum(obs),
+    ],
     "rmsd": ["Root-mean-square Deviation/Error (RMSD)", he.rmse],
-    "crmsd": ["Centered RMSD (CRMSD)", sm.centered_rms_dev],
+    "crmsd": [
+        "Centered RMSD (CRMSD)",
+        lambda sim, obs: np.sqrt(
+            np.sum(np.square((sim - np.mean(sim)) - (obs - np.mean(obs)))) / sim.size
+        ),
+    ],
     "corrcoef": ["Pearson coefficient of correlation (r)", he.pearson_r],
     "coefdet": ["Coefficient of determination (r^2)", he.r_squared],
-    "murphyss": ["Skill score (Murphy)", sm.skill_score_murphy],
+    "murphyss": [
+        "Skill score (Murphy)",
+        lambda sim, obs: 1 - he.rmse(sim, obs) ** 2 / np.std(obs, ddof=1) ** 2,
+    ],
     "nse": ["Nash-Sutcliffe Efficiency", he.nse],
     "kge09": ["Kling-Gupta efficiency (2009)", he.kge_2009],
     "kge12": ["Kling-Gupta efficiency (2012)", he.kge_2012],
@@ -654,8 +663,9 @@ def gof(
         raise ValueError(
             tsutils.error_wrapper(
                 """
-The "gof" requires only two time-series, the first one is the observed values
-and the second is the simulated.  """
+                The "gof" requires only two time-series, the first one is the
+                observed values and the second is the simulated.
+                """
             )
         )
     lennao, lennas = tsd.isna().sum()

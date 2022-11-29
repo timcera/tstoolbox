@@ -338,6 +338,3 @@ keywords.  Instead you have "{to}" in both.
     result = pd.DataFrame(y_pred, index=x_pred.index)
     result = result.reindex(index=wtsd.index)
     return tsutils.return_input(print_input, tsd, result)
-
-
-pass

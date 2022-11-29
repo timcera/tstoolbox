@@ -1,28 +1,43 @@
 """Collection of functions for the manipulation of time series."""
 
-import itertools
-import os
 import warnings
 from typing import List, Optional, Tuple, Union
 
 import cltoolbox
-import numpy as np
-import pandas as pd
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
-from plottoolbox import plottoolbox, plotutils
+from plottoolbox.functions.autocorrelation import autocorrelation
+from plottoolbox.functions.bar import bar
+from plottoolbox.functions.bar_stacked import bar_stacked
+from plottoolbox.functions.barh import barh
+from plottoolbox.functions.barh_stacked import barh_stacked
+from plottoolbox.functions.bootstrap import bootstrap
+from plottoolbox.functions.boxplot import boxplot
+from plottoolbox.functions.double_mass import double_mass
+from plottoolbox.functions.heatmap import heatmap
+from plottoolbox.functions.histogram import histogram
+from plottoolbox.functions.kde import kde
+from plottoolbox.functions.kde_time import kde_time
+from plottoolbox.functions.lag_plot import lag_plot
+from plottoolbox.functions.lognorm_xaxis import lognorm_xaxis
+from plottoolbox.functions.lognorm_yaxis import lognorm_yaxis
+from plottoolbox.functions.norm_xaxis import norm_xaxis
+from plottoolbox.functions.norm_yaxis import norm_yaxis
+from plottoolbox.functions.probability_density import probability_density
+from plottoolbox.functions.scatter_matrix import scatter_matrix
+from plottoolbox.functions.target import target
+from plottoolbox.functions.taylor import taylor
+from plottoolbox.functions.time import time
+from plottoolbox.functions.weibull_xaxis import weibull_xaxis
+from plottoolbox.functions.weibull_yaxis import weibull_yaxis
+from plottoolbox.functions.xy import xy
 from pydantic import PositiveInt, validate_arguments
 from toolbox_utils import tsutils
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
+from typing_extensions import Literal
 
 warnings.filterwarnings("ignore")
 
 
 @cltoolbox.command("plot", formatter_class=RSTHelpFormatter)
-@tsutils.doc(plotutils.ldocstrings)
 def plot_cli(
     input_ts="-",
     columns=None,
@@ -61,10 +76,6 @@ def plot_cli(
     scatter_matrix_diagonal="kde",
     bootstrap_size=50,
     bootstrap_samples=500,
-    norm_xaxis=False,
-    norm_yaxis=False,
-    lognorm_xaxis=False,
-    lognorm_yaxis=False,
     xy_match_line="",
     grid=False,
     label_rotation=None,
@@ -497,14 +508,6 @@ def plot_cli(
         [optional, defaults to 500]
 
         The number of random subsets of 'bootstrap_size'.
-    norm_xaxis
-        DEPRECATED: use '--type="norm_xaxis"' instead.
-    norm_yaxis
-        DEPRECATED: use '--type="norm_yaxis"' instead.
-    lognorm_xaxis
-        DEPRECATED: use '--type="lognorm_xaxis"' instead.
-    lognorm_yaxis
-        DEPRECATED: use '--type="lognorm_yaxis"' instead.
     xy_match_line : str
         [optional, defaults is '']
 
@@ -711,10 +714,6 @@ def plot_cli(
         scatter_matrix_diagonal=scatter_matrix_diagonal,
         bootstrap_size=bootstrap_size,
         bootstrap_samples=bootstrap_samples,
-        norm_xaxis=norm_xaxis,
-        norm_yaxis=norm_yaxis,
-        lognorm_xaxis=lognorm_xaxis,
-        lognorm_yaxis=lognorm_yaxis,
         xy_match_line=xy_match_line,
         grid=grid,
         label_rotation=label_rotation,
@@ -827,10 +826,6 @@ def plot(
     scatter_matrix_diagonal: Literal["kde", "hist"] = "kde",
     bootstrap_size: PositiveInt = 50,
     bootstrap_samples: PositiveInt = 500,
-    norm_xaxis: bool = False,
-    norm_yaxis: bool = False,
-    lognorm_xaxis: bool = False,
-    lognorm_yaxis: bool = False,
     xy_match_line: str = "",
     grid: bool = False,
     label_rotation: Optional[float] = None,
@@ -959,7 +954,7 @@ def plot(
     )
 
     if type == "autocorrelation":
-        pltr = plottoolbox.autocorrelation(
+        pltr = autocorrelation(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -985,7 +980,7 @@ def plot(
             plot_styles=plot_styles,
         )
     elif type == "bar":
-        pltr = plottoolbox.bar(
+        pltr = bar(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1033,7 +1028,7 @@ def plot(
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "bar_stacked":
-        pltr = plottoolbox.bar_stacked(
+        pltr = bar_stacked(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1081,7 +1076,7 @@ def plot(
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "barh":
-        pltr = plottoolbox.barh(
+        pltr = barh(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1129,7 +1124,7 @@ def plot(
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "barh_stacked":
-        pltr = plottoolbox.barh_stacked(
+        pltr = barh_stacked(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1177,7 +1172,7 @@ def plot(
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "bootstrap":
-        pltr = plottoolbox.bootstrap(
+        pltr = bootstrap(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1219,7 +1214,7 @@ def plot(
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "boxplot":
-        pltr = plottoolbox.boxplot(
+        pltr = boxplot(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1263,7 +1258,7 @@ def plot(
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "double_mass":
-        pltr = plottoolbox.double_mass(
+        pltr = double_mass(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1307,7 +1302,7 @@ def plot(
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "heatmap":
-        pltr = plottoolbox.heatmap(
+        pltr = heatmap(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1351,7 +1346,7 @@ def plot(
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "histogram":
-        pltr = plottoolbox.histogram(
+        pltr = histogram(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1397,7 +1392,7 @@ def plot(
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "kde":
-        pltr = plottoolbox.kde(
+        pltr = kde(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1443,7 +1438,7 @@ def plot(
             secondary_x=secondary_x,
         )
     elif type == "kde_time":
-        pltr = plottoolbox.kde_time(
+        pltr = kde_time(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1489,7 +1484,7 @@ def plot(
             secondary_x=secondary_x,
         )
     elif type == "lag_plot":
-        pltr = plottoolbox.lag_plot(
+        pltr = lag_plot(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1534,7 +1529,7 @@ def plot(
             lag_plot_lag=lag_plot_lag,
         )
     elif type == "lognorm_xaxis":
-        pltr = plottoolbox.lognorm_xaxis(
+        pltr = lognorm_xaxis(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1580,7 +1575,7 @@ def plot(
             prob_plot_sort_values=prob_plot_sort_values,
         )
     elif type == "lognorm_yaxis":
-        pltr = plottoolbox.lognorm_yaxis(
+        pltr = lognorm_yaxis(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1626,7 +1621,7 @@ def plot(
             prob_plot_sort_values=prob_plot_sort_values,
         )
     elif type == "norm_xaxis":
-        pltr = plottoolbox.norm_xaxis(
+        pltr = norm_xaxis(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1672,7 +1667,7 @@ def plot(
             prob_plot_sort_values=prob_plot_sort_values,
         )
     elif type == "norm_yaxis":
-        pltr = plottoolbox.norm_yaxis(
+        pltr = norm_yaxis(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1718,7 +1713,7 @@ def plot(
             prob_plot_sort_values=prob_plot_sort_values,
         )
     elif type == "probability_density":
-        pltr = plottoolbox.probability_density(
+        pltr = probability_density(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1764,7 +1759,7 @@ def plot(
             secondary_x=secondary_x,
         )
     elif type == "scatter_matrix":
-        pltr = plottoolbox.scatter_matrix(
+        pltr = scatter_matrix(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1809,7 +1804,7 @@ def plot(
             scatter_matrix_diagonal=scatter_matrix_diagonal,
         )
     elif type == "target":
-        pltr = plottoolbox.target(
+        pltr = target(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1853,7 +1848,7 @@ def plot(
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "taylor":
-        pltr = plottoolbox.taylor(
+        pltr = taylor(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1893,7 +1888,7 @@ def plot(
             vlines_linestyles=vlines_linestyles,
         )
     elif type == "time":
-        pltr = plottoolbox.time(
+        pltr = time(
             tsd,
             legend=legend,
             subplots=subplots,
@@ -1914,7 +1909,7 @@ def plot(
             plot_styles=plot_styles,
         )
     elif type == "weibull_xaxis":
-        pltr = plottoolbox.weibull_xaxis(
+        pltr = weibull_xaxis(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -1960,7 +1955,7 @@ def plot(
             prob_plot_sort_values=prob_plot_sort_values,
         )
     elif type == "weibull_yaxis":
-        pltr = plottoolbox.weibull_yaxis(
+        pltr = weibull_yaxis(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,
@@ -2006,7 +2001,7 @@ def plot(
             prob_plot_sort_values=prob_plot_sort_values,
         )
     elif type == "xy":
-        pltr = plottoolbox.xy(
+        pltr = xy(
             input_ts=input_ts,
             columns=columns,
             start_date=start_date,

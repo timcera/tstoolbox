@@ -40,5 +40,6 @@ def centered_rms_dev(predicted, reference):
     crmsd = np.square((predicted - pmean) - (reference - rmean))
     crmsd = np.sum(crmsd) / predicted.size
     crmsd = np.sqrt(crmsd)
+    # crmsd = np.sqrt(np.sum(np.square((sim - np.mean(sim)) - (obs - np.mean(obs)))) / sim.size)
 
     return crmsd

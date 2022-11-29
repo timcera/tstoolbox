@@ -3,9 +3,9 @@ import subprocess
 from unittest import TestCase
 
 import pandas as pd
+import toolbox_utils.tsutils as tsutils
 from pandas.testing import assert_frame_equal
 
-import tstoolbox.tsutils as tsutils
 from tstoolbox import tstoolbox
 
 from . import capture
@@ -27,7 +27,7 @@ class TestDescribe(TestCase):
             ],
             index=index,
             columns=["Area"],
-        )
+        ).astype("Float64")
         self.date_slice.index.name = "Statistic"
         self.date_slice_cli = capture.capture(
             tsutils.printiso, self.date_slice, showindex="always"
