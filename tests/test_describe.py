@@ -27,7 +27,7 @@ class TestDescribe(TestCase):
             ],
             index=index,
             columns=["Area"],
-        ).astype("Float64")
+        )
         self.date_slice.index.name = "Statistic"
         self.date_slice_cli = capture.capture(
             tsutils.printiso, self.date_slice, showindex="always"
@@ -38,7 +38,7 @@ class TestDescribe(TestCase):
         """Test of describe API."""
         out = tstoolbox.describe(input_ts="tests/data_sunspot.csv")
         out.index.name = "UniqueID"
-        assert_frame_equal(out, self.date_slice)
+        assert_frame_equal(out, self.date_slice, check_dtype=False)
 
     def test_describe_cli(self):
         """Test of describe CLI."""
