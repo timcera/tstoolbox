@@ -1,3 +1,9 @@
+## 104.0.1 (2022-12-16)
+
+### Fix
+
+- **fill.py**: force type to be float so that linear (and other mathematical methods) work in fill
+
 ## 104.0.0 (2022-10-18)
 
 ### Fix
