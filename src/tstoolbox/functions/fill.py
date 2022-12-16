@@ -242,7 +242,7 @@ def fill(
         target_units=target_units,
         force_freq=force_freq,
         clean=clean,
-    )
+    ).astype(float)
     ntsd = tsd.copy() if print_input is True else tsd
     ntsd = tsutils.asbestfreq(ntsd)
     offset = ntsd.index[1] - ntsd.index[0]
