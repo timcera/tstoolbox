@@ -271,7 +271,7 @@ def equation(
                 dtype=float,
             )
             try:
-                y.iloc[:, 0] = eval(nequation)
+                y[y.columns[0]] = eval(nequation)
             except IndexError:
                 raise IndexError(
                     f"""

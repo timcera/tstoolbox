@@ -24,7 +24,7 @@ class Testconvert_index(TestCase):
             epoch="1979-12-30",
         )
         out.index.name = "1979-12-30_date"
-        out.index = pd.Int64Index(out.index)
+        out.index = pd.Index(out.index, dtype="int64")
         assert_frame_equal(out, self.read_direct)
 
 

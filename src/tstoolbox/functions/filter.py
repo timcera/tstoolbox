@@ -276,8 +276,9 @@ def filter(
         raise ValueError(
             tsutils.error_wrapper(
                 f"""
-Input vector (length={len(tsd.values)}) needs to be bigger than window size ({window_len}).
-"""
+                Input vector (length={len(tsd.values)}) needs to be bigger than
+                window size ({window_len}).
+                """
             )
         )
 
@@ -285,9 +286,11 @@ Input vector (length={len(tsd.values)}) needs to be bigger than window size ({wi
         warnings.warn(
             tsutils.error_wrapper(
                 """
-DEPRECATED: The `filter_type`s "flat", "hanning", "hamming", "bartlett", and
-"blackman" are implemented with greater capabilities in the "rolling_window"
-function in tstoolbox.  Eventually they will be removed from the "filter" function."""
+                DEPRECATED: The `filter_type`s "flat", "hanning", "hamming",
+                "bartlett", and "blackman" are implemented with greater
+                capabilities in the "rolling_window" function in tstoolbox.
+                Eventually they will be removed from the "filter" function.
+                """
             )
         )
         # Inelegant - but works.  If any rolling_window filters then just set
@@ -308,10 +311,11 @@ function in tstoolbox.  Eventually they will be removed from the "filter" functi
         raise ValueError(
             tsutils.error_wrapper(
                 f"""
-The "bandpass" and "bandstop" options for `filter_pass` require values
-for the `lowpass_cutoff` and `highpass_cutoff` keywords.  You have
-"{lowpass_cutoff}" for `lowpass_cutoff` and "{highpass_cutoff}" for
-`highpass_cutoff`."""
+                The "bandpass" and "bandstop" options for `filter_pass` require
+                values for the `lowpass_cutoff` and `highpass_cutoff` keywords.
+                You have "{lowpass_cutoff}" for `lowpass_cutoff` and
+                "{highpass_cutoff}" for `highpass_cutoff`.
+                """
             )
         )
 
@@ -320,16 +324,18 @@ for the `lowpass_cutoff` and `highpass_cutoff` keywords.  You have
             raise ValueError(
                 tsutils.error_wrapper(
                     f"""
-The "lowpass" option for `filter_pass` requires a value for
-`lowpass_cutoff`.  You have "{lowpass_cutoff}"."""
+                    The "lowpass" option for `filter_pass` requires a value for
+                    `lowpass_cutoff`.  You have "{lowpass_cutoff}".
+                    """
                 )
             )
         if highpass_cutoff is not None:
             warnings.warn(
                 tsutils.error_wrapper(
                     f"""
-The `highpass_cutoff` value of {highpass_cutoff} is ignored it
-`filter_pass` is "lowpass"."""
+                    The `highpass_cutoff` value of {highpass_cutoff} is ignored
+                    it `filter_pass` is "lowpass".
+                    """
                 )
             )
 
@@ -338,16 +344,18 @@ The `highpass_cutoff` value of {highpass_cutoff} is ignored it
             raise ValueError(
                 tsutils.error_wrapper(
                     f"""
-The "highpass" option for `filter_pass` requires a value for
-`highpass_cutoff`.  You have "{highpass_cutoff}"."""
+                    The "highpass" option for `filter_pass` requires a value
+                    for `highpass_cutoff`.  You have "{highpass_cutoff}".
+                    """
                 )
             )
         if lowpass_cutoff is not None:
             warnings.warn(
                 tsutils.error_wrapper(
                     f"""
-The `lowpass_cutoff` value of {lowpass_cutoff} is ignored it
-`filter_pass` is "highpass"."""
+                    The `lowpass_cutoff` value of {lowpass_cutoff} is ignored
+                    it `filter_pass` is "highpass".
+                    """
                 )
             )
 
@@ -356,7 +364,7 @@ The `lowpass_cutoff` value of {lowpass_cutoff} is ignored it
     else:
         ntsd = tsutils.asbestfreq(tsd)
 
-    tdelt = pd.to_timedelta(ntsd.index.freq).delta / 86400000000000
+    tdelt = pd.to_timedelta(ntsd.index.freq).nanoseconds / 86400000000000
 
     for col in tsd.columns:
         if filter_type == "fft":
@@ -374,7 +382,9 @@ The `lowpass_cutoff` value of {lowpass_cutoff} is ignored it
                     raise ValueError(
                         tsutils.error_wrapper(
                             """
-The "lowpass_cutoff" must be greater than 0.5/interval_in_days."""
+                            The "lowpass_cutoff" must be greater than
+                            0.5/interval_in_days.
+                            """
                         )
                     )
                 a, b, c = lpdes(lowpass_cutoff, tdelt, butterworth_stages)
@@ -383,7 +393,9 @@ The "lowpass_cutoff" must be greater than 0.5/interval_in_days."""
                     raise ValueError(
                         tsutils.error_wrapper(
                             """
-The "highpass_cutoff" must be greater than 0.5/interval_in_days."""
+                            The "highpass_cutoff" must be greater than
+                            0.5/interval_in_days.
+                            """
                         )
                     )
                 a, b, c = hpdes(highpass_cutoff, tdelt, butterworth_stages)
@@ -392,7 +404,9 @@ The "highpass_cutoff" must be greater than 0.5/interval_in_days."""
                     raise ValueError(
                         tsutils.error_wrapper(
                             """
-The "lowpass_cutoff" and "highpass_cutoff" must be greater than 0.5/interval_in_days."""
+                            The "lowpass_cutoff" and "highpass_cutoff" must be
+                            greater than 0.5/interval_in_days.
+                            """
                         )
                     )
                 a, b, c, d, e = bpdes(
