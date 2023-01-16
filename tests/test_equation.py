@@ -163,7 +163,6 @@ class TestEquation(TestCase):
         """Test of using equation API with columns over 9."""
         input_ts = tstoolbox.read(
             "tests/data_multiple_cols.csv tests/data_multiple_cols.csv tests/data_multiple_cols.csv tests/data_multiple_cols.csv tests/data_multiple_cols.csv",
-            append="columns",
         )
         out = tstoolbox.equation("x10*10", input_ts=input_ts)
         assert_frame_equal(out, self.equation_result, check_column_type=False)

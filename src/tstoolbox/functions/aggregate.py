@@ -39,7 +39,6 @@ def aggregate_cli(
     target_units=None,
     print_input=False,
     tablefmt="csv",
-    skipna=True,
     min_count=0,
 ):
     """Take a time series and aggregate to specified frequency.
@@ -118,12 +117,6 @@ def aggregate_cli(
     ${target_units}
     ${print_input}
     ${tablefmt}
-    skipna :
-        [optional, defaults to True, transformation]
-
-        If False will return a NaN for any aggregation group that has a NaN.
-        If True will fill all NaNs with 0 before aggregation.  Ignored if
-        `groupby` is "all" or `groupby` is "months_across_years".
     min_count:
         The required number of valid values to perform the operation. If fewer than
         min_count non-NA values are present the result will be NA.  Default is 0.
@@ -156,7 +149,6 @@ def aggregate_cli(
             source_units=source_units,
             target_units=target_units,
             print_input=print_input,
-            skipna=skipna,
             min_count=min_count,
         ),
         tablefmt=tablefmt,
@@ -188,7 +180,6 @@ def aggregate(
     source_units=None,
     target_units=None,
     print_input=False,
-    skipna: bool = True,
     min_count: int = 0,
 ):
     """Take a time series and aggregate to specified frequency."""
@@ -261,7 +252,6 @@ def aggregate(
         source_units=source_units,
         target_units=target_units,
         clean=clean,
-        skipna=skipna,
     )
     newts = pd.DataFrame()
     for method in statistic:

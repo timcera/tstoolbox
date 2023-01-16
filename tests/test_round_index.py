@@ -69,7 +69,6 @@ class Testround_index(TestCase):
         """Test round_index API for multiple columns - daily."""
         out = tstoolbox.read(
             "tests/data_simple.csv tests/data_simple.csv",
-            append="columns",
             round_index="D",
         )
         assert_frame_equal(out, self.round_index_multiple_direct)
