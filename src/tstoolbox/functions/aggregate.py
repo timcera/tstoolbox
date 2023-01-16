@@ -1,6 +1,7 @@
 """Collection of functions for the manipulation of time series."""
 
 import warnings
+from contextlib import suppress
 from typing import List
 
 import cltoolbox
@@ -198,17 +199,17 @@ def aggregate(
             raise ValueError(
                 tsutils.error_wrapper(
                     """
-You cannot specify both 'groupby' and 'agg_interval'.  The 'agg_interval'
-option is deprecated in favor of 'groupby'.
-"""
+                    You cannot specify both 'groupby' and 'agg_interval'.  The
+                    'agg_interval' option is deprecated in favor of 'groupby'.
+                    """
                 )
             )
         warnings.warn(
             tsutils.error_wrapper(
                 """
-The 'agg_interval' option has been deprecated in favor of 'groupby' to be
-consistent with other tstoolbox commands.
-"""
+                The 'agg_interval' option has been deprecated in favor of
+                'groupby' to be consistent with other tstoolbox commands.
+                """
             )
         )
         groupby = aggd.get(agg_interval, agg_interval)
@@ -218,33 +219,31 @@ consistent with other tstoolbox commands.
         ninterval = int(ninterval)
 
         inter = None
-        try:
+        with suppress(ValueError, TypeError):
             inter = int(groupby[0])
-        except (ValueError, TypeError):
-            pass
 
         if inter is not None:
             raise ValueError(
+                tsutils.error_wrapper(
+                    """
+                You cannot specify the 'ninterval' option and prefix a number
+                in the 'groupby' option.  The 'ninterval' option is deprecated
+                in favor of prefixing the number in the pandas offset code used
+                in the 'groupby' option.
                 """
-*
-*   You cannot specify the 'ninterval' option and prefix a number in the
-*   'groupby' option.  The 'ninterval' option is deprecated in favor of
-*   prefixing the number in the pandas offset code used in the 'groupby'
-*   option.
-*
-"""
+                )
             )
 
         warnings.warn(
+            tsutils.error_wrapper(
+                """
+            The 'ninterval' option has been deprecated in favor of prefixing
+            the desired interval in front of the 'groupby' pandas offset code.
+
+            For example: instead of 'grouby="D"' and 'ninterval=7', you can
+            just have 'groupby="7D"'.
             """
-*
-*   The 'ninterval' option has been deprecated in favor of prefixing the
-*   desired interval in front of the 'groupby' pandas offset code.
-*
-*   For example: instead of 'grouby="D"' and 'ninterval=7', you can just
-*   have 'groupby="7D"'.
-*
-"""
+            )
         )
     else:
         ninterval = ""
@@ -262,6 +261,7 @@ consistent with other tstoolbox commands.
         source_units=source_units,
         target_units=target_units,
         clean=clean,
+        skipna=skipna,
     )
     newts = pd.DataFrame()
     for method in statistic:
@@ -274,7 +274,7 @@ consistent with other tstoolbox commands.
         elif groupby == "months_across_years":
             tmptsd = tsd.groupby(lambda x: x.month).agg(method)
             tmptsd.index = list(range(1, 13))
-        elif method in ["first", "last", "max", "min", "prod", "sum"]:
+        elif method in ("first", "last", "max", "min", "prod", "sum"):
             tmptsd = tsd.resample(f"{ninterval}{groupby}").agg(
                 method, min_count=min_count
             )

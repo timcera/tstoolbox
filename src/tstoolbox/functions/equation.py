@@ -2,6 +2,7 @@
 
 import re
 import warnings
+from contextlib import suppress
 from typing import List
 
 import cltoolbox
@@ -69,10 +70,9 @@ def _parse_equation(equation_str):
     elif nsearch:
         nequation = re.sub(r"x([1-9][0-9]*)", r"x.iloc[:,\1-1]", nequation)
 
-    try:
+    with suppress(KeyError):
         testeval.remove("t")
-    except KeyError:
-        pass
+
     return tsearch, nsearch, testeval, nequation
 
 
@@ -272,15 +272,16 @@ def equation(
             )
             try:
                 y[y.columns[0]] = eval(nequation)
-            except IndexError:
+            except IndexError as err:
                 raise IndexError(
-                    f"""
-*
-*   There are {y.shape[1]} columns, but the equation you are trying to apply is trying
-*   to access a column greater than that.
-*
-"""
-                )
+                    tsutils.error_wrapper(
+                        f"""
+                        There are {y.shape[1]} columns, but the equation you
+                        are trying to apply is trying to access a column
+                        greater than that.
+                        """
+                    )
+                ) from err
 
         else:
             y = eval(eqn)

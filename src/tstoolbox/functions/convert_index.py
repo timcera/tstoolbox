@@ -210,7 +210,9 @@ def convert_index(
         raise ValueError(
             tsutils.error_wrapper(
                 f"""
-The "to" option can be one of "datetime" or "number" not "{to}"."""
+                The "to" option can be one of "datetime" or "number" not
+                "{to}".
+                """
             )
         )
 
@@ -279,33 +281,34 @@ The "to" option can be one of "datetime" or "number" not "{to}"."""
         words = interval.split("-")
         if len(words) == 2:
             warnings.warn(
-                f"""
-*
-*   The epoch keyword "{epoch}" overrides the anchoring suffix "{words[1]}".
-*
-"""
+                tsutils.error_wrapper(
+                    f"""
+                    The epoch keyword "{epoch}" overrides the anchoring suffix
+                    "{words[1]}".
+                    """
+                )
             )
 
             interval = words[0]
 
-    if epoch == "unix" and interval not in ["S", "s"]:
+    if epoch == "unix" and interval not in ("S", "s"):
         warnings.warn(
-            f"""
-*
-*   Typically the unix epoch would has an interval of 'S' (seconds).
-*   Instead you gave {interval}.
-*
-"""
+            tsutils.error_wrapper(
+                f"""
+                Typically the unix epoch would has an interval of 'S'
+                (seconds). Instead you gave {interval}.
+                """
+            )
         )
 
     if epoch in dailies and interval != "D":
         warnings.warn(
-            f"""
-*
-*   Typically the {epoch} epoch would has an interval of 'D' (days).
-*   Instead you gave {interval}.
-*
-"""
+            tsutils.error_wrapper(
+                f"""
+                Typically the {epoch} epoch would has an interval of 'D'
+                (days). Instead you gave {interval}.
+                """
+            )
         )
 
     if to == "number":

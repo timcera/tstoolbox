@@ -1,5 +1,6 @@
 """A lag routine."""
 
+from contextlib import suppress
 from typing import List
 
 import cltoolbox
@@ -99,10 +100,8 @@ def lag(
     )
     if len(lags) == 1:
         lags = lags[0]
-    try:
+    with suppress(TypeError):
         lags = list(range(1, lags + 1))
-    except TypeError:
-        pass
 
     if lags == 0:
         return tsd

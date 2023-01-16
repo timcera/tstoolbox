@@ -1,6 +1,7 @@
 """Collection of functions for the manipulation of time series."""
 
 import warnings
+from contextlib import suppress
 
 import cltoolbox
 import numpy as np
@@ -283,14 +284,11 @@ def _peakdetect(
                 break
 
     # Remove the false hit on the first value of the y_axis
-    try:
+    with suppress(IndexError):
         if dump[0]:
             max_peaks.pop(0)
         else:
             min_peaks.pop(0)
-    except IndexError:
-        # no peaks were found, should the function return empty lists?
-        pass
 
     return [max_peaks, min_peaks]
 
@@ -341,7 +339,7 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
 
     # check input data
     x_axis, y_axis = _datacheck_peakdetect(x_axis, y_axis)
-    zero_indices = zero_crossings(y_axis, window=11)
+    zero_indices = zero_crossings(y_axis)
     # select a n amount of periods
     last_indice = -1 - (1 - len(zero_indices) & 1)
     # Calculate the fft between the first and last zero crossing
@@ -489,7 +487,7 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
 
     # calculate an approximate frequency of the signal
     hz = []
-    for raw in [max_raw, min_raw]:
+    for raw in (max_raw, min_raw):
         if len(raw) > 1:
             peak_pos = [x_axis[index] for index in zip(*raw)[0]]
             hz.append(np.mean(np.diff(peak_pos)))
@@ -512,7 +510,7 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
 
     # get peaks
     fitted_peaks = []
-    for raw_peaks in [max_raw, min_raw]:
+    for raw_peaks in (max_raw, min_raw):
         peak_data = []
         for peak in raw_peaks:
             index = peak[0]
@@ -764,10 +762,8 @@ def zero_crossings(y_axis, window=11):
     if len(nzero_crossings) < 1:
         raise ValueError
 
-    try:
+    with suppress(ValueError):
         indices.remove(0)
-    except ValueError:
-        pass
 
     return indices
     # used this to test the fft function's sensitivity to spectral leakage
@@ -942,11 +938,10 @@ def peak_detection(
         clean=clean,
     )
 
-    window = int(window)
     kwds = {}
     if method == "fft":
         func = _peakdetect_fft
-        kwds["pad_len"] = int(pad_len)
+        kwds["pad_len"] = pad_len
 
     elif method == "minmax":
         func = _peakdetect
@@ -956,7 +951,7 @@ def peak_detection(
         kwds["window"] = window
     elif method == "parabola":
         func = _peakdetect_parabola
-        kwds["points"] = int(points)
+        kwds["points"] = points
     elif method == "rel":
         func = _argrel
         window /= 2
@@ -965,7 +960,7 @@ def peak_detection(
         kwds["window"] = window
     elif method == "sine":
         func = _peakdetect_sine
-        kwds["points"] = int(points)
+        kwds["points"] = points
         kwds["lock_frequency"] = lock_frequency
     elif method == "zero_crossing":
         func = _peakdetect_zero_crossing
@@ -982,7 +977,7 @@ def peak_detection(
         tmptsd.columns = [tsutils.renamer(i, extrema) for i in tsd.columns]
 
     for cols in tmptsd.columns:
-        if method in ["fft", "parabola", "sine"]:
+        if method in ("fft", "parabola", "sine"):
             maxpeak, minpeak = func(
                 tmptsd[cols].values, list(range(len(tmptsd[cols]))), **kwds
             )

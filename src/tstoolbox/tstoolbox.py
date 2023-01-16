@@ -12,6 +12,7 @@ __all__ = [
     "accumulate",
     "add_trend",
     "aggregate",
+    "calculate_fdc",
     "calculate_kde",
     "clip",
     "convert",

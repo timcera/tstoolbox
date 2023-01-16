@@ -92,9 +92,9 @@ def _transform(vector, filter_pass, lowpass_cutoff, highpass_cutoff, window_len)
     freq = F.fftfreq(len(vector))[: len(vector) // 2 + 1]
     factor = np.ones_like(freq)
 
-    if filter_pass in ["lowpass", "bandpass"]:
+    if filter_pass in ("lowpass", "bandpass"):
         factor[freq > 1.0 / float(lowpass_cutoff)] = 0.0
-    if filter_pass in ["highpass", "bandpass"]:
+    if filter_pass in ("highpass", "bandpass"):
         factor[freq < 1.0 / float(highpass_cutoff)] = 0.0
     if filter_pass == "bandstop":
         factor[1.0 / float(highpass_cutoff) < freq < 1.0 / float(lowpass_cutoff)] = 0.0
@@ -282,7 +282,7 @@ def filter(
             )
         )
 
-    if filter_type in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
+    if filter_type in ("flat", "hanning", "hamming", "bartlett", "blackman"):
         warnings.warn(
             tsutils.error_wrapper(
                 """
@@ -305,7 +305,7 @@ def filter(
             lowpass_cutoff = 1
             highpass_cutoff = 1
 
-    if filter_pass in ["bandpass", "bandstop"] and (
+    if filter_pass in ("bandpass", "bandstop") and (
         lowpass_cutoff is None or highpass_cutoff is None
     ):
         raise ValueError(
@@ -459,7 +459,7 @@ def filter(
                     gval = np.flip(gval)
             ntsd[col] = gval
 
-        elif filter_type in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
+        elif filter_type in ("flat", "hanning", "hamming", "bartlett", "blackman"):
             if window_len < 3:
                 continue
             s = np.pad(tsd[col].values, window_len // 2, "reflect")

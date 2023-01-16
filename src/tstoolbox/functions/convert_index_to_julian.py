@@ -15,7 +15,6 @@ warnings.filterwarnings("ignore")
 @tsutils.doc(tsutils.docstrings)
 def convert_index_to_julian(
     input_ts="-",
-    epoch="julian",
     columns=None,
     start_date=None,
     end_date=None,
@@ -55,7 +54,6 @@ def convert_index_to_julian(
     )
     return convert_index(
         "julian",
-        epoch="julian",
         columns=columns,
         input_ts=input_ts,
         start_date=start_date,

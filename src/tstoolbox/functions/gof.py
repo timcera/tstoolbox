@@ -654,7 +654,6 @@ def gof(
         start_date=start_date,
         end_date=end_date,
         round_index=round_index,
-        dropna="no",
         source_units=source_units,
         target_units=target_units,
         clean=clean,
@@ -677,7 +676,7 @@ def gof(
     obs = tsd.iloc[:, 0].astype("float64")
     sim = tsd.iloc[:, 1].astype("float64")
 
-    nstats = [i for i in stats if i not in ["mean", "stdev"]]
+    nstats = [i for i in stats if i not in ("mean", "stdev")]
 
     for stat in nstats:
         extra_args = {
@@ -686,7 +685,7 @@ def gof(
             "remove_neg": remove_neg,
             "remove_zero": remove_zero,
         }
-        if stat in ["crmsd", "murphyss", "brierss", "pc_bias", "apc_bias"]:
+        if stat in ("crmsd", "murphyss", "brierss", "pc_bias", "apc_bias"):
             extra_args = {}
         proc = stats_dict[stat]
         if stat == "kge09":

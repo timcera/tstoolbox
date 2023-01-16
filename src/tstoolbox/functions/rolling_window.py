@@ -243,7 +243,7 @@ def rolling_window(
     ntsd = pd.DataFrame()
     for win in window:
         statstr = ""
-        if statistic in [
+        if statistic in (
             "corr",
             "count",
             "cov",
@@ -257,7 +257,7 @@ def rolling_window(
             "std",
             "sum",
             "var",
-        ]:
+        ):
             statstr = f".{statistic}()"
         etsd = eval(
             f"""tsd.apply(lambda x:

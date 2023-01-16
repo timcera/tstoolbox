@@ -119,7 +119,7 @@ def unstack(
         index_type=index_type,
         pick=columns,
         bestfreq=False,
-        clean=False,
+        clean=clean,
     )
 
     try:
@@ -129,16 +129,15 @@ def unstack(
             columns=column_names,
             aggfunc="first",
         )
-    except ValueError:
+    except ValueError as exc:
         raise ValueError(
             tsutils.error_wrapper(
                 f"""
-Duplicate index (time stamp and '{column_names}') where found.
-Found these duplicate indices:
-{tsd.index.get_duplicates()}
-"""
+                Duplicate index (time stamp and '{column_names}') where found.
+                Found these duplicate indices: {tsd.index.get_duplicates()}
+                """
             )
-        )
+        ) from exc
 
     newtsd.index.name = "Datetime"
 

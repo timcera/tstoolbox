@@ -20,7 +20,6 @@ warnings.filterwarnings("ignore")
 @tsutils.doc(tsutils.docstrings)
 def read_cli(
     force_freq=None,
-    append="columns",
     columns=None,
     start_date=None,
     end_date=None,
@@ -121,13 +120,6 @@ def read_cli(
 
             newdf = tstoolbox.read(['fname.csv,4,1', 'fname.xlsx', 'fname.hdf5'])
 
-    append : str
-        [optional, default is 'columns']
-
-        The type of appending to do.  For "combine" option matching column
-        indices will append rows, matching row indices will append columns, and
-        matching column/row indices use the value from the first dataset.  You
-        can use "row" or "column" to force an append along either axis.
     ${force_freq}
         ${pandas_offset_codes}
     ${columns}
@@ -147,7 +139,6 @@ def read_cli(
     tsutils.printiso(
         read(
             *filenames,
-            append=append,
             start_date=start_date,
             end_date=end_date,
             dropna=dropna,
@@ -171,7 +162,6 @@ def read_cli(
 def read(
     *filenames,
     force_freq=None,
-    append: Literal["columns", "rows", "combine"] = "columns",
     columns=None,
     start_date=None,
     end_date=None,

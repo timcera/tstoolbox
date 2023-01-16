@@ -253,9 +253,9 @@ def fill(
         dict(list(zip(tsd.columns, tsd.mean().values))), index=[tsd.index[-1] + offset]
     )
     ntsd = pd.concat([predf, ntsd, postf])
-    if method in ["ffill", "bfill"]:
+    if method in ("ffill", "bfill"):
         ntsd = ntsd.fillna(method=method, limit=limit)
-    elif method in [
+    elif method in (
         "linear",
         "time",
         "index",
@@ -273,7 +273,7 @@ def fill(
         "pchip",
         "akima",
         "from_derivatives",
-    ]:
+    ):
         ntsd = ntsd.interpolate(method=method, limit=limit, order=order)
     elif method == "mean":
         ntsd = ntsd.fillna(ntsd.mean(), limit=limit)

@@ -38,7 +38,6 @@ def correlation_cli(
     lags,
     method="pearson",
     input_ts="-",
-    print_input=False,
     start_date=None,
     end_date=None,
     columns=None,
@@ -83,7 +82,6 @@ def correlation_cli(
             kendall : Kendall Tau correlation coefficient
 
             spearman : Spearman rank correlation
-    ${print_input}
     ${input_ts}
     ${start_date}
     ${end_date}
@@ -103,7 +101,6 @@ def correlation_cli(
             lags,
             method=method,
             input_ts=input_ts,
-            print_input=print_input,
             start_date=start_date,
             end_date=end_date,
             columns=columns,
@@ -128,7 +125,6 @@ def correlation(
     lags: List[conint(ge=0)],
     method: Literal["pearson", "kendall", "spearman"] = "pearson",
     input_ts="-",
-    print_input=False,
     start_date=None,
     end_date=None,
     columns=None,

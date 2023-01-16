@@ -56,11 +56,11 @@ def convert_cli(
     ${index_type}
     ${names}
     ${print_input}
-    ${float_format}
     ${source_units}
     ${target_units}
     ${round_index}
     ${tablefmt}
+    ${float_format}
     """
     tsutils.printiso(
         convert(
@@ -79,8 +79,8 @@ def convert_cli(
             round_index=round_index,
             source_units=source_units,
             target_units=target_units,
-            float_format=float_format,
         ),
+        float_format=float_format,
         tablefmt=tablefmt,
     )
 
@@ -103,7 +103,6 @@ def convert(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format: str = "g",
 ):
     """Convert values of a time series by applying a factor and offset."""
     tsd = tsutils.common_kwds(

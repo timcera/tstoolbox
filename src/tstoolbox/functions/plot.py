@@ -934,8 +934,8 @@ def plot(
 ):
     r"""Plot data."""
     # Need to work around some old option defaults with the implementation of
-    # cltoolbox
-    legend = bool(legend == "" or legend == "True" or legend is None)
+    # mando (predecessor to cltoolbox)
+    legend = legend in ("", "True", None, True)
 
     tsd = tsutils.common_kwds(
         input_tsd=input_ts,

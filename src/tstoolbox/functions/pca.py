@@ -3,6 +3,7 @@
 import cltoolbox
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import PositiveInt, validate_arguments
+from sklearn.decomposition import PCA as skPCA
 from toolbox_utils import tsutils
 
 
@@ -83,7 +84,6 @@ def pca(
     round_index=None,
 ):
     """Return the principal components analysis of the time series."""
-    from sklearn.decomposition import PCA as skPCA
 
     tsd = tsutils.common_kwds(
         input_ts,

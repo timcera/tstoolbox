@@ -121,7 +121,6 @@ def pct_change(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="g",
 ):
     """Return the percent change between times."""
     tsd = tsutils.common_kwds(
