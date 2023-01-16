@@ -1,3 +1,9 @@
+## 104.0.4 (2023-01-16)
+
+### Fix
+
+- removed skipna and append="columns" that actually weren't doing anything
+
 ## 104.0.3 (2023-01-16)
 
 ### Refactor
