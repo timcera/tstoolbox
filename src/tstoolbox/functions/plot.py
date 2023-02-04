@@ -5,31 +5,33 @@ from typing import List, Optional, Tuple, Union
 
 import cltoolbox
 from cltoolbox.rst_text_formatter import RSTHelpFormatter
-from plottoolbox.functions.autocorrelation import autocorrelation
-from plottoolbox.functions.bar import bar
-from plottoolbox.functions.bar_stacked import bar_stacked
-from plottoolbox.functions.barh import barh
-from plottoolbox.functions.barh_stacked import barh_stacked
-from plottoolbox.functions.bootstrap import bootstrap
-from plottoolbox.functions.boxplot import boxplot
-from plottoolbox.functions.double_mass import double_mass
-from plottoolbox.functions.heatmap import heatmap
-from plottoolbox.functions.histogram import histogram
-from plottoolbox.functions.kde import kde
-from plottoolbox.functions.kde_time import kde_time
-from plottoolbox.functions.lag_plot import lag_plot
-from plottoolbox.functions.lognorm_xaxis import lognorm_xaxis
-from plottoolbox.functions.lognorm_yaxis import lognorm_yaxis
-from plottoolbox.functions.norm_xaxis import norm_xaxis
-from plottoolbox.functions.norm_yaxis import norm_yaxis
-from plottoolbox.functions.probability_density import probability_density
-from plottoolbox.functions.scatter_matrix import scatter_matrix
-from plottoolbox.functions.target import target
-from plottoolbox.functions.taylor import taylor
-from plottoolbox.functions.time import time
-from plottoolbox.functions.weibull_xaxis import weibull_xaxis
-from plottoolbox.functions.weibull_yaxis import weibull_yaxis
-from plottoolbox.functions.xy import xy
+from plottoolbox import (
+    autocorrelation,
+    bar,
+    bar_stacked,
+    barh,
+    barh_stacked,
+    bootstrap,
+    boxplot,
+    double_mass,
+    heatmap,
+    histogram,
+    kde,
+    kde_time,
+    lag_plot,
+    lognorm_xaxis,
+    lognorm_yaxis,
+    norm_xaxis,
+    norm_yaxis,
+    probability_density,
+    scatter_matrix,
+    target,
+    taylor,
+    time,
+    weibull_xaxis,
+    weibull_yaxis,
+    xy,
+)
 from pydantic import PositiveInt, validate_arguments
 from toolbox_utils import tsutils
 from typing_extensions import Literal
@@ -108,7 +110,14 @@ def plot_cli(
     Parameters
     ----------
     ${input_ts}
-
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${clean}
+    ${skiprows}
+    ${dropna}
+    ${index_type}
+    ${names}
     ofilename : str, optional
         [optional, defaults to 'plot.png']
 
@@ -228,10 +237,7 @@ def plot_cli(
             calculated and displayed are bias, root mean square deviation, and
             centered root mean square deviation.  The data columns have to be
             organized as 'observed,simulated1,simulated2,simulated3,...etc.'
-    lag_plot_lag : int, optional
-        [optional, default to 1]
 
-        The lag used if ``type`` "lag_plot" is chosen.
     xtitle : str
         [optional, default depends on ``type``]
 
@@ -420,16 +426,6 @@ def plot_cli(
 
         Marker reference:
         http://matplotlib.org/api/markers_api.html
-    style
-        [optional, default is None]
-
-        Still available, but if None is replaced by 'colors', 'linestyles', and
-        'markerstyles' options.  Currently the 'style' option will override the
-        others.
-
-        Comma separated matplotlib style strings per time-series.  Just
-        combine codes in 'ColorMarkerLine' order, for example 'r*--' is
-        a red dashed line with star marker.
     bar_hatchstyles
         [optional, default to "auto", only used if type equal to "bar", "barh",
         "bar_stacked", and "barh_stacked"]
@@ -461,10 +457,28 @@ def plot_cli(
         +-----------------+-------------------+
         | *               | stars             |
         +-----------------+-------------------+
+    style
+        [optional, default is None]
+
+        Still available, but if None is replaced by 'colors', 'linestyles', and
+        'markerstyles' options.  Currently the 'style' option will override the
+        others.
+
+        Comma separated matplotlib style strings per time-series.  Just
+        combine codes in 'ColorMarkerLine' order, for example 'r*--' is
+        a red dashed line with star marker.
     logx
         DEPRECATED: use '--xaxis="log"' instead.
     logy
         DEPRECATED: use '--yaxis="log"' instead.
+    xaxis : str
+        [optional, default is 'arithmetic']
+
+        Defines the type of the xaxis.  One of 'arithmetic', 'log'.
+    yaxis : str
+        [optional, default is 'arithmetic']
+
+        Defines the type of the yaxis.  One of 'arithmetic', 'log'.
     xlim
         [optional, default is based on range of x values]
 
@@ -477,14 +491,6 @@ def plot_cli(
 
         Comma separated lower and upper limits for the y-axis of the
         plot.  See `xlim` for examples.
-    xaxis : str
-        [optional, default is 'arithmetic']
-
-        Defines the type of the xaxis.  One of 'arithmetic', 'log'.
-    yaxis : str
-        [optional, default is 'arithmetic']
-
-        Defines the type of the yaxis.  One of 'arithmetic', 'log'.
     secondary_y
         ${secondary_axis}
     secondary_x
@@ -524,6 +530,7 @@ def plot_cli(
         [optional]
 
         Skip for major labels for bar plots.
+    ${force_freq}
     drawstyle : str
         [optional, default is 'default']
 
@@ -539,7 +546,6 @@ def plot_cli(
 
         Plot from first good value to last good value.  Strips NANs
         from beginning and end.
-    ${force_freq}
     invert_xaxis
         [optional, default is False]
 
@@ -548,6 +554,7 @@ def plot_cli(
         [optional, default is False]
 
         Invert the y-axis.
+    ${round_index}
     plotting_position : str
         [optional, default is 'weibull']
 
@@ -562,17 +569,12 @@ def plot_cli(
 
         Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
         lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
-    ${columns}
-    ${start_date}
-    ${end_date}
-    ${clean}
-    ${skiprows}
-    ${dropna}
-    ${index_type}
-    ${names}
     ${source_units}
     ${target_units}
-    ${round_index}
+    lag_plot_lag : int, optional
+        [optional, default to 1]
+
+        The lag used if ``type`` "lag_plot" is chosen.
     plot_styles: str
         [optional, default is "default"]
 
