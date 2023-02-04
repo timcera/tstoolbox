@@ -1,0 +1,34 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: tstoolbox
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Timothy
+    family-names: Cera
+    email: tim@cerazone.net
+    orcid: 'https://orcid.org/0000-0003-4613-7697'
+identifiers:
+  - type: url
+    value: 'https://pypi.org/project/tstoolbox/'
+    description: Python Package Index URL for tstoolbox
+repository-code: 'https://github.com/timcera/tstoolbox'
+url: 'https://timcera.bitbucket.io/'
+repository: 'https://bitbucket.org/timcera/tstoolbox/src/main/'
+abstract: >-
+  Import, calculations, transformations, statistics, and
+  plots for time-series.
+keywords:
+  - time-series
+  - filter
+  - regression
+  - forecast
+  - rank
+  - peak
+  - normalization
+  - rolling-window
+license: BSD-3-Clause
