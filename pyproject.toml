@@ -23,7 +23,7 @@ dependencies = [
     "pyaf",
     "HydroErr",
     "plottoolbox >= 101.6.2",
-    "toolbox_utils >= 1.0.0, < 2.0.0",
+    "toolbox_utils >= 2.0.0, < 3.0.0",
     ]
 license = {text = "BSD-3-Clause"}
 authors = [
