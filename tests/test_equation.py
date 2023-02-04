@@ -1,3 +1,4 @@
+import io
 import shlex
 import subprocess
 from unittest import TestCase
@@ -178,8 +179,8 @@ class TestEquation(TestCase):
         out = subprocess.Popen(
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate()[0]
-        self.maxDiff = None
-        self.assertEqual(out, self.equation_cli)
+        out = pd.read_csv(io.BytesIO(out), index_col=0, parse_dates=True).asfreq("D")
+        assert_frame_equal(out, self.equation, check_dtype=False)
 
     def test_equation_multiple_cols_01_cli(self):
         """Test of equation API with multiple columns."""
