@@ -1,3 +1,9 @@
+## 105.0.0 (2023-02-05)
+
+### Refactor
+
+- removed unused utility code
+
 ## 104.0.4 (2023-01-16)
 
 ### Fix
