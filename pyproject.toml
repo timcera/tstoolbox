@@ -22,7 +22,7 @@ dependencies = [
     "typing-extensions",
     "pyaf",
     "HydroErr",
-    "plottoolbox >= 101.6.2",
+    "plottoolbox >= 102.1.1",
     "toolbox_utils >= 2.0.0, < 3.0.0",
     ]
 license = {text = "BSD-3-Clause"}
