@@ -1,18 +1,13 @@
 """Collection of functions for the manipulation of time series."""
 
 import warnings
+from typing import Literal
 
-import cltoolbox
 import numpy as np
+import numpy.fft as F
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import PositiveFloat, PositiveInt, conint, validate_arguments
 from toolbox_utils import tsutils
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
 warnings.filterwarnings("ignore")
 
@@ -78,15 +73,13 @@ def _transform(vector, filter_pass, lowpass_cutoff, highpass_cutoff, window_len)
 
     Parameters
     ----------
-    vector: array_like, evenly spaced samples in time
+    vector : array_like, evenly spaced samples in time
 
     Returns
     -------
     vector of filtered values
 
     """
-    import numpy.fft as F
-
     result = F.rfft(vector, len(vector))
 
     freq = F.fftfreq(len(vector))[: len(vector) // 2 + 1]
@@ -115,117 +108,8 @@ def _transform(vector, filter_pass, lowpass_cutoff, highpass_cutoff, window_len)
     return np.atleast_1d(rvector)
 
 
-@cltoolbox.command("filter", formatter_class=RSTHelpFormatter)
-@tsutils.doc(tsutils.docstrings)
-def filter_cli(
-    filter_type,
-    filter_pass,
-    lowpass_cutoff=None,
-    highpass_cutoff=None,
-    window_len=3,
-    butterworth_stages=1,
-    reverse_second_stage=True,
-    input_ts="-",
-    start_date=None,
-    end_date=None,
-    columns=None,
-    float_format="g",
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    round_index=None,
-    source_units=None,
-    target_units=None,
-    print_input=False,
-    tablefmt="csv",
-):
-    """Apply different filters to the time-series.
-
-    Parameters
-    ----------
-    filter_type: str
-        OneOf("fft", "butterworth")
-        The "fft" and "butterworth" types are defined by cutoff frequencies.
-        The "fft" is the Fast Fourier Transform filter in the frequency domain.
-    filter_pass: str
-        OneOf("lowpass", "highpass", "bandpass", "bandstop")
-        Indicates what frequencies to block.
-    lowpass_cutoff: float
-        [optional, default is None, used only if `filter_pass` equals
-         "lowpass", "bandpass" or "bandstop"]
-
-        The low frequency cutoff when `filter_pass` equals "vertical",
-        "bandpass", or "bandstop".
-    highpass_cutoff: float
-        [optional, default is None, used only if `filter_pass` equals
-         "highpass", "bandpass" or "bandstop"]
-
-        The high frequency cutoff when `filter_pass` equals "highpass",
-        "bandpass", or "bandstop".
-    window_len: int
-        [optional, default is 3]
-
-        Will soften the edges of the "fft" filter in the frequency domain.
-        The larger the number the softer the filter edges.  A value of 1
-        will have a brick wall step function which may introduce
-        frequencies into the filtered output.
-    butterworth_stages: int
-        [optional, default is 1]
-
-        The order of the butterworth filter.
-    reverse_second_stage: bool
-        [optional, default is True]
-
-        Will perform a second filter in reverse to eliminate shifting
-        in time caused by the first filter.
-    ${input_ts}
-    ${start_date}
-    ${end_date}
-    ${columns}
-    ${float_format}
-    ${dropna}
-    ${skiprows}
-    ${index_type}
-    ${names}
-    ${clean}
-    ${round_index}
-    ${source_units}
-    ${target_units}
-    ${print_input}
-    ${tablefmt}
-    """
-    tsutils.printiso(
-        filter(
-            filter_type,
-            filter_pass,
-            butterworth_stages=butterworth_stages,
-            reverse_second_stage=reverse_second_stage,
-            lowpass_cutoff=lowpass_cutoff,
-            highpass_cutoff=highpass_cutoff,
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            clean=clean,
-            print_input=print_input,
-            window_len=window_len,
-            source_units=source_units,
-            target_units=target_units,
-            round_index=round_index,
-        ),
-        float_format=float_format,
-        tablefmt=tablefmt,
-    )
-
-
 @validate_arguments
-@tsutils.copy_doc(filter_cli)
+@tsutils.doc(tsutils.docstrings)
 def filter(
     filter_type: Literal[
         "flat",
@@ -256,7 +140,82 @@ def filter(
     target_units=None,
     round_index=None,
 ):
-    """Apply different filters to the time-series."""
+    """Apply different filters to the time-series.
+
+    Parameters
+    ----------
+    filter_type : str
+        OneOf("fft", "butterworth")
+        The "fft" and "butterworth" types are defined by cutoff frequencies.
+        The "fft" is the Fast Fourier Transform filter in the frequency domain.
+
+    filter_pass : str
+        OneOf("lowpass", "highpass", "bandpass", "bandstop")
+        Indicates what frequencies to block.
+
+    lowpass_cutoff : float
+        [optional, default is None, used only if `filter_pass` equals
+         "lowpass", "bandpass" or "bandstop"]
+
+        The low frequency cutoff when `filter_pass` equals "vertical",
+        "bandpass", or "bandstop".
+
+    highpass_cutoff : float
+        [optional, default is None, used only if `filter_pass` equals
+         "highpass", "bandpass" or "bandstop"]
+
+        The high frequency cutoff when `filter_pass` equals "highpass",
+        "bandpass", or "bandstop".
+
+    window_len : int
+        [optional, default is 3]
+
+        Will soften the edges of the "fft" filter in the frequency domain.
+        The larger the number the softer the filter edges.  A value of 1
+        will have a brick wall step function which may introduce
+        frequencies into the filtered output.
+
+    butterworth_stages : int
+        [optional, default is 1]
+
+        The order of the butterworth filter.
+
+    reverse_second_stage : bool
+        [optional, default is True]
+
+        Will perform a second filter in reverse to eliminate shifting
+        in time caused by the first filter.
+
+    ${input_ts}
+
+    ${start_date}
+
+    ${end_date}
+
+    ${columns}
+
+    ${float_format}
+
+    ${dropna}
+
+    ${skiprows}
+
+    ${index_type}
+
+    ${names}
+
+    ${clean}
+
+    ${round_index}
+
+    ${source_units}
+
+    ${target_units}
+
+    ${print_input}
+
+    ${tablefmt}
+    """
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

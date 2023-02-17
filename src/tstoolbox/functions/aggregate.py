@@ -2,28 +2,38 @@
 
 import warnings
 from contextlib import suppress
-from typing import List
+from typing import List, Literal, Optional, Union
 
-import cltoolbox
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import validate_arguments
 from toolbox_utils import tsutils
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("aggregate", formatter_class=RSTHelpFormatter)
+@tsutils.transform_args(statistic=tsutils.make_list)
+@validate_arguments
 @tsutils.doc(tsutils.docstrings)
-def aggregate_cli(
+def aggregate(
     input_ts="-",
-    groupby=None,
-    statistic="mean",
+    groupby: Optional[str] = None,
+    statistic: Union[
+        str,
+        List[
+            Literal[
+                "mean",
+                "sum",
+                "std",
+                "sem",
+                "max",
+                "min",
+                "median",
+                "first",
+                "last",
+                "ohlc",
+            ]
+        ],
+    ] = "mean",
     columns=None,
     start_date=None,
     end_date=None,
@@ -38,8 +48,7 @@ def aggregate_cli(
     source_units=None,
     target_units=None,
     print_input=False,
-    tablefmt="csv",
-    min_count=0,
+    min_count: int = 0,
 ):
     """Take a time series and aggregate to specified frequency.
 
@@ -98,91 +107,57 @@ def aggregate_cli(
 
         Command line example::
             --statistic=mean,max,first
+
     ${groupby}
         The `groupby` keyword has a special option 'all' which will aggregate
         all records.
 
         ${pandas_offset_codes}
-    ${input_ts}
-    ${columns}
-    ${start_date}
-    ${end_date}
-    ${dropna}
-    ${clean}
-    ${round_index}
-    ${skiprows}
-    ${index_type}
-    ${names}
-    ${source_units}
-    ${target_units}
-    ${print_input}
-    ${tablefmt}
-    min_count:
-        The required number of valid values to perform the operation. If fewer than
-        min_count non-NA values are present the result will be NA.  Default is 0.
 
-        Only available for the following `statistic` methods: "first", "last", "max",
-        "min", "prod", and "sum".
+    ${input_ts}
+
+    ${columns}
+
+    ${start_date}
+
+    ${end_date}
+
+    ${dropna}
+
+    ${clean}
+
+    ${round_index}
+
+    ${skiprows}
+
+    ${index_type}
+
+    ${names}
+
+    ${source_units}
+
+    ${target_units}
+
+    ${print_input}
+
+    ${tablefmt}
+
+    min_count:
+        The required number of valid values to perform the operation. If fewer
+        than min_count non-NA values are present the result will be NA.
+        Default is 0.
+
+        Only available for the following `statistic` methods: "first", "last",
+        "max", "min", "prod", and "sum".
+
     agg_interval :
         DEPRECATED:
         Use the 'groupby' option instead.
+
     ninterval :
         DEPRECATED:
         Just prefix the number in front of the 'groupby' pandas offset code.
     """
-    tsutils.printiso(
-        aggregate(
-            input_ts=input_ts,
-            groupby=groupby,
-            statistic=statistic,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            clean=clean,
-            agg_interval=agg_interval,
-            ninterval=ninterval,
-            round_index=round_index,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            source_units=source_units,
-            target_units=target_units,
-            print_input=print_input,
-            min_count=min_count,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.transform_args(statistic=tsutils.make_list)
-@validate_arguments
-@tsutils.copy_doc(aggregate_cli)
-def aggregate(
-    input_ts="-",
-    groupby: str = None,
-    statistic: List[
-        Literal[
-            "mean", "sum", "std", "sem", "max", "min", "median", "first", "last", "ohlc"
-        ]
-    ] = "mean",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    clean=False,
-    agg_interval=None,
-    ninterval=None,
-    round_index=None,
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    source_units=None,
-    target_units=None,
-    print_input=False,
-    min_count: int = 0,
-):
-    """Take a time series and aggregate to specified frequency."""
     aggd = {"hourly": "H", "daily": "D", "monthly": "M", "yearly": "A", "all": "all"}
 
     if agg_interval is not None:

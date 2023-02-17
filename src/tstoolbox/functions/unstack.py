@@ -1,21 +1,18 @@
 """Collection of functions for the manipulation of time series."""
 
-
 import warnings
 from typing import Union
 
-import cltoolbox
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("unstack", formatter_class=RSTHelpFormatter)
+@validate_arguments
 @tsutils.doc(tsutils.docstrings)
-def unstack_cli(
-    column_names,
+def unstack(
+    column_names: Union[int, str],
     input_ts="-",
     columns=None,
     start_date=None,
@@ -28,7 +25,6 @@ def unstack_cli(
     source_units=None,
     target_units=None,
     clean=False,
-    tablefmt="csv",
 ):
     """Return the unstack of the input table.
 
@@ -74,44 +70,6 @@ def unstack_cli(
     ${round_index}
     ${tablefmt}
     """
-    tsutils.printiso(
-        unstack(
-            column_names,
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            round_index=round_index,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            source_units=source_units,
-            target_units=target_units,
-            clean=clean,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
-@validate_arguments
-@tsutils.copy_doc(unstack_cli)
-def unstack(
-    column_names: Union[int, str],
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    round_index=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    source_units=None,
-    target_units=None,
-    clean=False,
-):
-    """Return the unstack of the input table."""
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

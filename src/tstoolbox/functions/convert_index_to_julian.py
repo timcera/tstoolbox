@@ -2,8 +2,6 @@
 
 import warnings
 
-import cltoolbox
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from toolbox_utils import tsutils
 
 from .convert_index import convert_index
@@ -11,7 +9,6 @@ from .convert_index import convert_index
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command(formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
 def convert_index_to_julian(
     input_ts="-",
@@ -65,5 +62,4 @@ def convert_index_to_julian(
         names=names,
         source_units=source_units,
         target_units=target_units,
-        index_type=index_type,
     )

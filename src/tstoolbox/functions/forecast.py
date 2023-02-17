@@ -1,31 +1,27 @@
-import cltoolbox
 import pandas as pd
 import pyaf.ForecastEngine as autof
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from toolbox_utils import tsutils
 
 # Placeholder for future forecast subcommand.
 # cltoolbox.main.add_subprog("forecast", help="Forecast algorithms")
 
 
-@cltoolbox.command("forecast", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
-def forecast_cli(
+def forecast(
     input_ts="-",
-    columns=None,
     start_date=None,
     end_date=None,
+    columns=None,
     dropna="no",
-    clean=False,
     round_index=None,
+    clean=False,
+    target_units=None,
+    source_units=None,
     skiprows=None,
     index_type="datetime",
     names=None,
-    source_units=None,
-    target_units=None,
-    print_input=False,
-    tablefmt="csv",
     horizon=2,
+    print_input=False,
     print_cols="all",
 ):
     """Machine learning automatic forecasting
@@ -97,52 +93,12 @@ def forecast_cli(
     ${index_type}
     ${print_input}
     ${tablefmt}
-    horizon: int
+    horizon : int
         Number of intervals to forecast.
-    print_cols: str
+    print_cols : str
         Identifies what columns to return.  One of "all" or "forecast"
 
     """
-    tsutils.printiso(
-        forecast(
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            clean=clean,
-            round_index=round_index,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            source_units=source_units,
-            target_units=target_units,
-            print_input=print_input,
-            horizon=horizon,
-            print_cols=print_cols,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.copy_doc(forecast_cli)
-def forecast(
-    input_ts="-",
-    start_date=None,
-    end_date=None,
-    columns=None,
-    dropna="no",
-    round_index=None,
-    clean=False,
-    target_units=None,
-    source_units=None,
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    horizon=2,
-    print_input=False,
-    print_cols="all",
-):
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

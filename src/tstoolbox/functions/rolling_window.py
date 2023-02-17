@@ -1,187 +1,18 @@
 """Collection of functions for the manipulation of time series."""
 
-
 import warnings
-from typing import List, Optional
+from typing import List, Literal, Optional
 
-import cltoolbox
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import conint, validate_arguments
 from toolbox_utils import tsutils
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("rolling_window", formatter_class=RSTHelpFormatter)
-@tsutils.doc(tsutils.docstrings)
-def rolling_window_cli(
-    statistic,
-    groupby=None,
-    window=None,
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    span=None,
-    min_periods=None,
-    center=False,
-    win_type=None,
-    on=None,
-    closed=None,
-    source_units=None,
-    target_units=None,
-    print_input=False,
-    tablefmt="csv",
-):
-    """Calculate a rolling window statistic.
-
-    Parameters
-    ----------
-    statistic : str
-        The statistic that will be applied to each
-        window.
-
-        +----------+--------------------+
-        | corr     | correlation        |
-        +----------+--------------------+
-        | count    | count of numbers   |
-        +----------+--------------------+
-        | cov      | covariance         |
-        +----------+--------------------+
-        | kurt     | kurtosis           |
-        +----------+--------------------+
-        | max      | maximum            |
-        +----------+--------------------+
-        | mean     | mean               |
-        +----------+--------------------+
-        | median   | median             |
-        +----------+--------------------+
-        | min      | minimum            |
-        +----------+--------------------+
-        | quantile | quantile           |
-        +----------+--------------------+
-        | skew     | skew               |
-        +----------+--------------------+
-        | std      | standard deviation |
-        +----------+--------------------+
-        | sum      | sum                |
-        +----------+--------------------+
-        | var      | variance           |
-        +----------+--------------------+
-    ${groupby}
-    window
-        [optional, default = 2]
-
-        Size of the moving window. This is the number of observations used for
-        calculating the statistic. Each window will be a fixed size.
-
-        If it is an offset then this will be the time period of each window. Each
-        window will be a variable sized based on the observations included in
-        the time-period. This is only valid for datetimelike indexes.
-    min_periods : int
-        [optional, default is None]
-
-        Minimum number of observations in window required to have a value
-        (otherwise result is NA). For a window that is specified by an offset,
-        this will default to 1.
-    center : boolean
-        [optional, default is False]
-
-        Set the labels at the center of the window.
-    win_type : str
-        [optional, default is None]
-
-        Provide a window type.
-
-        One of::
-
-            boxcar
-            triang
-            blackman
-            hamming
-            bartlett
-            parzen
-            bohman
-            blackmanharris
-            nuttall
-            barthann
-            kaiser (needs beta)
-            gaussian (needs std)
-            general_gaussian (needs power, width)
-            slepian (needs width)
-            exponential (needs tau), center is set to None.
-    on : str
-        [optional, default is None]
-
-        For a DataFrame, column on which to calculate the rolling window,
-        rather than the index
-    closed : str
-        [optional, default is None]
-
-        Make the interval closed on the 'right', 'left', 'both' or 'neither'
-        endpoints. For offset-based windows, it defaults to 'right'. For fixed
-        windows, defaults to 'both'. Remaining cases not implemented for fixed
-        windows.
-    span :
-        [optional, default = 2]
-
-        DEPRECATED: Changed to 'window' to be consistent with pandas.
-    ${input_ts}
-    ${columns}
-    ${start_date}
-    ${end_date}
-    ${dropna}
-    ${skiprows}
-    ${index_type}
-    ${names}
-    ${clean}
-    ${source_units}
-    ${target_units}
-    ${print_input}
-    ${tablefmt}
-    """
-    tsutils.printiso(
-        rolling_window(
-            statistic,
-            groupby=groupby,
-            window=window,
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            clean=clean,
-            span=span,
-            min_periods=min_periods,
-            center=center,
-            win_type=win_type,
-            on=on,
-            closed=closed,
-            source_units=source_units,
-            target_units=target_units,
-            print_input=print_input,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
 @tsutils.transform_args(window=tsutils.make_list)
 @validate_arguments
-@tsutils.copy_doc(rolling_window_cli)
+@tsutils.doc(tsutils.docstrings)
 def rolling_window(
     statistic: Literal[
         "corr",
@@ -219,7 +50,134 @@ def rolling_window(
     target_units=None,
     print_input=False,
 ):
-    """Calculate a rolling window statistic."""
+    """Calculate a rolling window statistic.
+
+    Parameters
+    ----------
+    statistic : str
+        The statistic that will be applied to each
+        window.
+
+        +----------+--------------------+
+        | corr     | correlation        |
+        +----------+--------------------+
+        | count    | count of numbers   |
+        +----------+--------------------+
+        | cov      | covariance         |
+        +----------+--------------------+
+        | kurt     | kurtosis           |
+        +----------+--------------------+
+        | max      | maximum            |
+        +----------+--------------------+
+        | mean     | mean               |
+        +----------+--------------------+
+        | median   | median             |
+        +----------+--------------------+
+        | min      | minimum            |
+        +----------+--------------------+
+        | quantile | quantile           |
+        +----------+--------------------+
+        | skew     | skew               |
+        +----------+--------------------+
+        | std      | standard deviation |
+        +----------+--------------------+
+        | sum      | sum                |
+        +----------+--------------------+
+        | var      | variance           |
+        +----------+--------------------+
+
+    ${groupby}
+
+    window
+        [optional, default = 2]
+
+        Size of the moving window. This is the number of observations used for
+        calculating the statistic. Each window will be a fixed size.
+
+        If it is an offset then this will be the time period of each window. Each
+        window will be a variable sized based on the observations included in
+        the time-period. This is only valid for datetimelike indexes.
+
+    min_periods : int
+        [optional, default is None]
+
+        Minimum number of observations in window required to have a value
+        (otherwise result is NA). For a window that is specified by an offset,
+        this will default to 1.
+
+    center : boolean
+        [optional, default is False]
+
+        Set the labels at the center of the window.
+
+    win_type : str
+        [optional, default is None]
+
+        Provide a window type.
+
+        One of::
+
+            boxcar
+            triang
+            blackman
+            hamming
+            bartlett
+            parzen
+            bohman
+            blackmanharris
+            nuttall
+            barthann
+            kaiser (needs beta)
+            gaussian (needs std)
+            general_gaussian (needs power, width)
+            slepian (needs width)
+            exponential (needs tau), center is set to None.
+
+    on : str
+        [optional, default is None]
+
+        For a DataFrame, column on which to calculate the rolling window,
+        rather than the index
+
+    closed : str
+        [optional, default is None]
+
+        Make the interval closed on the 'right', 'left', 'both' or 'neither'
+        endpoints. For offset-based windows, it defaults to 'right'. For fixed
+        windows, defaults to 'both'. Remaining cases not implemented for fixed
+        windows.
+
+    span :
+        [optional, default = 2]
+
+        DEPRECATED: Changed to 'window' to be consistent with pandas.
+
+    ${input_ts}
+
+    ${columns}
+
+    ${start_date}
+
+    ${end_date}
+
+    ${dropna}
+
+    ${skiprows}
+
+    ${index_type}
+
+    ${names}
+
+    ${clean}
+
+    ${source_units}
+
+    ${target_units}
+
+    ${print_input}
+
+    ${tablefmt}
+    """
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

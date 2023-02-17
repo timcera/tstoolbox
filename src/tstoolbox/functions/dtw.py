@@ -2,10 +2,8 @@
 
 import sys
 
-import cltoolbox
 import numpy as np
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
@@ -51,68 +49,8 @@ def _dtw(ts_a, ts_b, d=lambda x, y: abs(x - y), window=10000):
     return cost[-1, -1]
 
 
-@cltoolbox.command("dtw", formatter_class=RSTHelpFormatter)
-@tsutils.doc(tsutils.docstrings)
-def dtw_cli(
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    round_index=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    window=10000,
-    source_units=None,
-    target_units=None,
-    tablefmt="csv",
-):
-    """Dynamic Time Warping.
-
-    Parameters
-    ----------
-    window : int
-        [optional, default is 10000]
-
-        Window length.
-    ${input_ts}
-    ${columns}
-    ${start_date}
-    ${end_date}
-    ${round_index}
-    ${dropna}
-    ${skiprows}
-    ${index_type}
-    ${source_units}
-    ${target_units}
-    ${names}
-    ${clean}
-    ${tablefmt}
-    """
-    tsutils.printiso(
-        dtw(
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            round_index=round_index,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            clean=clean,
-            window=window,
-            source_units=source_units,
-            target_units=target_units,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
 @validate_arguments
-@tsutils.copy_doc(dtw_cli)
+@tsutils.doc(tsutils.docstrings)
 def dtw(
     input_ts="-",
     columns=None,
@@ -128,7 +66,41 @@ def dtw(
     source_units=None,
     target_units=None,
 ):
-    """Dynamic Time Warping."""
+    """Dynamic Time Warping.
+
+    Parameters
+    ----------
+    window : int
+        [optional, default is 10000]
+
+        Window length.
+
+    ${input_ts}
+
+    ${columns}
+
+    ${start_date}
+
+    ${end_date}
+
+    ${round_index}
+
+    ${dropna}
+
+    ${skiprows}
+
+    ${index_type}
+
+    ${source_units}
+
+    ${target_units}
+
+    ${names}
+
+    ${clean}
+
+    ${tablefmt}
+    """
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

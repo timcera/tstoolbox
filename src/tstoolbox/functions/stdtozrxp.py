@@ -1,18 +1,14 @@
 """Collection of functions for the manipulation of time series."""
 
-
 import warnings
 
-import cltoolbox
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("stdtozrxp", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
-def stdtozrxp_cli(
+def stdtozrxp(
     input_ts="-",
     columns=None,
     start_date=None,
@@ -35,55 +31,31 @@ def stdtozrxp_cli(
         [optional, default is None]
 
         The REXCHANGE ID to be written into the zrxp header.
+
     ${input_ts}
+
     ${columns}
+
     ${start_date}
+
     ${end_date}
+
     ${dropna}
+
     ${skiprows}
+
     ${index_type}
+
     ${names}
+
     ${clean}
+
     ${source_units}
+
     ${target_units}
+
     ${round_index}
     """
-    tsutils.printiso(
-        stdtozrxp(
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            clean=clean,
-            round_index=round_index,
-            source_units=source_units,
-            target_units=target_units,
-            rexchange=rexchange,
-        )
-    )
-
-
-@tsutils.copy_doc(stdtozrxp_cli)
-def stdtozrxp(
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    round_index=None,
-    source_units=None,
-    target_units=None,
-    rexchange=None,
-):
-    """Print out data to the screen in a WISKI ZRXP format."""
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

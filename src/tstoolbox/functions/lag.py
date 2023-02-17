@@ -3,17 +3,16 @@
 from contextlib import suppress
 from typing import List
 
-import cltoolbox
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import PositiveInt, validate_arguments
 from toolbox_utils import tsutils
 
 
-@cltoolbox.command("lag", formatter_class=RSTHelpFormatter)
+@tsutils.transform_args(lags=tsutils.make_list)
+@validate_arguments
 @tsutils.doc(tsutils.docstrings)
-def lag_cli(
-    lags,
+def lag(
+    lags: List[PositiveInt],
     input_ts="-",
     print_input=False,
     start_date=None,
@@ -25,7 +24,6 @@ def lag_cli(
     source_units=None,
     target_units=None,
     skiprows=None,
-    tablefmt="csv",
 ):
     """Create a series of lagged time-series.
 
@@ -48,43 +46,6 @@ def lag_cli(
     ${columns}
     ${tablefmt}
     """
-    tsutils.printiso(
-        lag(
-            lags,
-            input_ts=input_ts,
-            print_input=print_input,
-            start_date=start_date,
-            end_date=end_date,
-            columns=columns,
-            clean=clean,
-            index_type=index_type,
-            names=names,
-            source_units=source_units,
-            target_units=target_units,
-            skiprows=skiprows,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.transform_args(lags=tsutils.make_list)
-@validate_arguments
-@tsutils.copy_doc(lag_cli)
-def lag(
-    lags: List[PositiveInt],
-    input_ts="-",
-    print_input=False,
-    start_date=None,
-    end_date=None,
-    columns=None,
-    clean=False,
-    index_type="datetime",
-    names=None,
-    source_units=None,
-    target_units=None,
-    skiprows=None,
-):
-    """Create a series of lagged time-series."""
     tsd = tsutils.common_kwds(
         input_ts,
         dropna="all",

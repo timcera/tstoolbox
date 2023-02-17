@@ -3,25 +3,22 @@
 import warnings
 from typing import Union
 
-import cltoolbox
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("createts", formatter_class=RSTHelpFormatter)
+@validate_arguments
 @tsutils.doc(tsutils.docstrings)
-def createts_cli(
-    freq=None,
-    fillvalue=None,
+def createts(
     input_ts=None,
+    freq: str = None,
+    fillvalue: Union[float, int] = None,
     index_type="datetime",
     start_date=None,
     end_date=None,
-    tablefmt="csv",
 ):
     """Create empty time series, optionally fill with a value.
 
@@ -43,42 +40,23 @@ def createts_cli(
             --freq='A'
 
         ${pandas_offset_codes}
+
     fillvalue
         [optional, default is None]
 
         The fill value for the time-series.  The default is None, which
         generates the date/time stamps only.
+
     ${input_ts}
+
     ${start_date}
+
     ${end_date}
+
     ${index_type}
+
     ${tablefmt}
     """
-    tsutils.printiso(
-        createts(
-            freq=freq,
-            fillvalue=fillvalue,
-            input_ts=input_ts,
-            index_type=index_type,
-            start_date=start_date,
-            end_date=end_date,
-        ),
-        showindex="always",
-        tablefmt=tablefmt,
-    )
-
-
-@validate_arguments
-@tsutils.copy_doc(createts_cli)
-def createts(
-    input_ts=None,
-    freq: str = None,
-    fillvalue: Union[float, int] = None,
-    index_type="datetime",
-    start_date=None,
-    end_date=None,
-):
-    """Create empty time series, optionally fill with a value."""
     if input_ts is None and (
         (start_date is None) or (end_date is None) or (freq is None)
     ):

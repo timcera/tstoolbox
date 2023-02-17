@@ -1,19 +1,15 @@
 """Collection of functions for the manipulation of time series."""
 
-
 import warnings
 
-import cltoolbox
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("stack", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
-def stack_cli(
+def stack(
     input_ts="-",
     columns=None,
     start_date=None,
@@ -26,7 +22,6 @@ def stack_cli(
     source_units=None,
     target_units=None,
     clean=False,
-    tablefmt="csv",
 ):
     """Return the stack of the input table.
 
@@ -69,41 +64,6 @@ def stack_cli(
     ${round_index}
     ${tablefmt}
     """
-    tsutils.printiso(
-        stack(
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            round_index=round_index,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            source_units=source_units,
-            target_units=target_units,
-            clean=clean,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.copy_doc(stack_cli)
-def stack(
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    round_index=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    source_units=None,
-    target_units=None,
-    clean=False,
-):
-    """Return the stack of the input table."""
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

@@ -2,23 +2,17 @@
 
 import os
 import warnings
-from argparse import RawTextHelpFormatter
 
-import cltoolbox
 from pydantic import validate_arguments
 from toolbox_utils import tsutils
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("read", formatter_class=RawTextHelpFormatter)
+@validate_arguments
 @tsutils.doc(tsutils.docstrings)
-def read_cli(
+def read(
+    *filenames,
     force_freq=None,
     columns=None,
     start_date=None,
@@ -30,10 +24,7 @@ def read_cli(
     clean=False,
     source_units=None,
     target_units=None,
-    float_format="g",
     round_index=None,
-    tablefmt="csv",
-    *filenames,
 ):
     """Combine time-series from different sources into single dataset.
 
@@ -44,7 +35,7 @@ def read_cli(
 
     Parameters
     ----------
-    filenames : str
+    *filenames : str
         From the command line a list of space delimited filenames to read time
         series from.  Using the Python API a list or tuple of filenames.
 
@@ -122,59 +113,33 @@ def read_cli(
 
     ${force_freq}
         ${pandas_offset_codes}
+
     ${columns}
+
     ${start_date}
+
     ${end_date}
+
     ${dropna}
+
     ${skiprows}
+
     ${index_type}
+
     ${names}
+
     ${clean}
+
     ${source_units}
+
     ${target_units}
+
     ${float_format}
+
     ${round_index}
+
     ${tablefmt}
     """
-    tsutils.printiso(
-        read(
-            *filenames,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            index_type=index_type,
-            clean=clean,
-            force_freq=force_freq,
-            round_index=round_index,
-            columns=columns,
-            skiprows=skiprows,
-            names=names,
-            source_units=source_units,
-            target_units=target_units,
-        ),
-        float_format=float_format,
-        tablefmt=tablefmt,
-    )
-
-
-@validate_arguments
-@tsutils.copy_doc(read_cli)
-def read(
-    *filenames,
-    force_freq=None,
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    source_units=None,
-    target_units=None,
-    round_index=None,
-):
-    """Collect time series from a list of pickle or csv files."""
     if force_freq is not None:
         dropna = "no"
 

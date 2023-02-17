@@ -2,16 +2,13 @@
 
 import warnings
 
-import cltoolbox
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("pick", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
-def pick_cli(
+def pick(
     columns,
     input_ts="-",
     start_date=None,
@@ -24,7 +21,6 @@ def pick_cli(
     source_units=None,
     target_units=None,
     clean=False,
-    tablefmt="csv",
 ):
     """Will pick a column or list of columns from input [DEPRECATED].
 
@@ -52,44 +48,9 @@ def pick_cli(
     ${round_index}
     ${tablefmt}
     """
-    tsutils.printiso(
-        pick(
-            columns,
-            input_ts=input_ts,
-            start_date=start_date,
-            end_date=end_date,
-            round_index=round_index,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            source_units=source_units,
-            target_units=target_units,
-            clean=clean,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.copy_doc(pick_cli)
-def pick(
-    columns,
-    input_ts="-",
-    start_date=None,
-    end_date=None,
-    round_index=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    source_units=None,
-    target_units=None,
-    clean=False,
-):
-    """Will pick a column or list of columns from input."""
     warnings.warn(
         tsutils.error_wrapper(
-            f"""
+            """
             DEPRECATED in favor of using the "columns" keyword available in all
             other functions.
 

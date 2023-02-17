@@ -1,18 +1,14 @@
 """Collection of functions for the manipulation of time series."""
 
-
 import warnings
 
-import cltoolbox
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("tstopickle", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
-def tstopickle_cli(
+def tstopickle(
     filename,
     input_ts="-",
     columns=None,
@@ -49,42 +45,6 @@ def tstopickle_cli(
     ${target_units}
     ${round_index}
     """
-    tsutils.printiso(
-        tstopickle(
-            filename,
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            round_index=round_index,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            source_units=source_units,
-            target_units=target_units,
-            clean=clean,
-        )
-    )
-
-
-@tsutils.copy_doc(tstopickle_cli)
-def tstopickle(
-    filename,
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    round_index=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    source_units=None,
-    target_units=None,
-    clean=False,
-):
-    """Pickle the data into a Python pickled file."""
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

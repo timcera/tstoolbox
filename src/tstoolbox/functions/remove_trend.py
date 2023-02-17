@@ -3,17 +3,14 @@
 
 import warnings
 
-import cltoolbox
 import numpy as np
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("remove_trend", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
-def remove_trend_cli(
+def remove_trend(
     input_ts="-",
     columns=None,
     start_date=None,
@@ -27,7 +24,6 @@ def remove_trend_cli(
     source_units=None,
     target_units=None,
     print_input=False,
-    tablefmt="csv",
 ):
     """Remove a 'trend'.
 
@@ -50,43 +46,6 @@ def remove_trend_cli(
     ${print_input}
     ${tablefmt}
     """
-    tsutils.printiso(
-        remove_trend(
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            clean=clean,
-            round_index=round_index,
-            source_units=source_units,
-            target_units=target_units,
-            print_input=print_input,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.copy_doc(remove_trend_cli)
-def remove_trend(
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    round_index=None,
-    source_units=None,
-    target_units=None,
-    print_input=False,
-):
-    """Remove a 'trend'."""
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

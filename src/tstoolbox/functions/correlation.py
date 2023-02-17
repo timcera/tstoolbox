@@ -1,20 +1,13 @@
 """A correlation routine."""
 
-from typing import List
+from typing import List, Literal
 
-import cltoolbox
 import numpy as np
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import conint, validate_arguments
 from toolbox_utils import tsutils
 
 from . import lag
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
 
 def autocorrelation(series):
@@ -32,11 +25,12 @@ def autocorrelation(series):
     return y
 
 
-@cltoolbox.command("correlation", formatter_class=RSTHelpFormatter)
+@tsutils.transform_args(lags=tsutils.make_list)
+@validate_arguments
 @tsutils.doc(tsutils.docstrings)
-def correlation_cli(
-    lags,
-    method="pearson",
+def correlation(
+    lags: List[conint(ge=0)],
+    method: Literal["pearson", "kendall", "spearman"] = "pearson",
     input_ts="-",
     start_date=None,
     end_date=None,
@@ -47,9 +41,8 @@ def correlation_cli(
     source_units=None,
     target_units=None,
     skiprows=None,
-    tablefmt="csv",
     round_index=None,
-    dropna="no",
+    dropna=None,
 ):
     """Develop a correlation between time-series and potentially lags.
 
@@ -72,6 +65,7 @@ def correlation_cli(
         Command line example::
 
             --lags='2,5,3'
+
     method : str
         [optional, default to "pearson"]
 
@@ -82,62 +76,33 @@ def correlation_cli(
             kendall : Kendall Tau correlation coefficient
 
             spearman : Spearman rank correlation
+
     ${input_ts}
+
     ${start_date}
+
     ${end_date}
+
     ${clean}
+
     ${skiprows}
+
     ${index_type}
+
     ${names}
+
     ${source_units}
+
     ${target_units}
+
     ${columns}
+
     ${tablefmt}
+
     ${round_index}
+
     ${dropna}
     """
-    tsutils.printiso(
-        correlation(
-            lags,
-            method=method,
-            input_ts=input_ts,
-            start_date=start_date,
-            end_date=end_date,
-            columns=columns,
-            clean=clean,
-            index_type=index_type,
-            names=names,
-            source_units=source_units,
-            target_units=target_units,
-            skiprows=skiprows,
-            round_index=round_index,
-            dropna=dropna,
-        ),
-        showindex="always",
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.transform_args(lags=tsutils.make_list)
-@validate_arguments
-@tsutils.copy_doc(correlation_cli)
-def correlation(
-    lags: List[conint(ge=0)],
-    method: Literal["pearson", "kendall", "spearman"] = "pearson",
-    input_ts="-",
-    start_date=None,
-    end_date=None,
-    columns=None,
-    clean=False,
-    index_type="datetime",
-    names=None,
-    source_units=None,
-    target_units=None,
-    skiprows=None,
-    round_index=None,
-    dropna=None,
-):
-    """Develop a correlation between time-series and potentially lags."""
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

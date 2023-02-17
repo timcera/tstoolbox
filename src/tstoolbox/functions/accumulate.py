@@ -1,40 +1,39 @@
 """Collection of functions for the manipulation of time series."""
 
 import warnings
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
-import cltoolbox
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import validate_arguments
 from toolbox_utils import tsutils
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("accumulate", formatter_class=RSTHelpFormatter)
+@tsutils.transform_args(
+    statistic=tsutils.make_list,
+    columns=tsutils.make_list,
+    names=tsutils.make_list,
+    source_units=tsutils.make_list,
+    target_units=tsutils.make_list,
+)
+@validate_arguments
 @tsutils.doc(tsutils.docstrings)
-def accumulate_cli(
+def accumulate(
     input_ts="-",
-    columns=None,
+    columns: Optional[Union[str, List]] = None,
     start_date=None,
     end_date=None,
     dropna="no",
     clean=False,
-    statistic="sum",
+    statistic: Union[str, List[Literal["sum", "max", "min", "prod"]]] = "sum",
     round_index=None,
     skiprows=None,
     index_type="datetime",
-    names=None,
-    source_units=None,
-    target_units=None,
+    names: Optional[List] = None,
+    source_units: Optional[List] = None,
+    target_units: Optional[List] = None,
     print_input=False,
-    tablefmt="csv",
 ):
     """Calculate accumulating statistics.
 
@@ -50,68 +49,35 @@ def accumulate_cli(
 
         Command line example::
             --statistic=sum,max
+
     ${input_ts}
+
     ${start_date}
+
     ${end_date}
+
     ${skiprows}
+
     ${names}
+
     ${columns}
+
     ${dropna}
+
     ${clean}
+
     ${source_units}
+
     ${target_units}
+
     ${round_index}
+
     ${index_type}
+
     ${print_input}
+
     ${tablefmt}
     """
-    tsutils.printiso(
-        accumulate(
-            input_ts=input_ts,
-            skiprows=skiprows,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            clean=clean,
-            statistic=statistic,
-            round_index=round_index,
-            index_type=index_type,
-            names=names,
-            source_units=source_units,
-            target_units=target_units,
-            print_input=print_input,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.transform_args(
-    statistic=tsutils.make_list,
-    columns=tsutils.make_list,
-    names=tsutils.make_list,
-    source_units=tsutils.make_list,
-    target_units=tsutils.make_list,
-)
-@validate_arguments
-@tsutils.copy_doc(accumulate_cli)
-def accumulate(
-    input_ts="-",
-    columns: Optional[Union[str, List]] = None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    clean=False,
-    statistic: List[Literal["sum", "max", "min", "prod"]] = "sum",
-    round_index=None,
-    skiprows=None,
-    index_type="datetime",
-    names: Optional[List] = None,
-    source_units: Optional[List] = None,
-    target_units: Optional[List] = None,
-    print_input=False,
-):
-    """Calculate accumulating statistics."""
     statistic = tsutils.make_list(statistic)
     tsd = tsutils.common_kwds(
         input_ts,

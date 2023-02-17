@@ -2,16 +2,13 @@
 
 import warnings
 
-import cltoolbox
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("date_slice", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
-def date_slice_cli(
+def date_slice(
     input_ts="-",
     columns=None,
     start_date=None,
@@ -24,8 +21,6 @@ def date_slice_cli(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="g",
-    tablefmt="csv",
 ):
     """Print out data to the screen between start_date and end_date.
 
@@ -49,42 +44,6 @@ def date_slice_cli(
     ${round_index}
     ${tablefmt}
     """
-    tsutils.printiso(
-        date_slice(
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            clean=clean,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            round_index=round_index,
-            source_units=source_units,
-            target_units=target_units,
-        ),
-        float_format=float_format,
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.copy_doc(date_slice_cli)
-def date_slice(
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    clean=False,
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    round_index=None,
-    source_units=None,
-    target_units=None,
-):
-    """Print out data to the screen between start_date and end_date."""
     return tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

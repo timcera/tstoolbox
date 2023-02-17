@@ -1,20 +1,15 @@
 """Collection of functions for the manipulation of time series."""
 
-import cltoolbox
+from typing import Literal
+
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
-
-@cltoolbox.command("normalization", formatter_class=RSTHelpFormatter)
+@validate_arguments
 @tsutils.doc(tsutils.docstrings)
-def normalization_cli(
+def normalization(
     input_ts="-",
     columns=None,
     start_date=None,
@@ -24,16 +19,16 @@ def normalization_cli(
     index_type="datetime",
     names=None,
     clean=False,
-    mode="minmax",
-    min_limit=0,
-    max_limit=1,
-    pct_rank_method="average",
+    mode: Literal[
+        "minmax", "zscore", "pct_rank", "maxabs", "normal", "robust"
+    ] = "minmax",
+    min_limit: float = 0,
+    max_limit: float = 1,
+    pct_rank_method: Literal["average", "min", "max", "first", "dense"] = "average",
     print_input=False,
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="g",
-    tablefmt="csv",
     with_centering=True,
     with_scaling=True,
     quantile_range=(0.25, 0.75),
@@ -65,103 +60,69 @@ def normalization_cli(
 
         robust
             Robust scale to ranked quantile ranges.
+
     min_limit : float
         [optional, defaults to 0, used for mode=minmax]
 
         Defines the minimum limit of the minmax normalization.
+
     max_limit : float
         [optional, defaults to 1, used for mode=minmax]
 
         Defines the maximum limit of the minmax normalization.
+
     pct_rank_method : str
         [optional, defaults to 'average']
 
         Defines how tied ranks are broken.  Can be 'average', 'min', 'max',
         'first', 'dense'.
+
     with_centering : bool
         [optional, defaults to True, used when mode=robust]
 
         If True, center the data before scaling.
+
     with_scaling : bool
         [optional, defaults to True, used when mode=robust]
 
         If True, scale the data to interquartile range.
+
     quantile_range : tuple
         [optional, defaults to (0.25, 0.75)
         (q_min, q_max), 0.0 < q_min < q_max < 100.0]
 
         Quantile range used to calculate scale.
+
     ${input_ts}
+
     ${columns}
+
     ${start_date}
+
     ${end_date}
+
     ${dropna}
+
     ${skiprows}
+
     ${index_type}
+
     ${names}
+
     ${clean}
+
     ${print_input}
+
     ${float_format}
+
     ${source_units}
+
     ${target_units}
+
     ${round_index}
+
     ${tablefmt}
     """
-    tsutils.printiso(
-        normalization(
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            clean=clean,
-            mode=mode,
-            min_limit=min_limit,
-            max_limit=max_limit,
-            pct_rank_method=pct_rank_method,
-            print_input=print_input,
-            round_index=round_index,
-            source_units=source_units,
-            target_units=target_units,
-            with_centering=with_centering,
-            with_scaling=with_scaling,
-            quantile_range=quantile_range,
-        ),
-        float_format=float_format,
-        tablefmt=tablefmt,
-    )
-
-
-@validate_arguments
-@tsutils.copy_doc(normalization_cli)
-def normalization(
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    mode: Literal[
-        "minmax", "zscore", "pct_rank", "maxabs", "normal", "robust"
-    ] = "minmax",
-    min_limit: float = 0,
-    max_limit: float = 1,
-    pct_rank_method: Literal["average", "min", "max", "first", "dense"] = "average",
-    print_input=False,
-    round_index=None,
-    source_units=None,
-    target_units=None,
-    with_centering=True,
-    with_scaling=True,
-    quantile_range=(0.25, 0.75),
-):
-    """Return the normalization of the time series."""
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

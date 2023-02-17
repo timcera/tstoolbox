@@ -1,27 +1,36 @@
 """Collection of functions for the manipulation of time series."""
 
 import warnings
-from typing import Union
+from typing import Literal, Union
 
-import cltoolbox
 import numpy as np
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pandas.tseries.frequencies import to_offset
 from toolbox_utils import tsutils
 
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
-
-@cltoolbox.command("convert_index", formatter_class=RSTHelpFormatter)
+# @validate_arguments
 @tsutils.doc(tsutils.docstrings)
-def convert_index_cli(
-    to,
+def convert_index(
+    to: Literal["datetime", "number"],
     interval=None,
-    epoch="julian",
+    epoch: Union[
+        Literal[
+            "julian",
+            "reduced",
+            "modified",
+            "truncated",
+            "dublin",
+            "cnes",
+            "ccsds",
+            "lop",
+            "lilian",
+            "rata_die",
+            "mars_sol",
+            "unix",
+        ],
+        pd._typing.TimestampConvertibleTypes,
+    ] = "julian",
     input_ts="-",
     columns=None,
     start_date=None,
@@ -33,17 +42,17 @@ def convert_index_cli(
     source_units=None,
     target_units=None,
     skiprows=None,
-    tablefmt="csv",
 ):
     """Convert datetime to/from Julian dates from different epochs.
 
     Parameters
     ----------
-    to: str
+    to : str
         One of 'number' or 'datetime'.  If 'number', the source time-series
         should have a datetime index to convert to a number.  If 'datetime',
         source data should be a number and the converted index will be
         datetime.
+
     interval
         [optional, defaults to None, transformation]
 
@@ -57,6 +66,7 @@ def convert_index_cli(
         equal to or smaller than the frequency of the time-series.
 
         ${pandas_offset_codes}
+
     epoch : str
         [optional, defaults to 'julian', transformation]
 
@@ -128,73 +138,31 @@ def convert_index_cli(
 
         .. [3] . Theveny, Pierre-Michel. (10 September 2001). "Date Format"
            The TPtime Handbook. Media Lab.
+
     ${input_ts}
+
     ${columns}
+
     ${start_date}
+
     ${end_date}
+
     ${round_index}
+
     ${dropna}
+
     ${clean}
+
     ${skiprows}
+
     ${names}
+
     ${source_units}
+
     ${target_units}
+
     ${tablefmt}
     """
-    tsd = convert_index(
-        to,
-        interval=interval,
-        epoch=epoch,
-        input_ts=input_ts,
-        columns=columns,
-        start_date=start_date,
-        end_date=end_date,
-        round_index=round_index,
-        dropna=dropna,
-        clean=clean,
-        names=names,
-        source_units=source_units,
-        target_units=target_units,
-        skiprows=skiprows,
-    )
-    tsutils.printiso(tsd, tablefmt=tablefmt)
-
-
-# @validate_arguments
-@tsutils.copy_doc(convert_index_cli)
-def convert_index(
-    to: Literal["datetime", "number"],
-    interval=None,
-    epoch: Union[
-        Literal[
-            "julian",
-            "reduced",
-            "modified",
-            "truncated",
-            "dublin",
-            "cnes",
-            "ccsds",
-            "lop",
-            "lilian",
-            "rata_die",
-            "mars_sol",
-            "unix",
-        ],
-        pd._typing.TimestampConvertibleTypes,
-    ] = "julian",
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    round_index=None,
-    dropna="no",
-    clean=False,
-    names=None,
-    source_units=None,
-    target_units=None,
-    skiprows=None,
-):
-    """Convert datetime to/from Julian dates from different epochs."""
     # Clip to start_date/end_date if possible.
     if to == "datetime":
         index_type = "number"

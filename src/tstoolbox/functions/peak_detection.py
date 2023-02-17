@@ -2,17 +2,11 @@
 
 import warnings
 from contextlib import suppress
+from typing import Literal
 
-import cltoolbox
 import numpy as np
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import PositiveInt, conint, validate_arguments
 from toolbox_utils import tsutils
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
 warnings.filterwarnings("ignore")
 
@@ -26,15 +20,15 @@ def _boolrelextrema(data, comparator, axis=0, order: PositiveInt = 1, mode="clip
 
     Parameters
     ----------
-    data: ndarray
-    comparator: function
+    data : ndarray
+    comparator : function
         function to use to compare two data points.  Should take 2 numbers as
         arguments
-    axis: int, optional
+    axis : int, optional
         axis over which to select from `data`
-    order: int, optional
+    order : int, optional
         How many points on each side to require a `comparator`(n,n+x) = True.
-    mode: string, optional
+    mode : string, optional
         How the edges of the vector are treated.  'wrap' (wrap around) or
         'clip' (treat overflow as the same as the last (or first) element).
         Default 'clip'. See numpy.take
@@ -783,122 +777,8 @@ def zero_crossings(y_axis, window=11):
 ##############################################################################
 
 
-@cltoolbox.command("peak_detection", formatter_class=RSTHelpFormatter)
-@tsutils.doc(tsutils.docstrings)
-def peak_detection_cli(
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    method="rel",
-    extrema="peak",
-    window=24,
-    pad_len=5,
-    points=9,
-    lock_frequency=False,
-    float_format="g",
-    round_index=None,
-    source_units=None,
-    target_units=None,
-    print_input="",
-    tablefmt="csv",
-):
-    r"""Peak and valley detection.
-
-    Parameters
-    ----------
-    extrema: str
-        [optional, default is 'peak']
-
-        'peak', 'valley', or 'both' to determine what should be
-        returned.
-    method: str
-        [optional, default is 'rel']
-
-        'rel', 'minmax', 'zero_crossing', 'parabola', 'sine' methods are
-        available.  The different algorithms have different strengths
-        and weaknesses.
-    window: int
-        [optional, default is 24]
-
-        There will not usually be multiple peaks within the window
-        number of values.  The different methods use this variable in
-        different ways.  For 'rel' the window keyword specifies how many
-        points on each side to require a comparator(n,n+x) = True.  For
-        'minmax' the window keyword is the distance to look ahead from
-        a peak candidate to determine if it is the actual peak.
-
-        '(sample / period) / f'
-
-        where f might be a good choice between 1.25 and 4.
-
-        For 'zero_crossing' the window keyword is the dimension of the
-        smoothing window and should be an odd integer.
-    pad_len: int
-        [optional, default is 5]
-
-        Used with FFT to pad edges of time-series.
-    points: int
-        [optional, default is 9]
-
-        For 'parabola' and 'sine' methods. How many points around the
-        peak should be used during curve fitting, must be odd.  The
-    lock_frequency
-        [optional, default is False]
-
-        For 'sine' method only.  Specifies if the frequency argument of
-        the model function should be locked to the value calculated from
-        the raw peaks or if optimization process may tinker with it.
-    ${input_ts}
-    ${columns}
-    ${start_date}
-    ${end_date}
-    ${dropna}
-    ${skiprows}
-    ${index_type}
-    ${names}
-    ${clean}
-    ${float_format}
-    ${round_index}
-    ${source_units}
-    ${target_units}
-    ${print_input}
-    ${tablefmt}
-    """
-    tsutils.printiso(
-        peak_detection(
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            clean=clean,
-            method=method,
-            extrema=extrema,
-            window=window,
-            pad_len=pad_len,
-            points=points,
-            lock_frequency=lock_frequency,
-            round_index=round_index,
-            source_units=source_units,
-            target_units=target_units,
-            print_input=print_input,
-        ),
-        float_format=float_format,
-        tablefmt=tablefmt,
-    )
-
-
 @validate_arguments
-@tsutils.copy_doc(peak_detection_cli)
+@tsutils.doc(tsutils.docstrings)
 def peak_detection(
     input_ts="-",
     columns=None,
@@ -920,7 +800,88 @@ def peak_detection(
     target_units=None,
     print_input="",
 ):
-    r"""Peak and valley detection."""
+    r"""Peak and valley detection.
+
+    Parameters
+    ----------
+    extrema : str
+        [optional, default is 'peak']
+
+        'peak', 'valley', or 'both' to determine what should be
+        returned.
+
+    method : str
+        [optional, default is 'rel']
+
+        'rel', 'minmax', 'zero_crossing', 'parabola', 'sine' methods are
+        available.  The different algorithms have different strengths
+        and weaknesses.
+
+    window : int
+        [optional, default is 24]
+
+        There will not usually be multiple peaks within the window
+        number of values.  The different methods use this variable in
+        different ways.  For 'rel' the window keyword specifies how many
+        points on each side to require a comparator(n,n+x) = True.  For
+        'minmax' the window keyword is the distance to look ahead from
+        a peak candidate to determine if it is the actual peak.
+
+        '(sample / period) / f'
+
+        where f might be a good choice between 1.25 and 4.
+
+        For 'zero_crossing' the window keyword is the dimension of the
+        smoothing window and should be an odd integer.
+
+    pad_len : int
+        [optional, default is 5]
+
+        Used with FFT to pad edges of time-series.
+
+    points : int
+        [optional, default is 9]
+
+        For 'parabola' and 'sine' methods. How many points around the
+        peak should be used during curve fitting, must be odd.  The
+
+    lock_frequency
+        [optional, default is False]
+
+        For 'sine' method only.  Specifies if the frequency argument of
+        the model function should be locked to the value calculated from
+        the raw peaks or if optimization process may tinker with it.
+
+    ${input_ts}
+
+    ${columns}
+
+    ${start_date}
+
+    ${end_date}
+
+    ${dropna}
+
+    ${skiprows}
+
+    ${index_type}
+
+    ${names}
+
+    ${clean}
+
+    ${float_format}
+
+    ${round_index}
+
+    ${source_units}
+
+    ${target_units}
+
+    ${print_input}
+
+    ${tablefmt}
+    """
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.
     tsd = tsutils.common_kwds(

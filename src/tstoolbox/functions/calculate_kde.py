@@ -2,9 +2,7 @@
 
 import warnings
 
-import cltoolbox
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import validate_arguments
 from scipy.stats import gaussian_kde
 from toolbox_utils import tsutils
@@ -12,73 +10,8 @@ from toolbox_utils import tsutils
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("calculate_kde", formatter_class=RSTHelpFormatter)
-@tsutils.doc(tsutils.docstrings)
-def calculate_kde_cli(
-    ascending=True,
-    evaluate=False,
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    clean=False,
-    skiprows=None,
-    index_type="datetime",
-    source_units=None,
-    target_units=None,
-    names=None,
-    tablefmt="csv",
-):
-    """Return the kernel density estimation (KDE) curve.
-
-    Returns a time-series or the KDE curve depending on the `evaluate`
-    keyword.
-
-    Parameters
-    ----------
-    ascending : bool
-        [optional, defaults to True, input filter]
-
-        Sort order.
-    evaluate : bool
-        [optional, defaults to False, transformation]
-
-        Whether or not to return a time-series of KDE density values or
-        the KDE curve.  Defaults to False, which would return the KDE
-        curve.
-    ${input_ts}
-    ${columns}
-    ${start_date}
-    ${end_date}
-    ${skiprows}
-    ${index_type}
-    ${names}
-    ${source_units}
-    ${target_units}
-    ${clean}
-    ${tablefmt}
-    """
-    tsutils.printiso(
-        calculate_kde(
-            ascending=ascending,
-            evaluate=evaluate,
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            clean=clean,
-            skiprows=skiprows,
-            index_type=index_type,
-            source_units=source_units,
-            target_units=target_units,
-            names=names,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
 @validate_arguments
-@tsutils.copy_doc(calculate_kde_cli)
+@tsutils.doc(tsutils.docstrings)
 def calculate_kde(
     input_ts="-",
     ascending: bool = True,
@@ -93,7 +26,47 @@ def calculate_kde(
     target_units=None,
     names=None,
 ):
-    """Return the kernel density estimation (KDE) curve."""
+    """Return the kernel density estimation (KDE) curve.
+
+    Returns a time-series or the KDE curve depending on the `evaluate`
+    keyword.
+
+    Parameters
+    ----------
+    ascending : bool
+        [optional, defaults to True, input filter]
+
+        Sort order.
+
+    evaluate : bool
+        [optional, defaults to False, transformation]
+
+        Whether or not to return a time-series of KDE density values or
+        the KDE curve.  Defaults to False, which would return the KDE
+        curve.
+
+    ${input_ts}
+
+    ${columns}
+
+    ${start_date}
+
+    ${end_date}
+
+    ${skiprows}
+
+    ${index_type}
+
+    ${names}
+
+    ${source_units}
+
+    ${target_units}
+
+    ${clean}
+
+    ${tablefmt}
+    """
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

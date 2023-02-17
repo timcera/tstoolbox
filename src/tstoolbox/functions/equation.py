@@ -5,10 +5,8 @@ import warnings
 from contextlib import suppress
 from typing import List
 
-import cltoolbox
 import numpy as np
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from numpy import *  # nopycln: import
 from pydantic import validate_arguments
 from toolbox_utils import tsutils
@@ -76,10 +74,11 @@ def _parse_equation(equation_str):
     return tsearch, nsearch, testeval, nequation
 
 
-@cltoolbox.command("equation", formatter_class=RSTHelpFormatter)
+@tsutils.transform_args(output_names=tsutils.make_list)
+@validate_arguments
 @tsutils.doc(tsutils.docstrings)
-def equation_cli(
-    equation_str,
+def equation(
+    equation_str: str,
     input_ts="-",
     columns=None,
     start_date=None,
@@ -93,11 +92,9 @@ def equation_cli(
     round_index=None,
     source_units=None,
     target_units=None,
-    float_format="g",
-    tablefmt="csv",
-    output_names="",
+    output_names: List[str] = None,
 ):
-    """Apply <equation_str> cto the time series data.
+    """Apply <equation_str> to the time series data.
 
     The <equation_str> argument is a string contained in single quotes
     with 'x', 'x[t]', or 'x1', 'x2', 'x3', ...etc. used as the variable
@@ -157,67 +154,39 @@ def equation_cli(
 
         to add to the current value 0.6 times the maximum row adjacent
         value.
+
     ${input_ts}
+
     ${columns}
+
     ${start_date}
+
     ${end_date}
+
     ${dropna}
+
     ${skiprows}
+
     ${index_type}
+
     ${clean}
+
     ${print_input}
+
     ${names}
+
     ${float_format}
+
     ${source_units}
+
     ${target_units}
+
     ${round_index}
+
     ${tablefmt}
+
     ${output_names}
     """
-    tsutils.printiso(
-        equation(
-            equation_str,
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            clean=clean,
-            print_input=print_input,
-            round_index=round_index,
-            source_units=source_units,
-            target_units=target_units,
-            output_names=output_names,
-        ),
-        float_format=float_format,
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.transform_args(output_names=tsutils.make_list)
-@validate_arguments
-@tsutils.copy_doc(equation_cli)
-def equation(
-    equation_str: str,
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    print_input="",
-    round_index=None,
-    source_units=None,
-    target_units=None,
-    output_names: List[str] = None,
-):
-    """Apply <equation_str> to the time series data."""
     if output_names is None:
         output_names = []
     x = tsutils.common_kwds(

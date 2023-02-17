@@ -3,9 +3,7 @@
 import warnings
 from typing import List, Optional, Union
 
-import cltoolbox
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import validate_arguments
 from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, r2_score
@@ -45,13 +43,18 @@ _FUNCS = {
 }
 
 
-@cltoolbox.command("regression", formatter_class=RSTHelpFormatter)
+@tsutils.transform_args(
+    x_train_cols=tsutils.make_list,
+    y_train_col=tsutils.make_list,
+    x_pred_cols=tsutils.make_list,
+)
+@validate_arguments
 @tsutils.doc(tsutils.docstrings)
-def regression_cli(
+def regression(
     method,
-    x_train_cols,
-    y_train_col,
-    x_pred_cols=None,
+    x_train_cols: List[Union[str, int]],
+    y_train_col: List[Union[str, int]],
+    x_pred_cols: Optional[List[Union[str, int]]] = None,
     input_ts="-",
     columns=None,
     start_date=None,
@@ -63,7 +66,6 @@ def regression_cli(
     index_type="datetime",
     names=None,
     print_input=False,
-    tablefmt="csv",
     por=False,
 ):
     """Regression of one or more time-series or indices to a time-series.
@@ -74,7 +76,7 @@ def regression_cli(
 
     Parameters
     ----------
-    method: str
+    method : str
         The method of regression.  The chosen method will use `x_train_cols` as the
         independent data and `y_pred_col` as the dependent data.
 
@@ -173,17 +175,20 @@ def regression_cli(
             limited with max_subpopulation. If this limit is reached, the
             subsets are chosen randomly. In a final step, the spatial median
             (or L1 median) is calculated of all least square solutions.
-    x_train_cols: str or list
+
+    x_train_cols : str or list
         List of column names/numbers that hold the ``x`` value datasets used to
         train the regression.  Perform a multiple regression if ``method``
         allows by giving several ``x_train_cols``.  To include the index in the
         regression use column 0 or the index name.
-    y_train_col: str or list
+
+    y_train_col : str or list
         Column name or number of the ``y`` dataset used to train the
         regression.
 
         The ``y_train_col`` cannot be part of ``x_train_cols`` or
         ``x_pred_cols``.
+
     x_pred_cols : str or list
         [optional, if supplied will return a time-series of the ``y``
         prediction based on ``x_pred_cols``.]
@@ -191,70 +196,33 @@ def regression_cli(
         List of column names/numbers of ``x`` value datasets used to create the
         ``y`` prediction.  Needs to be the same number of columns as
         ``x_train_cols``.  Can be identical columns to ``x_train_cols``.
+
     ${input_ts}
+
     ${columns}
+
     ${start_date}
+
     ${end_date}
+
     ${dropna}
+
     ${clean}
+
     ${round_index}
+
     ${skiprows}
+
     ${index_type}
+
     ${names}
+
     ${print_input}
+
     ${tablefmt}
+
     ${por}
     """
-    tsutils.printiso(
-        regression(
-            method,
-            x_train_cols,
-            y_train_col,
-            x_pred_cols=x_pred_cols,
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            clean=clean,
-            round_index=round_index,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            print_input=print_input,
-            por=por,
-        ),
-        tablefmt=tablefmt,
-        headers=[],
-    )
-
-
-@tsutils.transform_args(
-    x_train_cols=tsutils.make_list,
-    y_train_col=tsutils.make_list,
-    x_pred_cols=tsutils.make_list,
-)
-@validate_arguments
-@tsutils.copy_doc(regression_cli)
-def regression(
-    method,
-    x_train_cols: List[Union[str, int]],
-    y_train_col: List[Union[str, int]],
-    x_pred_cols: Optional[List[Union[str, int]]] = None,
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    clean=False,
-    round_index=None,
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    print_input=False,
-    por=False,
-):
-    """Regression of data."""
     for to in y_train_col:
         for fro in x_train_cols:
             if to == fro:

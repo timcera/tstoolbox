@@ -4,19 +4,18 @@
 import warnings
 from typing import List, Optional, Union
 
-import cltoolbox
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 
 
-@cltoolbox.command("replace", formatter_class=RSTHelpFormatter)
+@tsutils.transform_args(from_values=tsutils.make_list, to_values=tsutils.make_list)
+@validate_arguments
 @tsutils.doc(tsutils.docstrings)
-def replace_cli(
-    from_values,
-    to_values,
+def replace(
+    from_values: Optional[List[Optional[Union[float, int, str]]]],
+    to_values: Optional[List[Optional[Union[float, int, str]]]],
     round_index=None,
     input_ts="-",
     columns=None,
@@ -30,7 +29,6 @@ def replace_cli(
     source_units=None,
     target_units=None,
     print_input=False,
-    tablefmt="csv",
 ):
     """Return a time-series replacing values with others.
 
@@ -60,49 +58,6 @@ def replace_cli(
     ${print_input}
     ${tablefmt}
     """
-    tsutils.printiso(
-        replace(
-            from_values,
-            to_values,
-            round_index=round_index,
-            input_ts=input_ts,
-            columns=columns,
-            start_date=start_date,
-            end_date=end_date,
-            dropna=dropna,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            clean=clean,
-            source_units=source_units,
-            target_units=target_units,
-            print_input=print_input,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.transform_args(from_values=tsutils.make_list, to_values=tsutils.make_list)
-@validate_arguments
-@tsutils.copy_doc(replace_cli)
-def replace(
-    from_values: Optional[List[Optional[Union[float, int, str]]]],
-    to_values: Optional[List[Optional[Union[float, int, str]]]],
-    round_index=None,
-    input_ts="-",
-    columns=None,
-    start_date=None,
-    end_date=None,
-    dropna="no",
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    clean=False,
-    source_units=None,
-    target_units=None,
-    print_input=False,
-):
-    """Return a time-series replacing values with others."""
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

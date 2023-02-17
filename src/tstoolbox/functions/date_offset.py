@@ -1,82 +1,10 @@
 """Collection of functions for the manipulation of time series."""
 
-import cltoolbox
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import PositiveInt
 from toolbox_utils import tsutils
 
 
-@cltoolbox.command("date_offset", formatter_class=RSTHelpFormatter)
 @tsutils.doc(tsutils.docstrings)
-def date_offset_cli(
-    intervals,
-    offset,
-    columns=None,
-    dropna="no",
-    clean=False,
-    skiprows=None,
-    index_type="datetime",
-    names=None,
-    input_ts="-",
-    start_date=None,
-    end_date=None,
-    source_units=None,
-    target_units=None,
-    round_index=None,
-    tablefmt="csv",
-):
-    """Apply a date offset to a time-series index.
-
-    If you want to adjust to a different time-zone then should use the
-    "converttz" tstoolbox command.
-
-    Parameters
-    ----------
-    intervals: int
-        Number of intervals of `offset` to shift the time index.  A positive
-        integer moves the index forward, negative moves it backwards.
-    offset: str
-        Any of the Pandas offset codes.  This is only the offset code
-        and doesn't include a prefixed interval.
-
-        ${pandas_offset_codes}
-    ${input_ts}
-    ${start_date}
-    ${end_date}
-    ${columns}
-    ${round_index}
-    ${dropna}
-    ${clean}
-    ${skiprows}
-    ${index_type}
-    ${source_units}
-    ${target_units}
-    ${names}
-    ${tablefmt}
-    """
-    tsutils.printiso(
-        date_offset(
-            intervals,
-            offset,
-            columns=columns,
-            dropna=dropna,
-            clean=clean,
-            skiprows=skiprows,
-            index_type=index_type,
-            names=names,
-            input_ts=input_ts,
-            start_date=start_date,
-            end_date=end_date,
-            source_units=source_units,
-            target_units=target_units,
-            round_index=round_index,
-        ),
-        showindex="always",
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.copy_doc(date_offset_cli)
 def date_offset(
     intervals: PositiveInt,
     offset: str,
@@ -93,7 +21,49 @@ def date_offset(
     target_units=None,
     round_index=None,
 ):
-    """Apply an offset to a time-series."""
+    """Apply a date offset to a time-series index.
+
+    If you want to adjust to a different time-zone then should use the
+    "converttz" tstoolbox command.
+
+    Parameters
+    ----------
+    intervals : int
+        Number of intervals of `offset` to shift the time index.  A positive
+        integer moves the index forward, negative moves it backwards.
+
+    offset : str
+        Any of the Pandas offset codes.  This is only the offset code
+        and doesn't include a prefixed interval.
+
+        ${pandas_offset_codes}
+
+    ${input_ts}
+
+    ${start_date}
+
+    ${end_date}
+
+    ${columns}
+
+    ${round_index}
+
+    ${dropna}
+
+    ${clean}
+
+    ${skiprows}
+
+    ${index_type}
+
+    ${source_units}
+
+    ${target_units}
+
+    ${names}
+
+    ${tablefmt}
+    """
     tsd = tsutils.common_kwds(
         input_ts,
         skiprows=skiprows,

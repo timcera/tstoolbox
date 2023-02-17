@@ -1,18 +1,11 @@
 """A collection of filling routines."""
 
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
-import cltoolbox
 import numpy as np
 import pandas as pd
-from cltoolbox.rst_text_formatter import RSTHelpFormatter
 from pydantic import conint
 from toolbox_utils import tsutils
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
 
 def _validate_columns(ntsd, from_columns, to_columns):
@@ -32,11 +25,39 @@ keywords.  Instead you have "{to}" in both.
     return from_columns, to_columns
 
 
-@cltoolbox.command("fill", formatter_class=RSTHelpFormatter)
+@tsutils.transform_args(from_columns=tsutils.make_list, to_columns=tsutils.make_list)
 @tsutils.doc(tsutils.docstrings)
-def fill_cli(
+def fill(
     input_ts="-",
-    method="ffill",
+    method: Union[
+        Literal[
+            "ffill",
+            "bfill",
+            "linear",
+            "index",
+            "values",
+            "nearest",
+            "zero",
+            "slinear",
+            "quadratic",
+            "cubic",
+            "spline",
+            "polynomial",
+            "barycentric",
+            "mean",
+            "median",
+            "max",
+            "min",
+            "from",
+            "time",
+            "krogh",
+            "piecewise_polynomial",
+            "from_derivatives",
+            "pchip",
+            "akima",
+        ],
+        float,
+    ] = "ffill",
     print_input=False,
     start_date=None,
     end_date=None,
@@ -47,12 +68,11 @@ def fill_cli(
     source_units=None,
     target_units=None,
     skiprows=None,
-    from_columns=None,
-    to_columns=None,
-    limit=None,
-    order=None,
-    tablefmt="csv",
-    force_freq=None,
+    from_columns: Optional[List[Union[int, str]]] = None,
+    to_columns: Optional[List[Union[int, str]]] = None,
+    limit: Optional[conint(ge=0)] = None,
+    order: Optional[conint(ge=0)] = None,
+    force_freq: str = None,
 ):
     """Fill missing values (NaN) with different methods.
 
@@ -121,114 +141,57 @@ def fill_cli(
         +----------------------+----------------------------------------------+
         | akima                | ...akima algorithm                           |
         +----------------------+----------------------------------------------+
+
     ${print_input}
+
     ${input_ts}
+
     ${start_date}
+
     ${end_date}
+
     ${clean}
+
     ${skiprows}
+
     ${index_type}
+
     ${names}
+
     ${source_units}
+
     ${target_units}
+
     ${columns}
+
     from_columns : str or list
         [required if method='from', otherwise not used]
 
         List of column names/numbers from which good values will be
         taken to fill missing values in the `to_columns` keyword.
+
     to_columns : str or list
         [required if method='from', otherwise not used]
 
         List of column names/numbers that missing values will be
         replaced in from good values in the `from_columns` keyword.
+
     limit : int
         [default is None]
 
         Gaps of missing values greater than this number will not be filled.
+
     order : int
         [required if method is 'spline' or 'polynomial', otherwise not used,
         default is None]
 
         The order of the 'spline' or 'polynomial' fit for missing values.
+
     ${tablefmt}
+
     ${force_freq}
         ${pandas_offset_codes}
     """
-    tsutils.printiso(
-        fill(
-            input_ts=input_ts,
-            method=method,
-            print_input=print_input,
-            start_date=start_date,
-            end_date=end_date,
-            columns=columns,
-            clean=clean,
-            index_type=index_type,
-            names=names,
-            source_units=source_units,
-            target_units=target_units,
-            skiprows=skiprows,
-            from_columns=from_columns,
-            to_columns=to_columns,
-            limit=limit,
-            order=order,
-            force_freq=force_freq,
-        ),
-        tablefmt=tablefmt,
-    )
-
-
-@tsutils.transform_args(from_columns=tsutils.make_list, to_columns=tsutils.make_list)
-@tsutils.copy_doc(fill_cli)
-def fill(
-    input_ts="-",
-    method: Union[
-        Literal[
-            "ffill",
-            "bfill",
-            "linear",
-            "index",
-            "values",
-            "nearest",
-            "zero",
-            "slinear",
-            "quadratic",
-            "cubic",
-            "spline",
-            "polynomial",
-            "barycentric",
-            "mean",
-            "median",
-            "max",
-            "min",
-            "from",
-            "time",
-            "krogh",
-            "piecewise_polynomial",
-            "from_derivatives",
-            "pchip",
-            "akima",
-        ],
-        float,
-    ] = "ffill",
-    print_input=False,
-    start_date=None,
-    end_date=None,
-    columns=None,
-    clean=False,
-    index_type="datetime",
-    names=None,
-    source_units=None,
-    target_units=None,
-    skiprows=None,
-    from_columns: Optional[List[Union[int, str]]] = None,
-    to_columns: Optional[List[Union[int, str]]] = None,
-    limit: Optional[conint(ge=0)] = None,
-    order: Optional[conint(ge=0)] = None,
-    force_freq: str = None,
-):
-    """Fill missing values (NaN) with different methods."""
     tsd = tsutils.common_kwds(
         input_ts,
         dropna="all",
