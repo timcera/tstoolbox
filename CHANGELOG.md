@@ -1,3 +1,9 @@
+## v106.0.0 (2023-02-17)
+
+### Refactor
+
+- finally fixed the cltoolbox functions showing up in descendent projects
+
 ## 105.0.0 (2023-02-05)
 
 ### Refactor
