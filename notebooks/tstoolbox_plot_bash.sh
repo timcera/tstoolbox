@@ -40,7 +40,7 @@ head 02233484.csv 02233500.csv
 # The default 'tstoolbox plot ...' is a time-series plot where the datetime column is the x-axis, and all data columns are plotted on the y-axis.
 
 # %%
-tstoolbox read 02233484.csv,02233500.csv | tstoolbox plot --ofilename econ.png --columns USGS_02233484_22314_00060_00003:ft3/s,USGS_02233500_22317_00060_00003:ft3/s --ytitle Flow 
+tstoolbox read 02233484.csv,02233500.csv | tstoolbox plot --ofilename econ.png --columns USGS_02233484_22314_00060_00003:ft3/s,USGS_02233500_22317_00060_00003:ft3/s --ytitle Flow
 
 # %% [markdown]
 # ![econ.png](econ.png)
@@ -51,7 +51,7 @@ tstoolbox read 02233484.csv,02233500.csv | tstoolbox plot --ofilename econ.png -
 # For all of these plot types the datetime column is ignored.
 
 # %%
-tstoolbox read 02233484.csv,02233500.csv | tstoolbox plot --type weibull_xaxis --ofilename weibull.png --columns USGS_02233484_22314_00060_00003:ft3/s,USGS_02233500_22317_00060_00003:ft3/s --ytitle Flow 
+tstoolbox read 02233484.csv,02233500.csv | tstoolbox plot --type weibull_xaxis --ofilename weibull.png --columns USGS_02233484_22314_00060_00003:ft3/s,USGS_02233500_22317_00060_00003:ft3/s --ytitle Flow
 
 # %% [markdown]
 # ![weibull.png](weibull.png)
@@ -60,7 +60,7 @@ tstoolbox read 02233484.csv,02233500.csv | tstoolbox plot --type weibull_xaxis -
 # The following illustrates how to use the '--start_date ISO8601' and '--end_date ISO8601' to limit the x-axis of the plot.
 
 # %%
-tstoolbox read 02233484.csv,02233500.csv | tstoolbox plot --start_date 2009-01-01 --end_date 2010-01-01 --ofilename econ_clip.png --columns USGS_02233484_22314_00060_00003:ft3/s,USGS_02233500_22317_00060_00003:ft3/s --ytitle Flow 
+tstoolbox read 02233484.csv,02233500.csv | tstoolbox plot --start_date 2009-01-01 --end_date 2010-01-01 --ofilename econ_clip.png --columns USGS_02233484_22314_00060_00003:ft3/s,USGS_02233500_22317_00060_00003:ft3/s --ytitle Flow
 
 # %% [markdown]
 # ![econ_clip.png](econ_clip.png)
