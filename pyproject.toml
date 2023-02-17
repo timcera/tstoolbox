@@ -1,11 +1,11 @@
 [build-system]
+build-backend = "setuptools.build_meta"
 requires = [
     "setuptools>=45",
     "setuptools_scm[toml]>=6.2",
     "wheel",
-    "oldest-supported-numpy",
+    "oldest-supported-numpy"
 ]
-build-backend = "setuptools.build_meta"
 
 [project]
 name = "tstoolbox"
@@ -23,12 +23,11 @@ dependencies = [
     "pyaf",
     "HydroErr",
     "plottoolbox >= 102.1.1",
-    "toolbox_utils >= 3.0.0, < 4.0.0",
-    ]
-license = {text = "BSD-3-Clause"}
+    "toolbox_utils >= 3.0.0, < 4.0.0"
+]
 authors = [
     {name = "Tim Cera", email = "tim@cerazone.net"}
-    ]
+]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
@@ -45,14 +44,17 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Topic :: Scientific/Engineering",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    ]
-keywords = ["time-series",
-            "cli-app",
-            "aggregate",
-            "fill",
-            "filter",
-            ]
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+keywords = [
+    "time-series",
+    "cli-app",
+    "aggregate",
+    "fill",
+    "filter"
+]
+license = {text = "BSD-3-Clause"}
+requires-python = ">=3.8"
 
 [project.optional-dependencies]
 dev = [
@@ -62,25 +64,26 @@ dev = [
     "black-nbconvert",
     "cleanpy",
     "commitizen",
-    "coverage",
-    "flake8",
-    "flakehell",
+    "coverage[toml]",
     "isort",
+    "mypy",
     "pre-commit",
-    "prospector",
     "pyflakes",
     "pylama",
+    "pyle",
     "pylint",
+    "pyre",
     "pyroma",
     "pytest",
     "pytest-cov",
     "pytest-mpl",
     "pyupgrade",
+    "ruff",
     "twine",
     "unimport",
     "velin",
-    "vulture",
-    ]
+    "vulture"
+]
 
 [project.scripts]
 tstoolbox = "tstoolbox.tstoolbox:main"
@@ -90,20 +93,20 @@ documentation = "https://timcera.bitbucket.io/tstoolbox/docs/index.html#tstoolbo
 github = "https://github.com/timcera/tstoolbox"
 bitbucket = "https://bitbucket.org/timcera/tstoolbox/src/main/"
 
-[tool]
-
 [tool.check-manifest]
-ignore = ["docs/_function_autosummary/*",
-          ".coverage",
-          ".deepsource.toml",
-          ".ipynb_checkpoints/*"]
+ignore = [
+    "docs/_function_autosummary/*",
+    ".coverage",
+    ".deepsource.toml",
+    ".ipynb_checkpoints/*"
+]
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "105.0.0"
-tag_format = "$version"
-version_files = ["VERSION"]
+tag_format = "v$version"
 update_changelog_on_bump = true
+version = "105.0.0"
+version_files = ["VERSION"]
 
 [tool.isort]
 profile = "black"
@@ -117,7 +120,7 @@ readme = {file = "README.rst"}
 version = {file = "VERSION"}
 
 [tool.setuptools.packages.find]
-where = ["src"]
 exclude = ["examples*", "tools*", "docs*", "tstoolbox.tests*"]
+where = ["src"]
 
 [tool.setuptools_scm]
