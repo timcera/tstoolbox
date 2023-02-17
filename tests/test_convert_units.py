@@ -1,6 +1,5 @@
 from unittest import TestCase
 
-import pint_pandas
 import pytest
 from pandas.testing import assert_frame_equal
 
