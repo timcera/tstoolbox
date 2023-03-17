@@ -1,3 +1,9 @@
+## v106.0.1 (2023-03-17)
+
+### Fix
+
+- **date_offset**: enforce intervals as an int and improve processing of annual, monthly, and weekly offsets
+
 ## v106.0.0 (2023-02-17)
 
 ### Refactor
