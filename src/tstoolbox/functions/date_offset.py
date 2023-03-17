@@ -1,12 +1,14 @@
 """Collection of functions for the manipulation of time series."""
 
-from pydantic import PositiveInt
+import pandas as pd
+from pydantic import validate_arguments
 from toolbox_utils import tsutils
 
 
+@validate_arguments
 @tsutils.doc(tsutils.docstrings)
 def date_offset(
-    intervals: PositiveInt,
+    intervals: int,
     offset: str,
     columns=None,
     dropna="no",
@@ -79,4 +81,12 @@ def date_offset(
         clean=clean,
     )
 
-    return tsd.shift(intervals, offset)
+    if offset in ["A", "AS"]:
+        tsd.index = tsd.index + pd.DateOffset(years=intervals)
+    elif offset in ["M", "MS"]:
+        tsd.index = tsd.index + pd.DateOffset(months=intervals)
+    elif offset in ["W"]:
+        tsd.index = tsd.index + pd.DateOffset(weeks=intervals)
+    else:
+        return tsd.shift(intervals, offset)
+    return tsd

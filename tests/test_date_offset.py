@@ -43,3 +43,33 @@ class TestDateOffset(TestCase):
     def test_data_offset(self):
         out = tstoolbox.date_offset(-1, "H", input_ts="tests/data_sine.csv")
         assert_frame_equal(out, self.ats, check_dtype=False)
+
+    def test_data_round_robin_annual(self):
+        out = tstoolbox.date_offset(2, "A", input_ts="tests/data_sine.csv")
+        out = tstoolbox.date_offset(-2, "A", input_ts=out)
+
+        # This is needed since the test time series doesn't start at the
+        # beginning of the year.
+        out = tstoolbox.date_offset(-1, "H", input_ts=out)
+
+        assert_frame_equal(out, self.ats, check_dtype=False)
+
+    def test_data_round_robin_monthly(self):
+        out = tstoolbox.date_offset(2, "M", input_ts="tests/data_sine.csv")
+        out = tstoolbox.date_offset(-2, "M", input_ts=out)
+
+        # This is needed since the test time series doesn't start at the
+        # beginning of the year.
+        out = tstoolbox.date_offset(-1, "H", input_ts=out)
+
+        assert_frame_equal(out, self.ats, check_dtype=False)
+
+    def test_data_round_robin_weekly(self):
+        out = tstoolbox.date_offset(2, "W", input_ts="tests/data_sine.csv")
+        out = tstoolbox.date_offset(-2, "W", input_ts=out)
+
+        # This is needed since the test time series doesn't start at the
+        # beginning of the year.
+        out = tstoolbox.date_offset(-1, "H", input_ts=out)
+
+        assert_frame_equal(out, self.ats, check_dtype=False)
