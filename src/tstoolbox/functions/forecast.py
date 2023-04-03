@@ -1,6 +1,7 @@
 import pandas as pd
-import pyaf.ForecastEngine as autof
 from toolbox_utils import tsutils
+
+from ..pyaf.pyaf import ForecastEngine as autof
 
 # Placeholder for future forecast subcommand.
 # cltoolbox.main.add_subprog("forecast", help="Forecast algorithms")

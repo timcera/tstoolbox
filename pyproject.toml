@@ -13,16 +13,18 @@ dynamic = ["readme", "version"]
 description = "Command line script and Python library to manipulate time series."
 dependencies = [
     "cltoolbox >= 1.0.0",
-    "numpy",
-    "scipy",
-    "pandas",
-    "scikit-learn",
-    "statsmodels",
-    "pydantic",
-    "typing-extensions",
-    "pyaf",
+    "dill",
     "HydroErr",
+    "numpy",
+    "pandas",
     "plottoolbox >= 102.1.1",
+    "pydantic",
+    "pydot",
+    "scikit-learn",
+    "scipy",
+    "six",
+    "sqlalchemy",
+    "statsmodels",
     "toolbox_utils >= 3.0.0, < 4.0.0"
 ]
 authors = [
