@@ -1,3 +1,9 @@
+## v106.0.2 (2023-05-15)
+
+### Fix
+
+- **read**: the columns content should be passed to the pick keyword, not usecols
+
 ## v106.0.1 (2023-03-17)
 
 ### Fix
