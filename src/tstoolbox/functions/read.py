@@ -180,5 +180,5 @@ def read(
         clean=clean,
         source_units=source_units,
         target_units=target_units,
-        usecols=columns,
+        pick=columns,
     )
