@@ -24,6 +24,10 @@ class TestDescribe(TestCase):
         )
         self.data_pct_rank.columns = ["Area::pct_rank"]
         self.data_pct_rank = tsutils.memory_optimize(self.data_pct_rank)
+        self.data_pct_rank.index = pd.to_datetime(
+            self.data_pct_rank.index, format="ISO8601"
+        )
+        self.data_pct_rank = tsutils.asbestfreq(self.data_pct_rank)
 
     def test_normalize_0_to_1(self):
         """Test the normalization API function from 0 to 1."""
