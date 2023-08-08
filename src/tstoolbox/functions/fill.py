@@ -4,8 +4,9 @@ from typing import List, Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
-from pydantic import conint
+from pydantic import Field
 from toolbox_utils import tsutils
+from typing_extensions import Annotated
 
 
 def _validate_columns(ntsd, from_columns, to_columns):
@@ -70,8 +71,8 @@ def fill(
     skiprows=None,
     from_columns: Optional[List[Union[int, str]]] = None,
     to_columns: Optional[List[Union[int, str]]] = None,
-    limit: Optional[conint(ge=0)] = None,
-    order: Optional[conint(ge=0)] = None,
+    limit: Annotated[int, Field(ge=0)] = None,
+    order: Annotated[int, Field(ge=0)] = None,
     force_freq: str = None,
 ):
     """Fill missing values (NaN) with different methods.

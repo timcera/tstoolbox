@@ -4,8 +4,9 @@ import warnings
 from typing import List, Literal, Optional, Union
 
 import pandas as pd
-from pydantic import confloat, conint, validate_arguments
+from pydantic import Field, validate_arguments
 from toolbox_utils import tsutils
+from typing_extensions import Annotated
 
 warnings.filterwarnings("ignore")
 
@@ -26,11 +27,11 @@ def ewm_window(
     statistic: Optional[
         Union[str, List[Literal["corr", "cov", "mean", "std", "var"]]]
     ] = "mean",
-    alpha_com: Optional[confloat(ge=0)] = None,
-    alpha_span: Optional[confloat(ge=0)] = None,
-    alpha_halflife: Optional[confloat(ge=0)] = None,
-    alpha: Optional[confloat(ge=0, le=1)] = None,
-    min_periods: Optional[conint(ge=0)] = 0,
+    alpha_com: Optional[Annotated[float, Field(ge=0)]] = None,
+    alpha_span: Optional[Annotated[float, Field(ge=0)]] = None,
+    alpha_halflife: Optional[Annotated[float, Field(ge=0)]] = None,
+    alpha: Optional[Annotated[float, Field(ge=0, le=1)]] = None,
+    min_periods: Optional[Annotated[int, Field(ge=0)]] = 0,
     adjust: bool = True,
     ignore_na: bool = False,
     source_units=None,

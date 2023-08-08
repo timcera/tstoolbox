@@ -3,8 +3,9 @@
 from typing import Literal, Optional
 
 import pandas as pd
-from pydantic import PositiveInt, conint, validate_arguments
+from pydantic import Field, PositiveInt, validate_arguments
 from toolbox_utils import tsutils
+from typing_extensions import Annotated
 
 
 @validate_arguments
@@ -21,7 +22,7 @@ def pct_change(
     clean=False,
     periods: PositiveInt = 1,
     fill_method: Literal["backfill", "bfill", "ffill", "pad"] = "pad",
-    limit: Optional[conint(ge=0)] = None,
+    limit: Optional[Annotated[int, Field(ge=0)]] = None,
     freq: str = None,
     print_input=False,
     round_index=None,

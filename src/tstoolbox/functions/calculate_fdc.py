@@ -4,9 +4,10 @@ import warnings
 from typing import Literal
 
 import pandas as pd
-from pydantic import confloat, validate_arguments
+from pydantic import Field, validate_arguments
 from scipy.stats import t
 from toolbox_utils import tsutils
+from typing_extensions import Annotated
 
 warnings.filterwarnings("ignore")
 
@@ -32,7 +33,7 @@ def calculate_fdc(
     include_ri: bool = False,
     include_sd: bool = False,
     include_cl: bool = False,
-    ci: confloat(gt=0, lt=1) = 0.9,
+    ci: Annotated[float, Field(gt=0, lt=1)] = 0.9,
 ):
     """Return the frequency distribution curve.
 

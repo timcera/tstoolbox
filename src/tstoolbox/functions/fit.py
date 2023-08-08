@@ -5,9 +5,10 @@ from typing import List, Literal
 
 import numpy as np
 import pandas as pd
-from pydantic import confloat, validate_arguments
+from pydantic import Field, validate_arguments
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from toolbox_utils import tsutils
+from typing_extensions import Annotated
 
 warnings.filterwarnings("ignore")
 
@@ -17,7 +18,7 @@ warnings.filterwarnings("ignore")
 @tsutils.doc(tsutils.docstrings)
 def fit(
     method: List[Literal["lowess", "linear"]],
-    lowess_frac: confloat(gt=0, le=1) = 0.01,
+    lowess_frac: Annotated[float, Field(gt=0, le=1)] = 0.01,
     input_ts="-",
     columns=None,
     start_date=None,

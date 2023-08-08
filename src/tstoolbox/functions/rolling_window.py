@@ -4,8 +4,9 @@ import warnings
 from typing import List, Literal, Optional
 
 import pandas as pd
-from pydantic import conint, validate_arguments
+from pydantic import Field, validate_arguments
 from toolbox_utils import tsutils
+from typing_extensions import Annotated
 
 warnings.filterwarnings("ignore")
 
@@ -30,7 +31,7 @@ def rolling_window(
         "var",
     ],
     groupby=None,
-    window: Optional[List[conint(ge=0)]] = None,
+    window: Optional[List[Annotated[int, Field(ge=0)]]] = None,
     input_ts="-",
     columns=None,
     start_date=None,
@@ -41,7 +42,7 @@ def rolling_window(
     names=None,
     clean=False,
     span=None,
-    min_periods: Optional[conint(ge=0)] = None,
+    min_periods: Optional[Annotated[int, Field(ge=0)]] = None,
     center: bool = False,
     win_type: Optional[str] = None,
     on: Optional[str] = None,

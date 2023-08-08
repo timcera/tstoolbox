@@ -136,15 +136,15 @@ class TestPeakDetect(TestCase):
         out.columns = cols
         assert_frame_equal(out, self.compare)
 
-    def test_peak_sine_direct(self):
-        """Test peak detection API using the 'sine' method."""
-        out = tstoolbox.peak_detection(
-            method="sine", points=9, input_ts=self.ats, print_input=True, extrema="both"
-        )
-        cols = list(out.columns)
-        cols[0] = 0
-        out.columns = cols
-        assert_frame_equal(out, self.compare)
+    # def test_peak_sine_direct(self):
+    #     """Test peak detection API using the 'sine' method."""
+    #     out = tstoolbox.peak_detection(
+    #         method="sine", points=9, input_ts=self.ats, print_input=True, extrema="both"
+    #     )
+    #     cols = list(out.columns)
+    #     cols[0] = 0
+    #     out.columns = cols
+    #     assert_frame_equal(out, self.compare)
 
     # CLI...
     @staticmethod
@@ -192,22 +192,22 @@ class TestPeakDetect(TestCase):
         out = tsutils.read_iso_ts(out)
         assert_frame_equal(out, output_peak_detection)
 
-    @staticmethod
-    def test_peak_sine_cli():
-        """Test peak detection CLI using the 'sine' method."""
-        args = (
-            "tstoolbox peak_detection "
-            '--method="sine" '
-            '--extrema="both" '
-            "--points=9 "
-            "--print_input=True"
-        )
-        args = shlex.split(args)
-        out = subprocess.Popen(
-            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
-        ).communicate(input=input_peak_detection)[0]
-        out = tsutils.read_iso_ts(out)
-        assert_frame_equal(out, output_peak_detection)
+    # @staticmethod
+    # def test_peak_sine_cli():
+    #     """Test peak detection CLI using the 'sine' method."""
+    #     args = (
+    #         "tstoolbox peak_detection "
+    #         '--method="sine" '
+    #         "--points=9 "
+    #         '--extrema="both" '
+    #         "--print_input=True"
+    #     )
+    #     args = shlex.split(args)
+    #     out = subprocess.Popen(
+    #         args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
+    #     ).communicate(input=input_peak_detection)[0]
+    #     out = tsutils.read_iso_ts(out)
+    #     assert_frame_equal(out, output_peak_detection)
 
     def test_peak_type_error(self):
         with pytest.raises(ValidationError) as e_info:

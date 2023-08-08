@@ -4,8 +4,9 @@ from typing import List, Literal
 
 import numpy as np
 import pandas as pd
-from pydantic import conint, validate_arguments
+from pydantic import Field, validate_arguments
 from toolbox_utils import tsutils
+from typing_extensions import Annotated
 
 from . import lag
 
@@ -29,7 +30,7 @@ def autocorrelation(series):
 @validate_arguments
 @tsutils.doc(tsutils.docstrings)
 def correlation(
-    lags: List[conint(ge=0)],
+    lags: List[Annotated[int, Field(ge=0)]],
     method: Literal["pearson", "kendall", "spearman"] = "pearson",
     input_ts="-",
     start_date=None,

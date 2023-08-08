@@ -6,8 +6,9 @@ from typing import Literal
 import numpy as np
 import numpy.fft as F
 import pandas as pd
-from pydantic import PositiveFloat, PositiveInt, conint, validate_arguments
+from pydantic import Field, PositiveFloat, PositiveInt, validate_arguments
 from toolbox_utils import tsutils
+from typing_extensions import Annotated
 
 warnings.filterwarnings("ignore")
 
@@ -121,7 +122,7 @@ def filter(
         "butterworth",
     ],
     filter_pass: Literal["lowpass", "highpass", "bandpass", "bandstop"],
-    butterworth_stages: conint(ge=1, le=3) = 1,
+    butterworth_stages: Annotated[int, Field(ge=1, le=3)] = 1,
     butterworth_reverse_second_stage: bool = True,
     input_ts="-",
     columns=None,

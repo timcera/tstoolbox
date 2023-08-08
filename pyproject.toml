@@ -18,7 +18,7 @@ dependencies = [
     "numpy",
     "pandas",
     "plottoolbox >= 102.1.1",
-    "pydantic",
+    "pydantic >= 2.0.0",
     "pydot",
     "scikit-learn",
     "scipy",

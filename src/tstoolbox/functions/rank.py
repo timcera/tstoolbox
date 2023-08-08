@@ -3,8 +3,9 @@
 from typing import Literal
 
 import pandas as pd
-from pydantic import conint, validate_arguments
+from pydantic import Field, validate_arguments
 from toolbox_utils import tsutils
+from typing_extensions import Annotated
 
 
 @validate_arguments
@@ -19,7 +20,7 @@ def rank(
     index_type="datetime",
     names=None,
     clean=False,
-    axis: conint(ge=0) = 0,
+    axis: Annotated[int, Field(ge=0)] = 0,
     method: Literal["average", "min", "max", "first", "dense"] = "average",
     numeric_only: bool = False,
     na_option: Literal["keep", "top", "bottom"] = "keep",

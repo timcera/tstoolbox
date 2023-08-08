@@ -5,8 +5,9 @@ from contextlib import suppress
 from typing import Literal
 
 import numpy as np
-from pydantic import PositiveInt, conint, validate_arguments
+from pydantic import Field, PositiveInt, validate_arguments
 from toolbox_utils import tsutils
+from typing_extensions import Annotated
 
 warnings.filterwarnings("ignore")
 
@@ -189,7 +190,7 @@ def _peakdetect(
     y_axis,
     x_axis=None,
     window: PositiveInt = 24,
-    delta: conint(ge=0) = 0,
+    delta: Annotated[int, Field(ge=0)] = 0,
 ):
     """Private peak detection algorithm.
 
