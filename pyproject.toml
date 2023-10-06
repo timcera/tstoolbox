@@ -24,8 +24,7 @@ dependencies = [
     "scipy",
     "six",
     "sqlalchemy",
-    "statsmodels",
-    "toolbox_utils >= 5.0.0, < 6.0.0"
+    "statsmodels"
 ]
 authors = [
     {name = "Tim Cera", email = "tim@cerazone.net"}

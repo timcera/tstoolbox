@@ -5,8 +5,9 @@ from typing import List, Literal, Optional, Union
 import numpy as np
 import pandas as pd
 from pydantic import Field
-from toolbox_utils import tsutils
 from typing_extensions import Annotated
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 
 def _validate_columns(ntsd, from_columns, to_columns):

@@ -6,8 +6,9 @@ from typing import Literal
 
 import numpy as np
 from pydantic import Field, PositiveInt, validate_arguments
-from toolbox_utils import tsutils
 from typing_extensions import Annotated
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 

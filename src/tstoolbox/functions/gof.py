@@ -6,8 +6,8 @@ from typing import List, Literal, Union
 import HydroErr as he
 import numpy as np
 from pydantic import validate_arguments
-from toolbox_utils import tsutils
 
+from ..toolbox_utils.src.toolbox_utils import tsutils
 from .read import read
 
 warnings.filterwarnings("ignore")

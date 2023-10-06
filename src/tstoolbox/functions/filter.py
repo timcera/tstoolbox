@@ -7,8 +7,9 @@ import numpy as np
 import numpy.fft as F
 import pandas as pd
 from pydantic import Field, PositiveFloat, PositiveInt, validate_arguments
-from toolbox_utils import tsutils
 from typing_extensions import Annotated
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 

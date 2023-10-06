@@ -4,8 +4,9 @@ from typing import Literal, Optional
 
 import pandas as pd
 from pydantic import Field, PositiveInt, validate_arguments
-from toolbox_utils import tsutils
 from typing_extensions import Annotated
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 
 @validate_arguments

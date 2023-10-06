@@ -7,8 +7,9 @@ import numpy as np
 import pandas as pd
 from pydantic import Field, validate_arguments
 from statsmodels.nonparametric.smoothers_lowess import lowess
-from toolbox_utils import tsutils
 from typing_extensions import Annotated
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 

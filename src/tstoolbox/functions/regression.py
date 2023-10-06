@@ -7,7 +7,8 @@ import pandas as pd
 from pydantic import validate_arguments
 from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, r2_score
-from toolbox_utils import tsutils
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 

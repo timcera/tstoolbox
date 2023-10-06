@@ -6,7 +6,8 @@ from typing import Literal, Union
 import numpy as np
 import pandas as pd
 from pandas.tseries.frequencies import to_offset
-from toolbox_utils import tsutils
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 
 # @validate_arguments

@@ -4,7 +4,8 @@
 import warnings
 
 import numpy as np
-from toolbox_utils import tsutils
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 

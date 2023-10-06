@@ -9,7 +9,8 @@ import numpy as np
 import pandas as pd
 from numpy import *  # nopycln: import
 from pydantic import validate_arguments
-from toolbox_utils import tsutils
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 

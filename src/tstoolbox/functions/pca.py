@@ -2,7 +2,8 @@
 
 from pydantic import PositiveInt, validate_arguments
 from sklearn.decomposition import PCA as skPCA
-from toolbox_utils import tsutils
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 
 @validate_arguments

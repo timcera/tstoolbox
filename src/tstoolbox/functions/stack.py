@@ -3,7 +3,8 @@
 import warnings
 
 import pandas as pd
-from toolbox_utils import tsutils
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")
 

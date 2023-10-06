@@ -4,7 +4,8 @@ from typing import Literal
 
 import pandas as pd
 from pydantic import validate_arguments
-from toolbox_utils import tsutils
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 
 @validate_arguments

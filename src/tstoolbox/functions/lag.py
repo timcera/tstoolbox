@@ -5,7 +5,8 @@ from typing import List
 
 import pandas as pd
 from pydantic import PositiveInt, validate_arguments
-from toolbox_utils import tsutils
+
+from ..toolbox_utils.src.toolbox_utils import tsutils
 
 
 @tsutils.transform_args(lags=tsutils.make_list)
