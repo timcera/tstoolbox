@@ -6,6 +6,7 @@ Python API Function Summary
 .. autosummary::
     :toctree: _function_autosummary
 
+    tstoolbox.tstoolbox.about
     tstoolbox.tstoolbox.accumulate
     tstoolbox.tstoolbox.add_trend
     tstoolbox.tstoolbox.aggregate

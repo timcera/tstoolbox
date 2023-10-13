@@ -3,7 +3,7 @@
 import re
 import warnings
 from contextlib import suppress
-from typing import List
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -75,8 +75,8 @@ def _parse_equation(equation_str):
     return tsearch, nsearch, testeval, nequation
 
 
-@tsutils.transform_args(output_names=tsutils.make_list)
 @validate_arguments
+@tsutils.transform_args(output_names=tsutils.make_list)
 @tsutils.doc(tsutils.docstrings)
 def equation(
     equation_str: str,
@@ -93,7 +93,7 @@ def equation(
     round_index=None,
     source_units=None,
     target_units=None,
-    output_names: List[str] = None,
+    output_names: Optional[Union[str, List[str]]] = None,
 ):
     """Apply <equation_str> to the time series data.
 
