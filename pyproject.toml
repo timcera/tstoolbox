@@ -13,10 +13,14 @@ dynamic = ["readme", "version"]
 description = "Command line script and Python library to manipulate time series."
 dependencies = [
     "cltoolbox >= 1.0.0",
+    "dateparser",
     "dill",
     "HydroErr",
     "numpy",
-    "pandas",
+    "pandas[excel]",
+    "pint!=0.21.*",
+    "pint<0.22; python_version < '3.9'",
+    "pint-pandas",
     "plottoolbox >= 102.1.1",
     "pydantic >= 2.0.0",
     "pydot",
@@ -24,7 +28,8 @@ dependencies = [
     "scipy",
     "six",
     "sqlalchemy",
-    "statsmodels"
+    "statsmodels",
+    "tabulate"
 ]
 authors = [
     {name = "Tim Cera", email = "tim@cerazone.net"}
@@ -121,7 +126,7 @@ readme = {file = "README.rst"}
 version = {file = "VERSION"}
 
 [tool.setuptools.packages.find]
-exclude = ["examples*", "tools*", "docs*", "tstoolbox.tests*"]
+exclude = ["tests*", "examples*", "tools*", "docs*", "tstoolbox.tests*"]
 where = ["src"]
 
 [tool.setuptools_scm]
