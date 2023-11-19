@@ -82,11 +82,11 @@ def date_offset(
         clean=clean,
     )
 
-    if offset in ["A", "AS"]:
+    if offset in {"A", "AS"}:
         tsd.index = tsd.index + pd.DateOffset(years=intervals)
-    elif offset in ["M", "MS"]:
+    elif offset in {"M", "MS"}:
         tsd.index = tsd.index + pd.DateOffset(months=intervals)
-    elif offset in ["W"]:
+    elif offset in {"W"}:
         tsd.index = tsd.index + pd.DateOffset(weeks=intervals)
     else:
         return tsd.shift(intervals, offset)

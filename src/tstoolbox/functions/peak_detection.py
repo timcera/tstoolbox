@@ -114,9 +114,7 @@ def _argrelextrema(data, comparator, axis=0, order=1, mode="clip"):
 
     """
     results = _boolrelextrema(data, comparator, axis, order, mode)
-    if ~results.any():
-        return (np.array([]),) * 2
-    return np.where(results)
+    return (np.array([]),) * 2 if ~results.any() else np.where(results)
 
 
 def _datacheck_peakdetect(x_axis, y_axis):
@@ -518,11 +516,7 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
             a = peak[1]
 
             # build list of approximations
-            if lock_frequency:
-                p0 = (a, tau)
-            else:
-                p0 = (a, hz, tau)
-
+            p0 = (a, tau) if lock_frequency else (a, hz, tau)
             # subtract offset from waveshape
             y_data -= offset
             popt, _ = curve_fit(func, x_data, y_data, p0)
