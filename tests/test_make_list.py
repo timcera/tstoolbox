@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from toolbox_utils import tsutils
+from tstoolbox.toolbox_utils.src.toolbox_utils import tsutils
 
 
 class TestMakeList(TestCase):

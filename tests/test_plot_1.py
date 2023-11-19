@@ -3,9 +3,9 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pytest
-from toolbox_utils import tsutils
 
 from tstoolbox import tstoolbox
+from tstoolbox.toolbox_utils.src.toolbox_utils import tsutils
 
 # Pull this in once.
 idf = tsutils.common_kwds(input_tsd="tests/02234500_65_65.csv", clean=True)

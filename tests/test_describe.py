@@ -3,10 +3,10 @@ import subprocess
 from unittest import TestCase
 
 import pandas as pd
-import toolbox_utils.tsutils as tsutils
 from pandas.testing import assert_frame_equal
 
 from tstoolbox import tstoolbox
+from tstoolbox.toolbox_utils.src.toolbox_utils import tsutils
 
 from . import capture
 

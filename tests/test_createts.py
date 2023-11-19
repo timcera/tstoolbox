@@ -3,9 +3,9 @@ from unittest import TestCase
 import pandas as pd
 import pytest
 from pandas.testing import assert_index_equal
-from toolbox_utils import tsutils
 
 from tstoolbox import tstoolbox
+from tstoolbox.toolbox_utils.src.toolbox_utils import tsutils
 
 
 class TestRead(TestCase):
