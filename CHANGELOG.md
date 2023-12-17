@@ -1,3 +1,10 @@
+## v108.0.1 (2023-12-16)
+
+### Refactor
+
+- remove unused SciencePlots
+- removed unused skill_metrics, sourcery refactor, update submodules
+
 ## v108.0.0 (2023-11-19)
 
 ### Fix
