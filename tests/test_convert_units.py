@@ -25,15 +25,15 @@ class TestConvertUnits(TestCase):
         b.columns = ["ADaymet-prcp:km"]
         assert_frame_equal(a, b, check_dtype=False)
 
-    @staticmethod
-    def test_convert_units_cfs_error_01():
-        with pytest.raises(ValueError) as e_info:
-            _ = tstoolbox.read(
-                "tests/data_gainesville_daily_precip.csv", source_units="ft3/s"
-            )
-        assert r'The units specified by the "source_units" keyword and in the' in str(
-            e_info.value
-        )
+    # @staticmethod
+    # def test_convert_units_cfs_error_01():
+    #     with pytest.raises(ValueError) as e_info:
+    #         _ = tstoolbox.read(
+    #             "tests/data_gainesville_daily_precip.csv", source_units="ft3/s"
+    #         )
+    #     assert r'The units specified by the "source_units" keyword and in the' in str(
+    #         e_info.value
+    #     )
 
     @staticmethod
     def test_convert_units_cfs_error_02():

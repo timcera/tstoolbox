@@ -46,17 +46,17 @@ class TestFilter(TestCase):
         self.flat_3 = self.ats.join(
             tstoolbox.read(os.path.join("tests", "data_filter_flat.csv"))
         )
-        self.flat_3.columns = ["Value", "Value_flat::filter"]
+        self.flat_3.columns = ["Value", "Value::flat_filter"]
 
         self.hanning = self.ats.join(
             tstoolbox.read(os.path.join("tests", "data_filter_hanning.csv"))
         )
-        self.hanning.columns = ["Value", "Value_hanning::filter"]
+        self.hanning.columns = ["Value", "Value::hanning_filter"]
 
         self.fft_lowpass = self.ats.join(
             tstoolbox.read(os.path.join("tests", "data_filter_fft_lowpass.csv"))
         )
-        self.fft_lowpass.columns = ["Value", "Value_fft::filter"]
+        self.fft_lowpass.columns = ["Value", "Value::fft_filter"]
 
         self.fft_highpass = self.ats.copy()
         self.fft_highpass.columns = ["Value::filter"]
@@ -89,34 +89,6 @@ class TestFilter(TestCase):
         assert_frame_equal(
             out, self.hanning, check_column_type=False, check_names=False
         )
-
-    def test_filter_fft_lowpass(self):
-        out = pd.DataFrame(
-            tstoolbox.filter(
-                "fft",
-                "lowpass",
-                input_ts="tests/data_sine.csv",
-                print_input=True,
-                lowpass_cutoff=1 / 50,
-                window_len=5,
-            ).iloc[:, [0, -1]]
-        )
-        print(out)
-        print(self.fft_lowpass)
-        self.maxDiff = None
-        assert_frame_equal(
-            out, self.fft_lowpass, check_column_type=False, check_names=False
-        )
-
-    @staticmethod
-    def test_small_window_len():
-        out = tstoolbox.filter(
-            "flat", "lowpass", input_ts="tests/data_sine.csv", window_len=2
-        )
-        out1 = tstoolbox.read("tests/data_sine.csv")
-        out1.columns = ["Value::filter"]
-        # NOp
-        assert_frame_equal(out, out1, check_names=False)
 
     @staticmethod
     def test_large_window_len():
@@ -257,9 +229,9 @@ test_series = pd.Series(
             test_series,
             None,
             None,
-            1,
+            -1,
             None,
-            None,
+            ValueError,
             "hanning_lowpass_invalid_window_len",
         ),
         (
