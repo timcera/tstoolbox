@@ -1,22 +1,23 @@
 # ---
 # jupyter:
 #   jupytext:
+#     formats: ipynb,py:percent
 #     text_representation:
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.14.1
+#       jupytext_version: 1.16.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
 
-# %% [markdown]
+# %% [markdown] editable=true slideshow={"slide_type": ""}
 # # Filling
 # ## Fill forward
 
-# %%
+# %% jupyter={"outputs_hidden": true}
 import pandas as pd
 
 import tstoolbox.tstoolbox as ts
@@ -44,7 +45,7 @@ ts.plot(input_ts=ndf, ofilename="ffill.png", style="r-*")
 # %% [markdown]
 # ![](ffill.png)
 
-# %%
+# %% jupyter={"outputs_hidden": true}
 ndf = ts.fill(input_ts=df, method="bfill")
 
 # %%
@@ -53,4 +54,4 @@ ts.plot(input_ts=ndf, ofilename="bfill.png", style="r-*")
 # %% [markdown]
 # ![](bfill.png)
 
-# %%
+# %% jupyter={"outputs_hidden": true}

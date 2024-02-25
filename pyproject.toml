@@ -3,8 +3,7 @@ build-backend = "setuptools.build_meta"
 requires = [
     "setuptools>=45",
     "setuptools_scm[toml]>=6.2",
-    "wheel",
-    "oldest-supported-numpy"
+    "wheel"
 ]
 
 [project]
@@ -116,6 +115,9 @@ version_files = ["VERSION"]
 
 [tool.isort]
 profile = "black"
+
+[tool.jupytext]
+formats = "auto:percent"
 
 [tool.setuptools]
 license-files = ["LICENSE.txt"]
