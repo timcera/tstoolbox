@@ -1,3 +1,9 @@
+## v108.1.0 (2024-02-25)
+
+### Feat
+
+- add tidal filters to the filter command
+
 ## v108.0.1 (2023-12-16)
 
 ### Refactor
