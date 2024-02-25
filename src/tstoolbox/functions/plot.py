@@ -37,6 +37,7 @@ from ..toolbox_utils.src.toolbox_utils import tsutils
 warnings.filterwarnings("ignore")
 
 
+@validate_arguments
 @tsutils.transform_args(
     xlim=tsutils.make_list,
     ylim=tsutils.make_list,
@@ -53,7 +54,6 @@ warnings.filterwarnings("ignore")
     vlines_colors=tsutils.make_list,
     vlines_linestyles=tsutils.make_list,
 )
-@validate_arguments
 @tsutils.doc(tsutils.docstrings)
 def plot(
     input_ts="-",
