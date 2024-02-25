@@ -920,18 +920,17 @@ def main():
     @cltoolbox.command("filter", formatter_class=RSTHelpFormatter)
     @_tsutils.copy_doc(filter)
     def filter_cli(
-        filter_type,
+        filter_types,
         filter_pass,
+        butterworth_order=10,
         lowpass_cutoff=None,
         highpass_cutoff=None,
         window_len=3,
-        butterworth_stages=1,
-        reverse_second_stage=True,
+        pad_mode="reflect",
         input_ts="-",
         start_date=None,
         end_date=None,
         columns=None,
-        float_format="g",
         dropna="no",
         skiprows=None,
         index_type="datetime",
@@ -941,13 +940,13 @@ def main():
         source_units=None,
         target_units=None,
         print_input=False,
+        float_format="g",
         tablefmt="csv",
     ):
         _tsutils.printiso(
             filter(
                 filter_type,
                 filter_pass,
-                butterworth_stages=butterworth_stages,
                 reverse_second_stage=reverse_second_stage,
                 lowpass_cutoff=lowpass_cutoff,
                 highpass_cutoff=highpass_cutoff,
