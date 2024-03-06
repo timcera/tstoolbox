@@ -155,14 +155,13 @@ class TestAddTrend(TestCase):
                 inferred_code = "1" + inferred_code
             testcode = matches.get(testcode, testcode)
             logging.warning(f"{testcode} {inferred_code}")
+            icode = inferred_code.split("-")[0].replace("Y", "A")
             try:
-                if "YE" in inferred_code.split("-")[0]:
-                    testcode = testcode.replace("A", "YE")
-                self.assertEqual(testcode, inferred_code.split("-")[0])
+                self.assertEqual(testcode, icode)
             except AssertionError:
                 self.assertEqual(
                     [i for i in testcode if not i.isdigit()],
-                    [i for i in inferred_code.split("-")[0] if not i.isdigit()],
+                    [i for i in icode if not i.isdigit()],
                 )
 
     def tearDown(self):
