@@ -157,7 +157,7 @@ class TestAddTrend(TestCase):
             logging.warning(f"{testcode} {inferred_code}")
             try:
                 if inferred_code.split("-")[0] == "1YE":
-                    testcode = "1YE"
+                    testcode = testcode.replace("A", "YE")
                 self.assertEqual(testcode, inferred_code.split("-")[0])
             except AssertionError:
                 self.assertEqual(
