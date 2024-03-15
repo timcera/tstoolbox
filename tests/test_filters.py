@@ -116,7 +116,7 @@ class TestFilter(TestCase):
 
 
 test_series = pd.Series(
-    np.random.randn(100), index=pd.date_range("2020-01-01", periods=100, freq="H")
+    np.random.randn(100), index=pd.date_range("2020-01-01", periods=100, freq="h")
 )
 
 

@@ -218,8 +218,10 @@ def fill(
         dict(list(zip(tsd.columns, tsd.mean().values))), index=[tsd.index[-1] + offset]
     )
     ntsd = pd.concat([predf, ntsd, postf])
-    if method in ("ffill", "bfill"):
-        ntsd = ntsd.fillna(method=method, limit=limit)
+    if method == "ffill":
+        ntsd = ntsd.ffill(limit=limit)
+    elif method == "bfill":
+        ntsd = ntsd.bfill(limit=limit)
     elif method in (
         "linear",
         "time",

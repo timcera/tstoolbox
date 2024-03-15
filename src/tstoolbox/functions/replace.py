@@ -1,12 +1,14 @@
 """Collection of functions for the manipulation of time series."""
 
-
 import warnings
 from typing import List, Optional, Union
 
-from pydantic import validate_arguments
-
 from ..toolbox_utils.src.toolbox_utils import tsutils
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
 

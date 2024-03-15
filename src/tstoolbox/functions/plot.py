@@ -30,9 +30,14 @@ from plottoolbox import (
     weibull_yaxis,
     xy,
 )
-from pydantic import PositiveInt, validate_arguments
+from pydantic import PositiveInt
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
 

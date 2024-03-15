@@ -5,13 +5,18 @@ from typing import List, Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
-from pydantic import Field, PositiveFloat, PositiveInt, validate_arguments
+from pydantic import Field, PositiveFloat, PositiveInt
 from scipy import signal
 from scipy.fft import irfft, rfft, rfftfreq
 from scipy.optimize import leastsq
 from typing_extensions import Annotated
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
 

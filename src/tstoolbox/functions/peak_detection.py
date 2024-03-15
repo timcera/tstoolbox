@@ -5,10 +5,15 @@ from contextlib import suppress
 from typing import Literal
 
 import numpy as np
-from pydantic import Field, PositiveInt, validate_arguments
+from pydantic import Field, PositiveInt
 from typing_extensions import Annotated
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
 
@@ -946,7 +951,7 @@ def peak_detection(
             datavals = minpeak
         maxx, _ = list(zip(*datavals))
         hold = tmptsd[cols][np.array(maxx).astype("i")]
-        tmptsd[cols][:] = np.nan
+        tmptsd.loc[:, cols] = np.nan
         tmptsd[cols][np.array(maxx).astype("i")] = hold
 
     tmptsd.index.name = "Datetime"

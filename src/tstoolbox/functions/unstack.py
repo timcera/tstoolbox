@@ -1,30 +1,39 @@
 """Collection of functions for the manipulation of time series."""
 
 import warnings
-from typing import Union
-
-from pydantic import validate_arguments
+from typing import List, Optional, Union
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
 
 
 @validate_arguments
+@tsutils.transform_args(
+    columns=tsutils.make_list,
+    names=tsutils.make_list,
+    source_units=tsutils.make_list,
+    target_units=tsutils.make_list,
+)
 @tsutils.doc(tsutils.docstrings)
 def unstack(
-    column_names: Union[int, str],
+    column_names: Optional[Union[str, List]] = None,
     input_ts="-",
-    columns=None,
+    columns: Optional[Union[str, List]] = None,
     start_date=None,
     end_date=None,
     round_index=None,
     dropna="no",
     skiprows=None,
     index_type="datetime",
-    names=None,
-    source_units=None,
-    target_units=None,
+    names: Optional[List] = None,
+    source_units: Optional[List] = None,
+    target_units: Optional[List] = None,
     clean=False,
 ):
     """Return the unstack of the input table.

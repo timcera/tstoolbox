@@ -70,7 +70,7 @@ input_peak_detection = b"""Datetime,0
 
 class TestPeakDetect(TestCase):
     def setUp(self):
-        dindex = pd.date_range("2000-01-01T00:00:00", periods=24, freq="H")
+        dindex = pd.date_range("2000-01-01T00:00:00", periods=24, freq="h")
         self.ats = np.arange(0, 360, 15)
         self.ats = np.sin(2 * np.pi * self.ats / 360)
         self.ats = pd.DataFrame(self.ats, index=dindex)
@@ -92,9 +92,9 @@ class TestPeakDetect(TestCase):
             )
         )
         self.compare.index.name = "Datetime"
-        self.compare["0::peak"] = np.nan
+        self.compare.loc[:, "0::peak"] = np.nan
         self.compare.loc[self.compare[0] == 1, "0::peak"] = 1
-        self.compare["0::valley"] = np.nan
+        self.compare.loc[:, "0::valley"] = np.nan
         self.compare.loc[self.compare[0] == -1, "0::valley"] = -1
         self.compare = tsutils.memory_optimize(self.compare).astype("Float64")
 

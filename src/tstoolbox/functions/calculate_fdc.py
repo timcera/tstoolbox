@@ -4,11 +4,16 @@ import warnings
 from typing import Literal
 
 import pandas as pd
-from pydantic import Field, validate_arguments
+from pydantic import Field
 from scipy.stats import t
 from typing_extensions import Annotated
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
 

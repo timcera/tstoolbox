@@ -4,9 +4,13 @@ import warnings
 from typing import Union
 
 import pandas as pd
-from pydantic import validate_arguments
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
 

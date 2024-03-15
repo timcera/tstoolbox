@@ -13,7 +13,7 @@ from . import capture
 
 class TestDate_slice(TestCase):
     def setUp(self):
-        dr = pd.date_range("2011-01-01T12:00:00", periods=3, freq="H")
+        dr = pd.date_range("2011-01-01T12:00:00", periods=3, freq="h")
         self.date_slice = pd.DataFrame([2, 2, 2], index=dr, columns=["Value"])
         self.date_slice.index.name = "Datetime"
         self.date_slice = tsutils.memory_optimize(self.date_slice)

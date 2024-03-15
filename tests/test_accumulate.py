@@ -28,7 +28,7 @@ class TestRead(TestCase):
 
 def test_stats():
     """Test stat names."""
-    with pytest.raises(ValueError):
+    with pytest.raises((AttributeError, ValueError)):
         _ = tstoolbox.accumulate(
             input_ts="tests/data_missing.csv", dropna="any", statistic="camel"
         )

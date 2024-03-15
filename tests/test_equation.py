@@ -88,7 +88,7 @@ class TestEquation(TestCase):
             tsutils.printiso, self.equation_multiple_cols_03, float_format=".2f"
         )
 
-        dindex = pd.date_range("2011-01-01T00:00:00", periods=48, freq="H")
+        dindex = pd.date_range("2011-01-01T00:00:00", periods=48, freq="h")
         ts1 = [2] * 48
         ts2 = [5.2] * 48
         ts2[0] = np.nan

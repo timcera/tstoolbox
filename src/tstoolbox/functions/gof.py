@@ -5,10 +5,14 @@ from typing import List, Literal, Union
 
 import HydroErr as he
 import numpy as np
-from pydantic import validate_arguments
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
 from .read import read
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
 

@@ -4,11 +4,16 @@ from typing import List, Literal
 
 import numpy as np
 import pandas as pd
-from pydantic import Field, validate_arguments
+from pydantic import Field
 from typing_extensions import Annotated
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
 from . import lag
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 
 def autocorrelation(series):

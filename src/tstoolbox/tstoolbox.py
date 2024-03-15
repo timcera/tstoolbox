@@ -7,7 +7,6 @@ import warnings as _warnings
 from .toolbox_utils.src.toolbox_utils import tsutils as _tsutils
 
 __all__ = [
-    "unstack",
     "accumulate",
     "add_trend",
     "aggregate",

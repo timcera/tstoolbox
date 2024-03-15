@@ -41,7 +41,7 @@ class TestDateOffset(TestCase):
         self.ats = tsutils.memory_optimize(self.ats)
 
     def test_data_offset(self):
-        out = tstoolbox.date_offset(-1, "H", input_ts="tests/data_sine.csv")
+        out = tstoolbox.date_offset(-1, "h", input_ts="tests/data_sine.csv")
         assert_frame_equal(out, self.ats, check_dtype=False)
 
     def test_data_round_robin_annual(self):
@@ -50,7 +50,7 @@ class TestDateOffset(TestCase):
 
         # This is needed since the test time series doesn't start at the
         # beginning of the year.
-        out = tstoolbox.date_offset(-1, "H", input_ts=out)
+        out = tstoolbox.date_offset(-1, "h", input_ts=out)
 
         assert_frame_equal(out, self.ats, check_dtype=False)
 
@@ -60,7 +60,7 @@ class TestDateOffset(TestCase):
 
         # This is needed since the test time series doesn't start at the
         # beginning of the year.
-        out = tstoolbox.date_offset(-1, "H", input_ts=out)
+        out = tstoolbox.date_offset(-1, "h", input_ts=out)
 
         assert_frame_equal(out, self.ats, check_dtype=False)
 
@@ -70,6 +70,6 @@ class TestDateOffset(TestCase):
 
         # This is needed since the test time series doesn't start at the
         # beginning of the year.
-        out = tstoolbox.date_offset(-1, "H", input_ts=out)
+        out = tstoolbox.date_offset(-1, "h", input_ts=out)
 
         assert_frame_equal(out, self.ats, check_dtype=False)

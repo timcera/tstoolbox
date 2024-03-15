@@ -4,9 +4,14 @@ from contextlib import suppress
 from typing import List
 
 import pandas as pd
-from pydantic import PositiveInt, validate_arguments
+from pydantic import PositiveInt
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 
 @tsutils.transform_args(lags=tsutils.make_list)

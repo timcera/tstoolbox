@@ -3,10 +3,15 @@
 from typing import Literal, Optional
 
 import pandas as pd
-from pydantic import Field, PositiveInt, validate_arguments
+from pydantic import Field, PositiveInt
 from typing_extensions import Annotated
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 
 @validate_arguments

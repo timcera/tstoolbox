@@ -4,11 +4,15 @@ import warnings
 from typing import List, Optional, Union
 
 import pandas as pd
-from pydantic import validate_arguments
 from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
 

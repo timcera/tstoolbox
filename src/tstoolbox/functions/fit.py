@@ -5,11 +5,16 @@ from typing import List, Literal
 
 import numpy as np
 import pandas as pd
-from pydantic import Field, validate_arguments
+from pydantic import Field
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from typing_extensions import Annotated
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
 

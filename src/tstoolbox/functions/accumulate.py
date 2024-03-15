@@ -4,13 +4,18 @@ import warnings
 from typing import List, Literal, Optional, Union
 
 import pandas as pd
-from pydantic import validate_arguments
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
+
+try:
+    from pydantic import validate_arguments
+except ImportError:
+    from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
 
 
+@validate_arguments
 @tsutils.transform_args(
     statistic=tsutils.make_list,
     columns=tsutils.make_list,
@@ -18,7 +23,6 @@ warnings.filterwarnings("ignore")
     source_units=tsutils.make_list,
     target_units=tsutils.make_list,
 )
-@validate_arguments
 @tsutils.doc(tsutils.docstrings)
 def accumulate(
     input_ts="-",
@@ -36,7 +40,8 @@ def accumulate(
     target_units: Optional[List] = None,
     print_input=False,
 ):
-    """Calculate accumulating statistics.
+    """
+    Calculate accumulating statistics.
 
     Parameters
     ----------
