@@ -1,6 +1,3 @@
-[submodule "src/tstoolbox/pyaf"]
-	path = src/tstoolbox/pyaf
-	url = git@github.com:timcera/pyaf.git
 [submodule "src/tstoolbox/toolbox_utils"]
 	path = src/tstoolbox/toolbox_utils
 	url = git@github.com:timcera/toolbox_utils.git

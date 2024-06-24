@@ -1,6 +1,6 @@
-.. image:: https://github.com/timcera/tstoolbox/actions/workflows/python-package.yml/badge.svg
+.. image:: https://github.com/timcera/tstoolbox/actions/workflows/pypi-package.yml/badge.svg
     :alt: Tests
-    :target: https://github.com/timcera/tstoolbox/actions/workflows/python-package.yml
+    :target: https://github.com/timcera/tstoolbox/actions/workflows/pypi-package.yml
     :height: 20
 
 .. image:: https://img.shields.io/coveralls/github/timcera/tstoolbox
@@ -52,16 +52,16 @@ Just run 'tstoolbox --help' to get a list of subcommands::
                      convert_index_to_julian, converttz, lag, correlation,
                      createts, date_offset, date_slice, describe, dtw,
                      equation, ewm_window, expanding_window, fill, filter, fit,
-                     forecast, read, gof, normalization, pca, pct_change,
-                     peak_detection, pick, plot, rank, regression,
-                     remove_trend, replace, rolling_window, stack, stdtozrxp,
-                     tstopickle, unstack, about} ...
+                     read, gof, normalization, pca, pct_change, peak_detection,
+                     pick, plot, rank, regression, remove_trend, replace,
+                     rolling_window, stack, stdtozrxp, tstopickle, unstack,
+                     about} ...
 
     positional arguments:
       {accumulate, add_trend, aggregate, calculate_fdc, calculate_kde, clip,
       convert, convert_index, convert_index_to_julian, converttz, lag,
       correlation, createts, date_offset, date_slice, describe, dtw, equation,
-      ewm_window, expanding_window, fill, filter, fit, forecast, read, gof,
+      ewm_window, expanding_window, fill, filter, fit, read, gof,
       normalization, pca, pct_change, peak_detection, pick, plot, rank,
       regression, remove_trend, replace, rolling_window, stack, stdtozrxp,
       tstopickle, unstack, about}
@@ -112,8 +112,6 @@ Just run 'tstoolbox --help' to get a list of subcommands::
         Apply different filters to the time-series.
     fit
         Fit model to data.
-    forecast
-        Forecast algorithms
     read
         Combines time-series from a list of pickle or csv files.
     gof

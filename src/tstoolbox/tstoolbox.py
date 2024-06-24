@@ -29,7 +29,6 @@ __all__ = [
     "fill",
     "filter",
     "fit",
-    "forecast",
     "gof",
     "lag",
     "normalization",
@@ -72,7 +71,6 @@ from tstoolbox.functions.expanding_window import expanding_window
 from tstoolbox.functions.fill import fill
 from tstoolbox.functions.filter import filter
 from tstoolbox.functions.fit import fit
-from tstoolbox.functions.forecast import forecast
 from tstoolbox.functions.gof import gof
 from tstoolbox.functions.lag import lag
 from tstoolbox.functions.normalization import normalization
@@ -461,7 +459,7 @@ def main():
         target_units=None,
         skiprows=None,
     ):
-        warnings.warn(
+        _warnings.warn(
             """
     *
     *   DEPRECATED in favor of using `convert_index` with the 'julian'
@@ -944,9 +942,8 @@ def main():
     ):
         _tsutils.printiso(
             filter(
-                filter_type,
+                filter_types,
                 filter_pass,
-                reverse_second_stage=reverse_second_stage,
                 lowpass_cutoff=lowpass_cutoff,
                 highpass_cutoff=highpass_cutoff,
                 input_ts=input_ts,
@@ -1005,47 +1002,6 @@ def main():
                 source_units=source_units,
                 target_units=target_units,
                 print_input=print_input,
-            ),
-            tablefmt=tablefmt,
-        )
-
-    @cltoolbox.command("forecast", formatter_class=RSTHelpFormatter)
-    @_tsutils.copy_doc(forecast)
-    def forecast_cli(
-        input_ts="-",
-        columns=None,
-        start_date=None,
-        end_date=None,
-        dropna="no",
-        clean=False,
-        round_index=None,
-        skiprows=None,
-        index_type="datetime",
-        names=None,
-        source_units=None,
-        target_units=None,
-        print_input=False,
-        tablefmt="csv",
-        horizon=2,
-        print_cols="all",
-    ):
-        _tsutils.printiso(
-            forecast(
-                input_ts=input_ts,
-                columns=columns,
-                start_date=start_date,
-                end_date=end_date,
-                dropna=dropna,
-                clean=clean,
-                round_index=round_index,
-                skiprows=skiprows,
-                index_type=index_type,
-                names=names,
-                source_units=source_units,
-                target_units=target_units,
-                print_input=print_input,
-                horizon=horizon,
-                print_cols=print_cols,
             ),
             tablefmt=tablefmt,
         )
