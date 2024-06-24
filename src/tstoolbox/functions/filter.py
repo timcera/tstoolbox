@@ -591,10 +591,6 @@ def filter(
 
                 # Available for testing but not documented in help.
 
-                half_kern = 25
-
-                nslice = slice(half_kern, -half_kern)
-
                 relevation = (
                     1.0
                     / 16.0
@@ -643,8 +639,8 @@ def filter(
                 for wl in pywt.wavelist():
                     w = pywt.Wavelet(wl)
 
-                    max_level = pywt.dwt_max_level(len(elevation), w.dec_len)
-                    a = pywt.wavedec(elevation, w, level=max_level, mode="sym")
+                    max_level = pywt.dwt_max_level(len(ttsd[col]), w.dec_len)
+                    a = pywt.wavedec(ttsd[col], w, level=max_level, mode="sym")
 
                     for i in range(len(a))[1:]:
                         avg = np.average(a[i][:])
@@ -663,38 +659,38 @@ def filter(
                     "Complex demodulation filter doesn't work right yet - still testing."
                 )
 
-                kern = np.ones(25) * (1.0 / 25.0)
+                # kern = np.ones(25) * (1.0 / 25.0)
 
-                nslice = slice(0, len(ttsd[col]))
-                ns_amplitude = {}
-                ns_phase = {}
-                constituent_residual = {}
-                for key in self.key_list:
-                    ntimes_filled = np.arange(len(ttsd[col])) * 24
-                    yt = new_elev * np.exp(
-                        -1j * self.speed_dict[key]["speed"] * ntimes_filled
-                    )
+                # nslice = slice(0, len(ttsd[col]))
+                # ns_amplitude = {}
+                # ns_phase = {}
+                # constituent_residual = {}
+                # for key in self.key_list:
+                #     ntimes_filled = np.arange(len(ttsd[col])) * 24
+                #     yt = new_elev * np.exp(
+                #         -1j * self.speed_dict[key]["speed"] * ntimes_filled
+                #     )
 
-                    ns_amplitude[key] = np.absolute(yt)
-                    ns_amplitude[key] = yt.real
-                    ns_amplitude[key] = np.convolve(
-                        ns_amplitude[key], kern, mode="same"
-                    )
-                    print(key, np.average(ns_amplitude[key]))
-                    ns_amplitude[key] = np.convolve(ns_amplitude[key], kern, mode=1)
+                #     ns_amplitude[key] = np.absolute(yt)
+                #     ns_amplitude[key] = yt.real
+                #     ns_amplitude[key] = np.convolve(
+                #         ns_amplitude[key], kern, mode="same"
+                #     )
+                #     print(key, np.average(ns_amplitude[key]))
+                #     ns_amplitude[key] = np.convolve(ns_amplitude[key], kern, mode=1)
 
-                    ns_phase[key] = np.arctan2(yt.imag, yt.real) * rad2deg
-                    ns_phase[key] = np.convolve(ns_phase[key], kern, mode=1)
+                #     ns_phase[key] = np.arctan2(yt.imag, yt.real) * rad2deg
+                #     ns_phase[key] = np.convolve(ns_phase[key], kern, mode=1)
 
-                    new_list = [i for i in self.key_list if i != key]
-                    everything_but = self.sum_signals(
-                        new_list, ntimes_filled, self.speed_dict
-                    )
-                    constituent_residual[key] = new_elev - everything_but
-                relevation = everything_but
-                tmptsd = pd.DataFrame(relevation[nslice], index=ttsd.index)
-                tmptsd.columns = [col_name]
-                ntsd = ntsd.join(tmptsd, how="outer")
+                #     new_list = [i for i in self.key_list if i != key]
+                #     everything_but = self.sum_signals(
+                #         new_list, ntimes_filled, self.speed_dict
+                #     )
+                #     constituent_residual[key] = new_elev - everything_but
+                # relevation = everything_but
+                # tmptsd = pd.DataFrame(relevation[nslice], index=ttsd.index)
+                # tmptsd.columns = [col_name]
+                # ntsd = ntsd.join(tmptsd, how="outer")
 
     ntsd.index.name = "Datetime"
     return tsutils.return_input(print_input, tsd, ntsd, "filter")

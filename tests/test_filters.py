@@ -106,7 +106,7 @@ class TestFilter(TestCase):
 
     @staticmethod
     def test_filter_all():
-        out = tstoolbox.filter(
+        _ = tstoolbox.filter(
             FILTERS,
             "lowpass",
             lowpass_cutoff=1 / 10,

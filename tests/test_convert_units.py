@@ -37,7 +37,7 @@ class TestConvertUnits(TestCase):
 
     @staticmethod
     def test_convert_units_cfs_error_02():
-        with pytest.raises(ValueError) as e_info:
+        with pytest.raises(ValueError):
             _ = tstoolbox.read(
                 "tests/data_gainesville_daily_precip.csv", target_units="ft3/s"
             )

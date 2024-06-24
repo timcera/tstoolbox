@@ -7,7 +7,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
-from numpy import *  # nopycln: import
+from numpy import *  # noqa: F403
 
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
