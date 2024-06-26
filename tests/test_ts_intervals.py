@@ -8,7 +8,7 @@ import pandas as pd
 
 from tstoolbox import tstoolbox
 
-if float(".".join(pd.__version__.split(".")[:2])) > 2.0:
+if float(".".join(pd.__version__.split(".")[:2])) >= 2.2:
     pandacodes = [
         "YE",
         "YS",
@@ -56,7 +56,7 @@ if float(".".join(pd.__version__.split(".")[:2])) > 2.0:
     }
 else:
     pandacodes = [
-        "YE",
+        "A",
         "AS",
         "BA",
         "BAS",  # Annual
@@ -79,7 +79,7 @@ else:
     ]  # Intra-daily
 
     pd_tstep_minterval = {
-        "YE": ("1800-01-01", 300, 10),
+        "A": ("1800-01-01", 300, 10),
         "AS": ("1800-01-01", 300, 10),
         "BA": ("1800-01-01", 300, 10),
         "BAS": ("1800-01-01", 300, 10),
