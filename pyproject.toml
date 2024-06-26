@@ -73,7 +73,7 @@ bitbucket = "https://bitbucket.org/timcera/tstoolbox/src/main/"
 name = "cz_conventional_commits"
 tag_format = "v$version"
 update_changelog_on_bump = true
-version = "108.1.1"
+version = "108.1.2"
 version_files = ["VERSION"]
 
 [tool.isort]
