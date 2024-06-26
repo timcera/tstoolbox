@@ -240,7 +240,7 @@ def _peakdetect(
 
     # maxima and minima candidates are temporarily stored in
     # mx and mn respectively
-    mn, mx = np.Inf, -np.Inf
+    mn, mx = np.inf, -np.inf
 
     # Only detect peak if there is 'window' amount of points after it
     for index, (x, y) in enumerate(zip(x_axis[:-window], y_axis[:-window])):
@@ -254,14 +254,14 @@ def _peakdetect(
         # ####look for max####
         if (
             y < mx - delta
-            and mx != np.Inf
+            and mx != np.inf
             and y_axis[index : index + window].max() < mx
         ):
             max_peaks.append([mxpos, mx])
             dump.append(True)
             # set algorithm to only find minima now
-            mx = np.Inf
-            mn = np.Inf
+            mx = np.inf
+            mn = np.inf
             if index + window >= length:
                 # end is within window no more peaks can be found
                 break
@@ -270,14 +270,14 @@ def _peakdetect(
         # ####look for min####
         if (
             y > mn + delta
-            and mn != -np.Inf
+            and mn != -np.inf
             and y_axis[index : index + window].min() > mn
         ):
             min_peaks.append([mnpos, mn])
             dump.append(False)
             # set algorithm to only find maxima now
-            mn = -np.Inf
-            mx = -np.Inf
+            mn = -np.inf
+            mx = -np.inf
             if index + window >= length:
                 # end is within window no more peaks can be found
                 break
