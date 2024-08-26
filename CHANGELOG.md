@@ -1,3 +1,13 @@
+## v108.2.0 (2024-08-26)
+
+### Refactor
+
+- refactor HydroErr code
+
+### Feat
+
+- bring HydroErr in as submodule
+
 ## v108.1.2 (2024-06-25)
 
 ### Fix
