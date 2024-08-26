@@ -3,9 +3,9 @@
 import warnings
 from typing import List, Literal, Union
 
-import HydroErr as he
 import numpy as np
 
+from ..HydroErr import HydroErr as he
 from ..toolbox_utils.src.toolbox_utils import tsutils
 from .read import read
 

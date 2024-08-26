@@ -13,8 +13,6 @@ description = "Command line script and Python library to manipulate time series.
 dependencies = [
     "cltoolbox >= 1.0.0",
     "dateparser",
-    "dill",
-    "hydroerr",
     "numpy <2.0; python_version == '3.9'",
     "pandas[excel]",
     "pint!=0.21.*",
@@ -22,11 +20,8 @@ dependencies = [
     "pint-pandas",
     "plottoolbox >= 105.0.1",
     "pydantic >= 2.0.0",
-    "pydot",
     "scikit-learn",
     "scipy",
-    "six",
-    "sqlalchemy",
     "statsmodels",
     "tabulate"
 ]

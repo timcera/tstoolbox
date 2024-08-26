@@ -1,3 +1,6 @@
 [submodule "src/tstoolbox/toolbox_utils"]
 	path = src/tstoolbox/toolbox_utils
 	url = git@github.com:timcera/toolbox_utils.git
+[submodule "src/tstoolbox/HydroErr"]
+	path = src/tstoolbox/HydroErr
+	url = git@github.com:timcera/HydroErr.git
