@@ -222,13 +222,13 @@ def plot(
     hlines_y: Optional[List[float]] = None,
     hlines_xmin: Optional[List[float]] = None,
     hlines_xmax: Optional[List[float]] = None,
-    hlines_colors: List[str] = None,
-    hlines_linestyles: List[Optional[str]] = "-",
+    hlines_colors: Optional[Union[str, List[str]]] = None,
+    hlines_linestyles: Union[str, List[str]] = "-",
     vlines_x: Optional[List[float]] = None,
     vlines_ymin: Optional[List[float]] = None,
     vlines_ymax: Optional[List[float]] = None,
-    vlines_colors: List[str] = None,
-    vlines_linestyles: List[Optional[str]] = "-",
+    vlines_colors: Optional[Union[str, List[str]]] = None,
+    vlines_linestyles: Union[str, List[str]] = "-",
 ):
     r"""Plot data.
 
