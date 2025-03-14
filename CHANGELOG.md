@@ -1,3 +1,9 @@
+## v108.2.1 (2025-03-13)
+
+### Fix
+
+- fix type hints on plot
+
 ## v108.2.0 (2024-08-26)
 
 ### Refactor
