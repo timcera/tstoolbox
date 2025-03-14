@@ -296,6 +296,6 @@ def test_filter(
         )
 
         # Assert
-        assert (
-            not result.empty
-        ), f"Test failed for {test_id}. Result should not be empty."
+        assert not result.empty, (
+            f"Test failed for {test_id}. Result should not be empty."
+        )

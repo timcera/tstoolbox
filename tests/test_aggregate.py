@@ -55,11 +55,7 @@ class TestAggregate(TestCase):
 
     def test_aggregate_cli_mean(self):
         """Test CLI mean, daily (by default) aggregation."""
-        args = (
-            "tstoolbox aggregate "
-            '--statistic="mean" '
-            '--input_ts="tests/data_flat.csv"'
-        )
+        args = 'tstoolbox aggregate --statistic="mean" --input_ts="tests/data_flat.csv"'
         args = shlex.split(args)
         out = pd.read_csv(
             BytesIO(subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0])
@@ -70,11 +66,7 @@ class TestAggregate(TestCase):
 
     def test_aggregate_cli_sum(self):
         """Test CLI summation, daily (by default) aggregation."""
-        args = (
-            "tstoolbox aggregate "
-            '--statistic="sum" '
-            '--input_ts="tests/data_flat.csv"'
-        )
+        args = 'tstoolbox aggregate --statistic="sum" --input_ts="tests/data_flat.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
         self.assertEqual(out, self.aggregate_cli_sum)

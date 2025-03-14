@@ -276,7 +276,7 @@ class TestFill(TestCase):
 
     def test_fill_mean_cli(self):
         """Test mean fill CLI."""
-        args = "tstoolbox fill " '--method="mean" ' "--input_ts=tests/data_missing.csv"
+        args = 'tstoolbox fill --method="mean" --input_ts=tests/data_missing.csv'
         args = shlex.split(args)
         out = subprocess.Popen(
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
