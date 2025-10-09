@@ -17,6 +17,17 @@ class Testgof(TestCase):
             ["Common count observed and simulated", 10],
             ["Count of NaNs", None, 0, 0],
         ]
+        self.gof_input_ts = [
+            ["Mean error or bias", 0.0],
+            ["Root-mean-square Deviation/Error (RMSD)", 0.0],
+            ["Centered RMSD (CRMSD)", 0.0],
+            ["Pearson coefficient of correlation (r)", 1.0000000000000002],
+            ["Skill score (Murphy)", 1.0],
+            ["Nash-Sutcliffe Efficiency", 1.0],
+            ["Brier's Score", 0.0],
+            ["Common count observed and simulated", 1672],
+            ["Count of NaNs", None, 0, 0],
+        ]
 
     def test_gof(self):
         """Test of gof API."""
@@ -26,3 +37,13 @@ class Testgof(TestCase):
             stats=["me", "rmsd", "crmsd", "corrcoef", "murphyss", "nse", "brierss"],
         )
         assert out == self.gof
+
+    def test_gof_intput_ts(self):
+        """Test of gof API."""
+        out = tstoolbox.gof(
+            obs_col=1,
+            sim_col=1,
+            stats=["me", "rmsd", "crmsd", "corrcoef", "murphyss", "nse", "brierss"],
+            input_ts="tests/data_sunspot.csv",
+        )
+        assert out == self.gof_input_ts

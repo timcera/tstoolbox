@@ -109,11 +109,10 @@ def read(
 
         Python library examples::
 
-            Each entry in the list can be one of a pandas DataFrame, pandas
-            Series, dict, tuple, list, StringIO, or file name with the options
-            listed above.
+            Each entry can be one of a pandas DataFrame, pandas Series, dict,
+            tuple, list, StringIO, or file name with the options listed above.
 
-            newdf = tstoolbox.read(['fname.csv,4,1', 'fname.xlsx', 'fname.hdf5'])
+            newdf = tstoolbox.read('fname.csv,4,1', 'fname.xlsx', 'fname.hdf5')
 
     ${force_freq}
 

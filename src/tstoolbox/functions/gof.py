@@ -16,7 +16,6 @@ except ImportError:
 
 warnings.filterwarnings("ignore")
 
-
 stats_dict = {
     "bias": ["Mean error or bias", he.me],
     "pc_bias": [
@@ -119,6 +118,9 @@ stats_dict = {
     "watt_m": ["Watterson’s M (M)", he.watt_m],
 }
 
+stat_types = ("default", "all") + tuple(stats_dict.keys())
+stat_types = Literal[stat_types]
+
 
 @tsutils.transform_args(stats=tsutils.make_list)
 @validate_arguments
@@ -128,98 +130,8 @@ def gof(
     sim_col=2,
     stats: Union[
         None,
-        str,
-        List[
-            Literal[
-                "default",
-                "all",
-                "bias",
-                "pc_bias",
-                "apc_bias",
-                "rmsd",
-                "crmsd",
-                "corrcoef",
-                "coefdet",
-                "murphyss",
-                "nse",
-                "kge09",
-                "kge12",
-                "index_agreement",
-                "brierss",
-                "mae",
-                "mean",
-                "stdev",
-                "acc",
-                "d1",
-                "d1_p",
-                "d",
-                "dmod",
-                "drel",
-                "dr",
-                "ed",
-                "g_mean_diff",
-                "h10_mahe",
-                "h10_mhe",
-                "h10_rmshe",
-                "h1_mahe",
-                "h1_mhe",
-                "h1_rmshe",
-                "h2_mahe",
-                "h2_mhe",
-                "h2_rmshe",
-                "h3_mahe",
-                "h3_mhe",
-                "h3_rmshe",
-                "h4_mahe",
-                "h4_mhe",
-                "h4_rmshe",
-                "h5_mahe",
-                "h5_mhe",
-                "h5_rmshe",
-                "h6_mahe",
-                "h6_mhe",
-                "h6_rmshe",
-                "h7_mahe",
-                "h7_mhe",
-                "h7_rmshe",
-                "h8_mahe",
-                "h8_mhe",
-                "h8_rmshe",
-                "irmse",
-                "lm_index",
-                "maape",
-                "male",
-                "mapd",
-                "mape",
-                "mase",
-                "mb_r",
-                "mdae",
-                "mde",
-                "mdse",
-                "mean_var",
-                "me",
-                "mle",
-                "mse",
-                "msle",
-                "ned",
-                "nrmse_iqr",
-                "nrmse_mean",
-                "nrmse_range",
-                "nse_mod",
-                "nse_rel",
-                "rmse",
-                "rmsle",
-                "sa",
-                "sc",
-                "sga",
-                "sid",
-                "smape1",
-                "smape2",
-                "spearman_r",
-                "ve",
-                "watt_m",
-            ]
-        ],
+        stat_types,
+        List[stat_types],
     ] = "default",
     replace_nan=None,
     replace_inf=None,
@@ -227,6 +139,7 @@ def gof(
     remove_zero=False,
     start_date=None,
     end_date=None,
+    input_ts=None,
     round_index=None,
     clean=False,
     index_type="datetime",
@@ -572,6 +485,31 @@ def gof(
         [optional, defaults to 1.0]
 
         Scaling factor for `kge09` and `kge12` beta.
+
+    input_ts : str
+        [DEPRECATED]
+        [optional, defaults to None]
+
+        The older approach was implicit by using the `input_ts` and `columns`
+        to create a two-column dataset where the first column was the observed
+        values and the second column was the simulated values.
+
+        The new approach is to specify the input time series file using
+        `obs_col` and `sim_col` parameters.
+
+        OLD WAY::
+
+            ... --input_ts=blah.csv ...
+            # Where blah.csv contains two columns, the first
+            # is the observed values and the second
+            # is the simulated values.
+
+        NEW WAY::
+
+            ... --obs_col=blah.csv,2 --sim_col=blah.csv,5 ...
+            # Where blah.csv contains at least 5 columns,
+            # the second column is the observed values
+            # and the fifth column is the simulated values.
     """
 
     #  > tstoolbox gof < x.csv
@@ -615,6 +553,12 @@ def gof(
         ]
     elif "all" in stats:
         stats = stats_dict.keys()
+
+    if input_ts is not None:
+        if isinstance(obs_col, int):
+            obs_col = f"{input_ts},{obs_col}"
+        if isinstance(sim_col, int):
+            sim_col = f"{input_ts},{sim_col}"
 
     # Use dropna='no' to get the lengths of both time-series.
     tsd = read(
