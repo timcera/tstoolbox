@@ -38,11 +38,7 @@ jobs:
                   python -m build
 
             - name: Download artifact
-<<<<<<< HEAD
               uses: actions/download-artifact@v8
-=======
-              uses: actions/download-artifact@v6
->>>>>>> b80f8e8 (build(deps): bump actions/download-artifact from 5 to 6 (#28))
               with:
                   path: dist
                   merge-multiple: true
