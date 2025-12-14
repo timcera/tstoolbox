@@ -31,7 +31,7 @@ classifiers = [
 dependencies = [
     "cltoolbox >= 1.0.0",
     "dateparser",
-    "numpy <2.0; python_version == '3.9'",
+    "numpy",
     "pandas[excel]",
     "pint!=0.21.*",
     "pint-pandas",
