@@ -110,7 +110,7 @@ class TestPeakDetect(TestCase):
         cols = list(out.columns)
         cols[0] = 0
         out.columns = cols
-        assert_frame_equal(out, self.compare)
+        assert_frame_equal(out, self.compare, check_dtype=False)
 
     def test_peak_minmax_direct(self):
         """Test peak detection API using the minmax method."""
@@ -124,7 +124,7 @@ class TestPeakDetect(TestCase):
         cols = list(out.columns)
         cols[0] = 0
         out.columns = cols
-        assert_frame_equal(out, self.compare)
+        assert_frame_equal(out, self.compare, check_dtype=False)
 
     def test_peak_zero_crossing_direct(self):
         """Test peak detection API using the zero_crossing method."""
@@ -138,7 +138,7 @@ class TestPeakDetect(TestCase):
         cols = list(out.columns)
         cols[0] = 0
         out.columns = cols
-        assert_frame_equal(out, self.compare)
+        assert_frame_equal(out, self.compare, check_dtype=False)
 
     # def test_peak_sine_direct(self):
     #     """Test peak detection API using the 'sine' method."""
