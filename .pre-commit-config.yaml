@@ -6,7 +6,9 @@ exclude: |
     (?x)^(
         .*\.dods|
         .*\.dmr|
-        .*\.dmd
+        .*\.dmd|
+        .*\.wdm|
+        .*\.hbn
         )$
 
 repos:
