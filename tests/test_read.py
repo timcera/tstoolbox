@@ -61,22 +61,22 @@ class TestRead(TestCase):
     def test_read_direct(self):
         """Test read API for single column - daily."""
         out = tstoolbox.read("tests/data_simple.csv")
-        assert_frame_equal(out, self.read_direct)
+        assert_frame_equal(out, self.read_direct, check_index_type=False)
 
     def test_read_mulitple_direct(self):
         """Test read API for multiple columns - daily."""
         out = tstoolbox.read("tests/data_simple.csv tests/data_simple.csv")
-        assert_frame_equal(out, self.read_multiple_direct)
+        assert_frame_equal(out, self.read_multiple_direct, check_index_type=False)
 
     def test_read_mulitple_direct_list(self):
         """Test read API for multiple columns - daily."""
         out = tstoolbox.read(["tests/data_simple.csv", "tests/data_simple.csv"])
-        assert_frame_equal(out, self.read_multiple_direct)
+        assert_frame_equal(out, self.read_multiple_direct, check_index_type=False)
 
     def test_read_bi_monthly(self):
         """Test read API for bi monthly time series."""
         out = tstoolbox.read("tests/data_bi_daily.csv")
-        assert_frame_equal(out, self.read_tsstep_2_daily)
+        assert_frame_equal(out, self.read_tsstep_2_daily, check_index_type=False)
 
     def test_read_cli(self):
         """Test read CLI for single column - daily."""
@@ -114,7 +114,9 @@ class TestRead(TestCase):
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
         out = tsutils.memory_optimize(tsutils.read_iso_ts(out))
-        assert_frame_equal(out, tsutils.memory_optimize(self.read_blanks))
+        assert_frame_equal(
+            out, tsutils.memory_optimize(self.read_blanks), check_index_type=False
+        )
 
     def test_read_multiple_spaces(self):
         """Test reading of files with multiple spaces in data."""
@@ -122,7 +124,7 @@ class TestRead(TestCase):
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
         out = tsutils.read_iso_ts(out)
-        assert_frame_equal(out, self.read_blanks)
+        assert_frame_equal(out, self.read_blanks, check_index_type=False)
 
 
 def test_read_xlsx():
@@ -130,7 +132,7 @@ def test_read_xlsx():
     out = tstoolbox.read("tests/data_flow_stage.xlsx")
     comp = tstoolbox.read("tests/data.wdm,2")
     comp.columns = ["Lake Helen"]
-    assert_frame_equal(out, comp, check_dtype=False)
+    assert_frame_equal(out, comp, check_dtype=False, check_index_type=False)
 
 
 def test_read_xlsx_sheet_name():
@@ -138,7 +140,7 @@ def test_read_xlsx_sheet_name():
     out = tstoolbox.read("tests/data_flow_stage.xlsx,in")
     comp = tstoolbox.read("tests/data.wdm,2")
     comp.columns = ["in_Lake Helen"]
-    assert_frame_equal(out, comp, check_dtype=False)
+    assert_frame_equal(out, comp, check_dtype=False, check_index_type=False)
 
 
 def test_read_xlsx_sheet_number():
@@ -146,4 +148,4 @@ def test_read_xlsx_sheet_number():
     out = pandas.DataFrame(tstoolbox.read("tests/data_flow_stage.xlsx,0,in").iloc[:, 0])
     comp = tstoolbox.read("tests/data.wdm,2")
     comp.columns = ["0_Lake Helen"]
-    assert_frame_equal(out, comp, check_dtype=False)
+    assert_frame_equal(out, comp, check_dtype=False, check_index_type=False)

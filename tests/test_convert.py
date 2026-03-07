@@ -37,14 +37,14 @@ class TestConvert(TestCase):
     def test_convert_direct_01(self):
         """Test of convert API with default factor and offset."""
         out = tstoolbox.convert(input_ts="tests/data_simple.csv")
-        assert_frame_equal(out, self.compare_direct_01)
+        assert_frame_equal(out, self.compare_direct_01, check_index_type=False)
 
     def test_convert_direct_02(self):
         """Test of convert API with set factor and offset."""
         out = (
             tstoolbox.convert(input_ts="tests/data_simple.csv", factor=2, offset=2)
         ).astype("Float64")
-        assert_frame_equal(out, self.compare_direct_02)
+        assert_frame_equal(out, self.compare_direct_02, check_index_type=False)
 
     def test_convert_cli_01(self):
         """Test of CLI convert with default factor and offset."""

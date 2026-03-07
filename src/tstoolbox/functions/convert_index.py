@@ -212,7 +212,7 @@ def convert_index(
         "lilian": lambda x: np.floor(x - 2299159.5),
         "rata_die": lambda x: np.floor(x - 1721424.5),
         "mars_sol": lambda x: (x - 2405522) / 1.02749,
-        "unix": lambda x: (x - 2440587.5),
+        "unix": lambda x: x - 2440587.5,
     }
 
     dailies = [

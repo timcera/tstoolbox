@@ -567,6 +567,8 @@ def filter(
                 xhat[0] = np.average(ttsd[col])
                 P[0] = 1.0
 
+                ttsd_index = ttsd.index
+                ttsd = ttsd.reset_index()
                 for k in range(1, len(ttsd[col])):
                     # time update
                     xhatminus[k] = xhat[k - 1]
@@ -577,7 +579,7 @@ def filter(
                     xhat[k] = xhatminus[k] + K[k] * (ttsd[col][k] - xhatminus[k])
                     P[k] = (1 - K[k]) * Pminus[k]
 
-                tmptsd = pd.DataFrame(xhat, index=ttsd.index)
+                tmptsd = pd.DataFrame(xhat, index=ttsd_index)
                 tmptsd.columns = [col_name]
                 ntsd = ntsd.join(tmptsd, how="outer")
 

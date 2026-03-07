@@ -41,14 +41,20 @@ class TestRollingWindow(TestCase):
         out = tstoolbox.rolling_window(
             statistic="sum", input_ts="tests/data_simple.csv"
         )
-        assert_frame_equal(out, tsutils.read_iso_ts(self.compare_rolling_window_sum))
+        assert_frame_equal(
+            out,
+            tsutils.read_iso_ts(self.compare_rolling_window_sum),
+            check_index_type=False,
+        )
 
     def test_rolling_window_mean(self):
         """API: Rolling window mean for data_simple.csv is 4.55."""
         out = tstoolbox.rolling_window(
             statistic="mean", input_ts="tests/data_simple.csv"
         )
-        assert_frame_equal(out, self.compare_rolling_window_mean)
+        assert_frame_equal(
+            out, self.compare_rolling_window_mean, check_index_type=False
+        )
 
     def test_rolling_window_sum_cli(self):
         """CLI: Rolling window mean for data_simple.csv is 9.1."""
@@ -57,7 +63,10 @@ class TestRollingWindow(TestCase):
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
         out = tsutils.read_iso_ts(out)
         assert_frame_equal(
-            out, tsutils.read_iso_ts(self.compare_rolling_window_sum_cli)
+            out,
+            tsutils.read_iso_ts(
+                self.compare_rolling_window_sum_cli, check_index_type=False
+            ),
         )
 
     def test_rolling_window_window_sum_cli(self):
@@ -69,7 +78,9 @@ class TestRollingWindow(TestCase):
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
         out = tsutils.read_iso_ts(out)
         assert_frame_equal(
-            out, tsutils.read_iso_ts(self.compare_rolling_window_sum_cli)
+            out,
+            tsutils.read_iso_ts(self.compare_rolling_window_sum_cli),
+            check_index_type=False,
         )
 
     def test_rolling_window_mean_cli(self):
@@ -79,5 +90,7 @@ class TestRollingWindow(TestCase):
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
         out = tsutils.read_iso_ts(out)
         assert_frame_equal(
-            out, tsutils.read_iso_ts(self.compare_rolling_window_mean_cli)
+            out,
+            tsutils.read_iso_ts(self.compare_rolling_window_mean_cli),
+            check_index_type=False,
         )

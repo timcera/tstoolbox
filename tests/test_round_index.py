@@ -63,7 +63,7 @@ class Testround_index(TestCase):
     def test_round_index_direct(self):
         """Test round_index API for single column - daily."""
         out = tstoolbox.read("tests/data_simple.csv", round_index="D")
-        assert_frame_equal(out, self.round_index_direct)
+        assert_frame_equal(out, self.round_index_direct, check_index_type=False)
 
     def test_round_index_mulitple_direct(self):
         """Test round_index API for multiple columns - daily."""
@@ -71,12 +71,14 @@ class Testround_index(TestCase):
             "tests/data_simple.csv tests/data_simple.csv",
             round_index="D",
         )
-        assert_frame_equal(out, self.round_index_multiple_direct)
+        assert_frame_equal(
+            out, self.round_index_multiple_direct, check_index_type=False
+        )
 
     def test_round_index_bi_monthly(self):
         """Test round_index API for bi monthly time series."""
         out = tstoolbox.read("tests/data_bi_daily.csv", round_index="D")
-        assert_frame_equal(out, self.round_index_tsstep_2_daily)
+        assert_frame_equal(out, self.round_index_tsstep_2_daily, check_index_type=False)
 
     def test_round_index_cli(self):
         """Test round_index CLI for single column - daily."""

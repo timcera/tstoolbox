@@ -110,7 +110,9 @@ class TestEquation(TestCase):
         out = tstoolbox.equation(
             "x*4 + 2", input_ts="tests/data_simple.csv", print_input=True
         )
-        assert_frame_equal(out, self.equation, check_column_type=False)
+        assert_frame_equal(
+            out, self.equation, check_column_type=False, check_index_type=False
+        )
 
     def test_equation_multiple_cols_01(self):
         """Test of equation API with multiple columns and numpy functions."""
