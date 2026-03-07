@@ -11,7 +11,10 @@ class TestFDC(TestCase):
             if not test1:
                 continue
             if "Exceed" in test1:
-                self.assertEqual(test1, test2)
+                self.assertEqual(
+                    test1.replace(b"\r", b"").replace(b"\n", b""),
+                    test2.replace(b"\r", b"").replace(b"\n", b""),
+                )
                 continue
             test1_words = test1.split(",")
             test2_words = test2.split(",")

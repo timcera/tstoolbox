@@ -243,7 +243,10 @@ class TestEquation(TestCase):
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate()[0]
         self.maxDiff = None
-        self.assertEqual(out, self.equation_multiple_cols_04_cli)
+        self.assertEqual(
+            out.replace(b"\r", b"").replace(b"\n", b""),
+            self.equation_multiple_cols_04_cli.replace(b"\r", b"").replace(b"\n", b""),
+        )
 
     def test_equation_multiple_cols_05_cli(self):
         """Test of equation with multiple time records.

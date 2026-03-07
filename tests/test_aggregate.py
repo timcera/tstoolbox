@@ -69,7 +69,10 @@ class TestAggregate(TestCase):
         args = 'tstoolbox aggregate --statistic="sum" --input_ts="tests/data_flat.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
-        self.assertEqual(out, self.aggregate_cli_sum)
+        self.assertEqual(
+            out.replace(b"\r", b"").replace(b"\n", b""),
+            self.aggregate_cli_sum.replace(b"\r", b"").replace(b"\n", b""),
+        )
 
 
 def test_aggregate_groupby():

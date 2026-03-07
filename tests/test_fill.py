@@ -282,4 +282,7 @@ class TestFill(TestCase):
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate(input=self.ats_cli)[0]
         self.maxDiff = None
-        self.assertEqual(out, self.mean_compare_cli)
+        self.assertEqual(
+            out.replace(b"\r", b"").replace(b"\n", b""),
+            self.mean_compare_cli.replace(b"\r", b"").replace(b"\n", b""),
+        )

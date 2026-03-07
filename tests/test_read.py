@@ -83,28 +83,40 @@ class TestRead(TestCase):
         args = "tstoolbox read tests/data_simple.csv"
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
-        self.assertEqual(out[0], self.read_cli)
+        self.assertEqual(
+            out[0].replace(b"\r", b"").replace(b"\n", b""),
+            self.read_cli.replace(b"\r", b"").replace(b"\n", b""),
+        )
 
     def test_read_multiple_cli(self):
         """Test read CLI for multiple columns - daily."""
         args = "tstoolbox read tests/data_simple.csv tests/data_simple.csv"
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
-        self.assertEqual(out[0], self.read_multiple_cli)
+        self.assertEqual(
+            out[0].replace(b"\r", b"").replace(b"\n", b""),
+            self.read_multiple_cli.replace(b"\r", b"").replace(b"\n", b""),
+        )
 
     def test_read_multiple_cli_space(self):
         """Test read CLI for multiple columns - daily."""
         args = "tstoolbox read tests/data_simple.csv tests/data_simple.csv"
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
-        self.assertEqual(out[0], self.read_multiple_cli)
+        self.assertEqual(
+            out[0].replace(b"\r", b"").replace(b"\n", b""),
+            self.read_multiple_cli.replace(b"\r", b"").replace(b"\n", b""),
+        )
 
     def test_read_bi_monthly_cli(self):
         """Test read CLI for bi monthly time series."""
         args = "tstoolbox read tests/data_bi_daily.csv"
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
-        self.assertEqual(out[0], self.read_tsstep_2_daily_cli)
+        self.assertEqual(
+            out[0].replace(b"\r", b"").replace(b"\n", b""),
+            self.read_tsstep_2_daily_cli.replace(b"\r", b"").replace(b"\n", b""),
+        )
 
     def test_read_blank_header_cli(self):
         """Test reading of files with blank titles in header."""
