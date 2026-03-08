@@ -1,3 +1,13 @@
+## v108.2.2 (2026-03-07)
+
+### Fix
+
+- fix all deprecations for pandas 3
+
+### Refactor
+
+- several small changes
+
 ## v108.2.1 (2025-03-13)
 
 ### Fix

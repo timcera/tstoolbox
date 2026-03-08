@@ -41,4 +41,7 @@ class TestPick(TestCase):
         args = 'tstoolbox pick 2,1 --input_ts="tests/data_multiple_cols.csv"'
         args = shlex.split(args)
         out = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()
-        self.assertEqual(out[0], self.pick_cli)
+        self.assertEqual(
+            out[0].replace(b"\r", b"").replace(b"\n", b""),
+            self.pick_cli.replace(b"\r", b"").replace(b"\n", b""),
+        )

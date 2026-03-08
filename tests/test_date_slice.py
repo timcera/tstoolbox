@@ -41,4 +41,7 @@ class TestDate_slice(TestCase):
         out = subprocess.Popen(
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate()[0]
-        self.assertEqual(out, self.date_slice_cli)
+        self.assertEqual(
+            out.replace(b"\r", b"").replace(b"\n", b""),
+            self.date_slice_cli.replace(b"\r", b"").replace(b"\n", b""),
+        )

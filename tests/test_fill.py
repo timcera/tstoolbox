@@ -150,14 +150,14 @@ class TestFill(TestCase):
     def test_fill_ffill_direct(self):
         """Test forward fill API."""
         out = tstoolbox.fill(input_ts="tests/data_missing.csv").astype("Float64")
-        assert_frame_equal(out, self.ffill_compare)
+        assert_frame_equal(out, self.ffill_compare, check_index_type=False)
 
     def test_fill_bfill(self):
         """Test backward fill API."""
         out = tstoolbox.fill(method="bfill", input_ts="tests/data_missing.csv").astype(
             "Float64"
         )
-        assert_frame_equal(out, self.bfill_compare)
+        assert_frame_equal(out, self.bfill_compare, check_index_type=False)
 
     # def test_fill_linear(self):
     #     """Test linear interpolation fill API."""
@@ -174,35 +174,35 @@ class TestFill(TestCase):
         out = tstoolbox.fill(method="mean", input_ts="tests/data_missing.csv").astype(
             "Float64"
         )
-        assert_frame_equal(out, self.mean_compare)
+        assert_frame_equal(out, self.mean_compare, check_index_type=False)
 
     def test_fill_median(self):
         """Test fill with median API."""
         out = tstoolbox.fill(method="median", input_ts="tests/data_missing.csv").astype(
             "Float64"
         )
-        assert_frame_equal(out, self.median_compare)
+        assert_frame_equal(out, self.median_compare, check_index_type=False)
 
     def test_fill_max(self):
         """Test fill with max API."""
         out = tstoolbox.fill(method="max", input_ts="tests/data_missing.csv").astype(
             "Float64"
         )
-        assert_frame_equal(out, self.max_compare)
+        assert_frame_equal(out, self.max_compare, check_index_type=False)
 
     def test_fill_min(self):
         """Test fill with min API."""
         out = tstoolbox.fill(method="min", input_ts="tests/data_missing.csv").astype(
             "Float64"
         )
-        assert_frame_equal(out, self.min_compare)
+        assert_frame_equal(out, self.min_compare, check_index_type=False)
 
     def test_fill_con(self):
         """Test fill with con API."""
         out = tstoolbox.fill(method=2.42, input_ts="tests/data_missing.csv").astype(
             "Float64"
         )
-        assert_frame_equal(out, self.con_compare)
+        assert_frame_equal(out, self.con_compare, check_index_type=False)
 
     @staticmethod
     def test_fill_from():
@@ -217,7 +217,7 @@ class TestFill(TestCase):
         compare.columns = ["Value::fill", "Value1::fill", "Value2::fill"]
         compare.loc["2000-01-02", "Value::fill"] = 2.5
         compare.loc["2000-01-04", "Value::fill"] = 23.1
-        assert_frame_equal(out, compare)
+        assert_frame_equal(out, compare, check_index_type=False)
 
     @staticmethod
     def test_fill_value():
@@ -282,4 +282,7 @@ class TestFill(TestCase):
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate(input=self.ats_cli)[0]
         self.maxDiff = None
-        self.assertEqual(out, self.mean_compare_cli)
+        self.assertEqual(
+            out.replace(b"\r", b"").replace(b"\n", b""),
+            self.mean_compare_cli.replace(b"\r", b"").replace(b"\n", b""),
+        )

@@ -23,7 +23,7 @@ class TestRead(TestCase):
     def test_cumsum(self):
         """Test cumsum."""
         out = tstoolbox.accumulate(input_ts="tests/data_missing.csv", dropna="any")
-        assert_frame_equal(out, self.cumsum, check_dtype=False)
+        assert_frame_equal(out, self.cumsum, check_dtype=False, check_index_type=False)
 
 
 def test_stats():

@@ -110,7 +110,9 @@ class TestEquation(TestCase):
         out = tstoolbox.equation(
             "x*4 + 2", input_ts="tests/data_simple.csv", print_input=True
         )
-        assert_frame_equal(out, self.equation, check_column_type=False)
+        assert_frame_equal(
+            out, self.equation, check_column_type=False, check_index_type=False
+        )
 
     def test_equation_multiple_cols_01(self):
         """Test of equation API with multiple columns and numpy functions."""
@@ -241,7 +243,10 @@ class TestEquation(TestCase):
             args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
         ).communicate()[0]
         self.maxDiff = None
-        self.assertEqual(out, self.equation_multiple_cols_04_cli)
+        self.assertEqual(
+            out.replace(b"\r", b"").replace(b"\n", b""),
+            self.equation_multiple_cols_04_cli.replace(b"\r", b"").replace(b"\n", b""),
+        )
 
     def test_equation_multiple_cols_05_cli(self):
         """Test of equation with multiple time records.

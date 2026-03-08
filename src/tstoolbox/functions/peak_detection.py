@@ -938,6 +938,7 @@ def peak_detection(
     else:
         tmptsd.columns = [tsutils.renamer(i, extrema) for i in tsd.columns]
 
+    tmptsd.index.name = "Datetime"
     for cols in tmptsd.columns:
         if method in ("fft", "parabola", "sine"):
             maxpeak, minpeak = func(
@@ -950,10 +951,11 @@ def peak_detection(
         if cols[-6:] == "valley":
             datavals = minpeak
         maxx, _ = list(zip(*datavals))
-        hold = tmptsd[cols][np.array(maxx).astype("i")]
+        tmptsd = tmptsd.reset_index()
+        hold = tmptsd.loc[np.array(maxx).astype("i"), cols]
         tmptsd.loc[:, cols] = np.nan
-        tmptsd[cols][np.array(maxx).astype("i")] = hold
+        tmptsd.loc[np.array(maxx).astype("i"), cols] = hold
+        tmptsd = tmptsd.set_index("Datetime", drop=True)
 
-    tmptsd.index.name = "Datetime"
     tsd.index.name = "Datetime"
     return tsutils.return_input(print_input, tsd, tmptsd, suffix="")

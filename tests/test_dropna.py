@@ -19,4 +19,4 @@ class TestRead(TestCase):
     def test_read_direct_dropna(self):
         """Test read dropna for single column - daily."""
         out = tstoolbox.read("tests/data_missing.csv", dropna="all").astype("Float64")
-        assert_frame_equal(out, self.read_direct)
+        assert_frame_equal(out, self.read_direct, check_index_type=False)

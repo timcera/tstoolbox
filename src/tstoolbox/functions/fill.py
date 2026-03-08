@@ -219,9 +219,9 @@ def fill(
     )
     ntsd = pd.concat([predf, ntsd, postf])
     if method == "ffill":
-        ntsd = ntsd.ffill(limit=limit)
+        ntsd = ntsd.convert_dtypes().ffill(limit=limit)
     elif method == "bfill":
-        ntsd = ntsd.bfill(limit=limit)
+        ntsd = ntsd.convert_dtypes().bfill(limit=limit)
     elif method in (
         "linear",
         "time",
@@ -243,13 +243,13 @@ def fill(
     ):
         ntsd = ntsd.interpolate(method=method, limit=limit, order=order)
     elif method == "mean":
-        ntsd = ntsd.fillna(ntsd.mean(), limit=limit)
+        ntsd = ntsd.convert_dtypes().fillna(ntsd.mean(), limit=limit)
     elif method == "median":
-        ntsd = ntsd.fillna(ntsd.median(), limit=limit)
+        ntsd = ntsd.convert_dtypes().fillna(ntsd.median(), limit=limit)
     elif method == "max":
-        ntsd = ntsd.fillna(ntsd.max(), limit=limit)
+        ntsd = ntsd.convert_dtypes().fillna(ntsd.max(), limit=limit)
     elif method == "min":
-        ntsd = ntsd.fillna(ntsd.min(), limit=limit)
+        ntsd = ntsd.convert_dtypes().fillna(ntsd.min(), limit=limit)
     elif method == "from":
         from_columns, to_columns = _validate_columns(ntsd, from_columns, to_columns)
         for to in to_columns:
@@ -259,7 +259,7 @@ def fill(
                     break
                 ntsd.loc[mask, to] = ntsd.loc[mask, fro]
     else:
-        ntsd = ntsd.fillna(value=float(method), limit=limit)
+        ntsd = ntsd.convert_dtypes().fillna(value=float(method), limit=limit)
     ntsd = ntsd.iloc[1:-1]
     tsd.index.name = "Datetime"
     ntsd.index.name = "Datetime"

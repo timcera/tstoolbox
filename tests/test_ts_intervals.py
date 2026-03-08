@@ -123,6 +123,7 @@ class TestAddTrend(TestCase):
                 df.index.name = "index"
                 df.columns = ["data"]
                 self.fps[(tstep, testpc)] = tempfile.mkstemp()
+                os.close(self.fps[(tstep, testpc)][0])
                 df.to_csv(self.fps[(tstep, testpc)][1], sep=",", header=True)
 
     def test_ts_intervals(self):

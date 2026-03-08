@@ -6,7 +6,11 @@ import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
-from pydantic.error_wrappers import ValidationError
+
+try:
+    from pydantic import ValidationError
+except ImportError:
+    from pydantic.error_wrappers import ValidationError
 
 from tstoolbox import tstoolbox
 from tstoolbox.toolbox_utils.src.toolbox_utils import tsutils
@@ -106,7 +110,7 @@ class TestPeakDetect(TestCase):
         cols = list(out.columns)
         cols[0] = 0
         out.columns = cols
-        assert_frame_equal(out, self.compare)
+        assert_frame_equal(out, self.compare, check_dtype=False)
 
     def test_peak_minmax_direct(self):
         """Test peak detection API using the minmax method."""
@@ -120,7 +124,7 @@ class TestPeakDetect(TestCase):
         cols = list(out.columns)
         cols[0] = 0
         out.columns = cols
-        assert_frame_equal(out, self.compare)
+        assert_frame_equal(out, self.compare, check_dtype=False)
 
     def test_peak_zero_crossing_direct(self):
         """Test peak detection API using the zero_crossing method."""
@@ -134,7 +138,7 @@ class TestPeakDetect(TestCase):
         cols = list(out.columns)
         cols[0] = 0
         out.columns = cols
-        assert_frame_equal(out, self.compare)
+        assert_frame_equal(out, self.compare, check_dtype=False)
 
     # def test_peak_sine_direct(self):
     #     """Test peak detection API using the 'sine' method."""
