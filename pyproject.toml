@@ -31,6 +31,7 @@ classifiers = [
 dependencies = [
     "cltoolbox >= 1.0.0",
     "dateparser",
+    "hydroerr",
     "numpy",
     "openpyxl",
     "pandas[excel]",

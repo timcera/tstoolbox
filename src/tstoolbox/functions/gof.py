@@ -5,7 +5,7 @@ from typing import List, Literal, Union
 
 import numpy as np
 
-from ..HydroErr import HydroErr as he
+from HydroErr import HydroErr as he
 from ..toolbox_utils.src.toolbox_utils import tsutils
 from .read import read
 
