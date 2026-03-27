@@ -71,7 +71,8 @@ def dtw(
     source_units=None,
     target_units=None,
 ):
-    """Dynamic Time Warping.
+    """
+    Dynamic Time Warping.
 
     Parameters
     ----------
@@ -79,31 +80,18 @@ def dtw(
         [optional, default is 10000]
 
         Window length.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${round_index}
-
     ${dropna}
-
     ${skiprows}
-
     ${index_type}
-
     ${source_units}
-
     ${target_units}
-
     ${names}
-
     ${clean}
-
     ${tablefmt}
     """
     tsd = tsutils.common_kwds(

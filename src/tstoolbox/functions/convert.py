@@ -31,7 +31,8 @@ def convert(
     source_units=None,
     target_units=None,
 ):
-    """Convert values of a time series by applying a factor and offset.
+    """
+    Convert values of a time series by applying a factor and offset.
 
     See the 'equation' subcommand for a generalized form of this
     command.
@@ -42,40 +43,24 @@ def convert(
         [optional, default is 1.0, transformation]
 
         Factor to multiply the time series values.
-
     offset : float
         [optional, default is 0.0, transformation]
 
         Offset to add to the time series values.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${dropna}
-
     ${clean}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${print_input}
-
     ${source_units}
-
     ${target_units}
-
     ${round_index}
-
     ${tablefmt}
-
     ${float_format}
     """
     tsd = tsutils.common_kwds(

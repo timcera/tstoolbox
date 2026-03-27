@@ -57,7 +57,8 @@ def rolling_window(
     target_units=None,
     print_input=False,
 ):
-    """Calculate a rolling window statistic.
+    """
+    Calculate a rolling window statistic.
 
     Parameters
     ----------
@@ -94,7 +95,6 @@ def rolling_window(
         +----------+--------------------+
 
     ${groupby}
-
     window
         [optional, default = 2]
 
@@ -104,19 +104,16 @@ def rolling_window(
         If it is an offset then this will be the time period of each window. Each
         window will be a variable sized based on the observations included in
         the time-period. This is only valid for datetimelike indexes.
-
     min_periods : int
         [optional, default is None]
 
         Minimum number of observations in window required to have a value
         (otherwise result is NA). For a window that is specified by an offset,
         this will default to 1.
-
     center : boolean
         [optional, default is False]
 
         Set the labels at the center of the window.
-
     win_type : str
         [optional, default is None]
 
@@ -139,13 +136,11 @@ def rolling_window(
             general_gaussian (needs power, width)
             slepian (needs width)
             exponential (needs tau), center is set to None.
-
     on : str
         [optional, default is None]
 
         For a DataFrame, column on which to calculate the rolling window,
         rather than the index
-
     closed : str
         [optional, default is None]
 
@@ -153,36 +148,22 @@ def rolling_window(
         endpoints. For offset-based windows, it defaults to 'right'. For fixed
         windows, defaults to 'both'. Remaining cases not implemented for fixed
         windows.
-
     span :
         [optional, default = 2]
 
         DEPRECATED: Changed to 'window' to be consistent with pandas.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${dropna}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${clean}
-
     ${source_units}
-
     ${target_units}
-
     ${print_input}
-
     ${tablefmt}
     """
     tsd = tsutils.common_kwds(
@@ -204,6 +185,8 @@ def rolling_window(
         window = [span]
     if window is None:
         window = [2]
+
+    window = tsutils.make_list(window)
 
     ntsd = pd.DataFrame()
     for win in window:

@@ -35,7 +35,8 @@ def add_trend(
     target_units=None,
     print_input=False,
 ):
-    """Add a trend.
+    """
+    Add a trend.
 
     Adds a linear interpolated trend to the input data.  The trend
     values start at [`start_index`, `start_offset`] and end at
@@ -47,50 +48,33 @@ def add_trend(
         The starting value for the applied trend.  This is the starting
         value for the linear interpolation that will be added to the
         input data.
-
     end_offset : float
         The ending value for the applied trend.  This is the ending
         value for the linear interpolation that will be added to the
         input data.
-
     start_index : int
         [optional, default is 0, transformation]
 
         The starting index where `start_offset` will be initiated.  Rows
         prior to `start_index` will not be affected.
-
     end_index : int
         [optional, default is -1, transformation]
 
         The ending index where `end_offset` will be set.  Rows after
         `end_index` will not be affected.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${dropna}
-
     ${clean}
-
     ${round_index}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${source_units}
-
     ${target_units}
-
     ${print_input}
-
     ${tablefmt}
     """
     tsd = tsutils.common_kwds(

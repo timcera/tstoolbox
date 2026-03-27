@@ -27,7 +27,8 @@ def pca(
     target_units=None,
     round_index=None,
 ):
-    """Return the principal components analysis of the time series.
+    """
+    Return the principal components analysis of the time series.
 
     Does not return a time-series.
 
@@ -38,29 +39,17 @@ def pca(
 
         The columns in the input_ts will be grouped into `n_components`
         groups.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${clean}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${source_units}
-
     ${target_units}
-
     ${round_index}
-
     ${tablefmt}
     """
 

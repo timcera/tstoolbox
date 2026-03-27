@@ -33,7 +33,8 @@ def replace(
     target_units=None,
     print_input=False,
 ):
-    """Return a time-series replacing values with others.
+    """
+    Return a time-series replacing values with others.
 
     Parameters
     ----------

@@ -24,7 +24,8 @@ def stack(
     target_units=None,
     clean=False,
 ):
-    """Return the stack of the input table.
+    """
+    Return the stack of the input table.
 
     The stack command takes the standard table and
     converts to a three column table.

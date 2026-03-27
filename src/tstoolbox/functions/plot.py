@@ -230,28 +230,20 @@ def plot(
     vlines_colors: Optional[Union[str, List[str]]] = None,
     vlines_linestyles: Union[str, List[str]] = "-",
 ):
-    r"""Plot data.
+    r"""
+    Plot data.
 
     Parameters
     ----------
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${clean}
-
     ${skiprows}
-
     ${dropna}
-
     ${index_type}
-
     ${names}
-
     ofilename : str, optional
         [optional, defaults to 'plot.png']
 
@@ -261,7 +253,6 @@ def plot(
         If used within Python, and `ofilename` is None will return the
         Matplotlib figure that can then be changed or added to as
         needed.
-
     type : {'time', 'xy', 'double_mass', 'bloxplot', 'scatter_matrix',
         'lag_plot', 'autocorrelation', 'bootstrap', 'histogram', 'kde',
         'kde_time', 'bar', 'barh', 'bar_stacked', 'barh_stacked',
@@ -372,32 +363,26 @@ def plot(
             calculated and displayed are bias, root mean square deviation, and
             centered root mean square deviation.  The data columns have to be
             organized as 'observed,simulated1,simulated2,simulated3,...etc.'
-
     xtitle : str
         [optional, default depends on ``type``]
 
         Title of x-axis.
-
     ytitle : str
         [optional, default depends on ``type``]
 
         Title of y-axis.
-
     title : str
         [optional, defaults to '']
 
         Title of chart.
-
     figsize : str
         [optional, defaults to '10,6.5']
 
         The 'width,height' of plot in inches.
-
     legend
         [optional, defaults to True]
 
         Whether to display the legend.
-
     legend_names : str
         [optional, defaults to None]
 
@@ -405,22 +390,18 @@ def plot(
         the input data.  The 'legend_names' option allows you to
         override the names in the data set.  You must supply a comma
         separated list of strings for each time-series in the data set.
-
     subplots
         [optional, defaults to False]
 
         Make separate subplots for each time series.
-
     sharex
         [optional, default to True]
 
         In case subplots=True, share x axis.
-
     sharey
         [optional, default to False]
 
         In case subplots=True, share y axis.
-
     colors
         [optional, default is 'auto']
 
@@ -474,7 +455,6 @@ def plot(
 
         Color reference:
         http://matplotlib.org/api/colors_api.html
-
     linestyles
         [optional, default to 'auto']
 
@@ -507,7 +487,6 @@ def plot(
 
         Line reference:
         http://matplotlib.org/api/artist_api.html
-
     markerstyles
         [optional, default to ' ']
 
@@ -572,7 +551,6 @@ def plot(
 
         Marker reference:
         http://matplotlib.org/api/markers_api.html
-
     bar_hatchstyles
         [optional, default to "auto", only used if type equal to "bar", "barh",
         "bar_stacked", and "barh_stacked"]
@@ -604,7 +582,6 @@ def plot(
         +-----------------+-------------------+
         | *               | stars             |
         +-----------------+-------------------+
-
     style
         [optional, default is None]
 
@@ -615,23 +592,18 @@ def plot(
         Comma separated matplotlib style strings per time-series.  Just
         combine codes in 'ColorMarkerLine' order, for example 'r*--' is
         a red dashed line with star marker.
-
     logx
         DEPRECATED: use '--xaxis="log"' instead.
-
     logy
         DEPRECATED: use '--yaxis="log"' instead.
-
     xaxis : str
         [optional, default is 'arithmetic']
 
         Defines the type of the xaxis.  One of 'arithmetic', 'log'.
-
     yaxis : str
         [optional, default is 'arithmetic']
 
         Defines the type of the yaxis.  One of 'arithmetic', 'log'.
-
     xlim
         [optional, default is based on range of x values]
 
@@ -639,64 +611,51 @@ def plot(
         plot.  For example, '--xlim 1,1000' would limit the plot from
         1 to 1000, where '--xlim ,1000' would base the lower limit on
         the data and set the upper limit to 1000.
-
     ylim
         [optional, default is based on range of y values]
 
         Comma separated lower and upper limits for the y-axis of the
         plot.  See `xlim` for examples.
-
     secondary_y
         ${secondary_axis}
-
     secondary_x
         ${secondary_axis}
-
     mark_right
         [optional, default is True]
 
         When using a secondary_y axis, should the legend label the axis of the
         various time-series automatically.
-
     scatter_matrix_diagonal : str
         [optional, defaults to 'kde']
 
         If plot type is 'scatter_matrix', this specifies the plot along the
         diagonal.  One of 'kde' for Kernel Density Estimation or 'hist'
         for a histogram.
-
     bootstrap_size : int
         [optional, defaults to 50]
 
         The size of the random subset for 'bootstrap' plot.
-
     bootstrap_samples
         [optional, defaults to 500]
 
         The number of random subsets of 'bootstrap_size'.
-
     xy_match_line : str
         [optional, defaults is '']
 
         Will add a match line where x == y. Set to a line style code.
-
     grid
         [optional, default is False]
 
         Whether to plot grid lines on the major ticks.
-
     label_rotation : int
         [optional]
 
         Rotation for major labels for bar plots.
-
     label_skip : int
         [optional]
 
         Skip for major labels for bar plots.
-
     ${force_freq}
-
     drawstyle : str
         [optional, default is 'default']
 
@@ -707,33 +666,63 @@ def plot(
         ACCEPTS::
 
          ['default' | 'steps' | 'steps-pre' | 'steps-mid' | 'steps-post']
-
     por
         [optional]
 
         Plot from first good value to last good value.  Strips NANs
         from beginning and end.
-
     invert_xaxis
         [optional, default is False]
 
         Invert the x-axis.
-
     invert_yaxis
         [optional, default is False]
 
         Invert the y-axis.
-
     ${round_index}
-
     plotting_position : str
         [optional, default is 'weibull']
 
-        ${plotting_position_table}
+        +------------+--------+----------------------+--------------------+
+        | Name       | a      | Equation             | Description        |
+        |            |        | (i-a)/(n+1-2*a)      |                    |
+        +============+========+======================+====================+
+        | weibull    | 0      | i/(n+1)              | mean of sampling   |
+        | (default)  |        |                      | distribution       |
+        +------------+--------+----------------------+--------------------+
+        | filliben   | 0.3175 | (i-0.3175)/(n+0.365) |                    |
+        +------------+--------+----------------------+--------------------+
+        | yu         | 0.326  | (i-0.326)/(n+0.348)  |                    |
+        +------------+--------+----------------------+--------------------+
+        | tukey      | 1/3    | (i-1/3)/(n+1/3)      | approx. median of  |
+        |            |        |                      | sampling           |
+        |            |        |                      | distribution       |
+        +------------+--------+----------------------+--------------------+
+        | blom       | 0.375  | (i-0.375)/(n+0.25)   |                    |
+        +------------+--------+----------------------+--------------------+
+        | cunnane    | 2/5    | (i-2/5)/(n+1/5)      | subjective         |
+        +------------+--------+----------------------+--------------------+
+        | gringorton | 0.44   | (1-0.44)/(n+0.12)    |                    |
+        +------------+--------+----------------------+--------------------+
+        | hazen      | 1/2    | (i-1/2)/n            | midpoints of n     |
+        |            |        |                      | equal intervals    |
+        +------------+--------+----------------------+--------------------+
+        | larsen     | 0.567  | (i-0.567)/(n-0.134)  |                    |
+        +------------+--------+----------------------+--------------------+
+        | gumbel     | 1      | (i-1)/(n-1)          | mode of sampling   |
+        |            |        |                      | distribution       |
+        +------------+--------+----------------------+--------------------+
+        | california | NA     | i/n                  |                    |
+        +------------+--------+----------------------+--------------------+
+
+        Where 'i' is the sorted rank of the y value, and 'n' is the total
+        number of values to be plotted.
+
+        The 'blom' plotting position is also known as the 'Sevruk and
+        Geiger'.
 
         Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
         lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
-
     prob_plot_sort_values : str
         [optional, default is 'descending']
 
@@ -741,16 +730,12 @@ def plot(
 
         Only used for norm_xaxis, norm_yaxis, lognorm_xaxis,
         lognorm_yaxis, weibull_xaxis, and weibull_yaxis.
-
     ${source_units}
-
     ${target_units}
-
     lag_plot_lag : int, optional
         [optional, default to 1]
 
         The lag used if ``type`` "lag_plot" is chosen.
-
     plot_styles : str
         [optional, default is "default"]
 
@@ -789,12 +774,10 @@ def plot(
 
         SciencePlots styles:
             https://github.com/garrettj403/SciencePlots
-
     hlines_y:
         [optional, defaults to None]
 
         Number or list of y values where to place a horizontal line.
-
     hlines_xmin:
         [optional, defaults to None]
 
@@ -802,7 +785,6 @@ def plot(
         be same length as `hlines_y`.  If a single number will be used as the
         minimum x values for all horizontal lines.  A missing value or None
         will start at the minimum x value for the entire plot.
-
     hlines_xmax:
         [optional, defaults to None]
 
@@ -810,7 +792,6 @@ def plot(
         be same length as `hlines_y`.  If a single number will be the maximum
         x value for all horizontal lines.  A missing value or None will end at
         the maximum x value for the entire plot.
-
     hlines_colors:
         [optional, defaults to None]
 
@@ -818,7 +799,6 @@ def plot(
         be used as the color for all horizontal lines.  If a list must be same
         length as `hlines_y`.  If None will take from the color pallette in the
         current plot style.
-
     hlines_linestyles:
         [optional, defaults to None]
 
@@ -826,12 +806,10 @@ def plot(
         then will be used as the linestyle for all horizontal lines.  If a list
         must be same length as `hlines_y`.  If None will take for the standard
         linestyles list.
-
     vlines_x:
         [optional, defaults to None]
 
         List of x values where to place a vertical line.
-
     vlines_ymin:
         [optional, defaults to None]
 
@@ -839,7 +817,6 @@ def plot(
         same length as `vlines_x`.  If a single number will be used as the
         minimum x values for all vertical lines.  A missing value or None will
         start at the minimum x value for the entire plot.
-
     vlines_ymax:
         [optional, defaults to None]
 
@@ -847,7 +824,6 @@ def plot(
         same length as `vlines_x`.  If a single number will be the maximum
         x value for all vertical lines.  A missing value or None will end at
         the maximum x value for the entire plot.
-
     vlines_colors:
         [optional, defaults to None]
 
@@ -855,7 +831,6 @@ def plot(
         used as the color for all vertical lines.  If a list must be same
         length as `vlines_x`.  If None will take from the color pallette in the
         current plot style.
-
     vlines_linestyles:
         [optional, defaults to None]
 

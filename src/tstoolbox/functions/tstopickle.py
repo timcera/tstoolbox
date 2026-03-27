@@ -23,7 +23,8 @@ def tstopickle(
     target_units=None,
     clean=False,
 ):
-    """Pickle the data into a Python pickled file.
+    """
+    Pickle the data into a Python pickled file.
 
     Can be brought back into Python with 'pickle.load' or 'numpy.load'.
     See also 'tstoolbox read'.

@@ -39,7 +39,8 @@ def fit(
     target_units=None,
     print_input=False,
 ):
-    """Fit model to data.
+    """
+    Fit model to data.
 
     Parameters
     ----------
@@ -48,38 +49,23 @@ def fit(
         vector data, like time-series, whereas the LOESS is a generalized
         technique that can be applied to multi-dimensional data.  For working
         with time-series LOESS and LOWESS are identical.
-
     lowess_frac : float
         [optional, default=0.01, range between 0 and 1]
 
         Fraction of data used for 'method'="lowess".
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${dropna}
-
     ${clean}
-
     ${round_index}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${source_units}
-
     ${target_units}
-
     ${print_input}
-
     ${tablefmt}
     """
     tsd = tsutils.common_kwds(

@@ -147,6 +147,17 @@ class TestFill(TestCase):
 
         self.con_compare_cli = capture.capture(tsutils.printiso, self.con_compare)
 
+        dr = pd.date_range(periods=16, start="2010-01-01", freq=tsutils.pandas_offset_by_version("h"))
+        self.fill_test = pd.DataFrame([1.1, 2.3, 2.1] + 10 * [None] + [5.4, 6.5, 7.2], dr)
+        self.fill_reference = pd.DataFrame([1.1, 2.3, 2.1] + 10 * [2.1] + [5.4, 6.5, 7.2], dr).astype("Float64")
+        self.fill_reference.index.name = "Datetime"
+        self.fill_reference.columns = ['0::fill']
+
+    def test_fill_direct(self):
+        """Test forward fill API."""
+        out = tstoolbox.fill(input_ts=self.fill_test).astype("Float64")
+        assert_frame_equal(out, self.fill_reference, check_index_type=False)
+
     def test_fill_ffill_direct(self):
         """Test forward fill API."""
         out = tstoolbox.fill(input_ts="tests/data_missing.csv").astype("Float64")
@@ -159,15 +170,15 @@ class TestFill(TestCase):
         )
         assert_frame_equal(out, self.bfill_compare, check_index_type=False)
 
-    # def test_fill_linear(self):
-    #     """Test linear interpolation fill API."""
-    #     out = tstoolbox.fill(method="linear", input_ts="tests/data_missing.csv")
-    #     assert_frame_equal(out, self.linear_compare)
+    def test_fill_linear(self):
+        """Test linear interpolation fill API."""
+        out = tstoolbox.fill(method="linear", input_ts="tests/data_missing.csv")
+        assert_frame_equal(out, self.linear_compare, check_index_type=False)
 
-    # def test_fill_nearest(self):
-    #     """Test nearest fill API."""
-    #     out = tstoolbox.fill(method="nearest", input_ts="tests/data_missing.csv")
-    #     assert_frame_equal(out, self.nearest_compare)
+    def test_fill_nearest(self):
+        """Test nearest fill API."""
+        out = tstoolbox.fill(method="nearest", input_ts="tests/data_missing.csv")
+        assert_frame_equal(out, self.nearest_compare, check_index_type=False)
 
     def test_fill_mean(self):
         """Test fill with mean API."""
@@ -226,53 +237,55 @@ class TestFill(TestCase):
             _ = tstoolbox.fill(method="a", input_ts="tests/data_missing.csv")
         assert r"could not convert " in str(e_info.value)
 
-    #    def test_fill_ffill_cli(self):
-    #        """Test forward fill CLI."""
-    #        args = "tstoolbox fill --input_ts=tests/data_missing.csv"
-    #        args = shlex.split(args)
-    #        out = subprocess.Popen(
-    #            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
-    #        ).communicate(input=self.ats_cli)[0]
-    #        self.maxDiff = None
-    #        self.assertEqual(out, self.ffill_compare_cli)
-    #
-    #    def test_fill_bfill_cli(self):
-    #        """Test backward fill CLI."""
-    #        args = "tstoolbox fill " '--method="bfill" ' "--input_ts=tests/data_missing.csv"
-    #        args = shlex.split(args)
-    #        out = subprocess.Popen(
-    #            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
-    #        ).communicate(input=self.ats_cli)[0]
-    #        self.maxDiff = None
-    #        self.assertEqual(out, self.bfill_compare_cli)
+    def test_fill_ffill_cli(self):
+        """Test forward fill CLI."""
+        args = "tstoolbox fill --input_ts=tests/data_missing.csv"
+        args = shlex.split(args)
+        out = subprocess.Popen(
+            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
+        ).communicate(input=self.ats_cli)[0]
+        print(out)
+        print(self.ffill_compare_cli)
+        self.maxDiff = None
+        self.assertEqual(out, self.ffill_compare_cli)
 
-    # def test_fill_linear_cli(self):
-    #     """Test linear fill CLI."""
-    #     args = (
-    #         "tstoolbox fill "
-    #         '--method="linear" '
-    #         "--input_ts=tests/data_missing.csv"
-    #     )
-    #     args = shlex.split(args)
-    #     out = subprocess.Popen(
-    #         args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
-    #     ).communicate(input=self.ats_cli)[0]
-    #     self.maxDiff = None
-    #     self.assertEqual(out, self.linear_compare_cli)
+    def test_fill_bfill_cli(self):
+        """Test backward fill CLI."""
+        args = "tstoolbox fill " '--method="bfill" ' "--input_ts=tests/data_missing.csv"
+        args = shlex.split(args)
+        out = subprocess.Popen(
+            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
+        ).communicate(input=self.ats_cli)[0]
+        self.maxDiff = None
+        self.assertEqual(out, self.bfill_compare_cli)
 
-    # def test_fill_nearest_cli(self):
-    #     """Test nearest fill CLI."""
-    #     args = (
-    #         "tstoolbox fill "
-    #         '--method="nearest" '
-    #         "--input_ts=tests/data_missing.csv"
-    #     )
-    #     args = shlex.split(args)
-    #     out = subprocess.Popen(
-    #         args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
-    #     ).communicate(input=self.ats_cli)[0]
-    #     self.maxDiff = None
-    #     self.assertEqual(out, self.nearest_compare_cli)
+    def test_fill_linear_cli(self):
+        """Test linear fill CLI."""
+        args = (
+            "tstoolbox fill "
+            '--method="linear" '
+            "--input_ts=tests/data_missing.csv"
+        )
+        args = shlex.split(args)
+        out = subprocess.Popen(
+            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
+        ).communicate(input=self.ats_cli)[0]
+        self.maxDiff = None
+        self.assertEqual(out, self.linear_compare_cli)
+
+    def test_fill_nearest_cli(self):
+        """Test nearest fill CLI."""
+        args = (
+            "tstoolbox fill "
+            '--method="nearest" '
+            "--input_ts=tests/data_missing.csv"
+        )
+        args = shlex.split(args)
+        out = subprocess.Popen(
+            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
+        ).communicate(input=self.ats_cli)[0]
+        self.maxDiff = None
+        self.assertEqual(out, self.nearest_compare_cli)
 
     def test_fill_mean_cli(self):
         """Test mean fill CLI."""

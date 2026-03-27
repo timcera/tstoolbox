@@ -26,7 +26,8 @@ def describe(
     clean=False,
     transpose: bool = False,
 ):
-    """Print out statistics for the time-series.
+    """
+    Calculate descriptive statistics for the input time-series.
 
     Parameters
     ----------
@@ -34,25 +35,15 @@ def describe(
         [optional, default is False, output format]
 
         If 'transpose' option is used, will transpose describe output.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${dropna}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${clean}
-
     ${tablefmt}
     """
     tsd = tsutils.common_kwds(

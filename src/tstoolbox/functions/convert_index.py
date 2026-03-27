@@ -30,7 +30,7 @@ def convert_index(
             "mars_sol",
             "unix",
         ],
-        pd._typing.TimestampConvertibleTypes,
+        pd.api.typing.aliases.TimestampConvertibleTypes,
     ] = "julian",
     input_ts="-",
     columns=None,
@@ -44,7 +44,8 @@ def convert_index(
     target_units=None,
     skiprows=None,
 ):
-    """Convert datetime to/from Julian dates from different epochs.
+    """
+    Convert datetime to/from Julian dates from different epochs.
 
     Parameters
     ----------
@@ -53,7 +54,6 @@ def convert_index(
         should have a datetime index to convert to a number.  If 'datetime',
         source data should be a number and the converted index will be
         datetime.
-
     interval
         [optional, defaults to None, transformation]
 
@@ -67,7 +67,6 @@ def convert_index(
         equal to or smaller than the frequency of the time-series.
 
         ${pandas_offset_codes}
-
     epoch : str
         [optional, defaults to 'julian', transformation]
 
@@ -83,85 +82,70 @@ def convert_index(
         The 'unix' epoch uses a default `interval` of seconds, and all other
         defined epochs use a default `interval` of 'daily'.
 
-        +-----------+----------------+----------------+-------------+
-        | epoch     | Epoch          | Calculation    | Notes       |
-        +===========+================+================+=============+
-        | julian    | 4713-01-01:12  | JD             |             |
-        |           | BCE            |                |             |
-        +-----------+----------------+----------------+-------------+
-        | reduced   | 1858-11-16:12  | JD -           | [ [1]_ ]    |
-        |           |                | 2400000        | [ [2]_ ]    |
-        +-----------+----------------+----------------+-------------+
-        | modified  | 1858-11-17:00  | JD -           | SAO 1957    |
-        |           |                | 2400000.5      |             |
-        +-----------+----------------+----------------+-------------+
-        | truncated | 1968-05-24:00  | floor (JD -    | NASA 1979,  |
-        |           |                | 2440000.5)     | integer     |
-        +-----------+----------------+----------------+-------------+
-        | dublin    | 1899-12-31:12  | JD -           | IAU 1955    |
-        |           |                | 2415020        |             |
-        +-----------+----------------+----------------+-------------+
-        | cnes      | 1950-01-01:00  | JD -           | CNES        |
-        |           |                | 2433282.5      | [ [3]_ ]    |
-        +-----------+----------------+----------------+-------------+
-        | ccsds     | 1958-01-01:00  | JD -           | CCSDS       |
-        |           |                | 2436204.5      | [ [3]_ ]    |
-        +-----------+----------------+----------------+-------------+
-        | lop       | 1992-01-01:00  | JD -           | LOP         |
-        |           |                | 2448622.5      | [ [3]_ ]    |
-        +-----------+----------------+----------------+-------------+
-        | lilian    | 1582-10-15[13] | floor (JD -    | Count of    |
-        |           |                | 2299159.5)     | days of the |
-        |           |                |                | Gregorian   |
-        |           |                |                | calendar,   |
-        |           |                |                | integer     |
-        +-----------+----------------+----------------+-------------+
-        | rata_die  | 0001-01-01[13] | floor (JD -    | Count of    |
-        |           | proleptic      | 1721424.5)     | days of the |
-        |           | Gregorian      |                | Common      |
-        |           | calendar       |                | Era,        |
-        |           |                |                | integer     |
-        +-----------+----------------+----------------+-------------+
-        | mars_sol  | 1873-12-29:12  | (JD - 2405522) | Count of    |
-        |           |                | /1.02749       | Martian     |
-        |           |                |                | days        |
-        +-----------+----------------+----------------+-------------+
-        | unix      | 1970-01-01     | JD - 2440587.5 | seconds     |
-        |           | T00:00:00      |                |             |
-        +-----------+----------------+----------------+-------------+
+        +-----------+----------------+--------------------+---------------+
+        | epoch     | Epoch          | Calculation        | Notes         |
+        +===========+================+====================+===============+
+        | julian    | 4713-01-01:12  | JD                 |               |
+        |           | BCE            |                    |               |
+        +-----------+----------------+--------------------+---------------+
+        | reduced   | 1858-11-16:12  | JD - 2400000       |               |
+        +-----------+----------------+--------------------+---------------+
+        | modified  | 1858-11-17:00  | JD - 2400000.5     | SAO 1957      |
+        +-----------+----------------+--------------------+---------------+
+        | truncated | 1968-05-24:00  | floor (JD -        | NASA 1979,    |
+        |           |                | 2440000.5)         | integer       |
+        +-----------+----------------+--------------------+---------------+
+        | dublin    | 1899-12-31:12  | JD - 2415020       | IAU 1955      |
+        +-----------+----------------+--------------------+---------------+
+        | cnes      | 1950-01-01:00  | JD - 2433282.5     |               |
+        +-----------+----------------+--------------------+---------------+
+        | ccsds     | 1958-01-01:00  | JD - 2436204.5     |               |
+        +-----------+----------------+--------------------+---------------+
+        | lop       | 1992-01-01:00  | JD - 2448622.5     |               |
+        +-----------+----------------+--------------------+---------------+
+        | lilian    | 1582-10-15[13] | floor (JD -        | Count of days |
+        |           |                | 2299159.5)         | of the        |
+        |           |                |                    | Gregorian     |
+        |           |                |                    | calendar,     |
+        |           |                |                    | integer       |
+        +-----------+----------------+--------------------+---------------+
+        | rata_die  | 0001-01-01[13] | floor (JD -        | Count of days |
+        |           | proleptic      | 1721424.5)         | of the Common |
+        |           | Gregorian      |                    | Era, integer  |
+        |           | calendar       |                    |               |
+        +-----------+----------------+--------------------+---------------+
+        | mars_sol  | 1873-12-29:12  | (JD - 2405522)     | Count of      |
+        |           |                | /1.02749           | Martian days  |
+        +-----------+----------------+--------------------+---------------+
+        | unix      | 1970-01-01     | JD - 2440587.5     | seconds       |
+        |           | T00:00:00      |                    |               |
+        +-----------+----------------+--------------------+---------------+
 
-        .. [1] . Hopkins, Jeffrey L. (2013). Using Commercial Amateur
+        Description of "reduced".
+
+        .. [1] Hopkins, Jeffrey L. (2013). Using Commercial Amateur
            Astronomical Spectrographs, p. 257, Springer Science & Business
            Media, ISBN 9783319014425
 
-        .. [2] . Palle, Pere L., Esteban, Cesar. (2014). Asteroseismology, p.
+        .. [2] Palle, Pere L., Esteban, Cesar. (2014). Asteroseismology, p.
            185, Cambridge University Press, ISBN 9781107470620
 
-        .. [3] . Theveny, Pierre-Michel. (10 September 2001). "Date Format"
+        Descriptions of "cnes", "ccsds", and "lop".
+
+        .. [3] Theveny, Pierre-Michel. (10 September 2001). "Date Format"
            The TPtime Handbook. Media Lab.
 
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${round_index}
-
     ${dropna}
-
     ${clean}
-
     ${skiprows}
-
     ${names}
-
     ${source_units}
-
     ${target_units}
-
     ${tablefmt}
     """
     # Clip to start_date/end_date if possible.

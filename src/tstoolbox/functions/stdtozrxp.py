@@ -23,7 +23,8 @@ def stdtozrxp(
     target_units=None,
     rexchange=None,
 ):
-    """Print out data to the screen in a WISKI ZRXP format.
+    """
+    Print out data to the screen in a WISKI ZRXP format.
 
     Parameters
     ----------
@@ -31,29 +32,17 @@ def stdtozrxp(
         [optional, default is None]
 
         The REXCHANGE ID to be written into the zrxp header.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${dropna}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${clean}
-
     ${source_units}
-
     ${target_units}
-
     ${round_index}
     """
     tsd = tsutils.common_kwds(

@@ -22,7 +22,8 @@ def date_slice(
     source_units=None,
     target_units=None,
 ):
-    """Print out data to the screen between start_date and end_date.
+    """
+    Print out data to the screen between start_date and end_date.
 
     This isn't really useful anymore because "start_date" and "end_date"
     are available in all sub-commands.

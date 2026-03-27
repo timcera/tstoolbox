@@ -41,7 +41,8 @@ def calculate_fdc(
     include_cl: bool = False,
     ci: Annotated[float, Field(gt=0, lt=1)] = 0.9,
 ):
-    """Return the frequency distribution curve.
+    """
+    Return the frequency distribution curve.
 
     DOES NOT return a time-series.
 
@@ -52,7 +53,6 @@ def calculate_fdc(
 
         The distribution used to shift the plotting position values.
         Choose from 'norm', 'lognorm', 'weibull', and None.
-
     plotting_position : str
         [optional, default is 'weibull', transformation]
 
@@ -62,46 +62,31 @@ def calculate_fdc(
         [optional, default is 'ascending', input filter]
 
         Sort order is either 'ascending' or 'descending'.
-
     sort_index : str
         [optional, default is 'ascending', input filter]
 
         Sort order is either 'ascending' or 'descending'.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${source_units}
-
     ${target_units}
-
     ${clean}
-
     ${tablefmt}
-
     add_index : bool
         [optional, default is False]
 
         Add a monotonically increasing index.
-
     include_ri : bool
         [optional, default is False]
 
         Include the recurrence interval (sometimes called the return interval).
         This is the inverse of the calculated plotting position defined by the
         equations available with the `plotting_position` keyword.
-
     include_sd : bool
         [optional, default is False]
 

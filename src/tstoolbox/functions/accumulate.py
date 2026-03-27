@@ -55,33 +55,19 @@ def accumulate(
 
         Command line example::
             --statistic=sum,max
-
     ${input_ts}
-
     ${start_date}
-
     ${end_date}
-
     ${skiprows}
-
     ${names}
-
     ${columns}
-
     ${dropna}
-
     ${clean}
-
     ${source_units}
-
     ${target_units}
-
     ${round_index}
-
     ${index_type}
-
     ${print_input}
-
     ${tablefmt}
     """
     statistic = tsutils.make_list(statistic)

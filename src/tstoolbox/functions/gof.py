@@ -150,7 +150,8 @@ def gof(
     kge12_sgamma: float = 1.0,
     kge_sbeta: float = 1.0,
 ):
-    """Will calculate goodness of fit statistics between two time-series.
+    """
+    Calculate goodness of fit statistics between two time-series.
 
     The first time series must be the observed, the second the simulated
     series.  You can only give two time-series.
@@ -162,12 +163,10 @@ def gof(
         If integer represents the column number of standard input. Can be
         a csv, wdm, hdf or xlsx file following format specified in
         'tstoolbox read ...'.
-
     sim_col
         If integer represents the column number of standard input. Can be
         a csv, wdm, hdf or xlsx file following format specified in
         'tstoolbox read ...'.
-
     stats : str
         [optional,  Python: list, Command line: comma separated string,
         default is 'default']
@@ -431,61 +430,44 @@ def gof(
         arrays. If None, when a NaN value is found at the i-th position in the
         observed OR simulated array, the i-th value of the observed and
         simulated array are removed before the computation.
-
     replace_inf : float
         If given, indicates which value to replace Inf values with in the two
         arrays. If None, when an inf value is found at the i-th position in the
         observed OR simulated array, the i-th value of the observed and
         simulated array are removed before the computation.
-
-    remove_neg : boolean
+    remove_neg : bool
         If True, when a negative value is found at the i-th position in the
         observed OR simulated array, the i-th value of the observed AND
         simulated array are removed before the computation.
-
-    remove_zero : boolean
+    remove_zero : bool
         If true, when a zero value is found at the i-th position in the
         observed OR simulated array, the i-th value of the observed AND
         simulated array are removed before the computation.
-
     ${start_date}
-
     ${end_date}
-
     ${round_index}
-
     ${clean}
-
     ${index_type}
-
     ${source_units}
-
     ${target_units}
-
     ${tablefmt}
-
     ${float_format}
-
     kge_sr : float
         [optional, defaults to 1.0]
 
         Scaling factor for `kge09` and `kge12` correlation.
-
     kge09_salpha : float
         [optional, defaults to 1.0]
 
         Scaling factor for `kge09` alpha.
-
     kge12_sgamma : float
         [optional, defaults to 1.0]
 
         Scaling factor for `kge12` beta.
-
     kge_sbeta : float
         [optional, defaults to 1.0]
 
         Scaling factor for `kge09` and `kge12` beta.
-
     input_ts : str
         [DEPRECATED]
         [optional, defaults to None]

@@ -28,7 +28,8 @@ def converttz(
     target_units=None,
     skiprows=None,
 ):
-    """Convert the time zone of the index.
+    """
+    Convert the time zone of the index.
 
     Parameters
     ----------

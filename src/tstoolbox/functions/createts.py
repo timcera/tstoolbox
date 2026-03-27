@@ -25,7 +25,8 @@ def createts(
     start_date=None,
     end_date=None,
 ):
-    """Create empty time series, optionally fill with a value.
+    """
+    Create empty time series, optionally fill with a value.
 
     Parameters
     ----------
@@ -45,21 +46,15 @@ def createts(
             --freq='A'
 
         ${pandas_offset_codes}
-
     fillvalue
         [optional, default is None]
 
         The fill value for the time-series.  The default is None, which
         generates the date/time stamps only.
-
     ${input_ts}
-
     ${start_date}
-
     ${end_date}
-
     ${index_type}
-
     ${tablefmt}
     """
     if input_ts is None and (

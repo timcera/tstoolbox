@@ -76,7 +76,8 @@ def fill(
     order: Annotated[int, Field(ge=0)] = None,
     force_freq: str = None,
 ):
-    """Fill missing values (NaN) with different methods.
+    """
+    Fill missing values (NaN) with different methods.
 
     Missing values can occur because of NaN, or because the time series
     is sparse.
@@ -145,52 +146,36 @@ def fill(
         +----------------------+----------------------------------------------+
 
     ${print_input}
-
     ${input_ts}
-
     ${start_date}
-
     ${end_date}
-
     ${clean}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${source_units}
-
     ${target_units}
-
     ${columns}
-
     from_columns : str or list
         [required if method='from', otherwise not used]
 
         List of column names/numbers from which good values will be
         taken to fill missing values in the `to_columns` keyword.
-
     to_columns : str or list
         [required if method='from', otherwise not used]
 
         List of column names/numbers that missing values will be
         replaced in from good values in the `from_columns` keyword.
-
     limit : int
         [default is None]
 
         Gaps of missing values greater than this number will not be filled.
-
     order : int
         [required if method is 'spline' or 'polynomial', otherwise not used,
         default is None]
 
         The order of the 'spline' or 'polynomial' fit for missing values.
-
     ${tablefmt}
-
     ${force_freq}
         ${pandas_offset_codes}
     """
@@ -241,7 +226,7 @@ def fill(
         "akima",
         "from_derivatives",
     ):
-        ntsd = ntsd.interpolate(method=method, limit=limit, order=order)
+        ntsd = ntsd.convert_dtypes().interpolate(method=method, limit=limit, order=order)
     elif method == "mean":
         ntsd = ntsd.convert_dtypes().fillna(ntsd.mean(), limit=limit)
     elif method == "median":
@@ -268,6 +253,7 @@ def fill(
 
 
 # @cltoolbox.command(formatter_class=RSTHelpFormatter)
+@tsutils.doc(tsutils.docstrings)
 def fill_by_correlation(
     method="move2",
     maximum_lag=0,
@@ -276,18 +262,21 @@ def fill_by_correlation(
     print_input=False,
     input_ts="-",
 ):
-    """Fill missing values (NaN) with different methods.
+    """
+    Fill missing values (NaN) with different methods.
 
     Missing values can occur because of NaN, or because the time series
     is sparse.
 
-    :param method: String contained in single quotes or a number that
-        defines the method to use for filling.  'move2': maintenance of
-        variance extension - 2
-    :param -p, --print_input: If set to 'True' will include the input
-        columns in the output table.  Default is 'False'.
-    :param -i, --input_ts <str>: Filename with data in 'ISOdate,value'
-        format or '-' for stdin.
+    Parameters
+    ----------
+    method : str
+        String contained in single quotes or a number that defines the method
+        to use for filling.  'move2': maintenance of variance extension - 2
+    print_input : bool
+        If set to 'True' will include the input columns in the output table.
+        Default is 'False'.
+    ${input_ts}
     """
     tsd = tsutils.common_kwds(input_ts)
     ntsd = tsd.copy() if print_input is True else tsd

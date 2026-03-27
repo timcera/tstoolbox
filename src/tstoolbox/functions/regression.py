@@ -73,7 +73,8 @@ def regression(
     print_input=False,
     por=False,
 ):
-    """Regression of one or more time-series or indices to a time-series.
+    """
+    Regression of one or more time-series or indices to a time-series.
 
     If optional ``x_pred_cols`` is given will return a time-series of the ``y``
     predictions. Otherwise returns dictionary of equation and statistics about
@@ -180,20 +181,17 @@ def regression(
             limited with max_subpopulation. If this limit is reached, the
             subsets are chosen randomly. In a final step, the spatial median
             (or L1 median) is calculated of all least square solutions.
-
     x_train_cols : str or list
         List of column names/numbers that hold the ``x`` value datasets used to
         train the regression.  Perform a multiple regression if ``method``
         allows by giving several ``x_train_cols``.  To include the index in the
         regression use column 0 or the index name.
-
     y_train_col : str or list
         Column name or number of the ``y`` dataset used to train the
         regression.
 
         The ``y_train_col`` cannot be part of ``x_train_cols`` or
         ``x_pred_cols``.
-
     x_pred_cols : str or list
         [optional, if supplied will return a time-series of the ``y``
         prediction based on ``x_pred_cols``.]
@@ -201,31 +199,18 @@ def regression(
         List of column names/numbers of ``x`` value datasets used to create the
         ``y`` prediction.  Needs to be the same number of columns as
         ``x_train_cols``.  Can be identical columns to ``x_train_cols``.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${dropna}
-
     ${clean}
-
     ${round_index}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${print_input}
-
     ${tablefmt}
-
     ${por}
     """
     for to in y_train_col:

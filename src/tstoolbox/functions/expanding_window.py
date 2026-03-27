@@ -50,7 +50,8 @@ def expanding_window(
     target_units=None,
     print_input=False,
 ):
-    """Calculate an expanding window statistic.
+    """
+    Calculate an expanding window statistic.
 
     Parameters
     ----------
@@ -89,36 +90,22 @@ def expanding_window(
         [optional, default is 1]
 
         Minimum number of observations in window required to have a value
-
     center : boolean
         [optional, default is False]
 
         Set the labels at the center of the window.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${dropna}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${clean}
-
     ${source_units}
-
     ${target_units}
-
     ${print_input}
-
     ${tablefmt}
     """
     tsd = tsutils.common_kwds(

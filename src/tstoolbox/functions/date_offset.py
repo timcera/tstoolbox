@@ -28,7 +28,8 @@ def date_offset(
     target_units=None,
     round_index=None,
 ):
-    """Apply a date offset to a time-series index.
+    """
+    Apply a date offset to a time-series index.
 
     If you want to adjust to a different time-zone then should use the
     "converttz" tstoolbox command.
@@ -38,37 +39,23 @@ def date_offset(
     intervals : int
         Number of intervals of `offset` to shift the time index.  A positive
         integer moves the index forward, negative moves it backwards.
-
     offset : str
         Any of the Pandas offset codes.  This is only the offset code
         and doesn't include a prefixed interval.
 
         ${pandas_offset_codes}
-
     ${input_ts}
-
     ${start_date}
-
     ${end_date}
-
     ${columns}
-
     ${round_index}
-
     ${dropna}
-
     ${clean}
-
     ${skiprows}
-
     ${index_type}
-
     ${source_units}
-
     ${target_units}
-
     ${names}
-
     ${tablefmt}
     """
     tsd = tsutils.common_kwds(

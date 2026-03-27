@@ -44,7 +44,8 @@ def ewm_window(
     target_units=None,
     print_input=False,
 ):
-    """Calculate exponential weighted functions.
+    """
+    Calculate exponential weighted functions.
 
     Exactly one of `alpha_com` (center of mass), `alpha_span`,
     `alpha_halflife`, and `alpha` must be provided to calculate the
@@ -53,23 +54,36 @@ def ewm_window(
     the link at the end of this section for a detailed explanation.
 
     When `adjust` is True (default), weighted averages are calculated
-    using weights ``(1-alpha)**(n-1), (1-alpha)**(n-2), . . . , 1-alpha, 1``.
+    using weights::
+
+        (1-alpha)**(n-1), (1-alpha)**(n-2), . . . , 1-alpha, 1
 
     When `adjust` is False, weighted averages are calculated recursively
-    as:
-    ``weighted_average[0] = arg[0]``
-    ``weighted_average[i] = (1-alpha)*weighted_average[i-1] + alpha*arg[i]``
+    as::
+
+        weighted_average[0] = arg[0]
+        weighted_average[i] = (1-alpha)*weighted_average[i-1] + alpha*arg[i]
+        ...
 
     When `ignore_na` is False (default), weights are based on absolute
     positions.  For example, the weights of x and y used in calculating
-    the final weighted average of [x, None, y] are ``(1-alpha)**2`` and
-    1 (if `adjust` is True), and ``(1-alpha)**2`` and alpha (if `adjust` is
-    False).
+    the final weighted average of [x, None, y] are if `adjust` is True::
+
+        (1-alpha)**2 and 1
+
+    and if `adjust` is False::
+
+        (1-alpha)**2 and alpha
 
     When `ignore_na` is True weights are based on relative positions.
     For example, the weights of x and y used in calculating the final
-    weighted average of [x, None, y] are 1-alpha and 1 (if `adjust` is
-    True), and 1-alpha and alpha (if adjust is `False`).
+    weighted average of [x, None, y] are if `adjust` is True::
+
+        1-alpha and 1
+
+    and if `adjust` is False::
+
+        1-alpha and alpha
 
     More details can be found at
     http://pandas.pydata.org/pandas-docs/stable/computation.html#exponentially-weighted-windows
@@ -101,67 +115,47 @@ def ewm_window(
         Specify decay in terms of center of mass::
 
             alpha = 1/(1+`alpha_com`), for `alpha_com` >= 0
-
     alpha_span : float
         [optional, defaults to None]
 
         Specify decay in terms of span::
 
             alpha = 2/(`alpha_span`+1), for `alpha_span` > 1
-
     alpha_halflife : float
         [optional, defaults to None]
 
         Specify decay in terms of half-life::
 
-            alpha = 1-exp(log(0.5)/alpha_halflife), for
-            alpha_halflife > 0
-
+            alpha = 1-exp(log(0.5)/alpha_halflife), for alpha_halflife > 0
     alpha : float
         [optional, defaults to None]
 
         Specify smoothing factor ``alpha`` directly, ``0<alpha<=1``
-
     min_periods : int
         [optional, default is 0]
 
         Minimum number of observations in window required to have a value
         (otherwise result is NA).
-
     adjust : boolean
         [optional, default is True]
 
         Divide by decaying adjustment factor in beginning periods to account
         for imbalance in relative weightings (viewing EWMA as a moving average)
-
     ignore_na : boolean
         [optional, default is False]
         Ignore missing values when calculating weights.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${dropna}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${clean}
-
     ${source_units}
-
     ${target_units}
-
     ${print_input}
-
     ${tablefmt}
     """
     tsd = tsutils.common_kwds(

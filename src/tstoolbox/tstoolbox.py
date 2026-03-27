@@ -1861,22 +1861,4 @@ def main():
 
 
 if __name__ == "__main__":
-    from tstoolbox import tstoolbox
-
-    df = tstoolbox.read("../../tests/02325000_flow.csv")
-    filt_fft_high = filter(
-        "fft", "highpass", print_input=True, input_ts=df, highpass_cutoff=10
-    )
-    filt_fft_low = filter(
-        "fft", "lowpass", print_input=True, input_ts=df, lowpass_cutoff=10
-    )
-    filt_butter_high = filter(
-        "butterworth", "highpass", print_input=True, input_ts=df, highpass_cutoff=0.4
-    )
-    filt_butter_low = filter(
-        "butterworth", "lowpass", print_input=True, input_ts=df, lowpass_cutoff=0.4
-    )
-
-
-if __name__ == "__main__":
     main()

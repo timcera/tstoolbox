@@ -22,7 +22,8 @@ def pick(
     target_units=None,
     clean=False,
 ):
-    """Will pick a column or list of columns from input [DEPRECATED].
+    """
+    Pick a column or list of columns from input [DEPRECATED].
 
     DEPRECATED: Effectively replaced by the "columns" keyword available
     in all other functions.

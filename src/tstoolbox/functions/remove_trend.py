@@ -25,7 +25,8 @@ def remove_trend(
     target_units=None,
     print_input=False,
 ):
-    """Remove a 'trend'.
+    """
+    Remove a trend.
 
     Subtracts from the data a linearly interpolated trend of the data.
 

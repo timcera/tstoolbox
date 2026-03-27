@@ -50,7 +50,8 @@ def correlation(
     round_index=None,
     dropna=None,
 ):
-    """Develop a correlation between time-series and potentially lags.
+    """
+    Develop a correlation between time-series and potentially lags.
 
     Parameters
     ----------
@@ -71,7 +72,6 @@ def correlation(
         Command line example::
 
             --lags='2,5,3'
-
     method : str
         [optional, default to "pearson"]
 
@@ -82,31 +82,18 @@ def correlation(
             kendall : Kendall Tau correlation coefficient
 
             spearman : Spearman rank correlation
-
     ${input_ts}
-
     ${start_date}
-
     ${end_date}
-
     ${clean}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${source_units}
-
     ${target_units}
-
     ${columns}
-
     ${tablefmt}
-
     ${round_index}
-
     ${dropna}
     """
     tsd = tsutils.common_kwds(

@@ -31,7 +31,8 @@ def lag(
     target_units=None,
     skiprows=None,
 ):
-    """Create a series of lagged time-series.
+    """
+    Create a series of lagged time-series.
 
     Parameters
     ----------

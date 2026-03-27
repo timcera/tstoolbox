@@ -801,7 +801,8 @@ def peak_detection(
     target_units=None,
     print_input="",
 ):
-    r"""Peak and valley detection.
+    """
+    Peak and valley detection.
 
     Parameters
     ----------
@@ -810,14 +811,12 @@ def peak_detection(
 
         'peak', 'valley', or 'both' to determine what should be
         returned.
-
     method : str
         [optional, default is 'rel']
 
         'rel', 'minmax', 'zero_crossing', 'parabola', 'sine' methods are
         available.  The different algorithms have different strengths
         and weaknesses.
-
     window : int
         [optional, default is 24]
 
@@ -834,53 +833,35 @@ def peak_detection(
 
         For 'zero_crossing' the window keyword is the dimension of the
         smoothing window and should be an odd integer.
-
     pad_len : int
         [optional, default is 5]
 
         Used with FFT to pad edges of time-series.
-
     points : int
         [optional, default is 9]
 
         For 'parabola' and 'sine' methods. How many points around the
         peak should be used during curve fitting, must be odd.  The
-
     lock_frequency
         [optional, default is False]
 
         For 'sine' method only.  Specifies if the frequency argument of
         the model function should be locked to the value calculated from
         the raw peaks or if optimization process may tinker with it.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${dropna}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${clean}
-
     ${float_format}
-
     ${round_index}
-
     ${source_units}
-
     ${target_units}
-
     ${print_input}
-
     ${tablefmt}
     """
     # Couldn't get fft method working correctly.  Left pieces in

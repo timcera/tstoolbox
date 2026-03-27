@@ -36,7 +36,8 @@ def unstack(
     target_units: Optional[List] = None,
     clean=False,
 ):
-    """Return the unstack of the input table.
+    """
+    Return the unstack of the input table.
 
     The unstack command takes the stacked table and converts to a
     standard tstoolbox table.

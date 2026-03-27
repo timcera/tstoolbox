@@ -30,7 +30,8 @@ def read(
     target_units=None,
     round_index=None,
 ):
-    """Combine time-series from different sources into single dataset.
+    """
+    Combine time-series from different sources into single dataset.
 
     Prints the read in time-series in the tstoolbox standard format.
 
@@ -113,35 +114,21 @@ def read(
             tuple, list, StringIO, or file name with the options listed above.
 
             newdf = tstoolbox.read('fname.csv,4,1', 'fname.xlsx', 'fname.hdf5')
-
     ${force_freq}
 
         ${pandas_offset_codes}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${dropna}
-
     ${skiprows}
-
     ${index_type}
-
     ${names}
-
     ${clean}
-
     ${source_units}
-
     ${target_units}
-
     ${float_format}
-
     ${round_index}
-
     ${tablefmt}
     """
     if force_freq is not None:

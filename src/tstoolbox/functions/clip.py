@@ -31,7 +31,8 @@ def clip(
     target_units=None,
     print_input=False,
 ):
-    """Return a time-series with values limited to [a_min, a_max].
+    """
+    Return a time-series with values limited to [a_min, a_max].
 
     Parameters
     ----------
@@ -40,39 +41,24 @@ def clip(
 
         All values lower than this will be set to this value.
         Default is None.
-
     a_max
         [optional, defaults to None, transformation]
 
         All values higher than this will be set to this value.
         Default is None.
-
     ${input_ts}
-
     ${columns}
-
     ${start_date}
-
     ${end_date}
-
     ${dropna}
-
     ${clean}
-
     ${skiprows}
-
     ${index_type}
-
     ${print_input}
-
     ${names}
-
     ${source_units}
-
     ${target_units}
-
     ${round_index}
-
     ${tablefmt}
     """
     tsd = tsutils.common_kwds(
