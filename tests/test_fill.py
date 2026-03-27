@@ -1,5 +1,6 @@
 import shlex
 import subprocess
+from io import BytesIO
 from unittest import TestCase
 
 import numpy as np
@@ -9,8 +10,6 @@ from pandas.testing import assert_frame_equal
 
 from tstoolbox import tstoolbox
 from tstoolbox.toolbox_utils.src.toolbox_utils import tsutils
-
-from . import capture
 
 
 class TestFill(TestCase):
@@ -25,15 +24,11 @@ class TestFill(TestCase):
         )
         self.ats.index.name = "Datetime"
 
-        self.ats_cli = capture.capture(tsutils.printiso, self.ats)
-
         self.ffill_compare = self.ats.copy()
         self.ffill_compare.loc[
             "2011-01-01T09:00:00":"2011-01-01T12:00:00", "Value_with_missing::fill"
         ] = 3.0
         self.ffill_compare.loc["2011-01-01T13:00:00", "Value_with_missing::fill"] = 9.0
-
-        self.ffill_compare_cli = capture.capture(tsutils.printiso, self.ffill_compare)
 
         self.bfill_compare = self.ats.copy()
         self.bfill_compare.loc["2011-01-01T09:00:00", "Value_with_missing::fill"] = 3.0
@@ -41,16 +36,12 @@ class TestFill(TestCase):
             "2011-01-01T10:00:00":"2011-01-01T13:00:00", "Value_with_missing::fill"
         ] = 9.0
 
-        self.bfill_compare_cli = capture.capture(tsutils.printiso, self.bfill_compare)
-
         self.linear_compare = self.ats.copy()
         self.linear_compare.loc["2011-01-01T09:00:00", "Value_with_missing::fill"] = 3.0
         self.linear_compare.loc["2011-01-01T10:00:00", "Value_with_missing::fill"] = 4.5
         self.linear_compare.loc["2011-01-01T11:00:00", "Value_with_missing::fill"] = 6.0
         self.linear_compare.loc["2011-01-01T12:00:00", "Value_with_missing::fill"] = 7.5
         self.linear_compare.loc["2011-01-01T13:00:00", "Value_with_missing::fill"] = 9.0
-
-        self.linear_compare_cli = capture.capture(tsutils.printiso, self.linear_compare)
 
         self.nearest_compare = self.ats.copy()
         self.nearest_compare.loc[
@@ -60,10 +51,6 @@ class TestFill(TestCase):
             "2011-01-01T12:00:00":"2011-01-01T13:00:00", "Value_with_missing::fill"
         ] = 9.0
         self.nearest_compare = tsutils.memory_optimize(self.nearest_compare)
-
-        self.nearest_compare_cli = capture.capture(
-            tsutils.printiso, self.nearest_compare
-        )
 
         self.mean_compare = self.ats.copy()
         self.mean_compare.loc["2011-01-01T01:00:00", "Value_with_missing::fill"] = (
@@ -90,8 +77,6 @@ class TestFill(TestCase):
             2.4210526315789473
         )
 
-        self.mean_compare_cli = capture.capture(tsutils.printiso, self.mean_compare)
-
         self.median_compare = self.ats.copy()
         self.median_compare.loc["2011-01-01T01:00:00", "Value_with_missing::fill"] = 2.0
         self.median_compare.loc["2011-01-01T09:00:00", "Value_with_missing::fill"] = 3.0
@@ -103,8 +88,6 @@ class TestFill(TestCase):
         self.median_compare.loc["2011-01-01T22:00:00", "Value_with_missing::fill"] = 2.0
         self.median_compare.loc["2011-01-01T23:00:00", "Value_with_missing::fill"] = 2.0
         self.median_compare = tsutils.memory_optimize(self.median_compare)
-
-        self.median_compare_cli = capture.capture(tsutils.printiso, self.median_compare)
 
         self.max_compare = self.ats.copy()
         self.max_compare.loc["2011-01-01T01:00:00", "Value_with_missing::fill"] = 9.0
@@ -118,8 +101,6 @@ class TestFill(TestCase):
         self.max_compare.loc["2011-01-01T23:00:00", "Value_with_missing::fill"] = 9.0
         self.max_compare = tsutils.memory_optimize(self.max_compare)
 
-        self.max_compare_cli = capture.capture(tsutils.printiso, self.max_compare)
-
         self.min_compare = self.ats.copy()
         self.min_compare.loc["2011-01-01T01:00:00", "Value_with_missing::fill"] = 2.0
         self.min_compare.loc["2011-01-01T09:00:00", "Value_with_missing::fill"] = 3.0
@@ -132,8 +113,6 @@ class TestFill(TestCase):
         self.min_compare.loc["2011-01-01T23:00:00", "Value_with_missing::fill"] = 2.0
         self.min_compare = tsutils.memory_optimize(self.min_compare)
 
-        self.min_compare_cli = capture.capture(tsutils.printiso, self.min_compare)
-
         self.con_compare = self.ats.copy()
         self.con_compare.loc["2011-01-01T01:00:00", "Value_with_missing::fill"] = 2.42
         self.con_compare.loc["2011-01-01T09:00:00", "Value_with_missing::fill"] = 3.0
@@ -145,13 +124,17 @@ class TestFill(TestCase):
         self.con_compare.loc["2011-01-01T22:00:00", "Value_with_missing::fill"] = 2.42
         self.con_compare.loc["2011-01-01T23:00:00", "Value_with_missing::fill"] = 2.42
 
-        self.con_compare_cli = capture.capture(tsutils.printiso, self.con_compare)
-
-        dr = pd.date_range(periods=16, start="2010-01-01", freq=tsutils.pandas_offset_by_version("h"))
-        self.fill_test = pd.DataFrame([1.1, 2.3, 2.1] + 10 * [None] + [5.4, 6.5, 7.2], dr)
-        self.fill_reference = pd.DataFrame([1.1, 2.3, 2.1] + 10 * [2.1] + [5.4, 6.5, 7.2], dr).astype("Float64")
+        dr = pd.date_range(
+            periods=16, start="2010-01-01", freq=tsutils.pandas_offset_by_version("h")
+        )
+        self.fill_test = pd.DataFrame(
+            [1.1, 2.3, 2.1] + 10 * [None] + [5.4, 6.5, 7.2], dr
+        )
+        self.fill_reference = pd.DataFrame(
+            [1.1, 2.3, 2.1] + 10 * [2.1] + [5.4, 6.5, 7.2], dr
+        ).astype("Float64")
         self.fill_reference.index.name = "Datetime"
-        self.fill_reference.columns = ['0::fill']
+        self.fill_reference.columns = ["0::fill"]
 
     def test_fill_direct(self):
         """Test forward fill API."""
@@ -241,61 +224,58 @@ class TestFill(TestCase):
         """Test forward fill CLI."""
         args = "tstoolbox fill --input_ts=tests/data_missing.csv"
         args = shlex.split(args)
-        out = subprocess.Popen(
-            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
-        ).communicate(input=self.ats_cli)[0]
-        print(out)
-        print(self.ffill_compare_cli)
-        self.maxDiff = None
-        self.assertEqual(out, self.ffill_compare_cli)
+        out = subprocess.check_output(args)
+        out = (
+            pd.read_csv(BytesIO(out), index_col=0, parse_dates=True)
+            .asfreq(tsutils.pandas_offset_by_version("h"))
+            .astype("Float64")
+        )
+        assert_frame_equal(out, self.ffill_compare, check_index_type=False)
 
     def test_fill_bfill_cli(self):
         """Test backward fill CLI."""
-        args = "tstoolbox fill " '--method="bfill" ' "--input_ts=tests/data_missing.csv"
+        args = 'tstoolbox fill --method="bfill" --input_ts=tests/data_missing.csv'
         args = shlex.split(args)
-        out = subprocess.Popen(
-            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
-        ).communicate(input=self.ats_cli)[0]
-        self.maxDiff = None
-        self.assertEqual(out, self.bfill_compare_cli)
+        out = subprocess.check_output(args)
+        out = (
+            pd.read_csv(BytesIO(out), index_col=0, parse_dates=True)
+            .asfreq(tsutils.pandas_offset_by_version("h"))
+            .astype("Float64")
+        )
+        assert_frame_equal(out, self.bfill_compare, check_index_type=False)
 
     def test_fill_linear_cli(self):
         """Test linear fill CLI."""
-        args = (
-            "tstoolbox fill "
-            '--method="linear" '
-            "--input_ts=tests/data_missing.csv"
-        )
+        args = 'tstoolbox fill --method="linear" --input_ts=tests/data_missing.csv'
         args = shlex.split(args)
-        out = subprocess.Popen(
-            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
-        ).communicate(input=self.ats_cli)[0]
-        self.maxDiff = None
-        self.assertEqual(out, self.linear_compare_cli)
+        out = subprocess.check_output(args)
+        out = (
+            pd.read_csv(BytesIO(out), index_col=0, parse_dates=True)
+            .asfreq(tsutils.pandas_offset_by_version("h"))
+            .astype("Float64")
+        )
+        assert_frame_equal(out, self.linear_compare, check_index_type=False)
 
     def test_fill_nearest_cli(self):
         """Test nearest fill CLI."""
-        args = (
-            "tstoolbox fill "
-            '--method="nearest" '
-            "--input_ts=tests/data_missing.csv"
-        )
+        args = 'tstoolbox fill --method="nearest" --input_ts=tests/data_missing.csv'
         args = shlex.split(args)
-        out = subprocess.Popen(
-            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
-        ).communicate(input=self.ats_cli)[0]
-        self.maxDiff = None
-        self.assertEqual(out, self.nearest_compare_cli)
+        out = subprocess.check_output(args)
+        out = (
+            pd.read_csv(BytesIO(out), index_col=0, parse_dates=True)
+            .asfreq(tsutils.pandas_offset_by_version("h"))
+            .astype("Float64")
+        )
+        assert_frame_equal(out, self.nearest_compare, check_index_type=False)
 
     def test_fill_mean_cli(self):
         """Test mean fill CLI."""
         args = 'tstoolbox fill --method="mean" --input_ts=tests/data_missing.csv'
         args = shlex.split(args)
-        out = subprocess.Popen(
-            args, stdout=subprocess.PIPE, stdin=subprocess.PIPE
-        ).communicate(input=self.ats_cli)[0]
-        self.maxDiff = None
-        self.assertEqual(
-            out.replace(b"\r", b"").replace(b"\n", b""),
-            self.mean_compare_cli.replace(b"\r", b"").replace(b"\n", b""),
+        out = subprocess.check_output(args)
+        out = (
+            pd.read_csv(BytesIO(out), index_col=0, parse_dates=True)
+            .asfreq(tsutils.pandas_offset_by_version("h"))
+            .astype("Float64")
         )
+        assert_frame_equal(out, self.mean_compare, check_index_type=False)
