@@ -30,7 +30,7 @@ def convert_index(
             "mars_sol",
             "unix",
         ],
-        pd.api.typing.aliases.TimestampConvertibleTypes,
+        pd._typing.TimestampConvertibleTypes,
     ] = "julian",
     input_ts="-",
     columns=None,
