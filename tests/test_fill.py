@@ -12,6 +12,12 @@ from tstoolbox import tstoolbox
 from tstoolbox.toolbox_utils.src.toolbox_utils import tsutils
 
 
+def pandas_version_1():
+    if int(pd.__version__.split(".")[0]) < 2:
+        return True
+    return False
+
+
 class TestFill(TestCase):
     def setUp(self):
         dindex = pd.date_range("2011-01-01T00:00:00", periods=26, freq="h")
@@ -153,11 +159,13 @@ class TestFill(TestCase):
         )
         assert_frame_equal(out, self.bfill_compare, check_index_type=False)
 
+    @pytest.mark.skipif(pandas_version_1(), reason="does not work with pandas 1.5.3")
     def test_fill_linear(self):
         """Test linear interpolation fill API."""
         out = tstoolbox.fill(method="linear", input_ts="tests/data_missing.csv")
         assert_frame_equal(out, self.linear_compare, check_index_type=False)
 
+    @pytest.mark.skipif(pandas_version_1(), reason="does not work with pandas 1.5.3")
     def test_fill_nearest(self):
         """Test nearest fill API."""
         out = tstoolbox.fill(method="nearest", input_ts="tests/data_missing.csv")
@@ -244,6 +252,7 @@ class TestFill(TestCase):
         )
         assert_frame_equal(out, self.bfill_compare, check_index_type=False)
 
+    @pytest.mark.skipif(pandas_version_1(), reason="does not work with pandas 1.5.3")
     def test_fill_linear_cli(self):
         """Test linear fill CLI."""
         args = 'tstoolbox fill --method="linear" --input_ts=tests/data_missing.csv'
@@ -256,6 +265,7 @@ class TestFill(TestCase):
         )
         assert_frame_equal(out, self.linear_compare, check_index_type=False)
 
+    @pytest.mark.skipif(pandas_version_1(), reason="does not work with pandas 1.5.3")
     def test_fill_nearest_cli(self):
         """Test nearest fill CLI."""
         args = 'tstoolbox fill --method="nearest" --input_ts=tests/data_missing.csv'
