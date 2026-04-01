@@ -60,7 +60,7 @@ def _boolrelextrema(data, comparator, axis=0, order: PositiveInt = 1, mode="clip
     datalen = data.shape[axis]
     locs = np.arange(0, datalen)
 
-    results = np.ones(data.shape, dtype=bool)
+    results = np.ones(data.shape, dtype="float64")
     main = data.take(locs)
     for shift in range(1, order + 1):
         plus = np.take(data, locs + shift, axis=axis, mode=mode)
@@ -69,7 +69,7 @@ def _boolrelextrema(data, comparator, axis=0, order: PositiveInt = 1, mode="clip
         results &= comparator(main, minus)
         if ~results.any():
             return results
-    return results
+    return results.astype("bool")
 
 
 def _argrel(data, axis=0, window=1):
@@ -119,7 +119,7 @@ def _argrelextrema(data, comparator, axis=0, order=1, mode="clip"):
 
     """
     results = _boolrelextrema(data, comparator, axis, order, mode)
-    return (np.array([]),) * 2 if ~results.any() else np.where(results)
+    return np.asarray(results).nonzero()
 
 
 def _datacheck_peakdetect(x_axis, y_axis):
@@ -806,17 +806,26 @@ def peak_detection(
 
     Parameters
     ----------
-    extrema : str
-        [optional, default is 'peak']
-
-        'peak', 'valley', or 'both' to determine what should be
-        returned.
+    ${input_ts}
+    ${columns}
+    ${start_date}
+    ${end_date}
+    ${dropna}
+    ${skiprows}
+    ${index_type}
+    ${names}
+    ${clean}
     method : str
         [optional, default is 'rel']
 
         'rel', 'minmax', 'zero_crossing', 'parabola', 'sine' methods are
         available.  The different algorithms have different strengths
         and weaknesses.
+    extrema : str
+        [optional, default is 'peak']
+
+        'peak', 'valley', or 'both' to determine what should be
+        returned.
     window : int
         [optional, default is 24]
 
@@ -848,21 +857,10 @@ def peak_detection(
         For 'sine' method only.  Specifies if the frequency argument of
         the model function should be locked to the value calculated from
         the raw peaks or if optimization process may tinker with it.
-    ${input_ts}
-    ${columns}
-    ${start_date}
-    ${end_date}
-    ${dropna}
-    ${skiprows}
-    ${index_type}
-    ${names}
-    ${clean}
-    ${float_format}
     ${round_index}
     ${source_units}
     ${target_units}
     ${print_input}
-    ${tablefmt}
     """
     # Couldn't get fft method working correctly.  Left pieces in
     # in case want to figure it out in the future.

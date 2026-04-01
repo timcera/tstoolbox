@@ -71,9 +71,15 @@ def converttz(
         target_units=target_units,
         clean=clean,
     )
-
-    # TODO Should test that 'fromtz' matches time zone that might be already
-    # set in tsd.
+    tzwords = tsd.index.name.split(":")
+    if len(tzwords) > 1:
+        if tzwords[1] != fromtz:
+            raise ValueError(tsutils.error_wrapper(
+                f"""
+                The "fromtz" positional argument "{fromtz}" does not match the
+                time-zone found in the header of the input file "{tzwords[1]}".
+                """
+            ))
 
     if totz == "None" or not totz:
         totz = None

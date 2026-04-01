@@ -1,4 +1,8 @@
-"""Collection of functions for the manipulation of time series."""
+"""
+Collection of functions for the manipulation of time series.
+
+This is where all the command line interface functions are collected.
+"""
 
 import os.path as _os_path
 import sys as _sys
@@ -1248,11 +1252,11 @@ def main():
         pad_len=5,
         points=9,
         lock_frequency=False,
-        float_format="g",
         round_index=None,
         source_units=None,
         target_units=None,
         print_input="",
+        float_format="g",
         tablefmt="csv",
     ):
         _tsutils.printiso(

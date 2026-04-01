@@ -2,6 +2,7 @@ from unittest import TestCase
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
+import pytest
 
 from tstoolbox import tstoolbox
 from tstoolbox.toolbox_utils.src.toolbox_utils import tsutils
@@ -25,3 +26,7 @@ class TestConvertTZ(TestCase):
         out = tstoolbox.converttz("UTC", "EST", input_ts="tests/data_sunspot.csv")
         out.index.name = "Datetime"
         assert_frame_equal(out, self.read_direct)
+
+    def test_different_tz(self):
+        with pytest.raises(ValueError):
+            _ = tstoolbox.converttz("EST", "America/New_York", input_ts="tests/data_converttz.csv")
