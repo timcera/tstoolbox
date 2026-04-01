@@ -1,3 +1,11 @@
+## v108.2.4 (2026-04-01)
+
+### Fix
+
+- fixed peak detection bug #33 and converttz bug #2
+- importing from the wrong place for python < 3.14
+- updated toolbox_utils to file "fill", fixed "rolling_window", cleaned up docstrings
+
 ## v108.2.3 (2026-03-27)
 
 ### Fix
