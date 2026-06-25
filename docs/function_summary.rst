@@ -4,9 +4,9 @@ Python API Function Summary
 ===========================
 
 .. autosummary::
-    :recursive:
     :toctree: _function_autosummary
 
+    tstoolbox.about
     tstoolbox.accumulate
     tstoolbox.add_trend
     tstoolbox.aggregate
@@ -47,4 +47,3 @@ Python API Function Summary
     tstoolbox.stdtozrxp
     tstoolbox.tstopickle
     tstoolbox.unstack
-
