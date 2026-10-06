@@ -1,12 +1,17 @@
+# Standard library imports
 import logging
 import os
 import tempfile
 from unittest import TestCase
 
+# Third party imports
 import numpy as np
 import pandas as pd
 
+# First party imports
 from tstoolbox import tstoolbox
+
+logger = logging.getLogger(__name__)
 
 if float(".".join(pd.__version__.split(".")[:2])) >= 2.2:
     pandacodes = [
@@ -102,7 +107,7 @@ else:
     }
 
 
-logging.basicConfig(filename="example.log", encoding="utf-8", level=logging.DEBUG)
+logger.basicConfig(filename="example.log", encoding="utf-8", level=logging.DEBUG)
 
 
 class TestAddTrend(TestCase):
@@ -329,7 +334,7 @@ class TestAddTrend(TestCase):
             if inferred_code[0] not in "123456789":
                 inferred_code = "1" + inferred_code
             testcode = matches.get(testcode, testcode)
-            logging.warning(f"{testcode} {inferred_code}")
+            logger.warning(f"{testcode} {inferred_code}")
             icode = inferred_code.split("-")[0]
             try:
                 self.assertEqual(testcode, icode)
@@ -341,6 +346,6 @@ class TestAddTrend(TestCase):
 
     def tearDown(self):
         """Remove the temporary files."""
-        for _, fname in self.fps.items():
+        for fname in self.fps.values():
             if os.path.exists(fname[1]):
                 os.remove(fname[1])

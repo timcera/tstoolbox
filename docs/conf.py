@@ -10,6 +10,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+# Standard library imports
 import os
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -60,7 +61,8 @@ copyright = "2013, Tim Cera, P.E."
 # built documents.
 #
 # The short X.Y version.
-version = open(os.path.join(os.path.pardir, "VERSION")).readline().strip()
+with open(os.path.join(os.path.pardir, "VERSION")) as version_file:
+    version = version_file.readline().strip()
 # The full version, including alpha/beta/rc tags.
 release = version
 

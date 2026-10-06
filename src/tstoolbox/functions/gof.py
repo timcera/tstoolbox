@@ -1,17 +1,22 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
-from typing import List, Literal, Union
+from typing import Literal
 
+# Third party imports
 import numpy as np
-
 from HydroErr import HydroErr as he
+
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 from .read import read
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -128,11 +133,7 @@ stat_types = Literal[stat_types]
 def gof(
     obs_col=1,
     sim_col=2,
-    stats: Union[
-        None,
-        stat_types,
-        List[stat_types],
-    ] = "default",
+    stats: None | stat_types | list[stat_types] = "default",
     replace_nan=None,
     replace_inf=None,
     remove_neg=False,

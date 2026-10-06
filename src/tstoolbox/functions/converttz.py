@@ -1,12 +1,15 @@
 """Collection of functions for the manipulation of time series."""
 
-from typing import Optional
+# Standard library imports
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 
@@ -14,7 +17,7 @@ except ImportError:
 @tsutils.doc(tsutils.docstrings)
 def converttz(
     fromtz: str,
-    totz: Optional[str],
+    totz: str | None,
     input_ts="-",
     columns=None,
     start_date=None,
@@ -72,14 +75,15 @@ def converttz(
         clean=clean,
     )
     tzwords = tsd.index.name.split(":")
-    if len(tzwords) > 1:
-        if tzwords[1] != fromtz:
-            raise ValueError(tsutils.error_wrapper(
+    if (len(tzwords) > 1) and (tzwords[1] != fromtz):
+        raise ValueError(
+            tsutils.error_wrapper(
                 f"""
                 The "fromtz" positional argument "{fromtz}" does not match the
                 time-zone found in the header of the input file "{tzwords[1]}".
                 """
-            ))
+            )
+        )
 
     if totz == "None" or not totz:
         totz = None

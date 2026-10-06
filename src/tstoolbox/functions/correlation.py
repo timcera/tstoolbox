@@ -1,18 +1,22 @@
 """A correlation routine."""
 
-from typing import List, Literal
+# Standard library imports
+from typing import Annotated, Literal
 
+# Third party imports
 import numpy as np
 import pandas as pd
 from pydantic import Field
-from typing_extensions import Annotated
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 from . import lag
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 
@@ -35,7 +39,7 @@ def autocorrelation(series):
 @validate_arguments
 @tsutils.doc(tsutils.docstrings)
 def correlation(
-    lags: List[Annotated[int, Field(ge=0)]],
+    lags: list[Annotated[int, Field(ge=0)]],
     method: Literal["pearson", "kendall", "spearman"] = "pearson",
     input_ts="-",
     start_date=None,

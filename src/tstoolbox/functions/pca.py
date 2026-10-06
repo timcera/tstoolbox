@@ -1,13 +1,17 @@
 """Collection of functions for the manipulation of time series."""
 
+# Third party imports
 from pydantic import PositiveInt
 from sklearn.decomposition import PCA as skPCA
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 

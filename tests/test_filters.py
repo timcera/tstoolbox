@@ -1,11 +1,14 @@
+# Standard library imports
 import os
 from unittest import TestCase
 
+# Third party imports
 import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
+# First party imports
 from tstoolbox import tstoolbox
 from tstoolbox.functions.filter import FILTERS, filter
 

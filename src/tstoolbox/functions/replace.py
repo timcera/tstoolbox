@@ -1,13 +1,16 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
-from typing import List, Optional, Union
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -17,8 +20,8 @@ warnings.filterwarnings("ignore")
 @validate_arguments
 @tsutils.doc(tsutils.docstrings)
 def replace(
-    from_values: Optional[List[Optional[Union[float, int, str]]]],
-    to_values: Optional[List[Optional[Union[float, int, str]]]],
+    from_values: list[float | int | str | None] | None,
+    to_values: list[float | int | str | None] | None,
     round_index=None,
     input_ts="-",
     columns=None,

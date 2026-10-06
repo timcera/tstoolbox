@@ -1,17 +1,22 @@
+# Standard library imports
 import shlex
 import subprocess
 from unittest import TestCase
 
+# Third party imports
 import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
 try:
+    # Third party imports
     from pydantic import ValidationError
 except ImportError:
+    # Third party imports
     from pydantic.error_wrappers import ValidationError
 
+# First party imports
 from tstoolbox import tstoolbox
 from tstoolbox.toolbox_utils.src.toolbox_utils import tsutils
 

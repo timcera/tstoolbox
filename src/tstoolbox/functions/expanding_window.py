@@ -1,15 +1,20 @@
 """Collection of functions for the manipulation of time series."""
 
-from typing import List, Literal, Optional
+# Standard library imports
+from typing import Literal
 
+# Third party imports
 import pandas as pd
 from pydantic import PositiveInt
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 
@@ -26,24 +31,23 @@ def expanding_window(
     index_type="datetime",
     names=None,
     clean=False,
-    statistic: Optional[
-        List[
-            Literal[
-                "corr",
-                "count",
-                "cov",
-                "kurt",
-                "max",
-                "mean",
-                "median",
-                "min",
-                "skew",
-                "std",
-                "sum",
-                "var",
-            ]
+    statistic: list[
+        Literal[
+            "corr",
+            "count",
+            "cov",
+            "kurt",
+            "max",
+            "mean",
+            "median",
+            "min",
+            "skew",
+            "std",
+            "sum",
+            "var",
         ]
-    ] = None,
+    ]
+    | None = None,
     min_periods: PositiveInt = 1,
     center: bool = False,
     source_units=None,

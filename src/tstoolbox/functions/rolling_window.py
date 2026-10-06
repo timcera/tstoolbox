@@ -1,17 +1,21 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
-from typing import List, Literal, Optional
+from typing import Annotated, Literal
 
+# Third party imports
 import pandas as pd
 from pydantic import Field
-from typing_extensions import Annotated
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -37,7 +41,7 @@ def rolling_window(
         "var",
     ],
     groupby=None,
-    window: Optional[List[Annotated[int, Field(ge=0)]]] = None,
+    window: list[Annotated[int, Field(ge=0)]] | None = None,
     input_ts="-",
     columns=None,
     start_date=None,
@@ -48,11 +52,11 @@ def rolling_window(
     names=None,
     clean=False,
     span=None,
-    min_periods: Optional[Annotated[int, Field(ge=0)]] = None,
+    min_periods: Annotated[int, Field(ge=0)] | None = None,
     center: bool = False,
-    win_type: Optional[str] = None,
-    on: Optional[str] = None,
-    closed: Optional[Literal["right", "left", "both", "neither"]] = None,
+    win_type: str | None = None,
+    on: str | None = None,
+    closed: Literal["right", "left", "both", "neither"] | None = None,
     source_units=None,
     target_units=None,
     print_input=False,

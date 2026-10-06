@@ -1,8 +1,10 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
-from typing import List, Literal, Optional, Tuple, Union
+from typing import Literal
 
+# Third party imports
 from plottoolbox import (
     autocorrelation,
     bar,
@@ -32,11 +34,14 @@ from plottoolbox import (
 )
 from pydantic import PositiveInt
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -70,7 +75,7 @@ def plot(
     dropna="no",
     index_type="datetime",
     names=None,
-    ofilename: Optional[str] = "plot.png",
+    ofilename: str | None = "plot.png",
     type: Literal[
         "time",
         "xy",
@@ -101,23 +106,23 @@ def plot(
     xtitle: str = "",
     ytitle: str = "",
     title: str = "",
-    figsize: Union[Tuple[float, float], List[float], str] = "10,6.0",
-    legend: Optional[bool] = None,
-    legend_names: Optional[List[str]] = None,
+    figsize: tuple[float, float] | list[float] | str = "10,6.0",
+    legend: bool | None = None,
+    legend_names: list[str] | None = None,
     subplots: bool = False,
     sharex: bool = True,
     sharey: bool = False,
-    colors: Optional[Union[str, List[Optional[str]]]] = "auto",
-    linestyles: Optional[Union[str, List[Optional[str]]]] = "auto",
-    markerstyles: Optional[Union[str, List[Optional[str]]]] = " ",
-    bar_hatchstyles: Optional[Union[str, List[Optional[str]]]] = "auto",
-    style: Optional[Union[str, List[str]]] = "auto",
+    colors: str | list[str | None] | None = "auto",
+    linestyles: str | list[str | None] | None = "auto",
+    markerstyles: str | list[str | None] | None = " ",
+    bar_hatchstyles: str | list[str | None] | None = "auto",
+    style: str | list[str] | None = "auto",
     logx: bool = False,
     logy: bool = False,
     xaxis: Literal["arithmetic", "log"] = "arithmetic",
     yaxis: Literal["arithmetic", "log"] = "arithmetic",
-    xlim: Optional[Tuple[Optional[float], Optional[float]]] = None,
-    ylim: Optional[Tuple[Optional[float], Optional[float]]] = None,
+    xlim: tuple[float | None, float | None] | None = None,
+    ylim: tuple[float | None, float | None] | None = None,
     secondary_y=False,
     secondary_x=False,
     mark_right: bool = True,
@@ -126,9 +131,9 @@ def plot(
     bootstrap_samples: PositiveInt = 500,
     xy_match_line: str = "",
     grid: bool = False,
-    label_rotation: Optional[float] = None,
+    label_rotation: float | None = None,
     label_skip: PositiveInt = 1,
-    force_freq: Optional[str] = None,
+    force_freq: str | None = None,
     drawstyle: str = "default",
     por: bool = False,
     invert_xaxis: bool = False,
@@ -141,7 +146,44 @@ def plot(
     source_units=None,
     target_units=None,
     lag_plot_lag: PositiveInt = 1,
-    plot_styles: Union[
+    plot_styles: Literal[
+        "classic",
+        "Solarize_Light2",
+        "bmh",
+        "dark_background",
+        "fast",
+        "fivethirtyeight",
+        "ggplot",
+        "grayscale",
+        "seaborn",
+        "seaborn-bright",
+        "seaborn-colorblind",
+        "seaborn-dark",
+        "seaborn-dark-palette",
+        "seaborn-darkgrid",
+        "seaborn-deep",
+        "seaborn-muted",
+        "seaborn-notebook",
+        "seaborn-paper",
+        "seaborn-pastel",
+        "seaborn-poster",
+        "seaborn-talk",
+        "seaborn-ticks",
+        "seaborn-white",
+        "seaborn-whitegrid",
+        "tableau-colorblind10",
+        "science",
+        "grid",
+        "ieee",
+        "scatter",
+        "notebook",
+        "high-vis",
+        "bright",
+        "vibrant",
+        "muted",
+        "retro",
+    ]
+    | list[
         Literal[
             "classic",
             "Solarize_Light2",
@@ -178,57 +220,18 @@ def plot(
             "vibrant",
             "muted",
             "retro",
-        ],
-        List[
-            Literal[
-                "classic",
-                "Solarize_Light2",
-                "bmh",
-                "dark_background",
-                "fast",
-                "fivethirtyeight",
-                "ggplot",
-                "grayscale",
-                "seaborn",
-                "seaborn-bright",
-                "seaborn-colorblind",
-                "seaborn-dark",
-                "seaborn-dark-palette",
-                "seaborn-darkgrid",
-                "seaborn-deep",
-                "seaborn-muted",
-                "seaborn-notebook",
-                "seaborn-paper",
-                "seaborn-pastel",
-                "seaborn-poster",
-                "seaborn-talk",
-                "seaborn-ticks",
-                "seaborn-white",
-                "seaborn-whitegrid",
-                "tableau-colorblind10",
-                "science",
-                "grid",
-                "ieee",
-                "scatter",
-                "notebook",
-                "high-vis",
-                "bright",
-                "vibrant",
-                "muted",
-                "retro",
-            ]
-        ],
+        ]
     ] = "bright",
-    hlines_y: Optional[List[float]] = None,
-    hlines_xmin: Optional[List[float]] = None,
-    hlines_xmax: Optional[List[float]] = None,
-    hlines_colors: Optional[Union[str, List[str]]] = None,
-    hlines_linestyles: Union[str, List[str]] = "-",
-    vlines_x: Optional[List[float]] = None,
-    vlines_ymin: Optional[List[float]] = None,
-    vlines_ymax: Optional[List[float]] = None,
-    vlines_colors: Optional[Union[str, List[str]]] = None,
-    vlines_linestyles: Union[str, List[str]] = "-",
+    hlines_y: list[float] | None = None,
+    hlines_xmin: list[float] | None = None,
+    hlines_xmax: list[float] | None = None,
+    hlines_colors: str | list[str] | None = None,
+    hlines_linestyles: str | list[str] = "-",
+    vlines_x: list[float] | None = None,
+    vlines_ymin: list[float] | None = None,
+    vlines_ymax: list[float] | None = None,
+    vlines_colors: str | list[str] | None = None,
+    vlines_linestyles: str | list[str] = "-",
 ):
     r"""
     Plot data.

@@ -4,10 +4,12 @@ Collection of functions for the manipulation of time series.
 This is where all the command line interface functions are collected.
 """
 
+# Standard library imports
 import os.path as _os_path
 import sys as _sys
 import warnings as _warnings
 
+# Local folder imports
 from .toolbox_utils.src.toolbox_utils import tsutils as _tsutils
 
 __all__ = [
@@ -53,6 +55,7 @@ __all__ = [
     "unstack",
 ]
 
+# First party imports
 from tstoolbox.functions.accumulate import accumulate
 from tstoolbox.functions.add_trend import add_trend
 from tstoolbox.functions.aggregate import aggregate
@@ -102,6 +105,7 @@ def main():
     if not _os_path.exists("debug_tstoolbox"):
         _sys.tracebacklimit = 0
 
+    # Third party imports
     import cltoolbox
     from cltoolbox.rst_text_formatter import RSTHelpFormatter
 

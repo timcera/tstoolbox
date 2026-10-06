@@ -1,5 +1,7 @@
+# Standard library imports
 from unittest import TestCase
 
+# First party imports
 from tstoolbox import tstoolbox
 
 

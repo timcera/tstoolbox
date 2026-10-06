@@ -1,7 +1,10 @@
+# Standard library imports
 from unittest import TestCase
 
+# First party imports
 from tstoolbox import tstoolbox
 
+# Local folder imports
 from . import capture
 
 
@@ -102,6 +105,6 @@ class TestFDC(TestCase):
             plotting_position="weibull",
             input_ts="tests/data_sunspot.csv",
         )
-        fp = open("tests/sunspot_area_fdc_compare.txt")
-        teststr = "".join(fp.readlines())
+        with open("tests/sunspot_fdc_compare.txt") as fp:
+            teststr = "".join(fp.readlines())
         self.linebyline(out, teststr)

@@ -18,8 +18,10 @@
 # ## Fill forward
 
 # %% jupyter={"outputs_hidden": true}
+# Third party imports
 import pandas as pd
 
+# First party imports
 import tstoolbox.tstoolbox as ts
 
 # %%

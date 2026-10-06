@@ -1,9 +1,12 @@
+# Standard library imports
 from unittest import TestCase
 
+# Third party imports
 import pandas as pd
-from pandas.testing import assert_frame_equal
 import pytest
+from pandas.testing import assert_frame_equal
 
+# First party imports
 from tstoolbox import tstoolbox
 from tstoolbox.toolbox_utils.src.toolbox_utils import tsutils
 
@@ -29,4 +32,6 @@ class TestConvertTZ(TestCase):
 
     def test_different_tz(self):
         with pytest.raises(ValueError):
-            _ = tstoolbox.converttz("EST", "America/New_York", input_ts="tests/data_converttz.csv")
+            _ = tstoolbox.converttz(
+                "EST", "America/New_York", input_ts="tests/data_converttz.csv"
+            )

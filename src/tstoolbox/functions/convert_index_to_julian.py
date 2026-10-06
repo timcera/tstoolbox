@@ -1,7 +1,9 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 from .convert_index import convert_index
 

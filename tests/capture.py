@@ -4,11 +4,14 @@ Capture function
 
 """
 
+# Standard library imports
 import sys
 
 try:
+    # Third party imports
     from cStringIO import StringIO
 except ImportError:
+    # Standard library imports
     from io import StringIO
 
 

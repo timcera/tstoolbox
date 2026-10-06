@@ -1,15 +1,20 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
-from typing import List, Literal, Optional, Union
+from typing import Literal
 
+# Third party imports
 import pandas as pd
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -26,18 +31,18 @@ warnings.filterwarnings("ignore")
 @tsutils.doc(tsutils.docstrings)
 def accumulate(
     input_ts="-",
-    columns: Optional[Union[str, List]] = None,
+    columns: str | list | None = None,
     start_date=None,
     end_date=None,
     dropna="no",
     clean=False,
-    statistic: Union[str, List[Literal["sum", "max", "min", "prod"]]] = "sum",
+    statistic: str | list[Literal["sum", "max", "min", "prod"]] = "sum",
     round_index=None,
     skiprows=None,
     index_type="datetime",
-    names: Optional[List] = None,
-    source_units: Optional[List] = None,
-    target_units: Optional[List] = None,
+    names: list | None = None,
+    source_units: list | None = None,
+    target_units: list | None = None,
     print_input=False,
 ):
     """

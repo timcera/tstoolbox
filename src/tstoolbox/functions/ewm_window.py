@@ -1,17 +1,21 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
-from typing import List, Literal, Optional, Union
+from typing import Annotated, Literal
 
+# Third party imports
 import pandas as pd
 from pydantic import Field
-from typing_extensions import Annotated
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -30,14 +34,12 @@ def ewm_window(
     index_type="datetime",
     names=None,
     clean=False,
-    statistic: Optional[
-        Union[str, List[Literal["corr", "cov", "mean", "std", "var"]]]
-    ] = "mean",
-    alpha_com: Optional[Annotated[float, Field(ge=0)]] = None,
-    alpha_span: Optional[Annotated[float, Field(ge=0)]] = None,
-    alpha_halflife: Optional[Annotated[float, Field(ge=0)]] = None,
-    alpha: Optional[Annotated[float, Field(ge=0, le=1)]] = None,
-    min_periods: Optional[Annotated[int, Field(ge=0)]] = 0,
+    statistic: str | list[Literal["corr", "cov", "mean", "std", "var"]] | None = "mean",
+    alpha_com: Annotated[float, Field(ge=0)] | None = None,
+    alpha_span: Annotated[float, Field(ge=0)] | None = None,
+    alpha_halflife: Annotated[float, Field(ge=0)] | None = None,
+    alpha: Annotated[float, Field(ge=0, le=1)] | None = None,
+    min_periods: Annotated[int, Field(ge=0)] | None = 0,
     adjust: bool = True,
     ignore_na: bool = False,
     source_units=None,

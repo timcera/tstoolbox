@@ -1,16 +1,20 @@
 """Collection of functions for the manipulation of time series."""
 
-from typing import Literal
+# Standard library imports
+from typing import Annotated, Literal
 
+# Third party imports
 import pandas as pd
 from pydantic import Field
-from typing_extensions import Annotated
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 

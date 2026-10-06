@@ -1,8 +1,11 @@
+# Standard library imports
 import os
 from unittest import TestCase
 
+# Third party imports
 from pandas.testing import assert_frame_equal
 
+# First party imports
 from tstoolbox import tstoolbox
 
 test_sinwave = """Datetime,0::,0::peak,0::valley

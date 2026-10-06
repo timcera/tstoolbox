@@ -1,18 +1,22 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
 from contextlib import suppress
-from typing import Literal
+from typing import Annotated, Literal
 
+# Third party imports
 import numpy as np
 from pydantic import Field, PositiveInt
-from typing_extensions import Annotated
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -158,6 +162,7 @@ def _peakdetect_parabola_fitter(raw_peaks, x_axis, y_axis, points):
         [[x, y, [fitted_x, fitted_y]]]
 
     """
+    # Third party imports
     from scipy.optimize import curve_fit
 
     def func(x, k, tau, m):
@@ -334,6 +339,7 @@ def _peakdetect_fft(y_axis, x_axis, pad_len=5):
         x, y = zip(*tab)
 
     """
+    # Third party imports
     from scipy import fft, ifft
 
     # check input data
@@ -464,6 +470,7 @@ def _peakdetect_sine(y_axis, x_axis, points=9, lock_frequency=False):
         x, y = zip(*tab)
 
     """
+    # Third party imports
     from scipy.optimize import curve_fit
 
     # check input data

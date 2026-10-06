@@ -1,19 +1,23 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
-from typing import List, Literal
+from typing import Annotated, Literal
 
+# Third party imports
 import numpy as np
 import pandas as pd
 from pydantic import Field
 from statsmodels.nonparametric.smoothers_lowess import lowess
-from typing_extensions import Annotated
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -23,7 +27,7 @@ warnings.filterwarnings("ignore")
 @validate_arguments
 @tsutils.doc(tsutils.docstrings)
 def fit(
-    method: List[Literal["lowess", "linear"]],
+    method: list[Literal["lowess", "linear"]],
     lowess_frac: Annotated[float, Field(gt=0, le=1)] = 0.01,
     input_ts="-",
     columns=None,

@@ -1,15 +1,20 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
 
+# Third party imports
 import pandas as pd
 from scipy.stats import gaussian_kde
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")

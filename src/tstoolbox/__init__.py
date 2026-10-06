@@ -43,6 +43,7 @@ __all__ = [
     "unstack",
 ]
 
+# First party imports
 from tstoolbox.functions.accumulate import accumulate
 from tstoolbox.functions.add_trend import add_trend
 from tstoolbox.functions.aggregate import aggregate

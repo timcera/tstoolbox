@@ -7,7 +7,7 @@ requires = [
 
 [project]
 authors = [
-    {email = "tim@cerazone.net", name = "Tim Cera"}
+    { email = "tim@cerazone.net", name = "Tim Cera" }
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -53,7 +53,7 @@ keywords = [
     "filter",
     "time-series"
 ]
-license = {text = "BSD-3-Clause"}
+license = { text = "BSD-3-Clause" }
 name = "tstoolbox"
 requires-python = ">=3.10"
 
@@ -66,28 +66,12 @@ documentation = "https://timcera.bitbucket.io/tstoolbox/docs/index.html#tstoolbo
 github = "https://github.com/timcera/tstoolbox"
 
 [tool.commitizen]
+multiline = true
 name = "cz_conventional_commits"
 tag_format = "v$version"
 update_changelog_on_bump = true
 version = "108.2.6"
 version_files = ["VERSION"]
-multiline = true
-
-[tool.ruff]
-fix = true
-exclude = [
-    "src/*/toolbox_utils/**/*.py"
-]
-
-[tool.ruff.lint]
-extend-select = ["I"]
-
-[tool.ruff.lint.isort.import-heading]
-future = "Future imports"
-standard-library = "Standard library imports"
-third-party = "Third party imports"
-first-party = "First party imports"
-local-folder = "Local folder imports"
 
 [tool.isort]
 profile = "black"
@@ -98,13 +82,30 @@ formats = "auto:percent"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
+[tool.ruff]
+exclude = [
+    "src/tstoolbox/toolbox_utils",
+    "notebooks"
+]
+fix = true
+
+[tool.ruff.lint]
+extend-select = ["I"]
+
+[tool.ruff.lint.isort.import-heading]
+first-party = "First party imports"
+future = "Future imports"
+local-folder = "Local folder imports"
+standard-library = "Standard library imports"
+third-party = "Third party imports"
+
 [tool.setuptools]
 include-package-data = true
 license-files = ["LICENSE.txt"]
 
 [tool.setuptools.dynamic]
-readme = {file = "README.rst"}
-version = {file = "VERSION"}
+readme = { file = "README.rst" }
+version = { file = "VERSION" }
 
 [tool.setuptools.packages.find]
 where = ["src"]

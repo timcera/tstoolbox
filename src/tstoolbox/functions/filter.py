@@ -1,21 +1,25 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
-from typing import List, Literal, Optional, Union
+from typing import Annotated, Literal
 
+# Third party imports
 import numpy as np
 import pandas as pd
 from pydantic import Field, PositiveFloat, PositiveInt
 from scipy import signal
 from scipy.fft import irfft, rfft, rfftfreq
 from scipy.optimize import leastsq
-from typing_extensions import Annotated
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -121,24 +125,16 @@ tsutils.docstrings["FILTERS"] = ", ".join(FILTERS)
 @validate_arguments
 @tsutils.doc(tsutils.docstrings)
 def filter(
-    filter_types: Union[Filters, List[Filters]],
+    filter_types: Filters | list[Filters],
     filter_pass: Literal["lowpass", "highpass", "bandpass", "bandstop"],
     butterworth_order: Annotated[int, Field(ge=1)] = 10,
-    lowpass_cutoff: Optional[PositiveFloat] = None,
-    highpass_cutoff: Optional[PositiveFloat] = None,
+    lowpass_cutoff: PositiveFloat | None = None,
+    highpass_cutoff: PositiveFloat | None = None,
     window_len: PositiveInt = 3,
-    pad_mode: Optional[
-        Literal[
-            "edge",
-            "maximum",
-            "mean",
-            "median",
-            "minimum",
-            "reflect",
-            "symmetric",
-            "wrap",
-        ]
-    ] = "reflect",
+    pad_mode: Literal[
+        "edge", "maximum", "mean", "median", "minimum", "reflect", "symmetric", "wrap"
+    ]
+    | None = "reflect",
     input_ts="-",
     start_date=None,
     end_date=None,
@@ -636,6 +632,7 @@ def filter(
                 ntsd = ntsd.join(tmptsd, how="outer")
 
             elif filter_type == "wavelet":
+                # Third party imports
                 import pywt
 
                 for wl in pywt.wavelist():
@@ -699,6 +696,7 @@ def filter(
 
 
 if __name__ == "__main__":
+    # First party imports
     from tstoolbox import tstoolbox
 
     df = tstoolbox.read("../../tests/02325000_flow.csv")

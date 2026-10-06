@@ -1,16 +1,20 @@
 """A lag routine."""
 
+# Standard library imports
 from contextlib import suppress
-from typing import List
 
+# Third party imports
 import pandas as pd
 from pydantic import PositiveInt
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 
@@ -18,7 +22,7 @@ except ImportError:
 @validate_arguments
 @tsutils.doc(tsutils.docstrings)
 def lag(
-    lags: List[PositiveInt],
+    lags: list[PositiveInt],
     input_ts="-",
     print_input=False,
     start_date=None,

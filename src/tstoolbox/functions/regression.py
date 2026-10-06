@@ -1,17 +1,21 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
-from typing import List, Optional, Union
 
+# Third party imports
 import pandas as pd
 from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -57,9 +61,9 @@ _FUNCS = {
 @tsutils.doc(tsutils.docstrings)
 def regression(
     method,
-    x_train_cols: List[Union[str, int]],
-    y_train_col: List[Union[str, int]],
-    x_pred_cols: Optional[List[Union[str, int]]] = None,
+    x_train_cols: list[str | int],
+    y_train_col: list[str | int],
+    x_pred_cols: list[str | int] | None = None,
     input_ts="-",
     columns=None,
     start_date=None,

@@ -1,10 +1,13 @@
+# Standard library imports
 import shlex
 import subprocess
 from unittest import TestCase
 
+# Third party imports
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
+# First party imports
 from tstoolbox import tstoolbox
 from tstoolbox.toolbox_utils.src.toolbox_utils import tsutils
 

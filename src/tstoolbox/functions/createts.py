@@ -1,15 +1,19 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
-from typing import Union
 
+# Third party imports
 import pandas as pd
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -19,8 +23,8 @@ warnings.filterwarnings("ignore")
 @tsutils.doc(tsutils.docstrings)
 def createts(
     input_ts=None,
-    freq: str = None,
-    fillvalue: Union[float, int] = None,
+    freq: str | None = None,
+    fillvalue: float | None = None,
     index_type="datetime",
     start_date=None,
     end_date=None,

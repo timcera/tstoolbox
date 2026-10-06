@@ -1,16 +1,21 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
 from contextlib import suppress
-from typing import List, Literal, Optional, Union
+from typing import Literal
 
+# Third party imports
 import pandas as pd
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -21,23 +26,12 @@ warnings.filterwarnings("ignore")
 @tsutils.doc(tsutils.docstrings)
 def aggregate(
     input_ts="-",
-    groupby: Optional[str] = None,
-    statistic: Union[
-        str,
-        List[
-            Literal[
-                "mean",
-                "sum",
-                "std",
-                "sem",
-                "max",
-                "min",
-                "median",
-                "first",
-                "last",
-                "ohlc",
-            ]
-        ],
+    groupby: str | None = None,
+    statistic: str
+    | list[
+        Literal[
+            "mean", "sum", "std", "sem", "max", "min", "median", "first", "last", "ohlc"
+        ]
     ] = "mean",
     columns=None,
     start_date=None,
@@ -152,11 +146,13 @@ def aggregate(
         DEPRECATED:
         Just prefix the number in front of the 'groupby' pandas offset code.
     """
-    aggd = {"hourly": tsutils.pandas_offset_by_version("h"),
-            "daily": "D",
-            "monthly": tsutils.pandas_offset_by_version("ME"),
-            "yearly": tsutils.pandas_offset_by_version("YE"),
-            "all": "all"}
+    aggd = {
+        "hourly": tsutils.pandas_offset_by_version("h"),
+        "daily": "D",
+        "monthly": tsutils.pandas_offset_by_version("ME"),
+        "yearly": tsutils.pandas_offset_by_version("YE"),
+        "all": "all",
+    }
 
     if agg_interval is not None:
         if groupby is not None:

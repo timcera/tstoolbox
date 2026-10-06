@@ -1,8 +1,11 @@
+# Standard library imports
 from unittest import TestCase
 
+# Third party imports
 import pytest
 from pandas.testing import assert_frame_equal
 
+# First party imports
 from tstoolbox import tstoolbox
 
 

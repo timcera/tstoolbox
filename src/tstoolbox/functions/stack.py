@@ -1,9 +1,12 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
 
+# Third party imports
 import pandas as pd
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 warnings.filterwarnings("ignore")

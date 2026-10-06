@@ -1,12 +1,14 @@
 """A collection of filling routines."""
 
-from typing import List, Literal, Optional, Union
+# Standard library imports
+from typing import Annotated, Literal
 
+# Third party imports
 import numpy as np
 import pandas as pd
 from pydantic import Field
-from typing_extensions import Annotated
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 
@@ -31,35 +33,33 @@ keywords.  Instead you have "{to}" in both.
 @tsutils.doc(tsutils.docstrings)
 def fill(
     input_ts="-",
-    method: Union[
-        Literal[
-            "ffill",
-            "bfill",
-            "linear",
-            "index",
-            "values",
-            "nearest",
-            "zero",
-            "slinear",
-            "quadratic",
-            "cubic",
-            "spline",
-            "polynomial",
-            "barycentric",
-            "mean",
-            "median",
-            "max",
-            "min",
-            "from",
-            "time",
-            "krogh",
-            "piecewise_polynomial",
-            "from_derivatives",
-            "pchip",
-            "akima",
-        ],
-        float,
-    ] = "ffill",
+    method: Literal[
+        "ffill",
+        "bfill",
+        "linear",
+        "index",
+        "values",
+        "nearest",
+        "zero",
+        "slinear",
+        "quadratic",
+        "cubic",
+        "spline",
+        "polynomial",
+        "barycentric",
+        "mean",
+        "median",
+        "max",
+        "min",
+        "from",
+        "time",
+        "krogh",
+        "piecewise_polynomial",
+        "from_derivatives",
+        "pchip",
+        "akima",
+    ]
+    | float = "ffill",
     print_input=False,
     start_date=None,
     end_date=None,
@@ -70,11 +70,11 @@ def fill(
     source_units=None,
     target_units=None,
     skiprows=None,
-    from_columns: Optional[List[Union[int, str]]] = None,
-    to_columns: Optional[List[Union[int, str]]] = None,
-    limit: Annotated[int, Field(ge=0)] = None,
-    order: Annotated[int, Field(ge=0)] = None,
-    force_freq: str = None,
+    from_columns: list[int | str] | None = None,
+    to_columns: list[int | str] | None = None,
+    limit: Annotated[int, Field(ge=0)] | None = None,
+    order: Annotated[int, Field(ge=0)] | None = None,
+    force_freq: str | None = None,
 ):
     """
     Fill missing values (NaN) with different methods.
@@ -226,7 +226,9 @@ def fill(
         "akima",
         "from_derivatives",
     ):
-        ntsd = ntsd.convert_dtypes().interpolate(method=method, limit=limit, order=order)
+        ntsd = ntsd.convert_dtypes().interpolate(
+            method=method, limit=limit, order=order
+        )
     elif method == "mean":
         ntsd = ntsd.convert_dtypes().fillna(ntsd.mean(), limit=limit)
     elif method == "median":

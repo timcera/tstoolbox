@@ -1,16 +1,20 @@
 """Collection of functions for the manipulation of time series."""
 
-from typing import Literal, Optional
+# Standard library imports
+from typing import Annotated, Literal
 
+# Third party imports
 import pandas as pd
 from pydantic import Field, PositiveInt
-from typing_extensions import Annotated
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 
@@ -28,8 +32,8 @@ def pct_change(
     clean=False,
     periods: PositiveInt = 1,
     fill_method: Literal["backfill", "bfill", "ffill", "pad"] = "pad",
-    limit: Optional[Annotated[int, Field(ge=0)]] = None,
-    freq: str = None,
+    limit: Annotated[int, Field(ge=0)] | None = None,
+    freq: str | None = None,
     print_input=False,
     round_index=None,
     source_units=None,

@@ -1,13 +1,16 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
-from typing import List, Optional, Union
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -22,18 +25,18 @@ warnings.filterwarnings("ignore")
 )
 @tsutils.doc(tsutils.docstrings)
 def unstack(
-    column_names: Optional[Union[str, List]] = None,
+    column_names: str | list | None = None,
     input_ts="-",
-    columns: Optional[Union[str, List]] = None,
+    columns: str | list | None = None,
     start_date=None,
     end_date=None,
     round_index=None,
     dropna="no",
     skiprows=None,
     index_type="datetime",
-    names: Optional[List] = None,
-    source_units: Optional[List] = None,
-    target_units: Optional[List] = None,
+    names: list | None = None,
+    source_units: list | None = None,
+    target_units: list | None = None,
     clean=False,
 ):
     """

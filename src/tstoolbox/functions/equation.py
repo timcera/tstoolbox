@@ -1,19 +1,23 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import re
 import warnings
 from contextlib import suppress
-from typing import List, Optional, Union
 
+# Third party imports
 import numpy as np
 import pandas as pd
-from numpy import *  # noqa: F403
+from numpy import *
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 try:
+    # Third party imports
     from pydantic import validate_arguments
 except ImportError:
+    # Third party imports
     from pydantic import validate_call as validate_arguments
 
 warnings.filterwarnings("ignore")
@@ -97,7 +101,7 @@ def equation(
     round_index=None,
     source_units=None,
     target_units=None,
-    output_names: Optional[Union[str, List[str]]] = None,
+    output_names: str | list[str] | None = None,
 ):
     """
     Apply <equation_str> to the time series data.

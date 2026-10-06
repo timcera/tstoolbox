@@ -1,12 +1,15 @@
 """Collection of functions for the manipulation of time series."""
 
+# Standard library imports
 import warnings
-from typing import Literal, Union
+from typing import Literal
 
+# Third party imports
 import numpy as np
 import pandas as pd
 from pandas.tseries.frequencies import to_offset
 
+# Local folder imports
 from ..toolbox_utils.src.toolbox_utils import tsutils
 
 
@@ -15,23 +18,21 @@ from ..toolbox_utils.src.toolbox_utils import tsutils
 def convert_index(
     to: Literal["datetime", "number"],
     interval=None,
-    epoch: Union[
-        Literal[
-            "julian",
-            "reduced",
-            "modified",
-            "truncated",
-            "dublin",
-            "cnes",
-            "ccsds",
-            "lop",
-            "lilian",
-            "rata_die",
-            "mars_sol",
-            "unix",
-        ],
-        pd._typing.TimestampConvertibleTypes,
-    ] = "julian",
+    epoch: Literal[
+        "julian",
+        "reduced",
+        "modified",
+        "truncated",
+        "dublin",
+        "cnes",
+        "ccsds",
+        "lop",
+        "lilian",
+        "rata_die",
+        "mars_sol",
+        "unix",
+    ]
+    | pd._typing.TimestampConvertibleTypes = "julian",
     input_ts="-",
     columns=None,
     start_date=None,
