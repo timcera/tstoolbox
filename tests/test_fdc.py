@@ -105,6 +105,6 @@ class TestFDC(TestCase):
             plotting_position="weibull",
             input_ts="tests/data_sunspot.csv",
         )
-        with open("tests/sunspot_fdc_compare.txt") as fp:
+        with open("tests/sunspot_area_fdc_compare.txt") as fp:
             teststr = "".join(fp.readlines())
         self.linebyline(out, teststr)
